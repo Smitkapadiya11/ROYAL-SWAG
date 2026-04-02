@@ -27,8 +27,15 @@ const SectionDivider = () => (
 export default function HomePage() {
   return (
     <PageClientWrapper>
-      <HeroSection />
       <HomeLungSliderLoader />
+      <div
+        style={{
+          height: "60px",
+          background: "linear-gradient(180deg, #061508 0%, #f5f0e8 100%)",
+        }}
+        aria-hidden="true"
+      />
+      <HeroSection />
       <SectionDivider />
       <BenefitsSection />
       <SectionDivider />

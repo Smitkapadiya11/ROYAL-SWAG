@@ -5,8 +5,16 @@ import dynamic from "next/dynamic";
 const LungSlider = dynamic(() => import("@/components/LungSlider"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[400px] w-full items-center justify-center rounded-2xl bg-[#071209]">
-      <p className="animate-pulse text-sm text-green-400">Loading...</p>
+    <div
+      style={{
+        background: "linear-gradient(180deg, #020b05 0%, #061508 100%)",
+        minHeight: "600px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <p style={{ color: "#4ade80", fontSize: "14px" }}>Loading...</p>
     </div>
   ),
 });

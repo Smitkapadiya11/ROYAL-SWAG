@@ -71,7 +71,8 @@ export default function LungSlider() {
           style={{ userSelect: isDragging ? "none" : "auto" }}
           onPointerDown={onPointerDown}
         >
-          {/* LAYER 1 — AFTER (healthy): full-bleed base */}
+          {/* LAYER 1 — AFTER (healthy): full-bleed base — raw <img> for CSS filter + clip sibling */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={LUNG_IMG}
             alt="Healthy lungs after care"
@@ -86,6 +87,7 @@ export default function LungSlider() {
           />
 
           {/* LAYER 2 — BEFORE (polluted): same image, clipped left */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={LUNG_IMG}
             alt=""

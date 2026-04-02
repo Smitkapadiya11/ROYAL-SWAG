@@ -60,7 +60,9 @@ function SocialProofTicker24h() {
       initial = randomIntInclusive(8, 15);
     }
 
-    setCount(initial);
+    const t0 = window.setTimeout(() => {
+      setCount(initial);
+    }, 0);
 
     const scheduleBump = () => {
       const delayMs = randomIntInclusive(3, 7) * 60 * 1000;
@@ -81,6 +83,7 @@ function SocialProofTicker24h() {
     scheduleBump();
 
     return () => {
+      window.clearTimeout(t0);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);

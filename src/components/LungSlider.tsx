@@ -42,7 +42,11 @@ export default function LungSlider() {
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
-    (e.currentTarget as HTMLDivElement).setPointerCapture?.(e.pointerId);
+    try {
+      (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
+    }
     setIsDragging(true);
     updateSlider(e.clientX);
   };

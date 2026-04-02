@@ -178,7 +178,7 @@ function QuizCard({
 
 // ━━━ Main Quiz Page ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default function LungTestPage() {
-  const { state, goBack, complete } = useQuiz();
+  const { state, goBack, complete, startQuiz } = useQuiz();
   const router = useRouter();
   const { currentStep } = state;
 
@@ -235,31 +235,16 @@ export default function LungTestPage() {
         q4: yn.breathless,
         q5: yn.dustFumes,
       };
-      const score =
+      const prelimScore =
         Number(answers.q1) +
         Number(answers.q2) +
         Number(answers.q3) +
         Number(answers.q4) +
         Number(answers.q5);
 
-      // Persist to localStorage for /lung-test/result
-      try {
-        const payload = {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.mobile,
-          score,
-          answers,
-          savedAt: Date.now(),
-        };
-        localStorage.setItem("lungTestResult", JSON.stringify(payload));
-        localStorage.setItem("lungTestAnswers", JSON.stringify(answers));
-        localStorage.setItem("lungTestScore", String(score));
-      } catch {
-        /* ignore storage errors */
-      }
+      const leadId = crypto.randomUUID();
 
-      // Save lead to backend (Supabase or console fallback)
+      // Save lead to backend (preliminary yes/no profile; final quiz score updates on /lung-test/report)
       try {
         await fetch("/api/save-lead", {
           method: "POST",
@@ -268,18 +253,19 @@ export default function LungTestPage() {
             name: formData.name,
             email: formData.email,
             phone: formData.mobile,
-            score,
+            score: prelimScore,
             answers,
           }),
         });
-      } catch (err: any) {
-        console.error("save-lead failed:", err?.message ?? err);
+      } catch (err: unknown) {
+        console.error("save-lead failed:", err instanceof Error ? err.message : err);
       }
 
-      router.push("/lung-test/result");
-    } catch (err: any) {
-      console.error("Lung test submit failed:", err?.message ?? err);
-      router.push("/lung-test/result");
+      // Enter the 12-question assessment (currentStep 0 … TOTAL_QUESTIONS-1)
+      startQuiz(leadId);
+    } catch (err: unknown) {
+      console.error("Lung test submit failed:", err instanceof Error ? err.message : err);
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -407,7 +393,7 @@ export default function LungTestPage() {
                   disabled={loading}
                   className="w-full py-4 rounded-full bg-[var(--brand-green)] text-[var(--brand-gold)] font-bold text-base shadow-sm hover:bg-[#163d29] transition-all active:scale-95 disabled:opacity-70"
                 >
-                  {loading ? "Preparing..." : "See My Result →"}
+                  {loading ? "Preparing..." : "Continue to lung assessment →"}
                 </button>
                 <p className="text-center text-xs text-[var(--brand-dark)]/35 mt-4">
                   🔒 Your data is safe. No spam, ever.

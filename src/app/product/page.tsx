@@ -2,9 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CountdownTimer from "@/components/CountdownTimer";
 import MobileStickyBar from "@/components/MobileStickyBar";
+import PricingSelector from "@/components/PricingSelector";
+import {
+  buildPricingPlans,
+  planToAmountPaise,
+  razorpayDescriptionForPlan,
+  type PlanId,
+} from "@/lib/product-pricing";
 
 // TODO: Set via env var NEXT_PUBLIC_STOCK_COUNT (default 38)
 const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "38";
@@ -113,9 +120,9 @@ declare global {
 }
 
 const PRODUCT_NAME = "Royal Swag Lung Detox Tea";
-const PRODUCT_DESCRIPTION = "30 Tea Bags — 30 Day Supply";
-const CHECKOUT_AMOUNT = 69900; // ₹699 in paise
 const CHECKOUT_CURRENCY = "INR";
+
+const PRICING_PLANS = buildPricingPlans();
 
 export default function ProductPage() {
   const introRef = useRef<HTMLElement>(null);
@@ -126,7 +133,17 @@ export default function ProductPage() {
   const [isPrefillOpen, setIsPrefillOpen] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [prefill, setPrefill] = useState({ name: "", email: "", contact: "" });
+  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>("40");
   const deepLinkOpenedRef = useRef(false);
+
+  const selectedPlan = useMemo(
+    () => PRICING_PLANS.find((p) => p.id === selectedPlanId) ?? PRICING_PLANS[1],
+    [selectedPlanId]
+  );
+  const perDayForButton = useMemo(
+    () => (selectedPlan.priceRupees / selectedPlan.days).toFixed(2),
+    [selectedPlan]
+  );
 
   useEffect(() => {
     let ctx: any;
@@ -217,7 +234,9 @@ export default function ProductPage() {
         });
         tl2
           .from(".product-title", { x: 30, opacity: 0, duration: 0.7, ease: "expo.out" })
-          .from(".product-price", { x: 30, opacity: 0, duration: 0.5, ease: "expo.out" }, "-=0.4")
+          .from(".product-urgency", { x: 30, opacity: 0, duration: 0.5, ease: "expo.out" }, "-=0.4")
+          .from(".product-pricing", { x: 30, opacity: 0, duration: 0.5, ease: "expo.out" }, "-=0.35")
+          .from(".product-details", { x: 30, opacity: 0, duration: 0.45, ease: "expo.out" }, "-=0.3")
           .from(".product-badge", { scale: 0, opacity: 0, duration: 0.4, stagger: 0.1, ease: "back.out(2)" }, "-=0.3")
           .from(".product-cta", { y: 20, opacity: 0, scale: 0.95, duration: 0.5, ease: "back.out(1.7)" }, "-=0.2");
       }, infoRef);
@@ -316,10 +335,12 @@ export default function ProductPage() {
       const scriptOk = await loadRazorpay();
       if (!scriptOk) throw new Error("Failed to load Razorpay Checkout");
 
+      const amountPaise = planToAmountPaise(selectedPlan);
+
       const res = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: CHECKOUT_AMOUNT, currency: CHECKOUT_CURRENCY }),
+        body: JSON.stringify({ amount: amountPaise, currency: CHECKOUT_CURRENCY }),
       });
       const data = (await res.json()) as
         | { orderId: string; amount: number; currency: string; keyId: string }
@@ -333,7 +354,7 @@ export default function ProductPage() {
         amount: data.amount,
         currency: data.currency,
         name: PRODUCT_NAME,
-        description: PRODUCT_DESCRIPTION,
+        description: razorpayDescriptionForPlan(selectedPlan),
         order_id: data.orderId,
         prefill: {
           name: prefill.name,
@@ -352,6 +373,7 @@ export default function ProductPage() {
                 customerName: prefill.name,
                 customerPhone: prefill.contact,
                 customerEmail: prefill.email,
+                amountPaise,
               }),
             });
 
@@ -441,7 +463,7 @@ export default function ProductPage() {
                 className="bg-green-700 text-white px-8 py-4 text-xl rounded-lg w-full sm:w-auto sm:px-10 font-bold shadow-lg hover:bg-green-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={isPaying}
               >
-                Buy Now — Rs 699
+                Buy Now — Rs {selectedPlan.priceRupees} ({selectedPlan.days}-Day Pack)
               </button>
               <p className="mt-2 text-sm text-gray-200/70">🔒 Secure Payment via Razorpay</p>
             </div>
@@ -513,15 +535,6 @@ export default function ProductPage() {
                 Royal Swag <br />Lung Detox Tea
               </h2>
 
-              {/* Price row */}
-              <div className="product-price flex items-baseline gap-3 mb-4">
-                <span className="text-4xl font-bold text-[var(--brand-dark)]">₹699</span>
-                <span className="text-lg line-through text-[var(--brand-dark)]/30">₹999</span>
-                <span className="text-sm font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                  30% OFF
-                </span>
-              </div>
-
               {/* Urgency: countdown, stock, social proof (fixed vertical rhythm — no flex-wrap chips) */}
               <div className="product-urgency space-y-2 mb-6 max-w-full">
                 <div className="min-h-[1.25rem]">
@@ -534,12 +547,18 @@ export default function ProductPage() {
               </div>
 
               {/* Product details */}
-              <ul className="product-title text-sm text-[var(--brand-dark)]/65 space-y-2 mb-8">
+              <ul className="product-details product-title text-sm text-[var(--brand-dark)]/65 space-y-2 mb-8">
                 <li>🌿 <strong>Ingredients:</strong> Tulsi, Vasaka, Mulethi, Pippali, Ginger, Black Pepper, Cinnamon</li>
-                <li>📦 <strong>Size:</strong> 30 tea bags (30-day supply at 1/day)</li>
+                <li>📦 <strong>Size:</strong> 20, 40, or 60 tea bags — pick your pack below</li>
                 <li>🏷️ <strong>Weight:</strong> 75g</li>
                 <li>📅 <strong>Shelf Life:</strong> 24 months from manufacture</li>
               </ul>
+
+              <PricingSelector
+                plans={PRICING_PLANS}
+                value={selectedPlanId}
+                onChange={setSelectedPlanId}
+              />
 
               {/* CTA buttons */}
               <div className="product-cta space-y-3">
@@ -549,12 +568,14 @@ export default function ProductPage() {
                   className="bg-green-700 text-white px-8 py-4 text-xl rounded-lg w-full font-bold shadow-sm hover:bg-green-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   disabled={isPaying}
                 >
-                  Buy Now — Rs 699
+                  Buy Now — Rs {selectedPlan.priceRupees} ({selectedPlan.days}-Day Pack)
                 </button>
-                <p className="text-xs text-green-700 text-center min-h-[1.25rem] max-w-full px-1 leading-snug">
-                  🚚 Free delivery on all orders. Ships within 24 hours.
+                <p className="text-sm text-center text-[var(--brand-dark)]/60">
+                  That&apos;s just Rs {perDayForButton}/day for cleaner lungs
                 </p>
-                <p className="text-sm text-gray-500 text-center">🔒 Secure Payment via Razorpay</p>
+                <p className="text-xs text-gray-500 text-center leading-snug px-1">
+                  🔒 Secure Payment | 🚚 Free Delivery | ↩️ 30-Day Guarantee
+                </p>
                 <Link
                   href="/lung-test"
                   className="inline-flex items-center justify-center w-full gap-2 px-8 py-3 rounded-xl border-2 border-[var(--brand-sage)] text-[var(--brand-dark)]/60 font-semibold text-sm hover:border-[var(--brand-green)] hover:text-[var(--brand-green)] transition-all"

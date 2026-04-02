@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
       pincode,
       city,
       state,
+      amountPaise,
     } = body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -68,7 +69,10 @@ export async function POST(request: NextRequest) {
       city,
       state,
       pincode,
-      amount: 69900,
+      amount:
+        typeof amountPaise === "number" && Number.isFinite(amountPaise)
+          ? amountPaise
+          : 0,
       status: "paid",
     };
 

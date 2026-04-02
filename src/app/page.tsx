@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import HeroSection from "@/components/home/HeroSection";
-import LungSlider from "@/components/LungSlider";
 import PageClientWrapper from "./PageClientWrapper";
 import BenefitsSection from "@/components/home/BenefitsSection";
 import IngredientsSection from "@/components/home/IngredientsSection";
@@ -9,6 +9,18 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FaqSection from "@/components/home/FaqSection";
 import FinalCTASection from "@/components/home/FinalCTASection";
 import MobileStickyBar from "@/components/MobileStickyBar";
+
+const LungSlider = dynamic(
+  () => import("@/components/LungSlider"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[400px] w-full items-center justify-center bg-[#0a1a0a]">
+        <p className="animate-pulse text-sm text-green-400">Loading Lung Comparison...</p>
+      </div>
+    ),
+  }
+);
 
 export const metadata: Metadata = {
   title: "Royal Swag — Herbal Lung Detox Tea | Breathe Clean. Live Free.",

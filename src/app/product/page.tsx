@@ -2,9 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
-import CountdownTimer from "@/components/CountdownTimer";
 import MobileStickyBar from "@/components/MobileStickyBar";
+
+const CountdownTimer = dynamic(
+  () => import("@/components/CountdownTimer"),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="min-h-[1.25rem] text-sm font-bold text-red-600">
+        <span className="text-red-600">⏰ Offer ends in: </span>
+        <span className="font-mono tabular-nums text-red-600">--:--:--</span>
+      </p>
+    ),
+  }
+);
 import PricingSelector from "@/components/PricingSelector";
 import {
   buildPricingPlans,
@@ -72,13 +85,12 @@ function SocialProofTicker24h() {
     };
   }, []);
 
+  if (count === null) return null;
+
   return (
     <p className="text-xs text-[var(--brand-dark)]/55 min-h-[1.25rem] max-w-full break-words leading-snug">
-      👥{" "}
-      <span className="tabular-nums inline-block min-w-[1.5ch] text-center">
-        {count !== null ? count : "\u00a0"}
-      </span>{" "}
-      people ordered in the last 24 hours
+      👥 <span className="tabular-nums inline-block min-w-[1.5ch] text-center">{count}</span> people
+      ordered in the last 24 hours
     </p>
   );
 }
@@ -391,7 +403,6 @@ export default function ProductPage() {
             });
             window.location.href = `/order-success?${qp.toString()}`;
           } catch (err) {
-            // eslint-disable-next-line no-alert
             alert(err instanceof Error ? err.message : "Payment verification failed");
             setIsPaying(false);
           }
@@ -408,7 +419,6 @@ export default function ProductPage() {
       rz.open();
       setIsPrefillOpen(false);
     } catch (e) {
-      // eslint-disable-next-line no-alert
       alert(e instanceof Error ? e.message : "Payment failed");
       setIsPaying(false);
     }

@@ -23,13 +23,6 @@ export async function POST(req: NextRequest) {
 
     if (!supabaseUrl || !serviceRoleKey) {
       // TODO: Configure SUPABASE_SERVICE_ROLE_KEY on Vercel before launch.
-      console.log("TODO(save-lead): Supabase not configured, lead:", {
-        name,
-        email,
-        phone,
-        score,
-        answers,
-      });
       return NextResponse.json({ ok: true, stored: false }, { status: 200 });
     }
 

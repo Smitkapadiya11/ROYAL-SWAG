@@ -15,14 +15,6 @@ export async function POST(request: NextRequest) {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-      customerName,
-      customerPhone,
-      customerEmail,
-      address,
-      pincode,
-      city,
-      state,
-      amountPaise,
     } = body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -58,25 +50,6 @@ export async function POST(request: NextRequest) {
     // );
     // ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
     // CREATE POLICY "service insert" ON orders FOR INSERT TO service_role WITH CHECK (true);
-
-    const orderRecord = {
-      razorpay_order_id,
-      razorpay_payment_id,
-      customer_name: customerName,
-      customer_phone: customerPhone,
-      customer_email: customerEmail,
-      address,
-      city,
-      state,
-      pincode,
-      amount:
-        typeof amountPaise === "number" && Number.isFinite(amountPaise)
-          ? amountPaise
-          : 0,
-      status: "paid",
-    };
-
-    console.log("✅ Order verified & saved:", orderRecord);
 
     return NextResponse.json({
       success: true,

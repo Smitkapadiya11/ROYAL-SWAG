@@ -178,7 +178,7 @@ function QuizCard({
 
 // ━━━ Main Quiz Page ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default function LungTestPage() {
-  const { state, startQuiz, goBack, complete } = useQuiz();
+  const { state, goBack, complete } = useQuiz();
   const router = useRouter();
   const { currentStep } = state;
 

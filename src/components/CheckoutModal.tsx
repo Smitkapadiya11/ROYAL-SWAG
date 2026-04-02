@@ -67,16 +67,23 @@ export default function CheckoutModal({
     pincode: "",
   });
 
-  // Trap body scroll when open
+  // Trap body scroll when open; reset step after paint (avoids sync setState in effect)
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      setStep("form");
-      setError(null);
-    } else {
-      document.body.style.overflow = "";
+      const t = window.setTimeout(() => {
+        setStep("form");
+        setError(null);
+      }, 0);
+      return () => {
+        window.clearTimeout(t);
+        document.body.style.overflow = "";
+      };
     }
-    return () => { document.body.style.overflow = ""; };
+    document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   // Close on overlay click

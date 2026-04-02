@@ -55,7 +55,7 @@ function ShareButton({ tier }: { tier: LungHealthTier }) {
   const canShare = typeof navigator !== "undefined" && !!navigator.share;
 
   const handleShare = async () => {
-    const text = `I just took the Royal Swag Lung Health Test! My result: ${result.label} ${result.emoji}\n\nFind out about your lungs at royalswag.in/lung-test`;
+    const text = `I just took the Royal Swag Lung Health Test! My result: ${result.label} ${result.emoji}\n\nFind out about your lungs at https://www.royalswag.in/lung-test`;
     if (canShare) {
       try {
         await navigator.share({ title: "My Royal Swag Lung Health Result", text });

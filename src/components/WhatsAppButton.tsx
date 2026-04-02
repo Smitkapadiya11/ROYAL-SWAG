@@ -8,12 +8,7 @@ const WA_MESSAGE = encodeURIComponent(
 );
 const WA_URL = `https://wa.me/${WA_NUMBER}?text=${WA_MESSAGE}`;
 
-interface WhatsAppButtonProps {
-  /** Pass true when sticky mobile bar is also visible (pushes button up by 68px on mobile) */
-  aboveStickyBar?: boolean;
-}
-
-export default function WhatsAppButton({ aboveStickyBar = false }: WhatsAppButtonProps) {
+export default function WhatsAppButton() {
   return (
     <a
       href={WA_URL}
@@ -25,7 +20,7 @@ export default function WhatsAppButton({ aboveStickyBar = false }: WhatsAppButto
       style={{
         position: "fixed",
         right: "20px",
-        bottom: aboveStickyBar ? "80px" : "24px",
+        bottom: "24px",
         zIndex: 9999,
         display: "flex",
         alignItems: "center",
@@ -67,6 +62,9 @@ export default function WhatsAppButton({ aboveStickyBar = false }: WhatsAppButto
         .whatsapp-float-btn:hover {
           transform: translateY(-3px) scale(1.04) !important;
           box-shadow: 0 8px 28px rgba(37,211,102,0.55) !important;
+        }
+        @media (max-width: 768px) {
+          .whatsapp-float-btn { bottom: 80px !important; }
         }
         /* Show label only on mobile (label is less intrusive on desktop too) */
         @media (max-width: 400px) {

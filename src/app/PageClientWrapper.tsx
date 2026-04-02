@@ -19,5 +19,5 @@ export default function PageClientWrapper({ children }: { children: React.ReactN
     return () => ctx?.revert();
   }, []);
 
-  return <div className="page-wrapper">{children}</div>;
+  return <div className="page-wrapper pb-16 md:pb-0">{children}</div>;
 }

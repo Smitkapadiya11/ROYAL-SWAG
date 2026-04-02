@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import MobileStickyBar from "@/components/MobileStickyBar";
 
@@ -53,6 +54,7 @@ const CHECKOUT_AMOUNT = 69900; // ₹699 in paise
 const CHECKOUT_CURRENCY = "INR";
 
 export default function ProductPage() {
+  const params = useSearchParams();
   const introRef = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
   const infoRef = useRef<HTMLElement>(null);
@@ -61,6 +63,7 @@ export default function ProductPage() {
   const [isPrefillOpen, setIsPrefillOpen] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [prefill, setPrefill] = useState({ name: "", email: "", contact: "" });
+  const deepLinkOpenedRef = useRef(false);
 
   useEffect(() => {
     let ctx: any;
@@ -165,6 +168,14 @@ export default function ProductPage() {
       infoCtx?.revert();
     };
   }, []);
+
+  useEffect(() => {
+    if (deepLinkOpenedRef.current) return;
+    if (params?.get("buy") === "1") {
+      deepLinkOpenedRef.current = true;
+      setIsPrefillOpen(true);
+    }
+  }, [params]);
 
   // GALLERY HOVER ZOOM
   const handleImgEnter = (e: React.MouseEvent<HTMLElement>) => {
@@ -317,7 +328,7 @@ export default function ProductPage() {
   };
 
   return (
-    <div>
+    <div className="pb-16 md:pb-0">
       {/* ── Hero ── */}
       <section
         ref={introRef}
@@ -541,7 +552,7 @@ export default function ProductPage() {
       />
 
       {/* Mobile sticky bar */}
-      <MobileStickyBar />
+      <MobileStickyBar onBuyNow={() => setIsPrefillOpen(true)} />
     </div>
   );
 }

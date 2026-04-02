@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET ?? "placeholder_secret";
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
 export async function POST(request: NextRequest) {
   try {
+    // Replace with live keys before launch
+    if (!RAZORPAY_KEY_SECRET) {
+      return NextResponse.json({ error: "Razorpay key secret is not configured" }, { status: 500 });
+    }
+
     const body = await request.json();
     const {
       razorpay_order_id,

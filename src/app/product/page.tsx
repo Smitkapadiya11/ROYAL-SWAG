@@ -188,19 +188,48 @@ export default function ProductPage() {
     new Promise<boolean>((resolve) => {
       if (typeof window === "undefined") return resolve(false);
       if (window.Razorpay) return resolve(true);
-      const existing = document.querySelector<HTMLScriptElement>(
-        'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
-      );
+
+      const SRC = "https://checkout.razorpay.com/v1/checkout.js";
+      const existing = document.querySelector<HTMLScriptElement>(`script[src="${SRC}"]`);
+
+      // Prevent hanging forever if load/error already happened.
+      const timeout = window.setTimeout(() => resolve(!!window.Razorpay), 10000);
+      const cleanup = (script?: HTMLScriptElement) => {
+        window.clearTimeout(timeout);
+        if (!script) return;
+        script.removeEventListener("load", onLoad);
+        script.removeEventListener("error", onError);
+      };
+      const onLoad = () => {
+        cleanup(existing ?? undefined);
+        resolve(true);
+      };
+      const onError = () => {
+        cleanup(existing ?? undefined);
+        resolve(false);
+      };
+
       if (existing) {
-        existing.addEventListener("load", () => resolve(true));
-        existing.addEventListener("error", () => resolve(false));
+        if (window.Razorpay) {
+          cleanup(existing);
+          return resolve(true);
+        }
+        existing.addEventListener("load", onLoad, { once: true });
+        existing.addEventListener("error", onError, { once: true });
         return;
       }
+
       const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.src = SRC;
       script.async = true;
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
+      script.addEventListener("load", () => {
+        cleanup(script);
+        resolve(true);
+      }, { once: true });
+      script.addEventListener("error", () => {
+        cleanup(script);
+        resolve(false);
+      }, { once: true });
       document.body.appendChild(script);
     });
 
@@ -235,12 +264,39 @@ export default function ProductPage() {
           email: prefill.email,
           contact: prefill.contact,
         },
-        handler: (response: any) => {
-          const qp = new URLSearchParams({
-            orderId: response?.razorpay_order_id ?? data.orderId,
-            paymentId: response?.razorpay_payment_id ?? "",
-          });
-          window.location.href = `/order-success?${qp.toString()}`;
+        handler: async (response: any) => {
+          try {
+            const verifyRes = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response?.razorpay_order_id ?? data.orderId,
+                razorpay_payment_id: response?.razorpay_payment_id,
+                razorpay_signature: response?.razorpay_signature,
+                customerName: prefill.name,
+                customerPhone: prefill.contact,
+                customerEmail: prefill.email,
+              }),
+            });
+
+            const verifyData = (await verifyRes.json()) as
+              | { success: true; orderId: string; paymentId: string }
+              | { error: string };
+
+            if (!verifyRes.ok || "error" in verifyData) {
+              throw new Error("error" in verifyData ? verifyData.error : "Payment verification failed");
+            }
+
+            const qp = new URLSearchParams({
+              orderId: verifyData.orderId,
+              paymentId: verifyData.paymentId,
+            });
+            window.location.href = `/order-success?${qp.toString()}`;
+          } catch (err) {
+            // eslint-disable-next-line no-alert
+            alert(err instanceof Error ? err.message : "Payment verification failed");
+            setIsPaying(false);
+          }
         },
         modal: {
           ondismiss: () => {

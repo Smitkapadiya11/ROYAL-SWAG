@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HeroSection from "@/components/home/HeroSection";
+import LungSlider from "@/components/LungSlider";
 import PageClientWrapper from "./PageClientWrapper";
 import BenefitsSection from "@/components/home/BenefitsSection";
 import IngredientsSection from "@/components/home/IngredientsSection";
@@ -27,6 +28,7 @@ export default function HomePage() {
   return (
     <PageClientWrapper>
       <HeroSection />
+      <LungSlider />
       <SectionDivider />
       <BenefitsSection />
       <SectionDivider />

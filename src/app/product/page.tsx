@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import CheckoutModal from "@/components/CheckoutModal";
 import CountdownTimer from "@/components/CountdownTimer";
 import MobileStickyBar from "@/components/MobileStickyBar";
 
@@ -42,13 +41,26 @@ const GOLD_PARTICLES = [
   { style: { top: "30%", right: "38%" } },
 ];
 
+declare global {
+  interface Window {
+    Razorpay?: any;
+  }
+}
+
+const PRODUCT_NAME = "Royal Swag Lung Detox Tea";
+const PRODUCT_DESCRIPTION = "30 Tea Bags — 30 Day Supply";
+const CHECKOUT_AMOUNT = 69900; // ₹699 in paise
+const CHECKOUT_CURRENCY = "INR";
+
 export default function ProductPage() {
   const introRef = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
   const infoRef = useRef<HTMLElement>(null);
   const gsapRef = useRef<any>(null);
 
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isPrefillOpen, setIsPrefillOpen] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const [prefill, setPrefill] = useState({ name: "", email: "", contact: "" });
 
   useEffect(() => {
     let ctx: any;
@@ -172,6 +184,82 @@ export default function ProductPage() {
       });
   };
 
+  const loadRazorpay = () =>
+    new Promise<boolean>((resolve) => {
+      if (typeof window === "undefined") return resolve(false);
+      if (window.Razorpay) return resolve(true);
+      const existing = document.querySelector<HTMLScriptElement>(
+        'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+      );
+      if (existing) {
+        existing.addEventListener("load", () => resolve(true));
+        existing.addEventListener("error", () => resolve(false));
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+
+  const startPayment = async () => {
+    if (isPaying) return;
+    setIsPaying(true);
+    try {
+      const scriptOk = await loadRazorpay();
+      if (!scriptOk) throw new Error("Failed to load Razorpay Checkout");
+
+      const res = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: CHECKOUT_AMOUNT, currency: CHECKOUT_CURRENCY }),
+      });
+      const data = (await res.json()) as
+        | { orderId: string; amount: number; currency: string; keyId: string }
+        | { error: string };
+      if (!res.ok || "error" in data) {
+        throw new Error("error" in data ? data.error : "Failed to create order");
+      }
+
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        name: PRODUCT_NAME,
+        description: PRODUCT_DESCRIPTION,
+        order_id: data.orderId,
+        prefill: {
+          name: prefill.name,
+          email: prefill.email,
+          contact: prefill.contact,
+        },
+        handler: (response: any) => {
+          const qp = new URLSearchParams({
+            orderId: response?.razorpay_order_id ?? data.orderId,
+            paymentId: response?.razorpay_payment_id ?? "",
+          });
+          window.location.href = `/order-success?${qp.toString()}`;
+        },
+        modal: {
+          ondismiss: () => {
+            setIsPaying(false);
+          },
+        },
+        theme: { color: "#15803d" },
+      };
+
+      const rz = new window.Razorpay(options);
+      rz.open();
+      setIsPrefillOpen(false);
+    } catch (e) {
+      // eslint-disable-next-line no-alert
+      alert(e instanceof Error ? e.message : "Payment failed");
+      setIsPaying(false);
+    }
+  };
+
   return (
     <div>
       {/* ── Hero ── */}
@@ -214,14 +302,17 @@ export default function ProductPage() {
           </p>
           {/* Hero Buy Now CTA */}
           <div className="product-hero-sub opacity-0 mt-8">
-            <button
-              id="product-hero-buy-btn"
-              onClick={() => setIsCheckoutOpen(true)}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-gold)] text-[var(--brand-green)] font-bold text-base shadow-lg hover:shadow-xl transition-all"
-            >
-              🛒 Buy Now — ₹699
-            </button>
-            <p className="text-white/40 text-xs mt-3">Free delivery · 30-day guarantee</p>
+            <div className="mx-auto w-full max-w-md">
+              <button
+                id="product-hero-buy-btn"
+                onClick={() => setIsPrefillOpen(true)}
+                className="bg-green-700 text-white px-8 py-4 text-xl rounded-lg w-full sm:w-auto sm:px-10 font-bold shadow-lg hover:bg-green-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={isPaying}
+              >
+                Buy Now — Rs 699
+              </button>
+              <p className="mt-2 text-sm text-gray-200/70">🔒 Secure Payment via Razorpay</p>
+            </div>
           </div>
         </div>
 
@@ -326,14 +417,13 @@ export default function ProductPage() {
               <div className="product-cta space-y-3">
                 <button
                   id="product-buy-now-btn"
-                  onClick={() => setIsCheckoutOpen(true)}
-                  className="inline-flex items-center justify-center w-full gap-2 px-8 py-4 rounded-xl bg-[var(--brand-green)] text-white font-bold text-base shadow-sm hover:bg-[#163d29] transition-all"
+                  onClick={() => setIsPrefillOpen(true)}
+                  className="bg-green-700 text-white px-8 py-4 text-xl rounded-lg w-full font-bold shadow-sm hover:bg-green-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={isPaying}
                 >
-                  🛒 Buy Now — ₹699
+                  Buy Now — Rs 699
                 </button>
-                <p className="text-xs text-[var(--brand-dark)]/40 text-center">
-                  ✈️ Free delivery on all orders · Ships in 24 hours
-                </p>
+                <p className="text-sm text-gray-500 text-center">🔒 Secure Payment via Razorpay</p>
                 <Link
                   href="/lung-test"
                   className="inline-flex items-center justify-center w-full gap-2 px-8 py-3 rounded-xl border-2 border-[var(--brand-sage)] text-[var(--brand-dark)]/60 font-semibold text-sm hover:border-[var(--brand-green)] hover:text-[var(--brand-green)] transition-all"
@@ -385,11 +475,98 @@ export default function ProductPage() {
         </div>
       </section>
 
-      {/* Checkout modal */}
-      <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
+      <PrefillModal
+        isOpen={isPrefillOpen}
+        isBusy={isPaying}
+        values={prefill}
+        onChange={setPrefill}
+        onClose={() => setIsPrefillOpen(false)}
+        onContinue={startPayment}
+      />
 
       {/* Mobile sticky bar */}
       <MobileStickyBar />
+    </div>
+  );
+}
+
+function PrefillModal(props: {
+  isOpen: boolean;
+  isBusy: boolean;
+  values: { name: string; email: string; contact: string };
+  onChange: (v: { name: string; email: string; contact: string }) => void;
+  onClose: () => void;
+  onContinue: () => void;
+}) {
+  const { isOpen, isBusy, values, onChange, onClose, onContinue } = props;
+  if (!isOpen) return null;
+
+  const canContinue =
+    values.name.trim().length >= 2 &&
+    values.email.trim().includes("@") &&
+    values.contact.trim().length >= 8;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+      <button
+        aria-label="Close"
+        className="absolute inset-0 bg-black/60"
+        onClick={onClose}
+        type="button"
+      />
+      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+        <h3 className="text-lg font-bold text-[var(--brand-dark)]">Enter details for payment</h3>
+        <p className="mt-1 text-sm text-gray-500">
+          We’ll prefill these in Razorpay Checkout.
+        </p>
+
+        <div className="mt-5 space-y-3">
+          <label className="block">
+            <span className="text-sm font-semibold text-[var(--brand-dark)]/70">Name</span>
+            <input
+              value={values.name}
+              onChange={(e) => onChange({ ...values, name: e.target.value })}
+              className="mt-1 w-full rounded-lg border border-gray-200 px-4 py-3 text-base outline-none focus:border-green-700"
+              placeholder="Your full name"
+              autoComplete="name"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-semibold text-[var(--brand-dark)]/70">Email</span>
+            <input
+              value={values.email}
+              onChange={(e) => onChange({ ...values, email: e.target.value })}
+              className="mt-1 w-full rounded-lg border border-gray-200 px-4 py-3 text-base outline-none focus:border-green-700"
+              placeholder="you@example.com"
+              inputMode="email"
+              autoComplete="email"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-semibold text-[var(--brand-dark)]/70">Mobile</span>
+            <input
+              value={values.contact}
+              onChange={(e) => onChange({ ...values, contact: e.target.value })}
+              className="mt-1 w-full rounded-lg border border-gray-200 px-4 py-3 text-base outline-none focus:border-green-700"
+              placeholder="10-digit mobile number"
+              inputMode="tel"
+              autoComplete="tel"
+            />
+          </label>
+        </div>
+
+        <div className="mt-6 space-y-2">
+          <button
+            type="button"
+            onClick={onContinue}
+            disabled={!canContinue || isBusy}
+            className="bg-green-700 text-white px-8 py-4 text-xl rounded-lg w-full font-bold hover:bg-green-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            Continue to payment
+          </button>
+          <p className="text-sm text-gray-500 text-center">🔒 Secure Payment via Razorpay</p>
+        </div>
+      </div>
     </div>
   );
 }

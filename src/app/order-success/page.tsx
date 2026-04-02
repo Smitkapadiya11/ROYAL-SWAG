@@ -6,8 +6,8 @@ import { Suspense } from "react";
 
 function OrderContent() {
   const params = useSearchParams();
-  const orderId = params.get("orderId") ?? "—";
-  const paymentId = params.get("paymentId") ?? "—";
+  const orderId = params?.get("orderId") ?? "—";
+  const paymentId = params?.get("paymentId") ?? "—";
 
   // Estimated delivery: 3-5 business days from today
   const today = new Date();
@@ -43,10 +43,10 @@ function OrderContent() {
           className="text-3xl sm:text-4xl font-bold text-[var(--brand-dark)] mb-4 leading-tight"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
-          Thank You for Your Order!
+          Thank you! Your order is confirmed.
         </h1>
         <p className="text-base text-[var(--brand-dark)]/60 mb-8 max-w-sm mx-auto">
-          Your Royal Swag Lung Detox Tea is on its way. You'll receive a WhatsApp confirmation shortly.
+          We'll WhatsApp you the details within 2 hours.
         </p>
 
         {/* Order details */}

@@ -1,51 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
+import Razorpay from "razorpay";
 
-// TODO: Add to .env.local:
-//   RAZORPAY_KEY_ID=rzp_test_YOUR_KEY_ID
-//   RAZORPAY_KEY_SECRET=YOUR_KEY_SECRET
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID ?? "rzp_test_placeholder";
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET ?? "placeholder_secret";
+type CreateOrderRequestBody = {
+  amount: number;
+  currency: string;
+};
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { amount = 69900 } = body; // amount in paise (₹699 = 69900 paise)
+    const body = (await request.json().catch(() => ({}))) as Partial<CreateOrderRequestBody>;
+    const { amount, currency } = body;
 
-    const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString("base64");
+    if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+    }
+    if (typeof currency !== "string" || currency.length < 3) {
+      return NextResponse.json({ error: "Invalid currency" }, { status: 400 });
+    }
 
-    const response = await fetch("https://api.razorpay.com/v1/orders", {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amount,
-        currency: "INR",
-        receipt: `rcpt_rs_${Date.now()}`,
-        notes: {
-          product: "Royal Swag Lung Detox Tea",
-          quantity: 1,
-        },
-      }),
-    });
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      console.error("Razorpay create order error:", errData);
+    // Replace with live keys before launch
+    if (!keyId || !keySecret) {
       return NextResponse.json(
-        { error: "Failed to create Razorpay order" },
+        { error: "Razorpay keys are not configured" },
         { status: 500 }
       );
     }
 
-    const order = await response.json();
+    const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+    const order = await razorpay.orders.create({
+      amount,
+      currency,
+      receipt: `rs_${Date.now()}`,
+    });
 
     return NextResponse.json({
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: RAZORPAY_KEY_ID,
+      keyId,
     });
   } catch (err: any) {
     console.error("create-order error:", err?.message ?? err);

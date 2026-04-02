@@ -8,8 +8,73 @@ import MobileStickyBar from "@/components/MobileStickyBar";
 
 // TODO: Set via env var NEXT_PUBLIC_STOCK_COUNT (default 38)
 const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "38";
-// TODO: Set via env var NEXT_PUBLIC_ORDERS_24H (default 12)
-const ORDERS_24H = process.env.NEXT_PUBLIC_ORDERS_24H ?? "12";
+
+const SOCIAL_PROOF_STORAGE_KEY = "productSocialProof24h";
+
+function randomIntInclusive(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/** Social proof count: random 8–15 on first visit, +1 every 3–7 min; persisted in localStorage */
+function SocialProofTicker24h() {
+  const [count, setCount] = useState<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    let initial: number;
+    try {
+      const raw = localStorage.getItem(SOCIAL_PROOF_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { count?: unknown };
+        if (typeof parsed.count === "number" && Number.isFinite(parsed.count) && parsed.count >= 0) {
+          initial = parsed.count;
+        } else {
+          initial = randomIntInclusive(8, 15);
+          localStorage.setItem(SOCIAL_PROOF_STORAGE_KEY, JSON.stringify({ count: initial }));
+        }
+      } else {
+        initial = randomIntInclusive(8, 15);
+        localStorage.setItem(SOCIAL_PROOF_STORAGE_KEY, JSON.stringify({ count: initial }));
+      }
+    } catch {
+      initial = randomIntInclusive(8, 15);
+    }
+
+    setCount(initial);
+
+    const scheduleBump = () => {
+      const delayMs = randomIntInclusive(3, 7) * 60 * 1000;
+      timeoutRef.current = setTimeout(() => {
+        setCount((prev) => {
+          const next = (prev ?? initial) + 1;
+          try {
+            localStorage.setItem(SOCIAL_PROOF_STORAGE_KEY, JSON.stringify({ count: next }));
+          } catch {
+            /* ignore */
+          }
+          return next;
+        });
+        scheduleBump();
+      }, delayMs);
+    };
+
+    scheduleBump();
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return (
+    <p className="text-xs text-[var(--brand-dark)]/55 min-h-[1.25rem] max-w-full break-words leading-snug">
+      👥{" "}
+      <span className="tabular-nums inline-block min-w-[1.5ch] text-center">
+        {count !== null ? count : "\u00a0"}
+      </span>{" "}
+      people ordered in the last 24 hours
+    </p>
+  );
+}
 
 // TODO: Replace XXXXXXXXXXXX with real FSSAI license number
 const FSSAI_LICENSE = "XXXXXXXXXXXX"; // TODO: REPLACE
@@ -457,19 +522,15 @@ export default function ProductPage() {
                 </span>
               </div>
 
-              {/* Countdown Timer */}
-              <div className="product-price mb-4">
-                <CountdownTimer />
-              </div>
-
-              {/* Urgency signals */}
-              <div className="product-price flex flex-wrap gap-3 mb-6 text-xs font-semibold">
-                <span className="flex items-center gap-1 text-orange-600 bg-orange-50 border border-orange-100 rounded-full px-3 py-1">
-                  📦 Only {STOCK_COUNT} packs left at this price
-                </span>
-                <span className="flex items-center gap-1 text-[var(--brand-green)] bg-[var(--brand-sage)] border border-[var(--brand-sage)] rounded-full px-3 py-1">
-                  🔥 {ORDERS_24H} people ordered in the last 24 hours
-                </span>
+              {/* Urgency: countdown, stock, social proof (fixed vertical rhythm — no flex-wrap chips) */}
+              <div className="product-urgency space-y-2 mb-6 max-w-full">
+                <div className="min-h-[1.25rem]">
+                  <CountdownTimer />
+                </div>
+                <p className="text-xs font-medium text-orange-600 min-h-[1.25rem] max-w-full break-words leading-snug">
+                  🔥 Only {STOCK_COUNT} packs left at this price
+                </p>
+                <SocialProofTicker24h />
               </div>
 
               {/* Product details */}
@@ -490,6 +551,9 @@ export default function ProductPage() {
                 >
                   Buy Now — Rs 699
                 </button>
+                <p className="text-xs text-green-700 text-center min-h-[1.25rem] max-w-full px-1 leading-snug">
+                  🚚 Free delivery on all orders. Ships within 24 hours.
+                </p>
                 <p className="text-sm text-gray-500 text-center">🔒 Secure Payment via Razorpay</p>
                 <Link
                   href="/lung-test"

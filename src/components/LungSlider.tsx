@@ -1,14 +1,12 @@
 "use client";
 
+// IMPORTANT: Place lung image at /public/images/lung-healthy.webp
+// Reference image: AdobeStock anatomical lung X-ray style
+
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const LUNG_IMG = "/images/lung-healthy.png";
-
-const afterImgFilter =
-  "brightness(1.1) saturate(1.4) hue-rotate(0deg)";
-const beforeImgFilter =
-  "grayscale(0.6) sepia(0.4) brightness(0.5) contrast(1.2) hue-rotate(0deg) saturate(0.3)";
+const LUNG_IMG = "/images/lung-healthy.webp";
 
 export default function LungSlider() {
   const [sliderPos, setSliderPos] = useState(50);
@@ -67,90 +65,133 @@ export default function LungSlider() {
           aria-valuemax={95}
           aria-valuenow={Math.round(sliderPos)}
           aria-label="Before and after lung comparison"
-          className="relative mx-auto w-full max-w-[700px] select-none overflow-hidden rounded-2xl border border-green-900/50 shadow-xl h-[300px] md:h-[420px] touch-none"
+          className="relative mx-auto w-full max-w-[700px] cursor-grab select-none overflow-hidden rounded-2xl border border-green-900/50 shadow-xl active:cursor-grabbing h-[300px] touch-none md:h-[420px]"
           style={{ userSelect: isDragging ? "none" : "auto" }}
           onPointerDown={onPointerDown}
         >
-          {/* LAYER 1 — AFTER (healthy): full-bleed base — raw <img> for CSS filter + clip sibling */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={LUNG_IMG}
-            alt="Healthy lungs after care"
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-            style={{ filter: afterImgFilter }}
-            draggable={false}
-          />
-          <div
-            className="pointer-events-none absolute inset-0 mix-blend-multiply"
-            style={{ background: "rgba(0,80,20,0.15)" }}
-            aria-hidden="true"
-          />
-
-          {/* LAYER 2 — BEFORE (polluted): same image, clipped left */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={LUNG_IMG}
-            alt=""
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-            style={{ filter: beforeImgFilter, clipPath: clipBefore }}
-            draggable={false}
-          />
+          {/* LAYER 1 — AFTER (healthy) */}
           <div
             className="pointer-events-none absolute inset-0"
-            style={{
-              background: "rgba(80,10,10,0.4)",
-              clipPath: clipBefore,
-            }}
-            aria-hidden="true"
-          />
+            style={{ background: "linear-gradient(135deg, #0a2a0a, #1a5a1a)" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LUNG_IMG}
+              alt="Healthy lungs after Royal Swag"
+              className="h-full w-full object-cover"
+              style={{
+                filter: "brightness(1.1) saturate(1.3)",
+                mixBlendMode: "normal",
+              }}
+              draggable={false}
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: "rgba(0,60,20,0.2)" }}
+              aria-hidden="true"
+            />
+          </div>
+
+          {/* LAYER 2 — BEFORE (polluted), clipped */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ clipPath: clipBefore }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(135deg, #1a0505, #2d0f0f)" }}
+              aria-hidden="true"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LUNG_IMG}
+              alt="Polluted lungs before Royal Swag"
+              className="h-full w-full object-cover"
+              style={{
+                filter:
+                  "grayscale(0.8) sepia(0.5) brightness(0.4) contrast(1.3) saturate(0.2)",
+              }}
+              draggable={false}
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: "rgba(80,10,10,0.45)" }}
+              aria-hidden="true"
+            />
+          </div>
 
           {/* Labels */}
-          <div className="pointer-events-none absolute left-4 top-4 z-10 rounded bg-black/70 px-3 py-1 text-xs font-bold text-white">
-            😮 BEFORE — Polluted Lungs
+          <div className="pointer-events-none absolute left-4 top-4 z-20">
+            <span
+              className="rounded-full px-3 py-1.5 text-xs font-bold text-white"
+              style={{ background: "rgba(0,0,0,0.75)" }}
+            >
+              😮 BEFORE — Polluted Lungs
+            </span>
           </div>
-          <div className="pointer-events-none absolute right-4 top-4 z-10 rounded bg-[rgba(0,100,40,0.85)] px-3 py-1 text-xs font-bold text-white">
-            ✅ AFTER 30 DAYS — Royal Swag
+          <div className="pointer-events-none absolute right-4 top-4 z-20">
+            <span
+              className="rounded-full px-3 py-1.5 text-xs font-bold text-white"
+              style={{ background: "rgba(0,100,40,0.9)" }}
+            >
+              ✅ AFTER 30 DAYS
+            </span>
           </div>
 
-          {/* Bad habits — left, when enough “before” visible */}
-          {sliderPos > 20 && (
-            <div className="pointer-events-none absolute bottom-[60px] left-3 z-10 flex flex-col gap-2">
-              {["🚬 Smoking", "🏭 Air Pollution", "😮‍💨 Weak Lungs"].map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full bg-black/65 px-2.5 py-1 text-[10px] font-semibold text-white sm:text-xs"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          )}
+          {/* Bad habit badges — BEFORE side */}
+          <div className="pointer-events-none absolute bottom-12 left-3 z-20 flex flex-col gap-2">
+            {["🚬 Smoking", "🏭 Air Pollution", "😮‍💨 Weak Lungs"].map((b) => (
+              <span
+                key={b}
+                className="rounded-full px-2 py-1 text-white"
+                style={{ background: "rgba(0,0,0,0.7)", fontSize: "11px" }}
+              >
+                {b}
+              </span>
+            ))}
+          </div>
 
-          {/* Benefits — right */}
-          {sliderPos < 80 && (
-            <div className="pointer-events-none absolute bottom-[60px] right-3 z-10 flex flex-col gap-2">
-              {["💚 Detoxified", "🌿 Clear Airways", "⚡ Full Energy"].map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full bg-green-800/90 px-2.5 py-1 text-[10px] font-semibold text-green-50 sm:text-xs"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          )}
+          {/* Benefit badges — AFTER side */}
+          <div className="pointer-events-none absolute bottom-12 right-3 z-20 flex flex-col items-end gap-2">
+            {["💚 Detoxified", "🌿 Clear Airways", "⚡ Full Energy"].map((b) => (
+              <span
+                key={b}
+                className="rounded-full px-2 py-1 text-white"
+                style={{ background: "rgba(0,100,40,0.85)", fontSize: "11px" }}
+              >
+                {b}
+              </span>
+            ))}
+          </div>
 
-          {/* Handle: full-height line + centered grip */}
+          {/* Slider handle */}
           <div
-            className="pointer-events-none absolute inset-y-0 z-20 flex w-10 items-center justify-center"
-            style={{ left: `calc(${sliderPos}% - 20px)` }}
+            className="pointer-events-none absolute inset-y-0 z-30 flex w-11 flex-col items-center justify-center"
+            style={{ left: `calc(${sliderPos}% - 22px)` }}
           >
-            <div className="absolute inset-y-0 left-1/2 w-[3px] -translate-x-1/2 bg-white/90" aria-hidden="true" />
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-              <span className="text-lg font-bold text-green-800" aria-hidden="true">
+            <div
+              className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
+              style={{ width: "3px", background: "rgba(255,255,255,0.9)" }}
+              aria-hidden="true"
+            />
+            <div
+              className="relative z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white"
+              style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.6)" }}
+            >
+              <span style={{ fontSize: "18px", color: "#166534" }} aria-hidden="true">
                 ↔
               </span>
             </div>
+          </div>
+
+          {/* Bottom instruction (inside card) */}
+          <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-20 flex justify-center">
+            <span
+              className="rounded-full px-3 py-1 text-white"
+              style={{ background: "rgba(0,0,0,0.5)", fontSize: "11px" }}
+            >
+              ← Drag to reveal transformation →
+            </span>
           </div>
         </div>
 

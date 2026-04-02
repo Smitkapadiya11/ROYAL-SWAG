@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 
 // ━━━ State ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export type QuizState = {
@@ -23,7 +30,8 @@ type Action =
   | { type: "ANSWER"; payload: number | number[] }
   | { type: "BACK" }
   | { type: "COMPLETE"; score: number }
-  | { type: "RESET" };
+  | { type: "RESET" }
+  | { type: "REHYDRATE"; payload: QuizState };
 
 function quizReducer(state: QuizState, action: Action): QuizState {
   switch (action.type) {
@@ -49,6 +57,9 @@ function quizReducer(state: QuizState, action: Action): QuizState {
     case "RESET": {
       return initialState;
     }
+    case "REHYDRATE": {
+      return action.payload;
+    }
     default:
       return state;
   }
@@ -69,21 +80,27 @@ const QuizContext = createContext<QuizContextValue | null>(null);
 const SESSION_KEY = "royal_swag_quiz_state";
 
 export function QuizProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(quizReducer, initialState, () => {
-    // Rehydrate from sessionStorage (for report page)
-    if (typeof window !== "undefined") {
-      try {
-        const saved = sessionStorage.getItem(SESSION_KEY);
-        if (saved) return JSON.parse(saved) as QuizState;
-      } catch {
-        /* ignore */
-      }
-    }
-    return initialState;
-  });
+  const [state, dispatch] = useReducer(quizReducer, initialState);
+  const skipNextPersist = useRef(true);
 
-  // Persist to sessionStorage on every change
+  // Rehydrate after mount only — avoids SSR/client mismatch from sessionStorage in useReducer init
   useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as QuizState;
+        dispatch({ type: "REHYDRATE", payload: parsed });
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (skipNextPersist.current) {
+      skipNextPersist.current = false;
+      return;
+    }
     try {
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
     } catch {

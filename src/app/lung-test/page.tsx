@@ -3,13 +3,21 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useQuiz } from "@/store/quiz-store";
-import { supabase } from "@/lib/supabase";
 import {
   QUIZ_QUESTIONS,
   TOTAL_QUESTIONS,
   calculateScore,
   type QuizQuestion,
 } from "@/lib/quiz-data";
+
+type LungTestYesNoKey =
+  | "pollution"
+  | "smoke"
+  | "morningCough"
+  | "breathless"
+  | "dustFumes";
+
+type LungTestYesNoAnswers = Record<LungTestYesNoKey, boolean>;
 
 // ━━━ Progress Bar ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ProgressBar({ step, total }: { step: number; total: number }) {
@@ -176,6 +184,13 @@ export default function LungTestPage() {
 
   // Lead form state
   const [formData, setFormData] = useState({ name: "", email: "", mobile: "" });
+  const [yn, setYn] = useState<LungTestYesNoAnswers>({
+    pollution: false,
+    smoke: false,
+    morningCough: false,
+    breathless: false,
+    dustFumes: false,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -191,19 +206,6 @@ export default function LungTestPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
-
-  const proceedToQuiz = (leadId: string) => {
-    // Persist form data locally as backup in case Supabase failed
-    try {
-      localStorage.setItem(
-        "royal_swag_lead_backup",
-        JSON.stringify({ ...formData, leadId, savedAt: Date.now() })
-      );
-    } catch {
-      /* ignore storage errors */
-    }
-    startQuiz(leadId);
-  };
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,32 +228,58 @@ export default function LungTestPage() {
 
     setLoading(true);
     try {
-      // SUPABASE SQL: Run this in SQL Editor to fix RLS:
-      // CREATE POLICY "Allow anon insert" ON leads
-      // FOR INSERT TO anon WITH CHECK (true);
-      // ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
-      const { data, error: dbError } = await supabase
-        .from("leads")
-        .insert([{
-          email: formData.email,
-          name: formData.name,
-          phone: formData.mobile || null,
-          created_at: new Date().toISOString(),
-        }])
-        .select();
+      const answers = {
+        q1: yn.pollution,
+        q2: yn.smoke,
+        q3: yn.morningCough,
+        q4: yn.breathless,
+        q5: yn.dustFumes,
+      };
+      const score =
+        Number(answers.q1) +
+        Number(answers.q2) +
+        Number(answers.q3) +
+        Number(answers.q4) +
+        Number(answers.q5);
 
-      if (dbError) {
-        // Non-blocking: log the error but still advance the quiz
-        console.error("Supabase error:", dbError.message);
-        proceedToQuiz(crypto.randomUUID());
-        return;
+      // Persist to localStorage for /lung-test/result
+      try {
+        const payload = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.mobile,
+          score,
+          answers,
+          savedAt: Date.now(),
+        };
+        localStorage.setItem("lungTestResult", JSON.stringify(payload));
+        localStorage.setItem("lungTestAnswers", JSON.stringify(answers));
+        localStorage.setItem("lungTestScore", String(score));
+      } catch {
+        /* ignore storage errors */
       }
 
-      proceedToQuiz(data?.[0]?.id || crypto.randomUUID());
+      // Save lead to backend (Supabase or console fallback)
+      try {
+        await fetch("/api/save-lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.mobile,
+            score,
+            answers,
+          }),
+        });
+      } catch (err: any) {
+        console.error("save-lead failed:", err?.message ?? err);
+      }
+
+      router.push("/lung-test/result");
     } catch (err: any) {
-      // Network or unexpected failure — quiz still proceeds with local fallback ID
-      console.error("Lead save failed:", err?.message ?? err);
-      proceedToQuiz(crypto.randomUUID());
+      console.error("Lung test submit failed:", err?.message ?? err);
+      router.push("/lung-test/result");
     } finally {
       setLoading(false);
     }
@@ -337,6 +365,41 @@ export default function LungTestPage() {
                   />
                 </div>
               </div>
+
+              {/* Yes/No Questions */}
+              <div className="pt-2 space-y-4">
+                <YesNoQuestion
+                  id="q1"
+                  question="Do you live in a high-pollution city or near heavy traffic?"
+                  value={yn.pollution}
+                  onChange={(v) => setYn({ ...yn, pollution: v })}
+                />
+                <YesNoQuestion
+                  id="q2"
+                  question="Do you smoke or have you smoked in the past?"
+                  value={yn.smoke}
+                  onChange={(v) => setYn({ ...yn, smoke: v })}
+                />
+                <YesNoQuestion
+                  id="q3"
+                  question="Do you experience morning cough or throat clearing?"
+                  value={yn.morningCough}
+                  onChange={(v) => setYn({ ...yn, morningCough: v })}
+                />
+                <YesNoQuestion
+                  id="q4"
+                  question="Do you feel breathless climbing stairs or walking fast?"
+                  value={yn.breathless}
+                  onChange={(v) => setYn({ ...yn, breathless: v })}
+                />
+                <YesNoQuestion
+                  id="q5"
+                  question="Do you work near dust, chemicals, paint, or factory fumes?"
+                  value={yn.dustFumes}
+                  onChange={(v) => setYn({ ...yn, dustFumes: v })}
+                />
+              </div>
+
               <div className="pt-2">
                 <button
                   type="submit"
@@ -344,7 +407,7 @@ export default function LungTestPage() {
                   disabled={loading}
                   className="w-full py-4 rounded-full bg-[var(--brand-green)] text-[var(--brand-gold)] font-bold text-base shadow-sm hover:bg-[#163d29] transition-all active:scale-95 disabled:opacity-70"
                 >
-                  {loading ? "Preparing..." : "Start My Lung Test →"}
+                  {loading ? "Preparing..." : "See My Result →"}
                 </button>
                 <p className="text-center text-xs text-[var(--brand-dark)]/35 mt-4">
                   🔒 Your data is safe. No spam, ever.
@@ -397,5 +460,60 @@ export default function LungTestPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function YesNoQuestion(props: {
+  id: string;
+  question: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  const { id, question, value, onChange } = props;
+
+  return (
+    <fieldset className="rounded-xl border border-[var(--brand-sage)] bg-[var(--brand-sage)]/20 p-4">
+      <legend className="text-sm font-semibold text-[var(--brand-dark)]/80 px-1">
+        {question}
+      </legend>
+      <div className="mt-3 flex gap-3">
+        <label className="flex-1 cursor-pointer">
+          <input
+            type="radio"
+            name={id}
+            checked={value === true}
+            onChange={() => onChange(true)}
+            className="sr-only"
+          />
+          <span
+            className={`block w-full text-center rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-colors ${
+              value
+                ? "border-[var(--brand-green)] bg-white text-[var(--brand-green)]"
+                : "border-[var(--brand-sage)] bg-white/70 text-[var(--brand-dark)]/60 hover:border-[var(--brand-green)]"
+            }`}
+          >
+            Yes
+          </span>
+        </label>
+        <label className="flex-1 cursor-pointer">
+          <input
+            type="radio"
+            name={id}
+            checked={value === false}
+            onChange={() => onChange(false)}
+            className="sr-only"
+          />
+          <span
+            className={`block w-full text-center rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-colors ${
+              !value
+                ? "border-[var(--brand-green)] bg-white text-[var(--brand-green)]"
+                : "border-[var(--brand-sage)] bg-white/70 text-[var(--brand-dark)]/60 hover:border-[var(--brand-green)]"
+            }`}
+          >
+            No
+          </span>
+        </label>
+      </div>
+    </fieldset>
   );
 }

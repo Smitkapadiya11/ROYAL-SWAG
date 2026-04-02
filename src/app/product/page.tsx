@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import MobileStickyBar from "@/components/MobileStickyBar";
 
@@ -54,7 +53,6 @@ const CHECKOUT_AMOUNT = 69900; // ₹699 in paise
 const CHECKOUT_CURRENCY = "INR";
 
 export default function ProductPage() {
-  const params = useSearchParams();
   const introRef = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
   const infoRef = useRef<HTMLElement>(null);
@@ -171,11 +169,13 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (deepLinkOpenedRef.current) return;
-    if (params?.get("buy") === "1") {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("buy") === "1") {
       deepLinkOpenedRef.current = true;
       setIsPrefillOpen(true);
     }
-  }, [params]);
+  }, []);
 
   // GALLERY HOVER ZOOM
   const handleImgEnter = (e: React.MouseEvent<HTMLElement>) => {

@@ -168,11 +168,20 @@
   background: var(--brand-green);
 }
 
-html, body {
+html {
   scroll-behavior: smooth;
+}
+
+html,
+body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ━━━ BUTTON & CARD HOVER ANIMATIONS ━━━━━━━━━━━━━━━━━━━━ */

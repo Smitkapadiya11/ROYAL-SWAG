@@ -1,23 +1,22 @@
 import Link from "next/link";
 
-// ── TODO: Replace all placeholder values below before going live ──────────────
-const WHATSAPP_NUMBER  = "+91 99999 99999";   // TODO: REPLACE — real WhatsApp Business number
-const WHATSAPP_RAW     = "919999999999";       // TODO: REPLACE — digits only for wa.me link
-const EMAIL            = "hello@royalswag.in"; // TODO: REPLACE — real monitored inbox
-const INSTAGRAM_URL    = "https://www.instagram.com/royalswag/"; // TODO: REPLACE — real Instagram URL
-const YOUTUBE_URL      = "https://www.youtube.com/@royalswag";   // TODO: REPLACE — real YouTube URL
-const TWITTER_URL      = "https://twitter.com/royalswag";        // TODO: REPLACE — real Twitter/X URL
-const FSSAI_LICENSE    = "XXXXXXXXXXXX";       // TODO: REPLACE — real FSSAI license number
+const WHATSAPP_NUMBER = "+91 70965 53300";
+const WHATSAPP_RAW = "917096553300";
+const EMAIL = "info@eximburginternational.in";
+const INSTAGRAM_URL = "https://www.instagram.com/royalswag_official/";
+const YOUTUBE_URL = "https://www.youtube.com/@royalswagofficial";
+const FACEBOOK_URL = "https://www.facebook.com/royalswag.herbal.cigarette/";
+const TWITTER_URL = "https://twitter.com/royalswag";
 
-const ADDRESS_LINE1    = "Eximburg International Pvt Ltd"; // TODO: REPLACE — verify correct entity name
-const ADDRESS_LINE2    = "Your Registered Address, City"; // TODO: REPLACE — registered address
-const ADDRESS_LINE3    = "State — PINCODE";               // TODO: REPLACE — state & pincode
-// ─────────────────────────────────────────────────────────────────────────────
+const ADDRESS_LINE1 = "Eximburg International Pvt. Ltd.";
+const ADDRESS_LINE2 = "Plot No. 150, 3rd Floor, Amrut Udhyognagar";
+const ADDRESS_LINE3 = "Kholvad, Kamrej, Surat — Gujarat 394185";
 
 const SOCIAL_LINKS = [
   { label: "Instagram", initial: "I", href: INSTAGRAM_URL },
-  { label: "YouTube",   initial: "Y", href: YOUTUBE_URL   },
-  { label: "Twitter",   initial: "X", href: TWITTER_URL   },
+  { label: "YouTube", initial: "Y", href: YOUTUBE_URL },
+  { label: "Facebook", initial: "f", href: FACEBOOK_URL },
+  { label: "Twitter", initial: "X", href: TWITTER_URL },
 ];
 
 export default function Footer() {
@@ -25,8 +24,6 @@ export default function Footer() {
     <footer className="bg-[var(--brand-green)] text-white" role="contentinfo">
       <div className="container-rs py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-4">
-
-          {/* Brand */}
           <div className="md:col-span-2">
             <h2
               className="text-2xl font-black tracking-tight mb-1"
@@ -47,7 +44,6 @@ export default function Footer() {
             </address>
           </div>
 
-          {/* Navigate */}
           <div>
             <h3
               className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4"
@@ -57,11 +53,11 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2.5">
               {[
-                { href: "/",          label: "Home" },
+                { href: "/", label: "Home" },
                 { href: "/lung-test", label: "Free Lung Test" },
-                { href: "/product",   label: "Our Product" },
-                { href: "/about",     label: "About Us" },
-                { href: "/reviews",   label: "Reviews" },
+                { href: "/product", label: "Our Product" },
+                { href: "/about", label: "About Us" },
+                { href: "/reviews", label: "Reviews" },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
@@ -75,7 +71,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
             <h3
               className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4"
@@ -108,8 +103,7 @@ export default function Footer() {
               <li className="text-white/40 text-xs pt-1">Mon–Sat, 10am–6pm IST</li>
             </ul>
 
-            {/* Social links */}
-            <div className="flex gap-3 mt-6">
+            <div className="flex flex-wrap gap-3 mt-6">
               {SOCIAL_LINKS.map(({ label, initial, href }) => (
                 <a
                   key={label}
@@ -126,7 +120,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-white/30">
             © 2016–2026 Royal Swag. All rights reserved.{" "}
@@ -135,9 +128,10 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white/60 transition-colors underline underline-offset-2"
-              title="Verify FSSAI license"
+              title="FSSAI verification"
             >
-              FSSAI Lic. No. {FSSAI_LICENSE}
+              {/* TODO: Add real FSSAI number */}
+              FSSAI Certified
             </a>
           </p>
           <div className="flex gap-4">

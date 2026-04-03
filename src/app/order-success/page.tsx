@@ -19,7 +19,7 @@ function OrderContent() {
     d.toLocaleDateString("en-IN", { day: "numeric", month: "long" });
 
   // WhatsApp follow-up
-  const waNumber = "919999999999"; // TODO: REPLACE WITH REAL NUMBER
+  const waNumber = "917096553300";
   const waMsg = encodeURIComponent(
     `Hi, I just placed an order for Royal Swag Lung Detox Tea. My Order ID is ${orderId}. Please confirm my order.`
   );

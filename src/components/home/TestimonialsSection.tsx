@@ -47,15 +47,37 @@ export default function TestimonialsSection() {
           duration: 1.2,
         });
 
-        gsap.from(".testimonial-card", {
-          scrollTrigger: { trigger: ".testimonials-section", start: "top 85%", once: true },
-          y: 120,
-          opacity: 0,
-          scale: 0.75,
-          rotation: "random(-8, 8)",
-          duration: 0.85,
-          stagger: 0.18,
-          ease: "back.out(2)",
+        const cards = gsap.utils.toArray<HTMLElement>(".testimonial-card");
+        const narrow = window.matchMedia("(max-width: 768px)").matches;
+        // Per-card trigger only (no section-wide stagger). Lighter motion on mobile.
+        const st = { start: "top 92%", once: true as const };
+        cards.forEach((card) => {
+          if (narrow) {
+            gsap.fromTo(
+              card,
+              { opacity: 0, y: 20 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.45,
+                ease: "power2.out",
+                scrollTrigger: { trigger: card, ...st },
+              }
+            );
+          } else {
+            gsap.fromTo(
+              card,
+              { y: 48, opacity: 0, scale: 0.97 },
+              {
+                y: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 0.65,
+                ease: "power2.out",
+                scrollTrigger: { trigger: card, start: "top 90%", once: true },
+              }
+            );
+          }
         });
       }, sectionRef);
     };
@@ -66,7 +88,7 @@ export default function TestimonialsSection() {
   return (
     <section
       ref={sectionRef}
-      className="testimonials-section rs-brand-dark-grain py-12 min-[769px]:py-20 bg-[var(--brand-green)] overflow-hidden"
+      className="testimonials-section reviews-section rs-brand-dark-grain relative z-[1] overflow-visible py-12 min-[769px]:py-20 bg-[var(--brand-green)] md:overflow-hidden"
     >
       <div className="container-rs">
         <div className="text-center mb-10">

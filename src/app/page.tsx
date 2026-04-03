@@ -48,8 +48,8 @@ export default function HomePage() {
       <SectionBridge from={IVORY} to={BRAND_GREEN} />
       <TestimonialsSection />
       <SectionBridge from={BRAND_GREEN} to={IVORY} />
-      <div className="bg-[var(--brand-ivory)] py-12 min-[769px]:py-20">
-        <div className="container-rs max-w-3xl mx-auto px-4">
+      <div className="relative z-[1] mt-0 bg-[var(--brand-ivory)] py-12 min-[769px]:py-20">
+        <div className="container-rs relative z-[1] mx-auto max-w-3xl px-4">
           <HowItsMadeMini />
         </div>
       </div>

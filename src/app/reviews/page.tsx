@@ -102,15 +102,25 @@ export default function ReviewsPage() {
       const lowPerf = window.navigator.hardwareConcurrency <= 4;
 
       ctx = gsap.context(() => {
-        // Review card batch
-        ScrollTrigger.batch(".review-card", {
-          start: "top 90%",
-          once: true,
-          onEnter: (els) => {
-            gsap.fromTo(els, { opacity: 0, y: 20 }, {
-              opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power2.out",
-            });
-          },
+        // Per-card triggers only — batch fires for ALL cards when the first enters,
+        // which leaves every other card at opacity 0 (huge empty gaps on mobile).
+        const cards = gsap.utils.toArray<HTMLElement>(".review-card");
+        cards.forEach((card) => {
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 24 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.45,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 92%",
+                once: true,
+              },
+            }
+          );
         });
 
         // Product float
@@ -131,7 +141,10 @@ export default function ReviewsPage() {
   }, []);
 
   return (
-    <div ref={containerRef} className="min-h-0 bg-[var(--brand-ivory)] pb-12 pt-6 min-[769px]:pb-20">
+    <div
+      ref={containerRef}
+      className="reviews-section relative z-[1] min-h-0 overflow-visible bg-[var(--brand-ivory)] pb-12 pt-6 min-[769px]:pb-20"
+    >
       <div className="container-rs">
 
         {/* Header */}
@@ -179,16 +192,13 @@ export default function ReviewsPage() {
             </div>
           </div>
 
-          {/* Review grid (CSS masonry via columns) */}
-          <div
-            className="columns-1 gap-0 sm:columns-2 sm:gap-4"
-            style={{ columnFill: "balance" }}
-          >
+          {/* Mobile: single column flex (stable height). md+: two-column grid — avoid multi-column + batch animation gaps. */}
+          <div className="reviews-container flex flex-col gap-5 md:grid md:grid-cols-2 md:gap-6">
             {REVIEWS.map(({ id, initials, line, tier, before, after }) => (
               <article
                 key={id}
                 id={`review-${id}`}
-                className="review-card premium-card-hover mb-3 break-inside-avoid rounded-2xl border border-[var(--brand-sage)] bg-white p-4 shadow-sm min-[769px]:mb-4 min-[769px]:p-6"
+                className="review-card premium-card-hover relative rounded-2xl border border-[var(--brand-sage)] bg-white p-4 shadow-sm min-[769px]:p-6"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">

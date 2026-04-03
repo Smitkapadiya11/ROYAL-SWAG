@@ -275,3 +275,19 @@ body {
   backdrop-filter: blur(12px);
   border-bottom-color: rgba(255, 255, 255, 0.06) !important;
 }
+
+/* Reviews / testimonials: stable mobile stack (no collapsed height / overlap).
+   767px max so we don’t fight Tailwind md: (768px+) grid. */
+@media (max-width: 767px) {
+  .reviews-section {
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+  }
+  .reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow: visible;
+  }
+}

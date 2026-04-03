@@ -2,12 +2,10 @@
 
 import { SITE_CONFIG } from "@/lib/config";
 
-const WA_URL = `https://wa.me/${SITE_CONFIG.whatsapp.number}?text=${SITE_CONFIG.whatsapp.orderMessage}`;
-
 export default function WhatsAppButton() {
   return (
     <a
-      href={WA_URL}
+      href={SITE_CONFIG.whatsapp.url}
       id="whatsapp-float-btn"
       target="_blank"
       rel="noopener noreferrer"

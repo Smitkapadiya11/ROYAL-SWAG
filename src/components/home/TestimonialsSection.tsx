@@ -103,7 +103,7 @@ export default function TestimonialsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-[769px]:gap-6">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3 min-[769px]:gap-6">
           {TESTIMONIALS.map(({ id, initials, line, before, after, tier }) => (
             <blockquote
               key={id}

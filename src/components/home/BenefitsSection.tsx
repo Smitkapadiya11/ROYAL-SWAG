@@ -65,21 +65,23 @@ export default function BenefitsSection() {
           scale: 0, opacity: 0, duration: 1.2, ease: 'expo.out'
         });
 
-        // CARD entrance with 3D tilt
-        ScrollTrigger.batch('.benefit-card', {
-          onEnter: (elements) => {
-            gsap.from(elements, {
-              y: 100,         // BIG movement
-              opacity: 0,
-              scale: 0.8,     // BIG scale
-              rotation: 3,
-              duration: 0.8,
-              stagger: 0.15,
-              ease: 'back.out(1.7)',
-            });
-          },
-          once: true,
-          start: 'top 90%',
+        // Per-card entrance only — batch animates ALL cards when the first enters (opacity:0 on
+        // the rest = huge empty gap below the visible “stack” on mobile and desktop).
+        const benefitCards = gsap.utils.toArray<HTMLElement>(".benefit-card");
+        benefitCards.forEach((card) => {
+          gsap.fromTo(
+            card,
+            { y: 36, opacity: 0, scale: 0.98, rotation: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              scale: 1,
+              rotation: 0,
+              duration: 0.55,
+              ease: "power2.out",
+              scrollTrigger: { trigger: card, start: "top 92%", once: true },
+            }
+          );
         });
 
         // ICON bounce on scroll enter
@@ -110,15 +112,17 @@ export default function BenefitsSection() {
   // CARD hover 3D tilt on each card
   const handleCardEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!gsapRef.current) return;
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches) return;
     gsapRef.current.to(e.currentTarget, {
       rotateY: 5, rotateX: -3, scale: 1.03,
       boxShadow: "0 20px 60px rgba(45,106,79,0.18)",
       duration: 0.3, ease: "power2.out"
     });
   };
-  
+
   const handleCardLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!gsapRef.current) return;
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches) return;
     gsapRef.current.to(e.currentTarget, {
       rotateY: 0, rotateX: 0, scale: 1,
       boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
@@ -155,14 +159,13 @@ export default function BenefitsSection() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-[769px]:gap-6" style={{ perspective: "1000px" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-[769px]:gap-6 md:[perspective:1000px]">
           {BENEFITS.map(({ id, emoji, title, desc }) => (
             <div
               key={id}
-              className="benefit-card bg-white rounded-2xl border border-[var(--brand-sage)] p-4 shadow-sm cursor-default min-[769px]:p-6"
+              className="benefit-card bg-white rounded-2xl border border-[var(--brand-sage)] p-4 shadow-sm cursor-default min-[769px]:p-6 md:[transform-style:preserve-3d]"
               onMouseEnter={handleCardEnter}
               onMouseLeave={handleCardLeave}
-              style={{ transformStyle: "preserve-3d" }}
             >
               <span className="benefit-icon text-3xl mb-4 block origin-center" aria-hidden="true">{emoji}</span>
               <h3

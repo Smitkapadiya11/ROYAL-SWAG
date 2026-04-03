@@ -292,45 +292,33 @@ body {
   }
 }
 
-/* Phase 7 — mobile: kill scroll-driven layout bugs on review-like nodes + section stack */
+/* Mobile: review / testimonial cards — no phantom height from GSAP transforms */
 @media (max-width: 768px) {
-  [class*="review"] {
+  .review-card,
+  .testimonial-card {
     opacity: 1 !important;
     transform: none !important;
     position: relative !important;
-    height: auto !important;
-    min-height: 0 !important;
   }
 
-  section,
-  [class*="section"] {
-    position: relative !important;
-    z-index: auto !important;
-    overflow: visible !important;
-  }
-}
-
-/* Phase 8 — herb float / card stack: flat list on small screens */
-@media (max-width: 768px) {
-  [class*="herb"],
-  [class*="Herb"] {
+  /* Benefits cards — flat (3D hover / batch animations break narrow layouts) */
+  .benefits-section .benefit-card {
     transform: none !important;
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    width: 100% !important;
-    margin: 0 0 16px 0 !important;
-    display: block !important;
+  }
+  .benefits-section .benefit-card.premium-card-hover:hover {
+    transform: none !important;
   }
 
-  [class*="herb-container"],
-  [class*="herbs-wrapper"] {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 16px !important;
-    overflow: visible !important;
-    position: relative !important;
-    height: auto !important;
+  /* Formula section: real herb cards only (never match .herb-float — that caused layout voids) */
+  .ingredients-section .ingredient-card {
+    transform: none !important;
+  }
+  .ingredients-section .ingredient-card.premium-card-hover:hover {
+    transform: none !important;
+  }
+
+  /* Decorative leaves: hide on small screens so they cannot clip or steal layout */
+  .ingredients-section .herb-float {
+    display: none !important;
   }
 }

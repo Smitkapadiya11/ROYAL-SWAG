@@ -205,7 +205,19 @@ export default function HeroSection() {
             Breathe Clean. Live Free.
           </p>
           <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
-            The premium Ayurvedic lung detox tea formulated to combat modern pollution.
+            At Royal Swag, we provide a unique wellness experience that is inspired by the depth of traditional herbal medicine.
+          </p>
+          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
+            In today&apos;s world filled with more pollution, more fast-paced living, and more exposure to environmental elements than ever before, taking care of your lungs has become as necessary as it is vital to your health. Our Lung Detox Tea has been formulated specifically for the purpose of helping you support everyday normality through a careful selection of time-tested herbs that are safe and effective for daily use.
+          </p>
+          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
+            Starting with the belief that true wellness comes from consistency and simplicity, each of our formulas is meant to be a seamless part of your everyday routine. With every cup you drink, you will have a chance to experience the effects of having just finished an ordinary cup of tea as an opportunity to recover from life&apos;s daily demands.
+          </p>
+          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
+            The production of each of our blends is a direct reflection of our commitment to delivering only the purest, highest-quality herbal ingredients to you as quickly and, as safely, as possible, while also providing a smoother, more calming infusion to promote a lighter breathing experience.
+          </p>
+          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
+            Royal Swag believes in more than merely selling products — it believes in taking an ordinary habit, enjoying it as much as possible, and turning that habit into a conscious act of self-care.
           </p>
         </div>
 

@@ -9,34 +9,44 @@ import {
 
 const FAQS = [
   {
-    id: "how-to-use",
-    q: "How do I use Royal Swag?",
-    a: "Steep one tea bag in hot water (85–95°C) for 5 minutes. Drink twice daily — morning on an empty stomach and before bed. You can add a teaspoon of honey.",
+    id: "what-is-lung-detox-tea",
+    q: "What is Lung Detox Tea?",
+    a: "A herbal tea designed to support respiratory health and help the body cope with daily exposure to pollution.",
   },
   {
-    id: "how-soon",
-    q: "How soon will I see results?",
-    a: "Most customers report easier breathing and reduced morning cough within 7–10 days of consistent use. For deeper cleansing (especially for smokers or high-pollution areas), we recommend 4–6 weeks.",
+    id: "best-time-drink",
+    q: "When is the best time to drink it?",
+    a: "Morning or evening, depending on your routine.",
   },
   {
-    id: "safe",
-    q: "Is it safe for daily use?",
-    a: "Yes. Royal Swag is 100% natural with no artificial additives. All herbs are within safe Ayurvedic dosage ranges. Consult a doctor if pregnant, nursing, or on prescription medication.",
+    id: "suitable-smokers",
+    q: "Is it suitable for smokers?",
+    a: "Yes, it is often used by individuals looking to support their respiratory health.",
   },
   {
-    id: "asthma",
-    q: "I have asthma. Can I drink Royal Swag?",
-    a: "Many customers use Royal Swag alongside existing asthma management. However, it is a wellness supplement and not a substitute for prescribed medication. Consult your pulmonologist first.",
+    id: "suitable-non-smokers",
+    q: "Is it suitable for non-smokers?",
+    a: "Absolutely, it is beneficial for anyone exposed to pollution or looking to support respiratory wellness.",
   },
   {
-    id: "shipping",
-    q: "How fast is delivery?",
-    a: "Metro cities (Delhi, Mumbai, Bangalore, etc.) receive delivery in 2–3 business days. Tier-2 and Tier-3 cities in 4–6 business days. Free shipping on all orders.",
+    id: "what-benefits",
+    q: "What benefits can I expect?",
+    a: "Supports lung function, helps soothe throat and airways, promotes easier breathing.",
   },
   {
-    id: "return",
-    q: "What if I don't see results?",
-    a: "We offer a 30-day happiness guarantee. If you've used Royal Swag consistently for 30 days and aren't satisfied, contact us for a full refund — no questions asked.",
+    id: "side-effects",
+    q: "Are there any side effects?",
+    a: "The tea is made from natural herbs and is generally well tolerated when consumed as directed.",
+  },
+  {
+    id: "who-should-start",
+    q: "Who should start using this tea today?",
+    a: "Anyone living in urban environments, exposed to pollution, or looking to build a daily respiratory care habit.",
+  },
+  {
+    id: "delivery-time",
+    q: "How long will delivery take?",
+    a: "Delivery usually takes 3–7 business days depending on your location.",
   },
 ];
 

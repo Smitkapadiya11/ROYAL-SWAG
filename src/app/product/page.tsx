@@ -539,30 +539,17 @@ export default function ProductPage() {
                 { icon: "🛡️", label: "No Side Effects", sub: "Safe for long-term daily use", link: null },
                 { icon: "🔄", label: "30-Day Guarantee", sub: "Full refund, no questions asked", link: null },
                 { icon: "🚚", label: "Free Delivery", sub: "Pan-India · Ships in 24 hours", link: null },
-              ].map(({ icon, label, sub, link }) => {
-                const inner = (
+              ].map(({ icon, label, sub }) => (
+                <div key={label}>
                   <div className="product-badge flex items-center gap-4 bg-[var(--brand-sage)]/50 rounded-2xl px-5 py-4 border border-[var(--brand-sage)] hover:border-[var(--brand-green)]/30 transition-colors">
                     <span className="text-2xl" aria-hidden="true">{icon}</span>
                     <div>
                       <p className="text-sm font-semibold text-[var(--brand-dark)]">{label}</p>
                       <p className="text-xs text-[var(--brand-dark)]/50">{sub}</p>
                     </div>
-                    {link && (
-                      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 ml-auto text-[var(--brand-dark)]/20" aria-hidden="true">
-                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                      </svg>
-                    )}
                   </div>
-                );
-                return link ? (
-                  <a key={label} href={link} target="_blank" rel="noopener noreferrer" aria-label={`${label} — verify on FSSAI portal`}>
-                    {inner}
-                  </a>
-                ) : (
-                  <div key={label}>{inner}</div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </div>

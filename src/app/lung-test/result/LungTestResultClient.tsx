@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   computeLungTestScore,
@@ -148,6 +148,7 @@ function polar(cx: number, cy: number, r: number, angleRad: number) {
 
 /** Semicircle arc gauge: green (left) → amber → red (right); needle rotates to score on load. */
 function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) {
+  const shadowFilterId = useId().replace(/:/g, "");
   const cx = 140;
   const cy = 132;
   const r = 88;
@@ -182,7 +183,7 @@ function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) 
     <div className="mx-auto w-full max-w-[280px]" aria-hidden="true">
       <svg viewBox="0 0 280 150" className="w-full overflow-visible">
         <defs>
-          <filter id="lungGaugeShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id={shadowFilterId} x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.25" />
           </filter>
         </defs>
@@ -192,7 +193,7 @@ function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) 
           stroke="#16a34a"
           strokeWidth={thick}
           strokeLinecap="round"
-          filter="url(#lungGaugeShadow)"
+          filter={`url(#${shadowFilterId})`}
         />
         <path
           d={arcPath(a1, a2)}

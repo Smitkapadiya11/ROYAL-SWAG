@@ -215,7 +215,8 @@ export default function LungTestPage() {
               Take the 60-Second Lung Health Check
             </h1>
             <p className="text-gray-400 text-sm text-center mb-6 leading-relaxed">
-              Answer 8 quick questions. Get your personal lung toxin score. Free — no signup needed to see your result.
+              Answer 8 quick questions and get your personal lung toxin score. Free — no paid account; we only ask for
+              contact details so we can deliver your report.
             </p>
             <p className="text-white/90 text-sm font-semibold text-center mb-3">What&apos;s your name?</p>
             <input
@@ -235,7 +236,7 @@ export default function LungTestPage() {
             >
               Continue →
             </button>
-            <p className="mt-2 text-center text-[11px] text-gray-500">No email required to see your result</p>
+            <p className="mt-2 text-center text-[11px] text-gray-500">Next: email &amp; phone for report delivery only</p>
           </div>
         )}
 

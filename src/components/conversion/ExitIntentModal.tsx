@@ -29,6 +29,15 @@ export default function ExitIntentModal() {
     return () => document.documentElement.removeEventListener("mouseout", onMouseOut);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
   if (!open) return null;
 
   return (
@@ -38,7 +47,6 @@ export default function ExitIntentModal() {
       aria-modal="true"
       aria-labelledby="exit-intent-title"
       onClick={() => setOpen(false)}
-      onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
     >
       <div
         className="max-w-md w-full rounded-2xl border border-white/10 bg-[#0D3B1F] p-6 shadow-2xl"

@@ -31,7 +31,7 @@ export default function Footer() {
       <div className="container-rs py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="mb-1">
+            <div className="mb-4">
               <Image
                 src={ROYAL_SWAG_LOGO_SRC}
                 alt="Royal Swag Logo"
@@ -40,9 +40,6 @@ export default function Footer() {
                 className="h-12 w-auto"
               />
             </div>
-            <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[var(--brand-gold)] mb-4">
-              estd. 2016
-            </p>
             <p className="text-sm text-white/60 leading-relaxed max-w-xs mb-5">
               Premium Ayurvedic lung detox tea crafted from ancient herbs. Breathe clean. Live free.
             </p>

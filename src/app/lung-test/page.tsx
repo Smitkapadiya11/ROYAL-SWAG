@@ -1,7 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  ROYAL_SWAG_LOGO_HEIGHT,
+  ROYAL_SWAG_LOGO_SRC,
+  ROYAL_SWAG_LOGO_WIDTH,
+} from "@/lib/brand-logo";
 
 const QUESTIONS = [
   "Do you live in a city with high air pollution or heavy traffic?",
@@ -143,8 +149,14 @@ export default function LungTestPage() {
 
       <div className="w-full max-w-[480px] mb-8">
         <div className="text-center mb-6">
-          <p className="text-white font-bold tracking-tight text-lg">ROYAL SWAG</p>
-          <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#c9a84c] mt-1">Free Lung Test</p>
+          <Image
+            src={ROYAL_SWAG_LOGO_SRC}
+            alt="Royal Swag Logo"
+            width={ROYAL_SWAG_LOGO_WIDTH}
+            height={ROYAL_SWAG_LOGO_HEIGHT}
+            className="mx-auto h-12 w-auto"
+          />
+          <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#c9a84c] mt-2">Free Lung Test</p>
         </div>
         <div className="flex justify-between text-xs mb-2">
           <span className="text-[#4ade80] font-semibold">Step {step} of 8</span>

@@ -1,5 +1,11 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
+import {
+  ROYAL_SWAG_LOGO_HEIGHT,
+  ROYAL_SWAG_LOGO_SRC,
+  ROYAL_SWAG_LOGO_WIDTH,
+} from "@/lib/brand-logo";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
@@ -45,10 +51,17 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-sm">
         {/* Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-[#1a3a2a] " style={{ fontFamily: "var(--font-playfair)" }}>
-            ROYAL SWAG
+          <h1 className="m-0 flex justify-center">
+            <Image
+              src={ROYAL_SWAG_LOGO_SRC}
+              alt="Royal Swag Logo"
+              width={ROYAL_SWAG_LOGO_WIDTH}
+              height={ROYAL_SWAG_LOGO_HEIGHT}
+              className="h-14 w-auto"
+              priority
+            />
           </h1>
-          <p className="text-xs text-[#c9a84c] tracking-widest mt-1">ESTD. 2016</p>
+          <p className="text-xs text-[#c9a84c] tracking-widest mt-2">ESTD. 2016</p>
         </div>
 
         {step === "email" ? (

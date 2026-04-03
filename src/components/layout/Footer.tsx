@@ -1,4 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
+import {
+  ROYAL_SWAG_LOGO_HEIGHT,
+  ROYAL_SWAG_LOGO_SRC,
+  ROYAL_SWAG_LOGO_WIDTH,
+} from "@/lib/brand-logo";
 
 const WHATSAPP_NUMBER = "+91 70965 53300";
 const WHATSAPP_RAW = "917096553300";
@@ -25,12 +31,15 @@ export default function Footer() {
       <div className="container-rs py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <h2
-              className="text-2xl font-black tracking-tight mb-1"
-              style={{ fontFamily: "var(--font-playfair)", color: "white" }}
-            >
-              ROYAL SWAG
-            </h2>
+            <div className="mb-1">
+              <Image
+                src={ROYAL_SWAG_LOGO_SRC}
+                alt="Royal Swag Logo"
+                width={ROYAL_SWAG_LOGO_WIDTH}
+                height={ROYAL_SWAG_LOGO_HEIGHT}
+                className="h-12 w-auto"
+              />
+            </div>
             <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[var(--brand-gold)] mb-4">
               estd. 2016
             </p>

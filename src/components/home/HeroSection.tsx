@@ -1,7 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import {
+  ROYAL_SWAG_LOGO_HEIGHT,
+  ROYAL_SWAG_LOGO_SRC,
+  ROYAL_SWAG_LOGO_WIDTH,
+} from "@/lib/brand-logo";
 
 const leaves = [
   { top: '8%',  left: '3%',   size: 55, delay: 0,   dur: 3 },
@@ -188,12 +194,16 @@ export default function HeroSection() {
         </div>
 
         {/* Logo / Tagline */}
-        <div className="hero-logo group">
-          <h1
-            className="text-5xl sm:text-6xl md:text-7xl font-black text-[var(--brand-green)] tracking-tight leading-none mb-4"
-            style={{ fontFamily: "var(--font-playfair)" }}
-          >
-            ROYAL SWAG
+        <div className="hero-logo group flex flex-col items-center">
+          <h1 className="m-0 mb-4">
+            <Image
+              src={ROYAL_SWAG_LOGO_SRC}
+              alt="Royal Swag Logo"
+              width={ROYAL_SWAG_LOGO_WIDTH}
+              height={ROYAL_SWAG_LOGO_HEIGHT}
+              className="mx-auto h-14 w-auto sm:h-16 md:h-[4.5rem]"
+              priority
+            />
           </h1>
           <p className="hero-tagline text-xs sm:text-sm font-bold tracking-[0.3em] uppercase text-[var(--brand-gold)] mb-6">
             estd. 2016

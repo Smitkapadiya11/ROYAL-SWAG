@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  ROYAL_SWAG_LOGO_HEIGHT,
+  ROYAL_SWAG_LOGO_SRC,
+  ROYAL_SWAG_LOGO_WIDTH,
+} from "@/lib/brand-logo";
 
 const NAV_LINKS = [
   { href: "/", label: "Home", emoji: "🏠" },
@@ -109,13 +115,15 @@ export default function Navbar() {
         <div className="container-rs flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex flex-col leading-none" aria-label="Royal Swag — Home">
-            <span
-              className="text-xl md:text-2xl font-black tracking-tight text-[var(--brand-green)]"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              ROYAL SWAG
-            </span>
-            <span className="text-[10px] font-semibold tracking-[0.25em] text-[var(--brand-gold)] uppercase">
+            <Image
+              src={ROYAL_SWAG_LOGO_SRC}
+              alt="Royal Swag Logo"
+              width={ROYAL_SWAG_LOGO_WIDTH}
+              height={ROYAL_SWAG_LOGO_HEIGHT}
+              className="h-9 w-auto md:h-11"
+              priority
+            />
+            <span className="text-[10px] font-semibold tracking-[0.25em] text-[var(--brand-gold)] uppercase mt-1">
               estd. 2016
             </span>
           </Link>
@@ -152,12 +160,13 @@ export default function Navbar() {
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-6 h-16 md:h-20 border-b border-[var(--brand-sage)] shrink-0">
-          <span
-            className="text-lg font-black text-[var(--brand-green)]"
-            style={{ fontFamily: "var(--font-playfair)" }}
-          >
-            ROYAL SWAG
-          </span>
+          <Image
+            src={ROYAL_SWAG_LOGO_SRC}
+            alt="Royal Swag Logo"
+            width={ROYAL_SWAG_LOGO_WIDTH}
+            height={ROYAL_SWAG_LOGO_HEIGHT}
+            className="h-8 w-auto"
+          />
           <button
             onClick={closeDrawer}
             aria-label="Close navigation menu"

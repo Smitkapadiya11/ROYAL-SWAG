@@ -113,22 +113,21 @@ export default function Navbar() {
         role="banner"
       >
         <div className="container-rs flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <Link href="/" className="flex flex-col leading-none" aria-label="Royal Swag — Home">
-            <div className="flex min-w-[80px] shrink-0 items-center justify-center py-2">
-              <Image
-                src={ROYAL_SWAG_LOGO_SRC}
-                alt="Royal Swag Logo"
-                width={ROYAL_SWAG_LOGO_WIDTH}
-                height={ROYAL_SWAG_LOGO_HEIGHT}
-                className="h-auto w-16 object-contain md:w-20"
-                style={{ objectFit: "contain" }}
-                priority
-              />
-            </div>
-            <span className="text-[10px] font-semibold tracking-[0.25em] text-[var(--brand-gold)] uppercase mt-1">
-              estd. 2016
-            </span>
+          {/* Logo — single asset from /public/images (icon + wordmark + ESTD); no duplicate text */}
+          <Link
+            href="/"
+            className="flex shrink-0 items-center py-2 min-w-[64px] md:min-w-[80px]"
+            aria-label="Royal Swag — Home"
+          >
+            <Image
+              src={ROYAL_SWAG_LOGO_SRC}
+              alt="Royal Swag Logo"
+              width={ROYAL_SWAG_LOGO_WIDTH}
+              height={ROYAL_SWAG_LOGO_HEIGHT}
+              className="h-auto w-16 object-contain md:w-20"
+              style={{ objectFit: "contain" }}
+              priority
+            />
           </Link>
 
           {/* Hamburger */}
@@ -168,7 +167,8 @@ export default function Navbar() {
             alt="Royal Swag Logo"
             width={ROYAL_SWAG_LOGO_WIDTH}
             height={ROYAL_SWAG_LOGO_HEIGHT}
-            className="h-8 w-auto"
+            className="h-auto w-16 object-contain md:w-20"
+            style={{ objectFit: "contain" }}
           />
           <button
             onClick={closeDrawer}

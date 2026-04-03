@@ -324,7 +324,7 @@ export default function ProductPage() {
       {/* ── Hero ── */}
       <section
         ref={introRef}
-        className="relative min-h-[100svh] bg-[var(--brand-green)] flex flex-col items-center justify-center overflow-hidden pt-20 pb-16"
+        className="relative min-h-[100svh] bg-[var(--brand-green)] flex flex-col items-center justify-center overflow-hidden pb-16 pt-0"
       >
         <div aria-hidden="true">
           {GOLD_PARTICLES.map(({ style }, i) => (

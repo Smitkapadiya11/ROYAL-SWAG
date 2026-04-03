@@ -79,7 +79,7 @@ export default function RootLayout({
         <ScrollProgress />
         <WhatsAppButton />
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pt-[60px] md:pt-[70px]">{children}</main>
         <LocationOrderTicker />
         <Footer />
         <ConversionShell />

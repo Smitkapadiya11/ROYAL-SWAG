@@ -131,7 +131,7 @@ export default function ReviewsPage() {
   }, []);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[var(--brand-ivory)] pt-24 pb-20">
+    <div ref={containerRef} className="min-h-screen bg-[var(--brand-ivory)] pb-20 pt-6">
       <div className="container-rs">
 
         {/* Header */}

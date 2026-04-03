@@ -345,7 +345,7 @@ export default function LungTestResultClient() {
   const [tB1, tB2] = TESTIMONIALS_B[band];
 
   return (
-    <div className="min-h-[100svh] px-4 pb-28 pt-20 sm:pt-24" style={{ backgroundColor: BG }}>
+    <div className="min-h-[100svh] px-4 pb-28 pt-6 sm:pt-8" style={{ backgroundColor: BG }}>
       <div className="mx-auto max-w-lg">
         {/* PERSONALIZATION */}
         <h1

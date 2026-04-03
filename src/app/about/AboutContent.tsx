@@ -75,7 +75,7 @@ export default function AboutContent() {
   }, []);
 
   return (
-    <div ref={storyRef} className="pt-20">
+    <div ref={storyRef} className="pt-0">
 
       {/* Brand Story */}
       <section className="py-24 md:py-32 bg-[var(--brand-ivory)]" aria-labelledby="story-heading">

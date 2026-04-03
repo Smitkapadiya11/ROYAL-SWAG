@@ -72,7 +72,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--brand-ivory)] flex items-center justify-center pt-20">
+      <div className="min-h-screen bg-[var(--brand-ivory)] flex items-center justify-center pt-0">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-[var(--brand-green)] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-[var(--brand-dark)]/40">Loading your profile…</p>
@@ -88,7 +88,7 @@ export default function ProfilePage() {
   const tierData = tierResult ? TIER_RESULTS[tierResult] : null;
 
   return (
-    <div className="min-h-screen bg-[var(--brand-ivory)] pt-24 pb-20 px-4">
+    <div className="min-h-screen bg-[var(--brand-ivory)] px-4 pb-20 pt-6">
       <div className="max-w-xl mx-auto space-y-6">
 
         {/* User details card */}

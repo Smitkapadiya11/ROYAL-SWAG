@@ -124,7 +124,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="hero-section relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-[var(--brand-ivory)] pb-20 pt-24">
+    <section ref={sectionRef} className="hero-section relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-[var(--brand-ivory)] pb-20 pt-0">
       
       {/* Background circles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

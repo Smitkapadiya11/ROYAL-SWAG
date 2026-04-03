@@ -88,7 +88,7 @@ export default function Navbar() {
       {/* ── Navbar bar ── */}
       <header
         ref={navRef}
-        className="navbar fixed top-0 left-0 right-0 z-50 h-[60px] overflow-hidden border-b border-white/10 md:h-[70px]"
+        className="navbar fixed top-0 left-0 right-0 z-50 h-[60px] overflow-hidden border-b border-white/10 min-[769px]:h-[70px]"
         style={{ backgroundColor: "#0D3B1F" }}
         role="banner"
       >
@@ -103,7 +103,7 @@ export default function Navbar() {
               alt="Royal Swag Logo"
               width={ROYAL_SWAG_LOGO_WIDTH}
               height={ROYAL_SWAG_LOGO_HEIGHT}
-              className="block h-auto max-h-full w-[56px] md:w-[72px]"
+              className="block h-auto max-h-full w-[56px] min-[769px]:w-[72px]"
               style={{
                 display: "block",
                 objectFit: "contain",
@@ -144,13 +144,13 @@ export default function Navbar() {
         className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-sm bg-[var(--brand-ivory)] flex flex-col overflow-y-auto shadow-xl"
       >
         {/* Drawer header */}
-        <div className="flex h-[60px] shrink-0 items-center justify-between overflow-hidden border-b border-[var(--brand-sage)] px-6 md:h-[70px]">
+        <div className="flex h-[60px] shrink-0 items-center justify-between overflow-hidden border-b border-[var(--brand-sage)] px-6 min-[769px]:h-[70px]">
           <Image
             src={ROYAL_SWAG_LOGO_SRC}
             alt="Royal Swag Logo"
             width={ROYAL_SWAG_LOGO_WIDTH}
             height={ROYAL_SWAG_LOGO_HEIGHT}
-            className="block h-auto max-h-full w-[56px] md:w-[72px]"
+            className="block h-auto max-h-full w-[56px] min-[769px]:w-[72px]"
             style={{
               display: "block",
               objectFit: "contain",

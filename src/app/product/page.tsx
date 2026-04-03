@@ -23,7 +23,9 @@ const SocialProofTicker24h = dynamic(() => import("@/components/SocialProofTicke
   ssr: false,
 });
 
+import ProductImageGallery from "@/components/ProductImageGallery";
 import PricingSelector from "@/components/PricingSelector";
+import { PRODUCT_GALLERY_IMAGES } from "@/lib/product-images";
 import {
   buildPricingPlans,
   planToAmountPaise,
@@ -33,22 +35,6 @@ import {
 
 // TODO: Set via env var NEXT_PUBLIC_STOCK_COUNT (default 38)
 const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "38";
-
-const productImages = [
-  "/images/product/product-1.jpg",
-  "/images/product/product-2.jpg",
-  "/images/product/product-3.jpg",
-  "/images/product/product-4.jpg",
-  "/images/product/product-5.jpg",
-  "/images/product/product-6.webp",
-  "/images/product/product-7.jpg",
-  "/images/product/product-8.jpg",
-  "/images/product/product-9.jpg",
-  "/images/product/product-10.jpg",
-  "/images/product/product-11.jpg",
-  "/images/product/product-12.jpg",
-  "/images/product/product-13.jpg",
-];
 
 const GOLD_PARTICLES = [
   { style: { top: "14%", left: "22%" } },
@@ -209,24 +195,6 @@ export default function ProductPage() {
     }
   }, []);
 
-  // GALLERY HOVER ZOOM
-  const handleImgEnter = (e: React.MouseEvent<HTMLElement>) => {
-    if (gsapRef.current)
-      gsapRef.current.to(e.currentTarget.querySelector("img"), {
-        scale: 1.08,
-        duration: 0.4,
-        ease: "power2.out",
-      });
-  };
-  const handleImgLeave = (e: React.MouseEvent<HTMLElement>) => {
-    if (gsapRef.current)
-      gsapRef.current.to(e.currentTarget.querySelector("img"), {
-        scale: 1.0,
-        duration: 0.4,
-        ease: "power2.out",
-      });
-  };
-
   const loadRazorpay = () =>
     new Promise<boolean>((resolve) => {
       if (typeof window === "undefined") return resolve(false);
@@ -381,7 +349,7 @@ export default function ProductPage() {
         <div className="relative z-10 mb-10 product-hero-img opacity-0">
           <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-[340px] md:h-[340px] rounded-2xl overflow-hidden shadow-2xl">
             <Image
-              src="/images/product/product-1.jpg"
+              src={PRODUCT_GALLERY_IMAGES[0]}
               alt="Royal Swag Herbal Lung Detox Tea"
               fill
               priority
@@ -442,28 +410,7 @@ export default function ProductPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 px-4 max-w-4xl mx-auto">
-            {productImages.map((img, i) => (
-              <div
-                key={i}
-                className={`gallery-item relative overflow-hidden rounded-xl ${
-                  i === 0 ? "col-span-2 h-72 sm:h-96" : "h-44 sm:h-64"
-                }`}
-                onMouseEnter={handleImgEnter}
-                onMouseLeave={handleImgLeave}
-              >
-                <Image
-                  src={img}
-                  alt={`Product view ${i + 1}`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
-                  loading={i > 2 ? "lazy" : "eager"}
-                  onError={() => {}}
-                />
-              </div>
-            ))}
-          </div>
+          <ProductImageGallery images={PRODUCT_GALLERY_IMAGES} />
         </div>
       </section>
 

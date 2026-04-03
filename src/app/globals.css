@@ -91,7 +91,7 @@
   }
 
   html {
-    scroll-behavior: auto; /* GSAP controls scroll */
+    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -166,10 +166,6 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--brand-green);
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 html,

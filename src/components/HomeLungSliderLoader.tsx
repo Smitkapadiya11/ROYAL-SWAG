@@ -8,7 +8,7 @@ const LungSlider = dynamic(() => import("@/components/LungSlider"), {
     <div
       style={{
         background: "linear-gradient(180deg, #020b05 0%, #061508 100%)",
-        minHeight: "600px",
+        minHeight: "580px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

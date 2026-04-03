@@ -47,7 +47,7 @@ export default function CheckoutModal({
   isOpen,
   onClose,
   productName = "Royal Swag Lung Detox Tea",
-  price = 699,
+  price = 359,
 }: CheckoutModalProps) {
   const router = useRouter();
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -176,7 +176,9 @@ export default function CheckoutModal({
 
           if (verifyRes.ok) {
             onClose();
-            router.push(`/order-success?orderId=${response.razorpay_order_id}&paymentId=${response.razorpay_payment_id}`);
+            router.push(
+              `/order-success?orderId=${encodeURIComponent(response.razorpay_order_id)}&paymentId=${encodeURIComponent(response.razorpay_payment_id)}&amountPaise=${price * 100}`
+            );
           } else {
             setError("Payment verification failed. Please contact support with your payment ID: " + response.razorpay_payment_id);
             setStep("form");

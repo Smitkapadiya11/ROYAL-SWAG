@@ -21,7 +21,7 @@ const FAQS = [
   {
     id: "safe",
     q: "Is it safe for daily use?",
-    a: "Yes. Royal Swag is 100% natural and FSSAI-certified with no artificial additives. All herbs are within safe Ayurvedic dosage ranges. Consult a doctor if pregnant, nursing, or on prescription medication.",
+    a: "Yes. Royal Swag is 100% natural with no artificial additives. All herbs are within safe Ayurvedic dosage ranges. Consult a doctor if pregnant, nursing, or on prescription medication.",
   },
   {
     id: "asthma",

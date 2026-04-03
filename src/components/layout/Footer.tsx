@@ -122,17 +122,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-white/30">
-            © 2016–2026 Royal Swag. All rights reserved.{" "}
-            <a
-              href="https://foscos.fssai.gov.in/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white/60 transition-colors underline underline-offset-2"
-              title="FSSAI verification"
-            >
-              {/* TODO: Add real FSSAI number */}
-              FSSAI Certified
-            </a>
+            © 2016–2026 Royal Swag. All rights reserved.
           </p>
           <div className="flex gap-4">
             <Link href="/privacy" className="text-xs text-white/30 hover:text-white/60 transition-colors">

@@ -18,7 +18,6 @@ const TEAM = [
 ];
 
 const CERTS = [
-  { label: "FSSAI Certified", badge: "✅" },
   { label: "Ayush Approved", badge: "🌿" },
   { label: "GMP Compliant", badge: "🏭" },
   { label: "Lab Tested", badge: "🔬" },

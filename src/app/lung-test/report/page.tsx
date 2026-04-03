@@ -220,7 +220,7 @@ export default function LungTestReportPage() {
             onClick={() => setIsCheckoutOpen(true)}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-gold)] text-[var(--brand-green)] font-bold text-base shadow-lg hover:opacity-90 transition-all active:scale-95 w-full sm:w-auto"
           >
-            🛒 Buy Now — ₹699
+            🛒 Buy Now — from Rs 359
           </button>
           <p className="text-white/40 text-xs mt-3">Free delivery · 30-Day money-back guarantee</p>
         </div>

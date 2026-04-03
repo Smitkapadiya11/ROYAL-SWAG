@@ -8,6 +8,15 @@ function OrderContent() {
   const params = useSearchParams();
   const orderId = params?.get("orderId") ?? "—";
   const paymentId = params?.get("paymentId") ?? "—";
+  const amountPaiseRaw = params?.get("amountPaise");
+  const amountPaise =
+    amountPaiseRaw != null && amountPaiseRaw !== "" ? Number.parseInt(amountPaiseRaw, 10) : NaN;
+  const amountDisplay =
+    Number.isFinite(amountPaise) && amountPaise > 0
+      ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(
+          amountPaise / 100
+        )
+      : "—";
 
   // Estimated delivery: 3-5 business days from today
   const today = new Date();
@@ -59,7 +68,7 @@ function OrderContent() {
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--brand-dark)]/60">Amount Paid</span>
-              <span className="font-bold text-[var(--brand-dark)]">₹699</span>
+              <span className="font-bold text-[var(--brand-dark)]">{amountDisplay}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--brand-dark)]/60">Delivery</span>

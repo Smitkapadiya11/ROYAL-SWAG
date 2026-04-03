@@ -34,9 +34,6 @@ import {
 // TODO: Set via env var NEXT_PUBLIC_STOCK_COUNT (default 38)
 const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "38";
 
-// TODO: Replace XXXXXXXXXXXX with real FSSAI license number
-const FSSAI_LICENSE = "XXXXXXXXXXXX"; // TODO: REPLACE
-
 const productImages = [
   "/images/product/product-1.jpg",
   "/images/product/product-2.jpg",
@@ -339,6 +336,7 @@ export default function ProductPage() {
             const qp = new URLSearchParams({
               orderId: verifyData.orderId,
               paymentId: verifyData.paymentId,
+              amountPaise: String(amountPaise),
             });
             window.location.href = `/order-success?${qp.toString()}`;
           } catch (err) {
@@ -537,12 +535,6 @@ export default function ProductPage() {
             {/* Trust badges */}
             <div className="flex flex-col gap-4">
               {[
-                {
-                  icon: "✅",
-                  label: "FSSAI Certified",
-                  sub: `License No. ${FSSAI_LICENSE}`,
-                  link: `https://foscos.fssai.gov.in/`,
-                },
                 { icon: "🌿", label: "100% Ayurvedic", sub: "No artificial ingredients", link: null },
                 { icon: "🛡️", label: "No Side Effects", sub: "Safe for long-term daily use", link: null },
                 { icon: "🔄", label: "30-Day Guarantee", sub: "Full refund, no questions asked", link: null },

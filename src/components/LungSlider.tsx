@@ -1,16 +1,15 @@
 "use client";
 
-// BEFORE & AFTER: /images/lungs.png — same asset, different CSS filters.
+// BEFORE & AFTER: separate photographic assets.
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const LUNG_IMAGE = "/images/lungs.png";
+const BEFORE_IMAGE = "/images/lungs-before.png";
+const AFTER_IMAGE = "/images/lungs-after.png";
 
-const BEFORE_FILTER =
-  "grayscale(1) brightness(0.22) contrast(1.8) sepia(0.6)";
-const AFTER_FILTER =
-  "brightness(1.4) saturate(2.2) contrast(1.05) hue-rotate(340deg) sepia(0.15)";
+const BEFORE_FILTER = "brightness(0.85) contrast(1.1)";
+const AFTER_FILTER = "brightness(1.05) saturate(1.1)";
 
 export default function LungSlider() {
   const [sliderPos, setSliderPos] = useState(72);
@@ -148,7 +147,7 @@ export default function LungSlider() {
           <div className="lung-slider-after-breathe relative h-full w-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={LUNG_IMAGE}
+              src={AFTER_IMAGE}
               alt="Healthy lungs after care"
               className="absolute inset-0 h-full w-full object-cover"
               style={{ filter: AFTER_FILTER }}
@@ -157,7 +156,7 @@ export default function LungSlider() {
           </div>
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: "rgba(22, 101, 52, 0.18)" }}
+            style={{ background: "rgba(10, 60, 20, 0.2)" }}
           />
         </div>
 
@@ -167,7 +166,7 @@ export default function LungSlider() {
             <div className="relative h-full w-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={LUNG_IMAGE}
+                src={BEFORE_IMAGE}
                 alt="Polluted lungs before"
                 className="absolute inset-0 h-full w-full object-cover"
                 style={{ filter: BEFORE_FILTER }}
@@ -176,7 +175,7 @@ export default function LungSlider() {
             </div>
             <div
               className="absolute inset-0"
-              style={{ background: "rgba(100, 5, 5, 0.6)" }}
+              style={{ background: "rgba(80, 5, 5, 0.35)" }}
             />
           </div>
         </div>

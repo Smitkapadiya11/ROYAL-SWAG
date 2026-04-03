@@ -1,63 +1,71 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, startTransition } from "react";
 
-const OFFER_DURATION_MS = 48 * 60 * 60 * 1000; // 48 hours
-/** End timestamp (ms); resets every 48h from this point when expired */
+const OFFER_DURATION_MS = 48 * 60 * 60 * 1000;
 const STORAGE_KEY = "productOffer48hDeadline";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
+function readOrInitDeadline(): number {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = parseInt(stored, 10);
+      if (!Number.isNaN(parsed) && parsed > Date.now()) {
+        return parsed;
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  const deadline = Date.now() + OFFER_DURATION_MS;
+  try {
+    localStorage.setItem(STORAGE_KEY, String(deadline));
+  } catch {
+    /* ignore */
+  }
+  return deadline;
+}
+
+/** Returns display string and ensures deadline ref + localStorage are rolled forward if expired. */
+function tickDeadline(deadlineMs: number): { display: string; deadline: number } {
+  let deadline = deadlineMs;
+  let diff = deadline - Date.now();
+  if (diff <= 0) {
+    deadline = Date.now() + OFFER_DURATION_MS;
+    try {
+      localStorage.setItem(STORAGE_KEY, String(deadline));
+    } catch {
+      /* ignore */
+    }
+    diff = deadline - Date.now();
+  }
+  const totalSeconds = Math.max(0, Math.floor(diff / 1000));
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return { display: `${pad(h)}:${pad(m)}:${pad(s)}`, deadline };
+}
+
 export default function CountdownTimer() {
+  const deadlineRef = useRef(0);
   const [display, setDisplay] = useState("00:00:00");
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    let deadline: number;
+    const initial = readOrInitDeadline();
+    const first = tickDeadline(initial);
+    deadlineRef.current = first.deadline;
+    startTransition(() => setDisplay(first.display));
 
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = parseInt(stored, 10);
-        if (!Number.isNaN(parsed) && parsed > Date.now()) {
-          deadline = parsed;
-        } else {
-          deadline = Date.now() + OFFER_DURATION_MS;
-          localStorage.setItem(STORAGE_KEY, String(deadline));
-        }
-      } else {
-        deadline = Date.now() + OFFER_DURATION_MS;
-        localStorage.setItem(STORAGE_KEY, String(deadline));
-      }
-    } catch {
-      deadline = Date.now() + OFFER_DURATION_MS;
-    }
-
-    const tick = () => {
-      let diff = deadline - Date.now();
-      if (diff <= 0) {
-        deadline = Date.now() + OFFER_DURATION_MS;
-        try {
-          localStorage.setItem(STORAGE_KEY, String(deadline));
-        } catch {
-          /* ignore */
-        }
-        diff = deadline - Date.now();
-      }
-      const totalSeconds = Math.max(0, Math.floor(diff / 1000));
-      const h = Math.floor(totalSeconds / 3600);
-      const m = Math.floor((totalSeconds % 3600) / 60);
-      const s = totalSeconds % 60;
-      setDisplay(`${pad(h)}:${pad(m)}:${pad(s)}`);
-    };
-
-    tick();
-    intervalRef.current = setInterval(tick, 1000);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
+    const id = window.setInterval(() => {
+      const { display: d, deadline } = tickDeadline(deadlineRef.current);
+      deadlineRef.current = deadline;
+      startTransition(() => setDisplay(d));
+    }, 1000);
+    return () => window.clearInterval(id);
   }, []);
 
   return (

@@ -181,14 +181,14 @@ export default function ReviewsPage() {
 
           {/* Review grid (CSS masonry via columns) */}
           <div
-            className="columns-1 sm:columns-2 gap-4 space-y-4"
+            className="columns-1 gap-0 sm:columns-2 sm:gap-4"
             style={{ columnFill: "balance" }}
           >
             {REVIEWS.map(({ id, initials, line, tier, before, after }) => (
               <article
                 key={id}
                 id={`review-${id}`}
-                className="review-card premium-card-hover break-inside-avoid mb-4 rounded-2xl border border-[var(--brand-sage)] bg-white p-4 opacity-0 shadow-sm min-[769px]:p-6"
+                className="review-card premium-card-hover mb-3 break-inside-avoid rounded-2xl border border-[var(--brand-sage)] bg-white p-4 shadow-sm min-[769px]:mb-4 min-[769px]:p-6"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">

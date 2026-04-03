@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { SITE_CONFIG } from "@/lib/config";
 
 function OrderContent() {
   const params = useSearchParams();
@@ -28,7 +29,7 @@ function OrderContent() {
     d.toLocaleDateString("en-IN", { day: "numeric", month: "long" });
 
   // WhatsApp follow-up
-  const waNumber = "917096553300";
+  const waNumber = SITE_CONFIG.whatsapp.number;
   const waMsg = encodeURIComponent(
     `Hi, I just placed an order for Royal Swag Lung Detox Tea. My Order ID is ${orderId}. Please confirm my order.`
   );

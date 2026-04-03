@@ -9,6 +9,7 @@ import { SectionBridge } from "@/components/layout/SectionBridge";
 import ProductObjectionsAccordion from "@/components/conversion/ProductObjectionsAccordion";
 import TrustAuthorityStrip from "@/components/conversion/TrustAuthorityStrip";
 import MobileStickyBar from "@/components/MobileStickyBar";
+import CountdownTimer from "@/components/CountdownTimer";
 import ProductImageGallery from "@/components/ProductImageGallery";
 import PricingSelector from "@/components/PricingSelector";
 import { PRODUCT_GALLERY_IMAGES } from "@/lib/product-images";
@@ -441,6 +442,7 @@ export default function ProductPage() {
                   <span className="font-bold text-amber-600 tabular-nums">{STOCK_COUNT}</span> units remaining.
                 </p>
                 <SocialProofTicker24h />
+                <CountdownTimer />
               </div>
 
               {/* Product details */}
@@ -538,7 +540,10 @@ export default function ProductPage() {
       />
 
       {/* Mobile sticky bar */}
-      <MobileStickyBar onBuyNow={() => setIsPrefillOpen(true)} />
+      <MobileStickyBar
+        onBuyNow={() => setIsPrefillOpen(true)}
+        subline={`Rs ${selectedPlan.priceRupees} · Secure checkout · Ships tomorrow`}
+      />
     </div>
   );
 }

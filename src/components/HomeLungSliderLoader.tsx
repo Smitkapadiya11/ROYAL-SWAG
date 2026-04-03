@@ -13,8 +13,10 @@ const LungSlider = dynamic(() => import("@/components/LungSlider"), {
         alignItems: "center",
         justifyContent: "center",
       }}
+      aria-busy="true"
+      aria-label="Preparing lung comparison"
     >
-      <p style={{ color: "#4ade80", fontSize: "14px" }}>Loading...</p>
+      <div className="h-96 w-full max-w-3xl animate-pulse rounded-2xl bg-[#0a2010]" />
     </div>
   ),
 });

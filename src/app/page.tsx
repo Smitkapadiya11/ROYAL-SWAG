@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import HeroSection from "@/components/home/HeroSection";
 import HomeLungSliderLoader from "@/components/HomeLungSliderLoader";
 import PageClientWrapper from "./PageClientWrapper";
@@ -13,12 +12,14 @@ import PollutionPainSection from "@/components/conversion/PollutionPainSection";
 import TrustAuthorityStrip from "@/components/conversion/TrustAuthorityStrip";
 import HowItsMadeMini from "@/components/conversion/HowItsMadeMini";
 import { SectionBridge, SectionHairline } from "@/components/layout/SectionBridge";
+import { pageMetadata } from "@/lib/seo-metadata";
+import { buildPricingPlans } from "@/lib/product-pricing";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata("/", {
   title: "Royal Swag — Herbal Lung Detox Tea | Breathe Clean. Live Free.",
   description:
-    "Premium Ayurvedic lung detox tea with Tulsi, Vasaka & Mulethi. Take a free lung health test and discover personalized recommendations. Trusted by 2,400+ customers across India.",
-};
+    "India's #1 Ayurvedic lung detox tea. Formulated with Tulsi, Vasaka, Mulethi & Pippali. Trusted by 5,000+ customers. Free delivery. 30-day guarantee.",
+});
 
 const IVORY = "#faf7f2";
 const LOADER_END = "#061508";
@@ -27,6 +28,8 @@ const PAIN_BOTTOM = "#0a2e18";
 const BRAND_GREEN = "#1a3a2a";
 
 export default function HomePage() {
+  const minPrice = Math.min(...buildPricingPlans().map((p) => p.priceRupees));
+
   return (
     <PageClientWrapper>
       <HomeLungSliderLoader />
@@ -54,7 +57,9 @@ export default function HomePage() {
       <FaqSection />
       <SectionBridge from={IVORY} to={BRAND_GREEN} />
       <FinalCTASection />
-      <MobileStickyBar />
+      <MobileStickyBar
+        subline={`From Rs ${minPrice} · Secure checkout · Ships tomorrow`}
+      />
     </PageClientWrapper>
   );
 }

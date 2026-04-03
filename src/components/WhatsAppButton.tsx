@@ -1,10 +1,8 @@
 "use client";
 
-const WA_NUMBER = "917096553300";
-const WA_MESSAGE = encodeURIComponent(
-  "Hi, I want to order Royal Swag Lung Detox Tea. Please share available packs and payment details."
-);
-const WA_URL = `https://wa.me/${WA_NUMBER}?text=${WA_MESSAGE}`;
+import { SITE_CONFIG } from "@/lib/config";
+
+const WA_URL = `https://wa.me/${SITE_CONFIG.whatsapp.number}?text=${SITE_CONFIG.whatsapp.orderMessage}`;
 
 export default function WhatsAppButton() {
   return (

@@ -38,47 +38,70 @@ export default function IngredientsSection() {
 
   useEffect(() => {
     let ctx: any;
+    let mm: { revert: () => void } | undefined;
+
     const init = async () => {
       const { gsap } = await import("gsap");
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
-      
+
+      mm = ScrollTrigger.matchMedia({
+        "(min-width: 769px)": () => {
+          gsap.from(".ingredient-card", {
+            scrollTrigger: {
+              trigger: ".ingredients-section",
+              start: "top 85%",
+              once: true,
+            },
+            x: -120,
+            opacity: 0,
+            rotation: -8,
+            duration: 0.9,
+            stagger: 0.15,
+            ease: "back.out(1.4)",
+          });
+        },
+        "(max-width: 768px)": () => {
+          gsap.from(".ingredient-card", {
+            scrollTrigger: {
+              trigger: ".ingredients-section",
+              start: "top 85%",
+              once: true,
+            },
+            y: 20,
+            opacity: 0,
+            duration: 0.45,
+            stagger: 0.08,
+            ease: "power2.out",
+          });
+        },
+      }) as unknown as { revert: () => void };
+
       ctx = gsap.context(() => {
-        // TITLE + underline draw
         gsap.from(".ingredients-title", {
           scrollTrigger: { trigger: ".ingredients-section", start: "top 80%", once: true },
-          y: 30, opacity: 0, duration: 0.7, ease: "expo.out",
+          y: 30,
+          opacity: 0,
+          duration: 0.7,
+          ease: "expo.out",
         });
         gsap.from(".ingredients-underline", {
           scrollTrigger: { trigger: ".ingredients-section", start: "top 80%", once: true },
-          scaleX: 0, transformOrigin: "left center",
-          duration: 0.8, delay: 0.4, ease: "expo.out",
+          scaleX: 0,
+          transformOrigin: "left center",
+          duration: 0.8,
+          delay: 0.4,
+          ease: "expo.out",
         });
 
-        // INGREDIENT CARDS flip in
-        gsap.from('.ingredient-card', {
-          scrollTrigger: {
-            trigger: '.ingredients-section',
-            start: 'top 85%',
-            once: true,
-          },
-          x: -120,     // BIG movement
-          opacity: 0,
-          rotation: -8,
-          duration: 0.9,
-          stagger: 0.15,
-          ease: 'back.out(1.4)',
-        });
-
-        gsap.from('.ingredient-stat', {
-          scrollTrigger: { trigger: '.ingredients-section', start: 'top 80%' },
+        gsap.from(".ingredient-stat", {
+          scrollTrigger: { trigger: ".ingredients-section", start: "top 80%" },
           textContent: 0,
           duration: 1.5,
-          ease: 'power1.out',
+          ease: "power1.out",
           snap: { textContent: 1 },
         });
 
-        // FLOATING HERBS
         gsap.to(".herb-float", {
           y: -20,
           rotation: "random(-12, 12)",
@@ -88,11 +111,14 @@ export default function IngredientsSection() {
           ease: "sine.inOut",
           stagger: { each: 0.8, from: "random" },
         });
-
       }, sectionRef);
     };
+
     init();
-    return () => ctx?.revert();
+    return () => {
+      mm?.revert();
+      ctx?.revert();
+    };
   }, []);
 
   return (

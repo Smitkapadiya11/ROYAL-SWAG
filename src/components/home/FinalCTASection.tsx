@@ -46,16 +46,16 @@ export default function FinalCTASection() {
     >
       <div className="container-rs text-center final-cta-inner">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-4">
-          The First Step is Free
+          Commit in 60 seconds
         </p>
         <h2
           className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-5 leading-tight"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
-          Your Lungs Deserve Better.
+          Stop Guessing What Pollution Is Costing You.
         </h2>
         <p className="text-base text-white/55 max-w-md mx-auto mb-10">
-          Start with a free lung health assessment. 2 minutes. Instant results. Personalized for you.
+          Get your personal lung toxin score — free. Eight quick questions. Then you&apos;ll know exactly where you stand.
         </p>
         <Link
           href="/lung-test"
@@ -65,9 +65,8 @@ export default function FinalCTASection() {
         >
           Take the Lung Test →
         </Link>
-        <p className="mt-6 text-xs text-white/30">
-          🔒  100% free. No credit card needed.
-        </p>
+        <p className="mt-3 text-xs text-white/40">No email required to see your result</p>
+        <p className="mt-2 text-xs text-white/30">100% free · No credit card</p>
       </div>
     </section>
   );

@@ -115,14 +115,17 @@ export default function Navbar() {
         <div className="container-rs flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex flex-col leading-none" aria-label="Royal Swag — Home">
-            <Image
-              src={ROYAL_SWAG_LOGO_SRC}
-              alt="Royal Swag Logo"
-              width={ROYAL_SWAG_LOGO_WIDTH}
-              height={ROYAL_SWAG_LOGO_HEIGHT}
-              className="h-9 w-auto md:h-11"
-              priority
-            />
+            <div className="flex min-w-[80px] shrink-0 items-center justify-center py-2">
+              <Image
+                src={ROYAL_SWAG_LOGO_SRC}
+                alt="Royal Swag Logo"
+                width={ROYAL_SWAG_LOGO_WIDTH}
+                height={ROYAL_SWAG_LOGO_HEIGHT}
+                className="h-auto w-16 object-contain md:w-20"
+                style={{ objectFit: "contain" }}
+                priority
+              />
+            </div>
             <span className="text-[10px] font-semibold tracking-[0.25em] text-[var(--brand-gold)] uppercase mt-1">
               estd. 2016
             </span>

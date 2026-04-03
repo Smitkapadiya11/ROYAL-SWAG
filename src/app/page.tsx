@@ -9,6 +9,9 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FaqSection from "@/components/home/FaqSection";
 import FinalCTASection from "@/components/home/FinalCTASection";
 import MobileStickyBar from "@/components/MobileStickyBar";
+import PollutionPainSection from "@/components/conversion/PollutionPainSection";
+import TrustAuthorityStrip from "@/components/conversion/TrustAuthorityStrip";
+import HowItsMadeMini from "@/components/conversion/HowItsMadeMini";
 
 export const metadata: Metadata = {
   title: "Royal Swag — Herbal Lung Detox Tea | Breathe Clean. Live Free.",
@@ -37,6 +40,10 @@ export default function HomePage() {
       />
       <HeroSection />
       <SectionDivider />
+      <PollutionPainSection />
+      <SectionDivider />
+      <TrustAuthorityStrip className="bg-[var(--brand-ivory)]" />
+      <SectionDivider />
       <BenefitsSection />
       <SectionDivider />
       <IngredientsSection />
@@ -44,6 +51,12 @@ export default function HomePage() {
       <HowItWorksSection />
       <SectionDivider />
       <TestimonialsSection />
+      <SectionDivider />
+      <div className="bg-[var(--brand-ivory)] py-14 md:py-20">
+        <div className="container-rs max-w-3xl mx-auto px-4">
+          <HowItsMadeMini />
+        </div>
+      </div>
       <SectionDivider />
       <FaqSection />
       <SectionDivider />

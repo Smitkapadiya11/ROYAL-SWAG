@@ -4,25 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
+import HowItsMadeMini from "@/components/conversion/HowItsMadeMini";
+import ProductObjectionsAccordion from "@/components/conversion/ProductObjectionsAccordion";
+import TrustAuthorityStrip from "@/components/conversion/TrustAuthorityStrip";
 import MobileStickyBar from "@/components/MobileStickyBar";
-
-const CountdownTimer = dynamic(
-  () => import("@/components/CountdownTimer"),
-  {
-    ssr: false,
-    loading: () => (
-      <p className="min-h-[1.25rem] text-sm font-bold text-red-600">
-        <span className="text-red-600">⏰ Offer ends in: </span>
-        <span className="font-mono tabular-nums text-red-600">--:--:--</span>
-      </p>
-    ),
-  }
-);
-
-const SocialProofTicker24h = dynamic(() => import("@/components/SocialProofTicker24h"), {
-  ssr: false,
-});
-
 import ProductImageGallery from "@/components/ProductImageGallery";
 import PricingSelector from "@/components/PricingSelector";
 import { PRODUCT_GALLERY_IMAGES } from "@/lib/product-images";
@@ -32,8 +17,13 @@ import {
   razorpayDescriptionForPlan,
   type PlanId,
 } from "@/lib/product-pricing";
+import { getSeasonalUrgencyMessage } from "@/lib/seasonal-urgency";
 
-const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "38";
+const SocialProofTicker24h = dynamic(() => import("@/components/SocialProofTicker24h"), {
+  ssr: false,
+});
+
+const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "47";
 
 const GOLD_PARTICLES = [
   { style: { top: "14%", left: "22%" } },
@@ -58,6 +48,7 @@ const CHECKOUT_CURRENCY = "INR";
 const PRICING_PLANS = buildPricingPlans();
 
 export default function ProductPage() {
+  const seasonalUrgencyMessage = useMemo(() => getSeasonalUrgencyMessage(), []);
   const introRef = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
   const infoRef = useRef<HTMLElement>(null);
@@ -368,8 +359,11 @@ export default function ProductPage() {
           <p className="product-hero-sub text-base text-white/55 opacity-0">
             One tea. Complete lung restoration.
           </p>
+          <div className="product-hero-sub opacity-0 mt-6 w-full max-w-3xl mx-auto px-2">
+            <TrustAuthorityStrip variant="dark" className="!py-4" />
+          </div>
           {/* Hero Buy Now CTA */}
-          <div className="product-hero-sub opacity-0 mt-8">
+          <div className="product-hero-sub opacity-0 mt-6">
             <div className="mx-auto w-full max-w-md">
               <button
                 id="product-hero-buy-btn"
@@ -379,7 +373,9 @@ export default function ProductPage() {
               >
                 Buy Now — Rs {selectedPlan.priceRupees} ({selectedPlan.days}-Day Pack)
               </button>
-              <p className="mt-2 text-sm text-gray-200/70">🔒 Secure Payment via Razorpay</p>
+              <p className="mt-2 text-center text-xs text-white/60">
+                Secure checkout · Razorpay protected · Ships tomorrow
+              </p>
             </div>
           </div>
         </div>
@@ -416,6 +412,7 @@ export default function ProductPage() {
       {/* ── Product Info ── */}
       <section ref={infoRef} className="product-info-section py-20 md:py-28 bg-white overflow-hidden">
         <div className="container-rs max-w-3xl">
+          <TrustAuthorityStrip className="pb-6 pt-0" />
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <div>
               <p className="product-title text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
@@ -428,13 +425,13 @@ export default function ProductPage() {
                 Royal Swag <br />Lung Detox Tea
               </h2>
 
-              {/* Urgency: countdown, stock, social proof (fixed vertical rhythm — no flex-wrap chips) */}
-              <div className="product-urgency space-y-2 mb-6 max-w-full">
-                <div className="min-h-[1.25rem]">
-                  <CountdownTimer />
-                </div>
-                <p className="text-xs font-medium text-orange-600 min-h-[1.25rem] max-w-full break-words leading-snug">
-                  🔥 Only {STOCK_COUNT} packs left at this price
+              <div className="product-urgency space-y-3 mb-6 max-w-full">
+                <p className="text-xs sm:text-sm text-[var(--brand-dark)]/70 leading-snug border border-[var(--brand-sage)] rounded-xl px-3 py-2 bg-[var(--brand-ivory)]">
+                  {seasonalUrgencyMessage}
+                </p>
+                <p className="text-sm font-medium text-amber-700 leading-snug">
+                  We produce Royal Swag in small batches to maintain quality. Current batch:{" "}
+                  <span className="font-bold text-amber-600 tabular-nums">{STOCK_COUNT}</span> units remaining.
                 </p>
                 <SocialProofTicker24h />
               </div>
@@ -453,8 +450,20 @@ export default function ProductPage() {
                 onChange={setSelectedPlanId}
               />
 
+              <p className="mt-4 text-sm text-[var(--brand-dark)]/75 leading-snug">
+                Rs 699 = Rs 23/day = less than one cup of chai from a café. Your lungs work 24 hours a day. This costs
+                less than your morning snack.
+              </p>
+              <p className="mt-2 text-sm font-medium text-green-800">
+                ✓ Free delivery included — no minimum order required
+              </p>
+
               {/* CTA buttons */}
-              <div className="product-cta space-y-3">
+              <div className="product-cta space-y-3 mt-6">
+                <div className="rounded-xl border border-[var(--brand-sage)] bg-[var(--brand-ivory)] px-4 py-3 text-xs sm:text-sm text-[var(--brand-dark)]/75 leading-relaxed">
+                  Every day without lung detox, PM2.5 particles accumulate further. This isn&apos;t fear — it&apos;s
+                  biology. And it&apos;s reversible right now.
+                </div>
                 <button
                   id="product-buy-now-btn"
                   onClick={() => setIsPrefillOpen(true)}
@@ -466,6 +475,9 @@ export default function ProductPage() {
                 <p className="text-sm text-center text-[var(--brand-dark)]/60">
                   That&apos;s just Rs {perDayForButton}/day for cleaner lungs
                 </p>
+                <p className="text-xs text-gray-600 text-center leading-snug px-1">
+                  Secure checkout · Razorpay protected · Ships tomorrow
+                </p>
                 <p className="text-xs text-gray-500 text-center leading-snug px-1">
                   🔒 Secure Payment | 🚚 Free Delivery | ↩️ 30-Day Guarantee
                 </p>
@@ -475,6 +487,9 @@ export default function ProductPage() {
                 >
                   Take the Free Lung Test First →
                 </Link>
+                <p className="text-center text-[10px] text-[var(--brand-dark)]/45">
+                  No email required to see your result
+                </p>
               </div>
             </div>
 
@@ -497,6 +512,11 @@ export default function ProductPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="mt-14 space-y-10">
+            <HowItsMadeMini />
+            <ProductObjectionsAccordion />
           </div>
         </div>
       </section>
@@ -578,6 +598,7 @@ function PrefillModal(props: {
               inputMode="tel"
               autoComplete="tel"
             />
+            <p className="mt-1 text-xs text-gray-500">We never share your number. Only used for order updates.</p>
           </label>
         </div>
 
@@ -590,7 +611,7 @@ function PrefillModal(props: {
           >
             Continue to payment
           </button>
-          <p className="text-sm text-gray-500 text-center">🔒 Secure Payment via Razorpay</p>
+          <p className="text-sm text-gray-500 text-center">Secure checkout · Razorpay protected · Ships tomorrow</p>
         </div>
       </div>
     </div>

@@ -6,6 +6,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollProgress from "@/components/ScrollProgress";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import LocationOrderTicker from "@/components/conversion/LocationOrderTicker";
+import ConversionShell from "@/components/conversion/ConversionShell";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -78,7 +80,9 @@ export default function RootLayout({
         <WhatsAppButton />
         <Navbar />
         <main className="flex-1">{children}</main>
+        <LocationOrderTicker />
         <Footer />
+        <ConversionShell />
       </body>
     </html>
   );

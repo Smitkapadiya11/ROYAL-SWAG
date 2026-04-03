@@ -300,6 +300,9 @@ export default function CheckoutModal({
                   placeholder="9876543210"
                 />
               </div>
+              <p className="mt-1 text-xs text-[var(--brand-dark)]/50">
+                We never share your number. Only used for order updates.
+              </p>
             </div>
 
             {/* Email (optional) */}

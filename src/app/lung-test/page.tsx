@@ -8,6 +8,7 @@ import {
   ROYAL_SWAG_LOGO_SRC,
   ROYAL_SWAG_LOGO_WIDTH,
 } from "@/lib/brand-logo";
+import { computeLungTestScore, LUNG_TEST_MAX_SCORE } from "@/lib/lung-test-scoring";
 
 const QUESTIONS = [
   "Do you live in a city with high air pollution or heavy traffic?",
@@ -15,17 +16,24 @@ const QUESTIONS = [
   "Do you experience morning cough or frequent throat clearing?",
   "Do you feel breathless while climbing stairs or walking fast?",
   "Do you work near dust, chemicals, paint fumes, or factories?",
+  "Do you often feel tired or low on energy throughout the day?",
+  "Do you live or work near a highway, factory, or construction zone?",
+  "Have you noticed your breathing getting worse over the past 6 months?",
 ];
+
+const TOTAL_STEPS = 3 + QUESTIONS.length;
 
 export default function LungTestPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [showMidAffirm, setShowMidAffirm] = useState(false);
+  const midAffirmShownRef = useRef(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    answers: [null, null, null, null, null] as (boolean | null)[],
+    answers: Array.from({ length: QUESTIONS.length }, () => null) as (boolean | null)[],
   });
 
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -44,18 +52,23 @@ export default function LungTestPage() {
   const goBack = () => setStep((s) => Math.max(1, s - 1));
 
   const finalizeSubmit = async (answers: (boolean | null)[]) => {
-    const score = answers.filter((a) => a === true).length;
+    const bools = answers.map((a) => a === true);
+    const score = computeLungTestScore(bools);
     const payload = {
       name: formData.name.trim(),
       email: formData.email.trim(),
       phone: formData.phone.replace(/\D/g, ""),
       score,
+      maxScore: LUNG_TEST_MAX_SCORE,
       answers: {
         q1: !!answers[0],
         q2: !!answers[1],
         q3: !!answers[2],
         q4: !!answers[3],
         q5: !!answers[4],
+        q6: !!answers[5],
+        q7: !!answers[6],
+        q8: !!answers[7],
       },
       timestamp: Date.now(),
     };
@@ -93,8 +106,14 @@ export default function LungTestPage() {
     newAnswers[qIndex] = answer;
     setFormData((f) => ({ ...f, answers: newAnswers }));
     window.setTimeout(() => {
-      if (step < 8) {
-        setStep((s) => s + 1);
+      if (step < TOTAL_STEPS) {
+        const nextStep = step + 1;
+        if (nextStep === 8 && qIndex === 3 && !midAffirmShownRef.current) {
+          midAffirmShownRef.current = true;
+          setShowMidAffirm(true);
+          window.setTimeout(() => setShowMidAffirm(false), 8000);
+        }
+        setStep(nextStep);
       } else {
         finalizeSubmit(newAnswers);
       }
@@ -158,15 +177,27 @@ export default function LungTestPage() {
           />
           <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#c9a84c] mt-2">Free Lung Test</p>
         </div>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Your Lung Report:</p>
+        <div className="flex gap-1 mb-2" aria-hidden="true">
+          {Array.from({ length: 10 }).map((_, i) => {
+            const filled = Math.ceil((step / TOTAL_STEPS) * 10);
+            return (
+              <div
+                key={i}
+                className={`h-2 min-w-0 flex-1 rounded-sm transition-colors ${i < filled ? "bg-[#4ade80]" : "bg-white/15"}`}
+              />
+            );
+          })}
+        </div>
         <div className="flex justify-between text-xs mb-2">
-          <span className="text-[#4ade80] font-semibold">Step {step} of 8</span>
-          <span className="text-gray-500">{Math.round((step / 8) * 100)}% complete</span>
+          <span className="text-[#4ade80] font-semibold">Step {step} of {TOTAL_STEPS}</span>
+          <span className="text-gray-500">{Math.round((step / TOTAL_STEPS) * 100)}% complete</span>
         </div>
         <div className="h-1 rounded-full bg-white/10 overflow-hidden">
           <div
             className="h-full rounded-full transition-[width] duration-300 ease-out"
             style={{
-              width: `${(step / 8) * 100}%`,
+              width: `${(step / TOTAL_STEPS) * 100}%`,
               background: "linear-gradient(90deg, #16a34a, #4ade80)",
             }}
           />
@@ -180,16 +211,22 @@ export default function LungTestPage() {
       >
         {step === 1 && (
           <div>
-            <h1 className="text-2xl font-bold text-white text-center mb-2">What&apos;s your name?</h1>
-            <p className="text-gray-400 text-sm text-center mb-8">We&apos;ll personalise your lung report for you.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white text-center mb-2 leading-tight">
+              Take the 60-Second Lung Health Check
+            </h1>
+            <p className="text-gray-400 text-sm text-center mb-6 leading-relaxed">
+              Answer 8 quick questions. Get your personal lung toxin score. Free — no signup needed to see your result.
+            </p>
+            <p className="text-white/90 text-sm font-semibold text-center mb-3">What&apos;s your name?</p>
             <input
               ref={nameInputRef}
               type="text"
               placeholder="Your full name"
               value={formData.name}
               onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
-              className="w-full p-4 text-lg rounded-xl border border-white/15 bg-white/10 text-white placeholder:text-white/40 focus:border-green-500 focus:outline-none mb-6"
+              className="w-full p-4 text-lg rounded-xl border border-white/15 bg-white/10 text-white placeholder:text-white/40 focus:border-green-500 focus:outline-none mb-2"
             />
+            <p className="text-[11px] text-gray-500 text-center mb-6">Used only to personalise your lung report.</p>
             <button
               type="button"
               disabled={!formData.name.trim()}
@@ -198,6 +235,7 @@ export default function LungTestPage() {
             >
               Continue →
             </button>
+            <p className="mt-2 text-center text-[11px] text-gray-500">No email required to see your result</p>
           </div>
         )}
 
@@ -211,8 +249,9 @@ export default function LungTestPage() {
               placeholder="you@example.com"
               value={formData.email}
               onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
-              className="w-full p-4 text-lg rounded-xl border border-white/15 bg-white/10 text-white placeholder:text-white/40 focus:border-green-500 focus:outline-none mb-6"
+              className="w-full p-4 text-lg rounded-xl border border-white/15 bg-white/10 text-white placeholder:text-white/40 focus:border-green-500 focus:outline-none mb-2"
             />
+            <p className="text-[11px] text-gray-500 text-center mb-6">We never spam — lung report delivery only.</p>
             <button
               type="button"
               disabled={!emailValid(formData.email)}
@@ -227,7 +266,8 @@ export default function LungTestPage() {
         {step === 3 && (
           <div>
             <h1 className="text-2xl font-bold text-white text-center mb-2">Your mobile number?</h1>
-            <p className="text-gray-400 text-sm text-center mb-8">For WhatsApp delivery of your results.</p>
+            <p className="text-gray-400 text-sm text-center mb-4">For WhatsApp delivery of your results.</p>
+            <p className="text-[11px] text-gray-500 text-center mb-6">We never share your number. Only used for order updates.</p>
             <div className="flex gap-2 mb-6">
               <span className="flex items-center px-4 rounded-xl bg-white/10 text-gray-300 text-sm border border-white/15">
                 +91
@@ -254,13 +294,19 @@ export default function LungTestPage() {
           </div>
         )}
 
-        {step >= 4 && step <= 8 && (
+        {step >= 4 && step <= TOTAL_STEPS && (
           <div className="text-center">
+            {showMidAffirm && step === 8 && (
+              <p className="mb-4 rounded-xl border border-[#4ade80]/40 bg-[#4ade80]/10 px-4 py-3 text-sm text-[#86efac] leading-snug">
+                You&apos;re doing great. Most people skip this check for years. You&apos;re already ahead of 80% of people
+                your age.
+              </p>
+            )}
             <p className="text-5xl mb-4" aria-hidden="true">
               🫁
             </p>
             <span className="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold mb-6">
-              Question {step - 3} of 5
+              Question {step - 3} of {QUESTIONS.length}
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug mb-10 px-1">
               {QUESTIONS[step - 4]}

@@ -14,6 +14,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Order on WhatsApp"
+      title="Real person replies — not a bot"
       className="whatsapp-float-btn"
       style={{
         position: "fixed",

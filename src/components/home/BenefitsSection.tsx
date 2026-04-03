@@ -6,38 +6,38 @@ const BENEFITS = [
   {
     id: "pollution",
     emoji: "🌿",
-    title: "Clears Pollutants",
-    desc: "Removes city pollution residue from airways",
+    title: "Stop silent daily damage",
+    desc: "Stop the silent daily damage pollution causes — before PM2.5 builds further in your airways.",
   },
   {
     id: "airways",
     emoji: "💨",
-    title: "Opens Airways",
-    desc: "Vasaka herb naturally widens bronchial passages",
+    title: "Reclaim easier breathing",
+    desc: "Reclaim the breathing you had 5 years ago — Vasaka helps clear what congestion is holding back.",
   },
   {
     id: "immunity",
     emoji: "🛡️",
-    title: "Boosts Immunity",
-    desc: "Tulsi strengthens respiratory defense",
+    title: "Don't wait for the next smog spike",
+    desc: "Tulsi helps your body fight back before the next AQI alert catches you unprepared.",
   },
   {
     id: "inflammation",
     emoji: "🔥",
-    title: "Reduces Inflammation",
-    desc: "Mulethi soothes irritated lung tissue",
+    title: "End the morning cough",
+    desc: "End the morning cough that’s been waking you up — Mulethi soothes irritated airway lining.",
   },
   {
     id: "energy",
     emoji: "⚡",
-    title: "Restores Energy",
-    desc: "Pippali revives oxygen absorption efficiency",
+    title: "Stop feeling drained at midday",
+    desc: "Stop feeling drained before your day even starts — better oxygen flow means real energy again.",
   },
   {
     id: "sleep",
     emoji: "😴",
-    title: "Improves Sleep",
-    desc: "Calm airways mean deeper, uninterrupted rest",
+    title: "Protect your nights",
+    desc: "Stop losing sleep to chest tightness and throat tickle — calm airways mean deeper rest.",
   },
 ];
 
@@ -151,7 +151,7 @@ export default function BenefitsSection() {
             Why Royal Swag
           </p>
           <h2 className="benefits-title text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--brand-dark)]">
-            What Royal Swag Does For You
+            Stop Losing Lung Capacity — Here&apos;s How Royal Swag Helps
           </h2>
         </div>
 

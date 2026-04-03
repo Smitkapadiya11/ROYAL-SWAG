@@ -8,6 +8,8 @@ import {
   ROYAL_SWAG_LOGO_SRC,
   ROYAL_SWAG_LOGO_WIDTH,
 } from "@/lib/brand-logo";
+import DetoxCounter from "@/components/conversion/DetoxCounter";
+import HeroTypewriter from "@/components/conversion/HeroTypewriter";
 
 const leaves = [
   { top: '8%',  left: '3%',   size: 55, delay: 0,   dur: 3 },
@@ -71,20 +73,25 @@ export default function HeroSection() {
           .from('.hero-tagline', {
             y: 50, opacity: 0, duration: 0.7, scale: 0.95
           }, '-=0.5')
-          .from('.hero-subtitle', {
-            y: 30, opacity: 0, duration: 0.6
-          }, '-=0.4')
+          .from('.hero-mirror-headline', {
+            y: 28, opacity: 0, duration: 0.65
+          }, '-=0.35')
+          .from('.hero-typewriter-wrap', {
+            y: 20, opacity: 0, duration: 0.55
+          }, '-=0.3')
+          .from('.hero-gold-line', {
+            y: 16, opacity: 0, duration: 0.5
+          }, '-=0.25')
+          .from('.hero-detox-counter', {
+            y: 12, opacity: 0, duration: 0.45
+          }, '-=0.2')
           .from('.hero-cta-btn', {
             scale: 0.5, opacity: 0, duration: 0.6,
             ease: 'back.out(3)'
-          }, '-=0.3');
-
-        // New hero stats animation
-        gsap.from('.hero-stat', {
-          y: 20, opacity: 0, scale: 0.5,
-          duration: 0.6, stagger: 0.15,
-          ease: 'back.out(2)', delay: 1.2,
-        });
+          }, '-=0.25')
+          .from('.hero-cta-micro', {
+            opacity: 0, duration: 0.4
+          }, '-=0.15');
 
         // 4. CTA BUTTON: Magnetic breathing pulse
         gsap.to('.hero-cta-btn', {
@@ -210,48 +217,31 @@ export default function HeroSection() {
           </p>
         </div>
 
-        <div className="max-w-lg mb-10">
-          <p className="hero-subtitle text-xl sm:text-2xl text-[var(--brand-dark)]/80 font-medium">
-            Breathe Clean. Live Free.
-          </p>
-          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
-            At Royal Swag, we provide a unique wellness experience that is inspired by the depth of traditional herbal medicine.
-          </p>
-          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
-            In today&apos;s world filled with more pollution, more fast-paced living, and more exposure to environmental elements than ever before, taking care of your lungs has become as necessary as it is vital to your health. Our Lung Detox Tea has been formulated specifically for the purpose of helping you support everyday normality through a careful selection of time-tested herbs that are safe and effective for daily use.
-          </p>
-          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
-            Starting with the belief that true wellness comes from consistency and simplicity, each of our formulas is meant to be a seamless part of your everyday routine. With every cup you drink, you will have a chance to experience the effects of having just finished an ordinary cup of tea as an opportunity to recover from life&apos;s daily demands.
-          </p>
-          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
-            The production of each of our blends is a direct reflection of our commitment to delivering only the purest, highest-quality herbal ingredients to you as quickly and, as safely, as possible, while also providing a smoother, more calming infusion to promote a lighter breathing experience.
-          </p>
-          <p className="hero-subtitle mt-4 text-sm sm:text-base text-[var(--brand-dark)]/60 leading-relaxed max-w-md mx-auto">
-            Royal Swag believes in more than merely selling products — it believes in taking an ordinary habit, enjoying it as much as possible, and turning that habit into a conscious act of self-care.
-          </p>
+        <h2 className="hero-mirror-headline text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--brand-dark)] leading-tight max-w-2xl mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+          Is This Your Morning?
+        </h2>
+
+        <div className="mb-6 w-full max-w-xl">
+          <HeroTypewriter />
         </div>
 
-        {/* CTA */}
+        <p className="hero-gold-line text-sm sm:text-base font-semibold text-[var(--brand-gold)] max-w-lg mx-auto mb-6 leading-snug px-2">
+          You already knew something was wrong. Royal Swag is how you fix it.
+        </p>
+
+        <div className="hero-detox-counter mb-8 w-full max-w-xl mx-auto">
+          <DetoxCounter />
+        </div>
+
         <Link
           href="/lung-test"
           className="hero-cta-btn inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-[var(--brand-green)] text-[var(--brand-gold)] font-bold text-lg shadow-xl"
         >
           Test Your Lungs →
         </Link>
-        <div className="flex gap-8 mt-6 justify-center">
-          <div className="text-center">
-            <div className="hero-stat text-3xl font-bold text-green-800">5000+</div>
-            <div className="text-sm text-gray-500">Happy Customers</div>
-          </div>
-          <div className="text-center">
-            <div className="hero-stat text-3xl font-bold text-green-800">100%</div>
-            <div className="text-sm text-gray-500">Natural</div>
-          </div>
-          <div className="text-center">
-            <div className="hero-stat text-3xl font-bold text-green-800">30-Day</div>
-            <div className="text-sm text-gray-500">Guarantee</div>
-          </div>
-        </div>
+        <p className="hero-cta-micro mt-3 text-xs text-[var(--brand-dark)]/50 text-center max-w-sm">
+          No email required to see your result
+        </p>
       </div>
     </section>
   );

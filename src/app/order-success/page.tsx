@@ -54,8 +54,11 @@ function OrderContent() {
         >
           Thank you! Your order is confirmed.
         </h1>
-        <p className="text-base text-[var(--brand-dark)]/60 mb-8 max-w-sm mx-auto">
-          We'll WhatsApp you the details within 2 hours.
+        <p className="text-base text-[var(--brand-dark)]/60 mb-4 max-w-sm mx-auto">
+          We&apos;ll WhatsApp you the details within 2 hours.
+        </p>
+        <p className="text-sm font-medium text-[var(--brand-green)] mb-8 max-w-md mx-auto leading-relaxed">
+          You just did something most people don&apos;t. Your lungs will thank you in 30 days.
         </p>
 
         {/* Order details */}

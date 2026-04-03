@@ -2,6 +2,7 @@
 
 // BEFORE & AFTER: separate photographic assets.
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -164,11 +165,12 @@ export default function LungSlider() {
           style={{ background: "linear-gradient(135deg, #041a08, #0a3015)" }}
         >
           <div className="lung-slider-after-breathe relative h-full w-full">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={AFTER_IMAGE}
               alt="Healthy lungs after care"
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 700px"
+              className="object-cover"
               style={{ filter: AFTER_FILTER }}
               draggable={false}
             />
@@ -220,11 +222,12 @@ export default function LungSlider() {
             style={{ background: "linear-gradient(135deg, #1a0404, #2a0606)" }}
           />
           <div className="relative h-full w-full">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={BEFORE_IMAGE}
               alt="Polluted lungs before Royal Swag"
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              fill
+              sizes="(max-width: 768px) 100vw, 700px"
+              className="object-cover object-center"
               style={{ filter: BEFORE_FILTER }}
               draggable={false}
             />

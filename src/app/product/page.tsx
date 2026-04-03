@@ -33,7 +33,6 @@ import {
   type PlanId,
 } from "@/lib/product-pricing";
 
-// TODO: Set via env var NEXT_PUBLIC_STOCK_COUNT (default 38)
 const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "38";
 
 const GOLD_PARTICLES = [

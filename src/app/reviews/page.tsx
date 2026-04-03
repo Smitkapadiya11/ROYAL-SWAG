@@ -131,16 +131,16 @@ export default function ReviewsPage() {
   }, []);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[var(--brand-ivory)] pb-20 pt-6">
+    <div ref={containerRef} className="min-h-0 bg-[var(--brand-ivory)] pb-12 pt-6 min-[769px]:pb-20">
       <div className="container-rs">
 
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+        <div className="text-center mb-10">
+          <p className="rs-section-label text-[var(--brand-gold)]">
             Verified Reviews
           </p>
           <h1
-            className="text-4xl sm:text-5xl font-bold text-[var(--brand-dark)] mb-3"
+            className="text-4xl sm:text-5xl font-bold text-[var(--brand-dark)] mb-4"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
             What Our Customers Say
@@ -151,7 +151,7 @@ export default function ReviewsPage() {
         </div>
 
         {/* Layout: sticky product image + scrolling reviews */}
-        <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-12 items-start">
+        <div className="items-start lg:grid lg:grid-cols-[280px_1fr] lg:gap-10 min-[1200px]:gap-12">
 
           {/* Sticky product image (desktop) */}
           <div
@@ -159,7 +159,7 @@ export default function ReviewsPage() {
             className="hidden lg:block sticky top-28 self-start"
             aria-hidden="true"
           >
-            <div className="relative w-full aspect-square rounded-2xl overflow-hidden border border-[var(--brand-sage)] bg-[var(--brand-sage)]/30">
+            <div className="relative aspect-square w-full overflow-hidden rounded-lg border border-[var(--brand-sage)] bg-[var(--brand-sage)]/30 min-[769px]:rounded-xl">
               <Image
                 src="/images/product/product-3.jpg"
                 alt="Royal Swag Lung Detox Tea"
@@ -188,7 +188,7 @@ export default function ReviewsPage() {
               <article
                 key={id}
                 id={`review-${id}`}
-                className="review-card break-inside-avoid bg-white rounded-2xl border border-[var(--brand-sage)] shadow-sm p-6 opacity-0 mb-4"
+                className="review-card premium-card-hover break-inside-avoid mb-4 rounded-2xl border border-[var(--brand-sage)] bg-white p-4 opacity-0 shadow-sm min-[769px]:p-6"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">

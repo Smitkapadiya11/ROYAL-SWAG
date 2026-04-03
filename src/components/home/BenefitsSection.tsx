@@ -127,7 +127,7 @@ export default function BenefitsSection() {
   };
 
   return (
-    <section ref={sectionRef} className="benefits-section relative py-24 md:py-32 bg-[var(--brand-ivory)] overflow-hidden">
+    <section ref={sectionRef} className="benefits-section relative py-12 min-[769px]:py-20 bg-[var(--brand-ivory)] overflow-hidden">
       
       {/* 2 Floating Leaves */}
       <div className="benefit-leaf absolute top-[10%] left-[15%] pointer-events-none" style={{ width: 40, height: 40, zIndex: 1 }}>
@@ -146,8 +146,8 @@ export default function BenefitsSection() {
       <div className="benefit-circle absolute -top-20 -right-20 w-64 h-64 rounded-full bg-green-100 opacity-40" />
 
       <div className="container-rs relative z-10">
-        <div className="text-center mb-16 benefits-heading">
-          <p className="benefits-title text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+        <div className="text-center mb-10 benefits-heading">
+          <p className="benefits-title rs-section-label text-[var(--brand-gold)]">
             Why Royal Swag
           </p>
           <h2 className="benefits-title text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--brand-dark)]">
@@ -155,11 +155,11 @@ export default function BenefitsSection() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" style={{ perspective: "1000px" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-[769px]:gap-6" style={{ perspective: "1000px" }}>
           {BENEFITS.map(({ id, emoji, title, desc }) => (
             <div
               key={id}
-              className="benefit-card bg-white rounded-2xl p-7 border border-[var(--brand-sage)] shadow-sm cursor-default"
+              className="benefit-card bg-white rounded-2xl border border-[var(--brand-sage)] p-4 shadow-sm cursor-default min-[769px]:p-6"
               onMouseEnter={handleCardEnter}
               onMouseLeave={handleCardLeave}
               style={{ transformStyle: "preserve-3d" }}

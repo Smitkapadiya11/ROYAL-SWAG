@@ -300,7 +300,7 @@ export default function LungTestResultClient() {
   if (!loaded) {
     return (
       <div
-        className="flex min-h-[100svh] items-center justify-center px-4 py-20"
+        className="flex min-h-[70svh] items-center justify-center px-4 py-16"
         style={{ backgroundColor: BG }}
       >
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#16a34a] border-t-transparent" />
@@ -311,7 +311,7 @@ export default function LungTestResultClient() {
   if (!stored || !band || !answersNorm) {
     return (
       <div
-        className="flex min-h-[100svh] flex-col items-center justify-center px-4 py-20"
+        className="flex min-h-[70svh] flex-col items-center justify-center px-4 py-16"
         style={{ backgroundColor: BG }}
       >
         <div className="w-full max-w-md text-center">
@@ -345,7 +345,7 @@ export default function LungTestResultClient() {
   const [tB1, tB2] = TESTIMONIALS_B[band];
 
   return (
-    <div className="min-h-[100svh] px-4 pb-28 pt-6 sm:pt-8" style={{ backgroundColor: BG }}>
+    <div className="px-4 pb-[60px] pt-6 min-[769px]:pt-8" style={{ backgroundColor: BG }}>
       <div className="mx-auto max-w-lg">
         {/* PERSONALIZATION */}
         <h1
@@ -468,7 +468,7 @@ export default function LungTestResultClient() {
 
           <Link
             href="/product"
-            className="mt-5 flex min-h-[52px] w-full items-center justify-center rounded-xl bg-[#15803d] px-4 py-4 text-center text-base font-bold text-white shadow-lg transition hover:bg-[#166534] sm:text-lg"
+            className="rs-cta-primary mt-5 flex w-full items-center justify-center rounded-xl bg-[#15803d] px-4 py-4 text-center text-base font-bold text-white min-[769px]:min-h-[52px] sm:text-lg"
           >
             Start My 30-Day Detox — Rs 699 →
           </Link>
@@ -477,8 +477,10 @@ export default function LungTestResultClient() {
             ⚡ 2,847 people with similar scores ordered this week
           </p>
 
-          <p className="mt-4 text-center text-xs leading-relaxed text-white/55">
-            ✓ Free delivery &nbsp;&nbsp; ✓ 30-day money-back guarantee &nbsp;&nbsp; ✓ Ships in 24 hours
+          <p className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-xs leading-relaxed text-white/55">
+            <span>✓ Free delivery</span>
+            <span>✓ 30-day money-back guarantee</span>
+            <span>✓ Ships in 24 hours</span>
           </p>
         </section>
 

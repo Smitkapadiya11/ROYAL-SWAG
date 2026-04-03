@@ -84,7 +84,7 @@ export default function ProductImageGallery({ images }: Props) {
 
           <button
             type="button"
-            className="relative block w-full cursor-zoom-in overflow-hidden rounded-xl bg-[var(--brand-sage)]/30 text-left shadow-md ring-1 ring-[var(--brand-sage)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-green)]"
+            className="relative block w-full cursor-zoom-in overflow-hidden rounded-lg bg-[var(--brand-sage)]/30 text-left shadow-md ring-1 ring-[var(--brand-sage)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-green)] min-[769px]:rounded-xl"
             onClick={() => setLightboxOpen(true)}
             aria-label="Open product image fullscreen"
           >
@@ -115,7 +115,7 @@ export default function ProductImageGallery({ images }: Props) {
               onClick={() => setActive(i)}
               aria-label={`Show product image ${i + 1}`}
               aria-current={i === active ? "true" : undefined}
-              className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-lg ring-2 ring-offset-2 ring-offset-[var(--brand-ivory)] transition sm:h-16 sm:w-16 ${
+              className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-md ring-2 ring-offset-2 ring-offset-[var(--brand-ivory)] transition min-[769px]:rounded-lg sm:h-16 sm:w-16 ${
                 i === active
                   ? "ring-[var(--brand-green)] opacity-100"
                   : "ring-transparent opacity-80 hover:opacity-100"

@@ -24,11 +24,12 @@ const BG = "#0D3B1F";
 export default function PollutionPainSection() {
   return (
     <section
-      className="py-16 md:py-24 px-4"
+      className="rs-brand-dark-grain px-4 py-12 min-[769px]:py-20"
       style={{ backgroundColor: BG }}
       aria-labelledby="pollution-pain-heading"
     >
       <div className="container-rs max-w-4xl mx-auto">
+        <p className="rs-section-label text-center text-[#d4a574]">The invisible cost</p>
         <h2
           id="pollution-pain-heading"
           className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-4 leading-tight"
@@ -36,7 +37,7 @@ export default function PollutionPainSection() {
         >
           What Pollution Does To Your Lungs Every Single Day
         </h2>
-        <p className="text-center text-sm text-white/60 mb-10 max-w-xl mx-auto">
+        <p className="text-center text-sm text-white/60 mb-8 max-w-xl mx-auto">
           Stop the silent daily damage pollution causes — before you feel the worst of it.
         </p>
 
@@ -44,14 +45,14 @@ export default function PollutionPainSection() {
           {CARDS.map((c) => (
             <div
               key={c.id}
-              className="rounded-2xl border border-red-900/40 bg-gradient-to-br from-[#3f0f17] to-[#2a0a12] px-5 py-5 text-left shadow-lg"
+              className="premium-card-hover rounded-2xl border border-red-900/40 bg-gradient-to-br from-[#3f0f17] to-[#2a0a12] px-4 py-4 text-left shadow-lg min-[769px]:px-5 min-[769px]:py-5"
             >
               <p className="text-sm sm:text-base text-red-50/95 leading-relaxed font-medium">{c.text}</p>
             </div>
           ))}
         </div>
 
-        <p className="mt-10 text-center text-base sm:text-lg font-semibold text-[#d4a574] max-w-2xl mx-auto leading-snug">
+        <p className="mt-8 text-center text-base sm:text-lg font-semibold text-[#d4a574] max-w-2xl mx-auto leading-snug">
           The best time to detox your lungs was 5 years ago. The second best time is today.
         </p>
       </div>

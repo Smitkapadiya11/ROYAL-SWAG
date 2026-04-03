@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import HowItsMadeMini from "@/components/conversion/HowItsMadeMini";
+import { SectionBridge } from "@/components/layout/SectionBridge";
 import ProductObjectionsAccordion from "@/components/conversion/ProductObjectionsAccordion";
 import TrustAuthorityStrip from "@/components/conversion/TrustAuthorityStrip";
 import MobileStickyBar from "@/components/MobileStickyBar";
@@ -319,12 +320,15 @@ export default function ProductPage() {
     }
   };
 
+  const IVORY = "#faf7f2";
+  const GREEN = "#1a3a2a";
+
   return (
-    <div className="pb-16 md:pb-0">
+    <div className="pb-20 min-[769px]:pb-0">
       {/* ── Hero ── */}
       <section
         ref={introRef}
-        className="relative min-h-[100svh] bg-[var(--brand-green)] flex flex-col items-center justify-center overflow-hidden pb-16 pt-0"
+        className="rs-brand-dark-grain relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-[var(--brand-green)] pb-12 pt-0 min-[769px]:pb-16"
       >
         <div aria-hidden="true">
           {GOLD_PARTICLES.map(({ style }, i) => (
@@ -337,7 +341,7 @@ export default function ProductPage() {
         </div>
 
         <div className="relative z-10 mb-10 product-hero-img opacity-0">
-          <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-[340px] md:h-[340px] rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative h-56 w-56 overflow-hidden rounded-lg shadow-2xl min-[769px]:h-[340px] min-[769px]:w-[340px] min-[769px]:rounded-xl sm:h-72 sm:w-72">
             <Image
               src={PRODUCT_GALLERY_IMAGES[0]}
               alt="Royal Swag Herbal Lung Detox Tea"
@@ -368,7 +372,7 @@ export default function ProductPage() {
               <button
                 id="product-hero-buy-btn"
                 onClick={() => setIsPrefillOpen(true)}
-                className="bg-green-700 text-white px-8 py-4 text-xl rounded-lg w-full sm:w-auto sm:px-10 font-bold shadow-lg hover:bg-green-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="rs-cta-primary w-full rounded-xl bg-green-700 px-8 py-4 text-lg font-bold text-white min-[769px]:text-xl sm:w-auto sm:px-10 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={isPaying}
               >
                 Buy Now — Rs {selectedPlan.priceRupees} ({selectedPlan.days}-Day Pack)
@@ -390,11 +394,13 @@ export default function ProductPage() {
         </div>
       </section>
 
+      <SectionBridge from={GREEN} to={IVORY} />
+
       {/* ── Gallery ── */}
-      <section ref={galleryRef} className="py-24 md:py-32 bg-[var(--brand-ivory)]">
+      <section ref={galleryRef} className="bg-[var(--brand-ivory)] py-12 min-[769px]:py-20">
         <div className="container-rs">
-          <div className="text-center mb-16">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+          <div className="mb-10 text-center">
+            <p className="rs-section-label text-[var(--brand-gold)]">
               Gallery
             </p>
             <h2
@@ -410,19 +416,20 @@ export default function ProductPage() {
       </section>
 
       {/* ── Product Info ── */}
-      <section ref={infoRef} className="product-info-section py-20 md:py-28 bg-white overflow-hidden">
+      <section ref={infoRef} className="product-info-section overflow-hidden bg-white py-12 min-[769px]:py-20">
         <div className="container-rs max-w-3xl">
           <TrustAuthorityStrip className="pb-6 pt-0" />
-          <div className="grid md:grid-cols-2 gap-12 items-start">
+          <div className="grid items-start gap-8 md:grid-cols-2 min-[769px]:gap-10">
             <div>
-              <p className="product-title text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+              <p className="product-title rs-section-label text-[var(--brand-gold)]">
                 Premium Blend
               </p>
               <h2
                 className="product-title text-3xl sm:text-4xl font-bold text-[var(--brand-dark)] mb-4"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                Royal Swag <br />Lung Detox Tea
+                <span className="block">Royal Swag</span>
+                <span className="block">Lung Detox Tea</span>
               </h2>
 
               <div className="product-urgency space-y-3 mb-6 max-w-full">
@@ -467,7 +474,7 @@ export default function ProductPage() {
                 <button
                   id="product-buy-now-btn"
                   onClick={() => setIsPrefillOpen(true)}
-                  className="bg-green-700 text-white px-8 py-4 text-xl rounded-lg w-full font-bold shadow-sm hover:bg-green-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="rs-cta-primary w-full rounded-xl bg-green-700 px-8 py-4 text-lg font-bold text-white min-[769px]:text-xl disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={isPaying}
                 >
                   Buy Now — Rs {selectedPlan.priceRupees} ({selectedPlan.days}-Day Pack)
@@ -502,7 +509,7 @@ export default function ProductPage() {
                 { icon: "🚚", label: "Free Delivery", sub: "Pan-India · Ships in 24 hours", link: null },
               ].map(({ icon, label, sub }) => (
                 <div key={label}>
-                  <div className="product-badge flex items-center gap-4 bg-[var(--brand-sage)]/50 rounded-2xl px-5 py-4 border border-[var(--brand-sage)] hover:border-[var(--brand-green)]/30 transition-colors">
+                  <div className="product-badge premium-card-hover flex items-center gap-4 rounded-2xl border border-[var(--brand-sage)] bg-[var(--brand-sage)]/50 px-4 py-4 min-[769px]:px-5">
                     <span className="text-2xl" aria-hidden="true">{icon}</span>
                     <div>
                       <p className="text-sm font-semibold text-[var(--brand-dark)]">{label}</p>
@@ -514,7 +521,7 @@ export default function ProductPage() {
             </div>
           </div>
 
-          <div className="mt-14 space-y-10">
+          <div className="mt-10 space-y-8">
             <HowItsMadeMini />
             <ProductObjectionsAccordion />
           </div>
@@ -563,7 +570,7 @@ function PrefillModal(props: {
       <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <h3 className="text-lg font-bold text-[var(--brand-dark)]">Enter details for payment</h3>
         <p className="mt-1 text-sm text-gray-500">
-          We’ll prefill these in Razorpay Checkout.
+          We&apos;ll prefill these in Razorpay Checkout.
         </p>
 
         <div className="mt-5 space-y-3">

@@ -180,22 +180,98 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ━━━ BUTTON & CARD HOVER ANIMATIONS ━━━━━━━━━━━━━━━━━━━━ */
-button, .btn, a[href] {
-  transition: transform 0.2s ease,
-              box-shadow 0.2s ease !important;
-}
-button:hover, .btn:hover {
-  transform: translateY(-3px) scale(1.03) !important;
-  box-shadow: 0 10px 30px rgba(45,106,79,0.3) !important;
-}
-button:active, .btn:active {
-  transform: translateY(0px) scale(0.98) !important;
+/* ━━━ PREMIUM SPACING & TYPOGRAPHY ━━━━━━━━━━━━━━━━━━━━━━ */
+.rs-section-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  opacity: 0.7;
+  margin-bottom: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.benefit-card:hover, .ingredient-card:hover,
-.testimonial-card:hover {
-  transform: translateY(-8px) scale(1.02) !important;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.12) !important;
-  transition: all 0.3s ease !important;
+/* Primary CTA — scoped (avoid warping every link/button) */
+.rs-cta-primary {
+  min-height: 48px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+@media (min-width: 769px) {
+  .rs-cta-primary {
+    min-height: 52px;
+  }
+}
+.rs-cta-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+}
+.rs-cta-primary:active {
+  transform: translateY(0);
+}
+
+/* Gold / ivory CTA variant */
+.rs-cta-gold {
+  min-height: 48px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(201, 168, 76, 0.35);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+@media (min-width: 769px) {
+  .rs-cta-gold {
+    min-height: 52px;
+  }
+}
+.rs-cta-gold:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+/* Card hover — premium lift (GSAP cards keep their own handlers) */
+.premium-card-hover {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.premium-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark green sections — subtle grain */
+.rs-brand-dark-grain {
+  position: relative;
+  isolation: isolate;
+}
+.rs-brand-dark-grain::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+.rs-brand-dark-grain > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Navbar scrolled (used with JS toggle) */
+.navbar-rs-scrolled {
+  background-color: rgba(13, 59, 31, 0.95) !important;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
 }

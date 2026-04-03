@@ -124,7 +124,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="hero-section relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-[var(--brand-ivory)] pb-20 pt-0">
+    <section ref={sectionRef} className="hero-section relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-[var(--brand-ivory)] pb-12 pt-0 min-[769px]:pb-20">
       
       {/* Background circles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -212,12 +212,9 @@ export default function HeroSection() {
               priority
             />
           </h1>
-          <p className="hero-tagline text-xs sm:text-sm font-bold tracking-[0.3em] uppercase text-[var(--brand-gold)] mb-6">
-            estd. 2016
-          </p>
         </div>
 
-        <h2 className="hero-mirror-headline text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--brand-dark)] leading-tight max-w-2xl mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+        <h2 className="hero-mirror-headline mt-2 text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--brand-dark)] leading-tight max-w-2xl mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
           Is This Your Morning?
         </h2>
 
@@ -225,7 +222,7 @@ export default function HeroSection() {
           <HeroTypewriter />
         </div>
 
-        <p className="hero-gold-line text-sm sm:text-base font-semibold text-[var(--brand-gold)] max-w-lg mx-auto mb-6 leading-snug px-2">
+        <p className="hero-gold-line text-sm sm:text-base font-semibold text-[var(--brand-gold)] max-w-lg mx-auto mb-8 leading-snug px-2">
           You already knew something was wrong. Royal Swag is how you fix it.
         </p>
 
@@ -235,12 +232,12 @@ export default function HeroSection() {
 
         <Link
           href="/lung-test"
-          className="hero-cta-btn inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-[var(--brand-green)] text-[var(--brand-gold)] font-bold text-lg shadow-xl"
+          className="hero-cta-btn rs-cta-primary inline-flex items-center justify-center gap-3 rounded-full bg-[var(--brand-green)] px-10 py-4 text-base font-bold text-[var(--brand-gold)] min-[769px]:text-lg"
         >
           Test Your Lungs →
         </Link>
         <p className="hero-cta-micro mt-3 text-xs text-[var(--brand-dark)]/50 text-center max-w-sm">
-          No email required to see your result
+          Eight quick questions — your score in about a minute.
         </p>
       </div>
     </section>

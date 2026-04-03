@@ -41,31 +41,31 @@ export default function FinalCTASection() {
     <section
       ref={sectionRef}
       id="final-cta"
-      className="py-28 md:py-40 bg-[var(--brand-green)]"
+      className="rs-brand-dark-grain py-12 min-[769px]:py-20 bg-[var(--brand-green)]"
       aria-label="Take the lung test CTA"
     >
       <div className="container-rs text-center final-cta-inner">
-        <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-4">
+        <p className="rs-section-label text-[var(--brand-gold)]">
           Commit in 60 seconds
         </p>
         <h2
-          className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-5 leading-tight"
+          className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
           Stop Guessing What Pollution Is Costing You.
         </h2>
-        <p className="text-base text-white/55 max-w-md mx-auto mb-10">
+        <p className="text-base text-white/55 max-w-md mx-auto mb-8">
           Get your personal lung toxin score — free. Eight quick questions. Then you&apos;ll know exactly where you stand.
         </p>
         <Link
           href="/lung-test"
           id="final-cta-btn"
-          className="inline-flex items-center gap-2 px-10 py-5 rounded-full bg-[var(--brand-gold)] text-[var(--brand-green)] font-bold text-base shadow-sm hover:opacity-90 hover:scale-105 transition-all duration-200 active:scale-98"
+          className="rs-cta-gold inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand-gold)] px-10 py-4 text-base text-[var(--brand-green)]"
           aria-label="Take the free lung health test now"
         >
           Take the Lung Test →
         </Link>
-        <p className="mt-3 text-xs text-white/40">No email required to see your result</p>
+        <p className="mt-3 text-xs text-white/40">We only use your contact to send your report.</p>
         <p className="mt-2 text-xs text-white/30">100% free · No credit card</p>
       </div>
     </section>

@@ -73,10 +73,10 @@ export default function HowItWorksSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="how-section py-24 md:py-32 bg-[var(--brand-ivory)]">
+    <section ref={sectionRef} className="how-section py-12 min-[769px]:py-20 bg-[var(--brand-ivory)]">
       <div className="container-rs">
-        <div className="text-center mb-16 how-heading">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+        <div className="text-center mb-10 how-heading">
+          <p className="rs-section-label text-[var(--brand-gold)]">
             Easy Routine
           </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--brand-dark)]">
@@ -91,7 +91,7 @@ export default function HowItWorksSection() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8 md:gap-6 max-w-3xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-6 min-[769px]:gap-8 max-w-3xl mx-auto">
           {STEPS.map(({ id, step, title, desc, icon }) => (
             <div
               key={id}

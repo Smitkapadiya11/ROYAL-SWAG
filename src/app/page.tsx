@@ -12,6 +12,7 @@ import MobileStickyBar from "@/components/MobileStickyBar";
 import PollutionPainSection from "@/components/conversion/PollutionPainSection";
 import TrustAuthorityStrip from "@/components/conversion/TrustAuthorityStrip";
 import HowItsMadeMini from "@/components/conversion/HowItsMadeMini";
+import { SectionBridge, SectionHairline } from "@/components/layout/SectionBridge";
 
 export const metadata: Metadata = {
   title: "Royal Swag — Herbal Lung Detox Tea | Breathe Clean. Live Free.",
@@ -19,47 +20,39 @@ export const metadata: Metadata = {
     "Premium Ayurvedic lung detox tea with Tulsi, Vasaka & Mulethi. Take a free lung health test and discover personalized recommendations. Trusted by 2,400+ customers across India.",
 };
 
-const SectionDivider = () => (
-  <div className="section-divider w-full overflow-hidden leading-none rotate-180">
-    <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-12 fill-[var(--brand-sage)] opacity-30">
-      <path d="M985.66,92.83C906.67,72,793.78,49.7,685.88,45.05S479.13,60.37,404.16,69.83c-71.52,9.13-147.09,14.15-219.16,12.5C111.27,80.63,47.79,65.9,0,50.32V0H1200V69.83C1130.16,69.83,1055.21,113.06,985.66,92.83Z"/>
-    </svg>
-  </div>
-);
+const IVORY = "#faf7f2";
+const LOADER_END = "#061508";
+const PAIN = "#0D3B1F";
+const PAIN_BOTTOM = "#0a2e18";
+const BRAND_GREEN = "#1a3a2a";
 
 export default function HomePage() {
   return (
     <PageClientWrapper>
       <HomeLungSliderLoader />
-      <div
-        style={{
-          height: "60px",
-          background: "linear-gradient(180deg, #061508 0%, #f5f0e8 100%)",
-        }}
-        aria-hidden="true"
-      />
+      <SectionBridge from={LOADER_END} to={IVORY} />
       <HeroSection />
-      <SectionDivider />
+      <SectionBridge from={IVORY} to={PAIN} />
       <PollutionPainSection />
-      <SectionDivider />
+      <SectionBridge from={PAIN_BOTTOM} to={IVORY} />
       <TrustAuthorityStrip className="bg-[var(--brand-ivory)]" />
-      <SectionDivider />
+      <SectionHairline />
       <BenefitsSection />
-      <SectionDivider />
+      <SectionHairline />
       <IngredientsSection />
-      <SectionDivider />
+      <SectionHairline />
       <HowItWorksSection />
-      <SectionDivider />
+      <SectionBridge from={IVORY} to={BRAND_GREEN} />
       <TestimonialsSection />
-      <SectionDivider />
-      <div className="bg-[var(--brand-ivory)] py-14 md:py-20">
+      <SectionBridge from={BRAND_GREEN} to={IVORY} />
+      <div className="bg-[var(--brand-ivory)] py-12 min-[769px]:py-20">
         <div className="container-rs max-w-3xl mx-auto px-4">
           <HowItsMadeMini />
         </div>
       </div>
-      <SectionDivider />
+      <SectionHairline />
       <FaqSection />
-      <SectionDivider />
+      <SectionBridge from={IVORY} to={BRAND_GREEN} />
       <FinalCTASection />
       <MobileStickyBar />
     </PageClientWrapper>

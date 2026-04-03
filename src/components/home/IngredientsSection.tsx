@@ -96,7 +96,7 @@ export default function IngredientsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="ingredients-section relative py-24 md:py-32 bg-[var(--brand-sage)]/40 overflow-hidden">
+    <section ref={sectionRef} className="ingredients-section relative py-12 min-[769px]:py-20 bg-[var(--brand-sage)]/40 overflow-hidden">
       
       {/* 3 Floating Herb Leaves */}
       {[
@@ -113,8 +113,8 @@ export default function IngredientsSection() {
       ))}
 
       <div className="container-rs relative z-10">
-        <div className="text-center mb-16 relative inline-block left-1/2 -translate-x-1/2">
-          <p className="ingredients-title text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+        <div className="text-center mb-10 relative inline-block left-1/2 -translate-x-1/2">
+          <p className="ingredients-title rs-section-label text-[var(--brand-gold)]">
             The Formula
           </p>
           <div className="relative inline-block">
@@ -123,16 +123,16 @@ export default function IngredientsSection() {
             </h2>
             <div className="ingredients-underline absolute -bottom-3 left-0 w-full h-[3px] bg-[var(--brand-gold)] opacity-50 block" />
           </div>
-          <p className="ingredients-title mt-6 text-base text-[var(--brand-dark)]/55 max-w-lg mx-auto">
+          <p className="ingredients-title mt-4 text-base text-[var(--brand-dark)]/55 max-w-lg mx-auto">
             Four centuries-old Ayurvedic herbs, precisely combined for the polluted world we live in.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-[769px]:gap-6">
           {INGREDIENTS.map(({ id, name, sanskrit, badge, desc }) => (
             <div
               key={id}
-              className="ingredient-card bg-white rounded-2xl p-8 border border-[var(--brand-sage)] shadow-sm"
+              className="ingredient-card premium-card-hover bg-white rounded-2xl border border-[var(--brand-sage)] p-4 shadow-sm min-[769px]:p-6"
             >
               <div className="flex items-start justify-between mb-5">
                 <div>

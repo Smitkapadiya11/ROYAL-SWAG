@@ -54,12 +54,12 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="py-24 md:py-32 bg-[var(--brand-ivory)]"
+      className="py-12 min-[769px]:py-20 bg-[var(--brand-ivory)]"
       aria-labelledby="faq-heading"
     >
       <div className="container-rs max-w-3xl">
-        <div className="text-center mb-12">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+        <div className="text-center mb-8">
+          <p className="rs-section-label text-[var(--brand-gold)]">
             Got Questions?
           </p>
           <h2
@@ -75,7 +75,7 @@ export default function FaqSection() {
             <AccordionItem
               key={id}
               value={id}
-              className="bg-white border border-[var(--brand-sage)] rounded-2xl px-6 shadow-sm"
+              className="bg-white border border-[var(--brand-sage)] rounded-2xl px-4 shadow-sm min-[769px]:px-6"
             >
               <AccordionTrigger
                 id={`faq-trigger-${id}`}

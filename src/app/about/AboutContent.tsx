@@ -78,15 +78,17 @@ export default function AboutContent() {
     <div ref={storyRef} className="pt-0">
 
       {/* Brand Story */}
-      <section className="py-24 md:py-32 bg-[var(--brand-ivory)]" aria-labelledby="story-heading">
+      <section className="py-12 min-[769px]:py-20 bg-[var(--brand-ivory)]" aria-labelledby="story-heading">
         <div className="container-rs max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-4">Our Story</p>
+          <p className="rs-section-label text-[var(--brand-gold)]">Our Story</p>
           <h1
             id="story-heading"
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--brand-dark)] mb-12 leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--brand-dark)] mb-8 leading-tight"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Heritage.<br />Purpose.<br />Breath.
+            <span className="block">Heritage.</span>
+            <span className="block">Purpose.</span>
+            <span className="block">Breath.</span>
           </h1>
           <div className="space-y-2">
             {STORY_LINES.map((line, i) => (
@@ -103,40 +105,40 @@ export default function AboutContent() {
 
       {/* Mission */}
       <section
-        className="py-24 md:py-32 bg-[var(--brand-green)] mission-block opacity-0"
+        className="rs-brand-dark-grain py-12 min-[769px]:py-20 bg-[var(--brand-green)] mission-block opacity-0"
         aria-labelledby="mission-heading"
       >
         <div className="container-rs max-w-2xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-4">Our Mission</p>
+          <p className="rs-section-label text-[var(--brand-gold)]">Our Mission</p>
           <h2
             id="mission-heading"
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            "We believe clean air is a right, not a privilege."
+            &ldquo;We believe clean air is a right, not a privilege.&rdquo;
           </h2>
           <p className="mt-8 text-base text-white/55 max-w-lg mx-auto">
-            Pollution isn't going away. But your lungs don't have to suffer for it. Every cup of Royal Swag is our commitment to helping India breathe better — one household at a time.
+            Pollution isn&apos;t going away. But your lungs don&apos;t have to suffer for it. Every cup of Royal Swag is our commitment to helping India breathe better — one household at a time.
           </p>
         </div>
       </section>
 
       {/* Team */}
-      <section className="py-24 md:py-32 bg-[var(--brand-ivory)]" aria-labelledby="team-heading">
+      <section className="py-12 min-[769px]:py-20 bg-[var(--brand-ivory)]" aria-labelledby="team-heading">
         <div className="container-rs">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">The People</p>
+          <div className="text-center mb-10">
+            <p className="rs-section-label text-[var(--brand-gold)]">The People</p>
             <h2 id="team-heading" className="text-3xl sm:text-4xl font-bold text-[var(--brand-dark)]"
               style={{ fontFamily: "var(--font-playfair)" }}>
               The Team Behind the Tea
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 min-[769px]:gap-6 max-w-3xl mx-auto">
             {TEAM.map(({ name, role, initials }) => (
               <div
                 key={name}
-                className="team-card bg-white rounded-2xl border border-[var(--brand-sage)] shadow-sm p-8 text-center opacity-0"
+                className="team-card premium-card-hover rounded-2xl border border-[var(--brand-sage)] bg-white p-4 text-center opacity-0 shadow-sm min-[769px]:p-6"
               >
                 <div className="w-16 h-16 rounded-full bg-[var(--brand-green)] text-white font-bold text-lg flex items-center justify-center mx-auto mb-5">
                   {initials}
@@ -153,17 +155,17 @@ export default function AboutContent() {
       </section>
 
       {/* Certifications */}
-      <section className="py-20 bg-[var(--brand-sage)]/30" aria-labelledby="certs-heading">
+      <section className="bg-[var(--brand-sage)]/30 py-12 min-[769px]:py-20" aria-labelledby="certs-heading">
         <div className="container-rs">
-          <h2 id="certs-heading" className="text-center text-2xl font-bold text-[var(--brand-dark)] mb-10"
+          <h2 id="certs-heading" className="text-center text-2xl font-bold text-[var(--brand-dark)] mb-8"
             style={{ fontFamily: "var(--font-playfair)" }}>
             Our Certifications
           </h2>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3 min-[769px]:gap-4">
             {CERTS.map(({ label, badge }) => (
               <div
                 key={label}
-                className="cert-badge bg-white rounded-2xl border border-[var(--brand-sage)] shadow-sm px-6 py-4 flex items-center gap-3 opacity-0"
+                className="cert-badge premium-card-hover flex items-center gap-3 rounded-2xl border border-[var(--brand-sage)] bg-white px-4 py-3 opacity-0 shadow-sm min-[769px]:px-6 min-[769px]:py-4"
               >
                 <span className="text-2xl" aria-hidden="true">{badge}</span>
                 <span className="font-semibold text-[var(--brand-dark)] text-sm">{label}</span>

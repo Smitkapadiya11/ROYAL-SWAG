@@ -64,10 +64,13 @@ export default function TestimonialsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="testimonials-section py-24 md:py-32 bg-[var(--brand-green)] overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="testimonials-section rs-brand-dark-grain py-12 min-[769px]:py-20 bg-[var(--brand-green)] overflow-hidden"
+    >
       <div className="container-rs">
-        <div className="text-center mb-16">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-gold)] mb-3">
+        <div className="text-center mb-10">
+          <p className="rs-section-label text-[var(--brand-gold)]">
             Real stories · City · Age · Symptoms
           </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
@@ -78,11 +81,11 @@ export default function TestimonialsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-[769px]:gap-6">
           {TESTIMONIALS.map(({ id, initials, line, before, after, tier }) => (
             <blockquote
               key={id}
-              className="testimonial-card bg-white/5 border border-white/10 rounded-2xl p-6 text-left"
+              className="testimonial-card premium-card-hover bg-white/5 border border-white/10 rounded-xl p-4 text-left min-[769px]:rounded-2xl min-[769px]:p-6"
             >
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div

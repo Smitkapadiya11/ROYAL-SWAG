@@ -22,10 +22,18 @@ const NAV_LINKS = [
 export default function Navbar() {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const gsapRef = useRef<any>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   /* ── GSAP drawer & sticky menu ── */
   useEffect(() => {
@@ -88,8 +96,10 @@ export default function Navbar() {
       {/* ── Navbar bar ── */}
       <header
         ref={navRef}
-        className="navbar fixed top-0 left-0 right-0 z-50 h-[60px] overflow-hidden border-b border-white/10 min-[769px]:h-[70px]"
-        style={{ backgroundColor: "#0D3B1F" }}
+        className={`navbar fixed top-0 left-0 right-0 z-50 h-[60px] overflow-hidden border-b border-white/10 min-[769px]:h-[70px] transition-[background-color,border-color,backdrop-filter] duration-300 ease-out ${
+          scrolled ? "navbar-rs-scrolled" : ""
+        }`}
+        style={scrolled ? undefined : { backgroundColor: "#0D3B1F" }}
         role="banner"
       >
         <div className="container-rs mx-auto flex h-full max-h-full items-center justify-between overflow-hidden px-4">

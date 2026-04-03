@@ -27,9 +27,12 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[var(--brand-green)] text-white" role="contentinfo">
-      <div className="container-rs py-12 md:py-16">
-        <div className="grid gap-10 md:grid-cols-4">
+    <footer
+      className="border-t border-white/[0.08] bg-[var(--brand-green)] text-white"
+      role="contentinfo"
+    >
+      <div className="container-rs pt-12 pb-8">
+        <div className="grid gap-10 min-[769px]:grid-cols-4 min-[769px]:gap-12">
           <div className="md:col-span-2">
             <div className="mb-4">
               <Image
@@ -37,7 +40,7 @@ export default function Footer() {
                 alt="Royal Swag Logo"
                 width={ROYAL_SWAG_LOGO_WIDTH}
                 height={ROYAL_SWAG_LOGO_HEIGHT}
-                className="h-12 w-auto"
+                className="h-12 w-auto rounded-lg min-[769px]:rounded-xl"
               />
             </div>
             <p className="text-sm text-white/60 leading-relaxed max-w-xs mb-5">
@@ -126,7 +129,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-white/30">
             © 2016–2026 Royal Swag. All rights reserved.
           </p>

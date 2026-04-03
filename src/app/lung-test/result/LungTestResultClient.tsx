@@ -146,7 +146,7 @@ function polar(cx: number, cy: number, r: number, angleRad: number) {
   };
 }
 
-/** Semicircle arc gauge: green (left) → amber → red (right); needle rotates to score on load. */
+/** Semicircle arc gauge: green (left) → amber → red (right). Needle: 0 = left, 90° = up/center, 180° = right. */
 function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) {
   const shadowFilterId = useId().replace(/:/g, "");
   const cx = 140;
@@ -154,15 +154,16 @@ function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) 
   const r = 88;
   const nLen = r - 18;
   const hubR = 8;
-  /** 0 = left (low), -(score/max)*180 = sweep toward right (high). */
-  const [needleRot, setNeedleRot] = useState(0);
+  /** Degrees along semicircle: 0 = low (left), 180 = high (right). Animates from 0 after mount. */
+  const [needleRotation, setNeedleRotation] = useState(0);
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      const clamped = Math.min(Math.max(score, 0), maxScore);
-      setNeedleRot(-(clamped / maxScore) * 180);
-    });
-    return () => cancelAnimationFrame(id);
+    const clamped = Math.min(Math.max(score, 0), maxScore);
+    const target = maxScore > 0 ? (clamped / maxScore) * 180 : 0;
+    const tid = window.setTimeout(() => {
+      setNeedleRotation(target);
+    }, 300);
+    return () => window.clearTimeout(tid);
   }, [score, maxScore]);
 
   const thick = 14;
@@ -212,16 +213,17 @@ function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) 
         <g transform={`translate(${cx},${cy})`}>
           <g
             style={{
-              transform: `rotate(${needleRot}deg)`,
-              transformOrigin: "0px 0px",
-              transition: "transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)",
+              transform: `rotate(${needleRotation - 90}deg)`,
+              transformOrigin: "50% 100%",
+              transformBox: "fill-box",
+              transition: "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
             <line
               x1="0"
               y1="0"
-              x2={-nLen}
-              y2="0"
+              x2="0"
+              y2={-nLen}
               stroke="#fefce8"
               strokeWidth={3}
               strokeLinecap="round"

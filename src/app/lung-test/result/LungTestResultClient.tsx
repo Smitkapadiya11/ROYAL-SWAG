@@ -31,8 +31,8 @@ type LungTestStored = {
   timestamp?: number;
 };
 
-const BG = "#0D3B1F";
-const GOLD = "#d4a574";
+const BG = "var(--rs-deep)";
+const GOLD = "var(--rs-gold)";
 const AMBER = "#f59e0b";
 
 function normalizeAnswers(raw: LungTestStored["answers"]): AnswersShape | null {
@@ -345,7 +345,7 @@ export default function LungTestResultClient() {
         <div className="w-full max-w-md text-center">
           <h1
             className="text-2xl font-bold text-white sm:text-3xl"
-            style={{ fontFamily: "var(--font-playfair)" }}
+            style={{ fontFamily: "var(--font-heading)" }}
           >
             Please complete the Lung Test first
           </h1>
@@ -378,7 +378,7 @@ export default function LungTestResultClient() {
         {/* PERSONALIZATION */}
         <h1
           className="mb-10 text-center text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl"
-          style={{ fontFamily: "var(--font-playfair)" }}
+          style={{ fontFamily: "var(--font-heading)" }}
         >
           {firstName}, here is your Lung Health Report
         </h1>
@@ -431,7 +431,7 @@ export default function LungTestResultClient() {
           <h2
             id="means-heading"
             className="mb-3 text-xl font-bold text-white sm:text-2xl"
-            style={{ fontFamily: "var(--font-playfair)" }}
+            style={{ fontFamily: "var(--font-heading)" }}
           >
             What this means for you
           </h2>
@@ -443,7 +443,7 @@ export default function LungTestResultClient() {
           <h2
             id="herbs-heading"
             className="mb-4 text-xl font-bold text-white sm:text-2xl"
-            style={{ fontFamily: "var(--font-playfair)" }}
+            style={{ fontFamily: "var(--font-heading)" }}
           >
             Which herbs target your symptoms
           </h2>

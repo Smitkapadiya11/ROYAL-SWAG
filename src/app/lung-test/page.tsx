@@ -1,13 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ROYAL_SWAG_LOGO_HEIGHT,
-  ROYAL_SWAG_LOGO_SRC,
-  ROYAL_SWAG_LOGO_WIDTH,
-} from "@/lib/brand-logo";
 import { computeLungTestScore, LUNG_TEST_MAX_SCORE } from "@/lib/lung-test-scoring";
 
 const QUESTIONS = [
@@ -23,6 +17,27 @@ const QUESTIONS = [
 
 const TOTAL_STEPS = 3 + QUESTIONS.length;
 
+const bgStyle: React.CSSProperties = {
+  background: "linear-gradient(160deg, var(--rs-deep) 0%, #0d1f07 100%)",
+  minHeight: "100vh", display: "flex", flexDirection: "column",
+  alignItems: "center", padding: "40px 20px",
+};
+
+const inputStyle: React.CSSProperties = {
+  width: "100%", padding: "14px 16px", fontSize: 16,
+  borderRadius: "var(--r-md)", border: "1.5px solid rgba(255,255,255,0.15)",
+  background: "rgba(255,255,255,0.08)", color: "#fff",
+  fontFamily: "var(--font-body)", outline: "none", marginBottom: 8,
+};
+
+const btnGreenStyle = (disabled?: boolean): React.CSSProperties => ({
+  width: "100%", padding: "15px", fontSize: 16, fontWeight: 700,
+  borderRadius: "var(--r-md)", border: "none", cursor: disabled ? "not-allowed" : "pointer",
+  background: disabled ? "rgba(74,100,34,0.4)" : "var(--rs-olive)",
+  color: disabled ? "rgba(255,255,255,0.4)" : "var(--rs-cream)",
+  fontFamily: "var(--font-body)",
+});
+
 export default function LungTestPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -30,9 +45,7 @@ export default function LungTestPage() {
   const [showMidAffirm, setShowMidAffirm] = useState(false);
   const midAffirmShownRef = useRef(false);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    name: "", email: "", phone: "",
     answers: Array.from({ length: QUESTIONS.length }, () => null) as (boolean | null)[],
   });
 
@@ -40,65 +53,30 @@ export default function LungTestPage() {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (step === 1) nameInputRef.current?.focus();
-    if (step === 2) emailInputRef.current?.focus();
-    if (step === 3) phoneInputRef.current?.focus();
-  }, [step]);
-
   const emailValid = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
   const phoneValid = (p: string) => /^[6789]\d{9}$/.test(p.replace(/\D/g, ""));
-
   const goBack = () => setStep((s) => Math.max(1, s - 1));
 
   const finalizeSubmit = async (answers: (boolean | null)[]) => {
     const bools = answers.map((a) => a === true);
     const score = computeLungTestScore(bools);
     const payload = {
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.replace(/\D/g, ""),
-      score,
+      name: formData.name.trim(), email: formData.email.trim(),
+      phone: formData.phone.replace(/\D/g, ""), score,
       maxScore: LUNG_TEST_MAX_SCORE,
-      answers: {
-        q1: !!answers[0],
-        q2: !!answers[1],
-        q3: !!answers[2],
-        q4: !!answers[3],
-        q5: !!answers[4],
-        q6: !!answers[5],
-        q7: !!answers[6],
-        q8: !!answers[7],
-      },
+      answers: { q1: !!answers[0], q2: !!answers[1], q3: !!answers[2], q4: !!answers[3], q5: !!answers[4], q6: !!answers[5], q7: !!answers[6], q8: !!answers[7] },
       timestamp: Date.now(),
     };
-
-    try {
-      localStorage.setItem("lungTestResult", JSON.stringify(payload));
-    } catch {
-      /* ignore */
-    }
-
+    try { localStorage.setItem("lungTestResult", JSON.stringify(payload)); } catch { /* ignore */ }
     try {
       await fetch("/api/save-lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: payload.name,
-          email: payload.email,
-          phone: payload.phone,
-          score,
-          answers: payload.answers,
-        }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: payload.name, email: payload.email, phone: payload.phone, score, answers: payload.answers }),
       });
-    } catch (err) {
-      console.error("save-lead failed:", err);
-    }
-
+    } catch { /* ignore */ }
     setSubmitting(true);
     window.setTimeout(() => {
-      const name = encodeURIComponent(payload.name || "there");
-      router.push(`/lung-test/result?score=${score}&name=${name}`);
+      router.push(`/lung-test/result?score=${score}&name=${encodeURIComponent(payload.name || "there")}`);
     }, 1000);
   };
 
@@ -121,144 +99,106 @@ export default function LungTestPage() {
     }, 600);
   };
 
-  const handleContinueName = () => {
-    if (!formData.name.trim()) return;
-    setStep(2);
-  };
-  const handleContinueEmail = () => {
-    if (!emailValid(formData.email)) return;
-    setStep(3);
-  };
-  const handleContinuePhone = () => {
-    const digits = formData.phone.replace(/\D/g, "");
-    if (digits.length !== 10 || !phoneValid(digits)) return;
-    setFormData((f) => ({ ...f, phone: digits }));
-    setStep(4);
-  };
-
   if (submitting) {
     return (
-      <div
-        className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-6"
-        style={{
-          background: "linear-gradient(135deg, #020b05 0%, #061408 100%)",
-        }}
-      >
-        <p className="text-6xl mb-4" aria-hidden="true">
-          🫁
+      <div style={{ ...bgStyle, justifyContent: "center", textAlign: "center" }}>
+        <p style={{ fontSize: 56, marginBottom: 16 }}>🫁</p>
+        <p style={{ color: "#fff", fontSize: 18, fontWeight: 600, marginBottom: 24 }}>
+          Analysing your lung health...
         </p>
-        <p className="text-white text-lg font-semibold text-center mb-6">Analysing your lung health...</p>
-        <div className="h-10 w-10 rounded-full border-2 border-green-500 border-t-transparent animate-spin" />
+        <div style={{
+          width: 36, height: 36, borderRadius: "50%",
+          border: "3px solid var(--rs-olive)", borderTopColor: "var(--rs-gold)",
+          animation: "spin 0.8s linear infinite",
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
-  return (
-    <div
-      className="min-h-[100svh] flex flex-col items-center px-4 py-8"
-      style={{
-        background: "linear-gradient(135deg, #020b05 0%, #061408 100%)",
-      }}
-    >
-      <style>{`
-        @keyframes lungTestStepFadeIn {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+  const progressPct = Math.round((step / TOTAL_STEPS) * 100);
 
-      <div className="w-full max-w-[480px] mb-8">
-        <div className="text-center mb-6">
-          <Image
-            src={ROYAL_SWAG_LOGO_SRC}
-            alt="Royal Swag Logo"
-            width={ROYAL_SWAG_LOGO_WIDTH}
-            height={ROYAL_SWAG_LOGO_HEIGHT}
-            className="mx-auto h-12 w-auto"
-          />
-          <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#c9a84c] mt-2">Free Lung Test</p>
+  return (
+    <div style={bgStyle}>
+      {/* Progress */}
+      <div style={{ width: "100%", maxWidth: 480, marginBottom: 32 }}>
+        <div style={{ textAlign: "center", marginBottom: 16 }}>
+          <span style={{ fontSize: 11, letterSpacing: 3, color: "var(--rs-gold)", fontWeight: 600, textTransform: "uppercase" }}>
+            Free Lung Test
+          </span>
         </div>
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Your Lung Report:</p>
-        <div className="flex gap-1 mb-2" aria-hidden="true">
+        <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
           {Array.from({ length: 10 }).map((_, i) => {
             const filled = Math.ceil((step / TOTAL_STEPS) * 10);
             return (
-              <div
-                key={i}
-                className={`h-2 min-w-0 flex-1 rounded-sm transition-colors ${i < filled ? "bg-[#4ade80]" : "bg-white/15"}`}
-              />
+              <div key={i} style={{
+                flex: 1, height: 6, borderRadius: 3,
+                background: i < filled ? "var(--rs-olive)" : "rgba(255,255,255,0.1)",
+              }} />
             );
           })}
         </div>
-        <div className="flex justify-between text-xs mb-2">
-          <span className="text-[#4ade80] font-semibold">Step {step} of {TOTAL_STEPS}</span>
-          <span className="text-gray-500">{Math.round((step / TOTAL_STEPS) * 100)}% complete</span>
-        </div>
-        <div className="h-1 rounded-full bg-white/10 overflow-hidden">
-          <div
-            className="h-full rounded-full transition-[width] duration-300 ease-out"
-            style={{
-              width: `${(step / TOTAL_STEPS) * 100}%`,
-              background: "linear-gradient(90deg, #16a34a, #4ade80)",
-            }}
-          />
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+          <span style={{ color: "var(--rs-gold)", fontWeight: 600 }}>Step {step} of {TOTAL_STEPS}</span>
+          <span style={{ color: "rgba(255,255,255,0.35)" }}>{progressPct}% complete</span>
         </div>
       </div>
 
-      <div
-        key={step}
-        className="w-full max-w-[480px]"
-        style={{ animation: "lungTestStepFadeIn 0.3s ease forwards" }}
-      >
+      {/* Step content */}
+      <div style={{ width: "100%", maxWidth: 480 }}>
         {step === 1 && (
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white text-center mb-2 leading-tight">
+            <h1 style={{ color: "#fff", textAlign: "center", fontSize: "clamp(22px, 4vw, 30px)", marginBottom: 10 }}>
               Take the 60-Second Lung Health Check
             </h1>
-            <p className="text-gray-400 text-sm text-center mb-6 leading-relaxed">
-              Answer 8 quick questions and get your personal lung toxin score. Free — no paid account; we only ask for
-              contact details so we can deliver your report.
+            <p style={{ color: "rgba(255,255,255,0.5)", textAlign: "center", fontSize: 14, marginBottom: 28 }}>
+              8 quick questions. Your personalised lung health score in under 2 minutes.
             </p>
-            <p className="text-white/90 text-sm font-semibold text-center mb-3">What&apos;s your name?</p>
+            <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
+              What&apos;s your name?
+            </p>
             <input
               ref={nameInputRef}
-              type="text"
-              placeholder="Your full name"
+              type="text" placeholder="Your full name"
               value={formData.name}
               onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
-              className="w-full p-4 text-lg rounded-xl border border-white/15 bg-white/10 text-white placeholder:text-white/40 focus:border-green-500 focus:outline-none mb-2"
+              style={inputStyle}
             />
-            <p className="text-[11px] text-gray-500 text-center mb-6">Used only to personalise your lung report.</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", textAlign: "center", marginBottom: 20 }}>
+              Used only to personalise your lung report.
+            </p>
             <button
               type="button"
               disabled={!formData.name.trim()}
-              onClick={handleContinueName}
-              className="w-full py-4 rounded-xl bg-green-700 text-white font-bold disabled:opacity-40"
+              onClick={() => setStep(2)}
+              style={btnGreenStyle(!formData.name.trim())}
             >
               Continue →
             </button>
-            <p className="mt-2 text-center text-[11px] text-gray-500">Next: email &amp; phone for report delivery only</p>
           </div>
         )}
 
         {step === 2 && (
           <div>
-            <h1 className="text-2xl font-bold text-white text-center mb-2">Your email address?</h1>
-            <p className="text-gray-400 text-sm text-center mb-8">We&apos;ll send your lung health report here.</p>
+            <h2 style={{ color: "#fff", textAlign: "center", marginBottom: 8 }}>Your email address?</h2>
+            <p style={{ color: "rgba(255,255,255,0.5)", textAlign: "center", fontSize: 14, marginBottom: 24 }}>
+              We&apos;ll send your lung health report here.
+            </p>
             <input
               ref={emailInputRef}
-              type="email"
-              placeholder="you@example.com"
+              type="email" placeholder="you@example.com"
               value={formData.email}
               onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
-              className="w-full p-4 text-lg rounded-xl border border-white/15 bg-white/10 text-white placeholder:text-white/40 focus:border-green-500 focus:outline-none mb-2"
+              style={inputStyle}
             />
-            <p className="text-[11px] text-gray-500 text-center mb-6">We never spam — lung report delivery only.</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", textAlign: "center", marginBottom: 20 }}>
+              We never spam — report delivery only.
+            </p>
             <button
               type="button"
               disabled={!emailValid(formData.email)}
-              onClick={handleContinueEmail}
-              className="w-full py-4 rounded-xl bg-green-700 text-white font-bold disabled:opacity-40"
+              onClick={() => setStep(3)}
+              style={btnGreenStyle(!emailValid(formData.email))}
             >
               Continue →
             </button>
@@ -267,29 +207,36 @@ export default function LungTestPage() {
 
         {step === 3 && (
           <div>
-            <h1 className="text-2xl font-bold text-white text-center mb-2">Your mobile number?</h1>
-            <p className="text-gray-400 text-sm text-center mb-4">For WhatsApp delivery of your results.</p>
-            <p className="text-[11px] text-gray-500 text-center mb-6">We never share your number. Only used for order updates.</p>
-            <div className="flex gap-2 mb-6">
-              <span className="flex items-center px-4 rounded-xl bg-white/10 text-gray-300 text-sm border border-white/15">
-                +91
-              </span>
+            <h2 style={{ color: "#fff", textAlign: "center", marginBottom: 8 }}>Your mobile number?</h2>
+            <p style={{ color: "rgba(255,255,255,0.5)", textAlign: "center", fontSize: 14, marginBottom: 24 }}>
+              For WhatsApp delivery of your results.
+            </p>
+            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+              <span style={{
+                padding: "14px 16px", borderRadius: "var(--r-md)",
+                background: "rgba(255,255,255,0.08)", border: "1.5px solid rgba(255,255,255,0.15)",
+                color: "rgba(255,255,255,0.6)", fontSize: 15, flexShrink: 0,
+              }}>+91</span>
               <input
                 ref={phoneInputRef}
-                type="tel"
-                inputMode="numeric"
-                maxLength={10}
-                placeholder="98765 43210"
+                type="tel" inputMode="numeric" maxLength={10} placeholder="98765 43210"
                 value={formData.phone}
                 onChange={(e) => setFormData((f) => ({ ...f, phone: e.target.value.replace(/\D/g, "") }))}
-                className="flex-1 p-4 text-lg rounded-xl border border-white/15 bg-white/10 text-white placeholder:text-white/40 focus:border-green-500 focus:outline-none"
+                style={{ ...inputStyle, marginBottom: 0, flex: 1 }}
               />
             </div>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", textAlign: "center", marginBottom: 20 }}>
+              Never shared. Only for order updates.
+            </p>
             <button
               type="button"
               disabled={formData.phone.replace(/\D/g, "").length !== 10 || !phoneValid(formData.phone)}
-              onClick={handleContinuePhone}
-              className="w-full py-4 rounded-xl bg-green-700 text-white font-bold disabled:opacity-40"
+              onClick={() => {
+                const digits = formData.phone.replace(/\D/g, "");
+                setFormData((f) => ({ ...f, phone: digits }));
+                setStep(4);
+              }}
+              style={btnGreenStyle(formData.phone.replace(/\D/g, "").length !== 10)}
             >
               Continue →
             </button>
@@ -297,42 +244,53 @@ export default function LungTestPage() {
         )}
 
         {step >= 4 && step <= TOTAL_STEPS && (
-          <div className="text-center">
+          <div style={{ textAlign: "center" }}>
             {showMidAffirm && step === 8 && (
-              <p className="mb-4 rounded-xl border border-[#4ade80]/40 bg-[#4ade80]/10 px-4 py-3 text-sm text-[#86efac] leading-snug">
-                You&apos;re doing great. Most people skip this check for years. You&apos;re already ahead of 80% of people
-                your age.
+              <p style={{
+                marginBottom: 16, padding: "12px 16px", borderRadius: "var(--r-md)",
+                background: "rgba(74,100,34,0.2)", border: "1px solid rgba(74,100,34,0.4)",
+                color: "rgba(162,222,133,0.9)", fontSize: 13, lineHeight: 1.6,
+              }}>
+                You&apos;re doing great. Most people skip this check for years.
               </p>
             )}
-            <p className="text-5xl mb-4" aria-hidden="true">
-              🫁
-            </p>
-            <span className="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold mb-6">
+            <p style={{ fontSize: 52, marginBottom: 12 }}>🫁</p>
+            <span style={{
+              display: "inline-block", padding: "4px 14px", borderRadius: 20,
+              background: "rgba(74,100,34,0.25)", color: "rgba(162,222,133,0.8)",
+              fontSize: 12, fontWeight: 700, marginBottom: 24,
+            }}>
               Question {step - 3} of {QUESTIONS.length}
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug mb-10 px-1">
+            <h2 style={{ color: "#fff", fontSize: "clamp(18px, 3vw, 24px)", marginBottom: 36, lineHeight: 1.4 }}>
               {QUESTIONS[step - 4]}
             </h2>
-            <div className="flex flex-col min-[360px]:flex-row gap-3">
+            <div style={{ display: "flex", gap: 12 }}>
               <button
                 type="button"
                 onClick={() => handleAnswer(step - 4, true)}
-                className={`flex-1 py-5 text-lg font-bold rounded-xl border-2 transition-colors ${
-                  formData.answers[step - 4] === true
-                    ? "bg-red-500 text-white border-red-500"
-                    : "border-red-400 bg-red-50/10 text-white border-red-400/80"
-                }`}
+                style={{
+                  flex: 1, padding: "18px", fontSize: 17, fontWeight: 700,
+                  borderRadius: "var(--r-md)", border: "2px solid",
+                  cursor: "pointer", fontFamily: "var(--font-body)",
+                  borderColor: formData.answers[step - 4] === true ? "#ef4444" : "rgba(239,68,68,0.5)",
+                  background: formData.answers[step - 4] === true ? "#ef4444" : "rgba(239,68,68,0.1)",
+                  color: "#fff",
+                }}
               >
                 😮‍💨 Yes
               </button>
               <button
                 type="button"
                 onClick={() => handleAnswer(step - 4, false)}
-                className={`flex-1 py-5 text-lg font-bold rounded-xl border-2 transition-colors ${
-                  formData.answers[step - 4] === false
-                    ? "bg-green-600 text-white border-green-600"
-                    : "border-green-400 bg-green-50/10 text-white border-green-400/80"
-                }`}
+                style={{
+                  flex: 1, padding: "18px", fontSize: 17, fontWeight: 700,
+                  borderRadius: "var(--r-md)", border: "2px solid",
+                  cursor: "pointer", fontFamily: "var(--font-body)",
+                  borderColor: formData.answers[step - 4] === false ? "var(--rs-olive)" : "rgba(74,100,34,0.5)",
+                  background: formData.answers[step - 4] === false ? "var(--rs-olive)" : "rgba(74,100,34,0.1)",
+                  color: "#fff",
+                }}
               >
                 ✅ No
               </button>
@@ -345,7 +303,11 @@ export default function LungTestPage() {
         <button
           type="button"
           onClick={goBack}
-          className="mt-6 text-gray-500 text-sm bg-transparent border-none cursor-pointer hover:text-gray-300"
+          style={{
+            marginTop: 24, background: "none", border: "none",
+            color: "rgba(255,255,255,0.35)", fontSize: 14, cursor: "pointer",
+            fontFamily: "var(--font-body)",
+          }}
         >
           ← Back
         </button>

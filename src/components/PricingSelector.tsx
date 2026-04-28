@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import type { PlanId, PricingPlan } from "@/lib/product-pricing";
 
 type Props = {
@@ -12,90 +11,83 @@ type Props = {
 export default function PricingSelector({ plans, value, onChange }: Props) {
   const p20 = plans.find((p) => p.id === "20");
   const p60 = plans.find((p) => p.id === "60");
-  const upgradeDelta =
-    p20 && p60 ? Math.max(0, p60.priceRupees - p20.priceRupees) : null;
+  const upgradeDelta = p20 && p60 ? Math.max(0, p60.priceRupees - p20.priceRupees) : null;
 
   return (
-    <div className="product-pricing w-full max-w-full">
-      <div className="flex flex-col md:flex-row md:items-stretch gap-4 md:gap-4">
+    <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {plans.map((plan) => {
           const selected = value === plan.id;
-          const is60 = plan.id === "60";
           const is40 = plan.id === "40";
+          const is60 = plan.id === "60";
 
           return (
-            <div key={plan.id} className="relative flex-1 min-w-0">
+            <div key={plan.id} style={{ position: "relative" }}>
               <button
                 type="button"
                 onClick={() => onChange(plan.id)}
-                className={cn(
-                  "relative w-full text-left rounded-xl border-2 p-4 pt-8 transition-colors min-h-[200px] flex flex-col",
-                  selected
-                    ? "border-green-700 bg-green-50"
-                    : "border-gray-200 bg-white",
-                  is60 && "shadow-[0_0_0_2px_#16a34a]"
-                )}
+                style={{
+                  position: "relative", width: "100%", textAlign: "left",
+                  borderRadius: "var(--r-md)", padding: "20px 16px 16px",
+                  border: `2px solid ${selected ? "var(--rs-olive)" : "var(--rs-sand)"}`,
+                  background: selected ? "rgba(74,100,34,0.06)" : "var(--rs-white)",
+                  cursor: "pointer", fontFamily: "var(--font-body)",
+                  boxShadow: is60 ? "0 0 0 2px var(--rs-olive)" : "none",
+                }}
               >
                 {is40 && (
-                  <span
-                    className="absolute top-2 right-2 rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white sm:text-xs"
-                    aria-hidden="true"
-                  >
-                    MOST POPULAR 🔥
-                  </span>
+                  <span style={{
+                    position: "absolute", top: 8, right: 8,
+                    background: "#f97316", color: "#fff",
+                    fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase",
+                    padding: "3px 8px", borderRadius: 20,
+                  }}>MOST POPULAR 🔥</span>
                 )}
                 {is60 && (
-                  <span
-                    className="absolute top-2 right-2 rounded-full bg-green-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white sm:text-xs"
-                    aria-hidden="true"
-                  >
-                    BEST VALUE 💚
-                  </span>
+                  <span style={{
+                    position: "absolute", top: 8, right: 8,
+                    background: "var(--rs-olive)", color: "var(--rs-cream)",
+                    fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase",
+                    padding: "3px 8px", borderRadius: 20,
+                  }}>BEST VALUE 💚</span>
                 )}
 
-                <p className="text-xs font-bold uppercase tracking-widest text-[var(--brand-gold)]">
+                <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "var(--rs-gold)", textTransform: "uppercase", marginBottom: 4 }}>
                   {plan.title}
                 </p>
-                <p className="mt-1 text-sm text-[var(--brand-dark)]/70">
+                <p style={{ fontSize: 13, color: "var(--rs-text)", marginBottom: 8 }}>
                   {plan.bags} tea bags · {plan.days}-Day Supply
                 </p>
-
-                <div className="mt-3 flex flex-wrap items-baseline gap-2">
-                  <span className="text-2xl font-bold text-[var(--brand-dark)] tabular-nums">
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: "var(--rs-dark)" }}>
                     Rs {plan.priceRupees}
                   </span>
-                  <span className="text-sm line-through text-[var(--brand-dark)]/40 tabular-nums">
+                  <span style={{ fontSize: 13, textDecoration: "line-through", color: "rgba(0,0,0,0.3)" }}>
                     Rs {plan.mrpRupees}
                   </span>
                   {plan.savingsRupees > 0 && (
-                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold text-green-800">
+                    <span style={{
+                      background: "rgba(74,100,34,0.1)", color: "var(--rs-olive)",
+                      fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
+                    }}>
                       Save Rs {plan.savingsRupees}
                     </span>
                   )}
                 </div>
-
-                <p className="mt-2 text-sm font-semibold text-[var(--brand-dark)]">
+                <p style={{ fontSize: 13, fontWeight: 600, color: "var(--rs-dark)", marginBottom: 4 }}>
                   {plan.perDayDisplay}
                 </p>
-
-                <p className="mt-3 text-xs text-[var(--brand-dark)]/65 leading-snug">
+                <p style={{ fontSize: 12, color: "var(--rs-text)", lineHeight: 1.5, marginBottom: 0 }}>
                   {plan.tagline}
                 </p>
-
                 {is60 && (
-                  <>
-                    <p className="mt-3 text-xs text-[var(--brand-dark)]/55 leading-relaxed border-t border-[var(--brand-sage)]/60 pt-3">
-                      ⚡ Ayurvedic results need minimum 60 days — this pack completes your full detox cycle
-                    </p>
-                    <p className="mt-2 text-xs font-medium text-orange-700">
-                      📦 Limited stock available at this price
-                    </p>
-                  </>
+                  <p style={{ fontSize: 11, color: "var(--rs-text)", marginTop: 8, paddingTop: 8, borderTop: "1px solid var(--rs-sand)", lineHeight: 1.5 }}>
+                    ⚡ Ayurvedic results need minimum 60 days — this pack completes your full detox cycle
+                  </p>
                 )}
               </button>
-
               {plan.id === "20" && (
-                <p className="mt-2 text-[11px] leading-snug text-amber-800/90 px-0.5">
+                <p style={{ fontSize: 11, color: "#b45309", marginTop: 4, paddingLeft: 4, lineHeight: 1.5 }}>
                   ⚠️ Most customers need 40–60 days to feel full results
                 </p>
               )}
@@ -105,7 +97,7 @@ export default function PricingSelector({ plans, value, onChange }: Props) {
       </div>
 
       {upgradeDelta !== null && (
-        <p className="mt-4 text-center text-sm text-[var(--brand-dark)]/70 leading-snug px-1 max-w-xl mx-auto">
+        <p style={{ marginTop: 16, textAlign: "center", fontSize: 13, color: "var(--rs-text)", lineHeight: 1.6 }}>
           Going from 20 days to 60 days costs just Rs {upgradeDelta} more — but gives you 3x the results.
         </p>
       )}

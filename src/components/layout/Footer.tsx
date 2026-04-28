@@ -13,7 +13,7 @@ export default function Footer() {
               Premium Ayurvedic lung detox tea crafted from ancient herbs. Breathe clean. Live free.
             </p>
             <p style={{ fontSize: 12, opacity: 0.6 }}>
-              {SITE_CONFIG.companyName}
+              {SITE_CONFIG.company}
               <br />
               {SITE_CONFIG.address.line1}
               <br />

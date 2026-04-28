@@ -3,24 +3,20 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
+const loadingEl = (
+  <div style={{ display: "flex", minHeight: "70svh", alignItems: "center", justifyContent: "center", background: "var(--rs-deep)", padding: "64px 16px" }}>
+    <div style={{ width: 32, height: 32, borderRadius: "50%", border: "4px solid var(--rs-olive)", borderTopColor: "transparent" }} />
+  </div>
+);
+
 const LungTestResultClient = dynamic(() => import("./LungTestResultClient"), {
   ssr: false,
-  loading: () => (
-    <div className="flex min-h-[70svh] items-center justify-center bg-[#061408] px-4 py-16">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#16a34a] border-t-transparent" />
-    </div>
-  ),
+  loading: () => loadingEl,
 });
 
 export default function LungTestResultGate() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[70svh] items-center justify-center bg-[#061408] px-4 py-16">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#16a34a] border-t-transparent" />
-        </div>
-      }
-    >
+    <Suspense fallback={loadingEl}>
       <LungTestResultClient />
     </Suspense>
   );

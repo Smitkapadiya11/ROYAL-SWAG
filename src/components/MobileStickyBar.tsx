@@ -24,7 +24,7 @@ export default function MobileStickyBar(props: {
         bottom: 0,
         left: 0,
         right: 0,
-        background: "#0D3B1F",
+        background: "var(--rs-deep)",
         height: 60,
         zIndex: 9998,
         display: "flex",
@@ -55,7 +55,7 @@ export default function MobileStickyBar(props: {
           id="mobile-sticky-buy-btn"
           onClick={onBuyNow}
           style={{
-            background: "#2d7a2d",
+            background: "var(--rs-olive)",
             color: "#fff",
             padding: "10px 18px",
             borderRadius: 8,
@@ -74,7 +74,7 @@ export default function MobileStickyBar(props: {
           id="mobile-sticky-buy-btn"
           href={href}
           style={{
-            background: "#2d7a2d",
+            background: "var(--rs-olive)",
             color: "#fff",
             padding: "10px 18px",
             borderRadius: 8,

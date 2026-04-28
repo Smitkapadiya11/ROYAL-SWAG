@@ -73,11 +73,11 @@ const founders = [
 // ─── REUSABLE STYLES ─────────────────────────────────────
 const label: React.CSSProperties = {
   fontSize: 11, letterSpacing: 3, textTransform: "uppercase",
-  color: "var(--brand-primary)", marginBottom: 8,
+  color: "var(--rs-olive)", marginBottom: 8,
 };
 const sectionHeading: React.CSSProperties = {
   fontSize: "clamp(22px, 4vw, 32px)",
-  fontWeight: 800, color: "var(--brand-dark)",
+  fontWeight: 800, color: "var(--rs-deep)",
   marginBottom: 16, lineHeight: 1.25,
 };
 
@@ -86,11 +86,11 @@ export default function AboutContent() {
   void SITE_CONFIG; // referenced for config-based info used in the footer CTA
 
   return (
-    <main style={{ background: "#fff", color: "var(--text-primary)" }}>
+    <main style={{ background: "#fff", color: "var(--rs-dark)" }}>
 
       {/* ── HERO ── */}
       <section style={{
-        background: "linear-gradient(135deg, #1A4A1A 0%, #2D6A2D 100%)",
+        background: "linear-gradient(135deg, var(--rs-deep) 0%, var(--rs-olive) 100%)",
         color: "#fff", padding: "64px 24px 48px", textAlign: "center",
       }}>
         <p style={{ fontSize: 12, letterSpacing: 3, opacity: 0.7, marginBottom: 12 }}>
@@ -107,7 +107,7 @@ export default function AboutContent() {
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 32, marginBottom: 40 }}>
           {stats.map((s) => (
             <div key={s.label} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 26, fontWeight: 800, color: "#F5A623" }}>{s.value}</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: "var(--rs-gold)" }}>{s.value}</div>
               <div style={{ fontSize: 12, opacity: 0.7 }}>{s.label}</div>
             </div>
           ))}
@@ -127,7 +127,7 @@ export default function AboutContent() {
       </section>
 
       {/* ── OTT BANNER ── */}
-      <section style={{ background: "#F5A623", padding: "18px 24px", textAlign: "center" }}>
+      <section style={{ background: "var(--rs-gold)", padding: "18px 24px", textAlign: "center" }}>
         <p style={{ margin: 0, fontWeight: 800, fontSize: 15, color: "#1A1A1A" }}>
           🎥 As Seen on Screen —{" "}
           <strong>Mirzapur (Amazon Prime)</strong> · <strong>Dhurndhar (Netflix)</strong>
@@ -142,12 +142,12 @@ export default function AboutContent() {
       <section style={{ maxWidth: 860, margin: "0 auto", padding: "60px 24px" }}>
         <p style={label}>Who We Are</p>
         <h2 style={sectionHeading}>Born in Surat. Built for India&apos;s Lungs.</h2>
-        <p style={{ fontSize: 16, lineHeight: 1.85, color: "var(--text-secondary)", marginBottom: 16 }}>
+        <p style={{ fontSize: 16, lineHeight: 1.85, color: "var(--rs-text)", marginBottom: 16 }}>
           Royal Swag is the flagship wellness brand of Eximburg International Pvt. Ltd. — proudly
           headquartered in Surat, the Growth Capital of India and the diamond &amp; textile powerhouse
           of Gujarat. Founded in 2015, we bring 10 years of Ayurvedic manufacturing expertise.
         </p>
-        <p style={{ fontSize: 16, lineHeight: 1.85, color: "var(--text-secondary)" }}>
+        <p style={{ fontSize: 16, lineHeight: 1.85, color: "var(--rs-text)" }}>
           We started with India&apos;s first research-backed herbal cigarette and have since built a
           complete wellness range — with Lung Detox Tea as our most rigorously developed product.
           Sold on Amazon India, Amazon US, and theroyalswag.com — trusted by buyers across India,
@@ -156,7 +156,7 @@ export default function AboutContent() {
       </section>
 
       {/* ── WHY WE BUILT THIS ── */}
-      <section style={{ background: "var(--brand-light)", padding: "60px 24px" }}>
+      <section style={{ background: "var(--rs-cream)", padding: "60px 24px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <p style={{ ...label, textAlign: "center" }}>Why We Built This</p>
           <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 40 }}>
@@ -166,11 +166,11 @@ export default function AboutContent() {
             {whyBuilt.map((c) => (
               <div key={c.title} style={{
                 background: "#fff", borderRadius: 12, padding: "28px 24px",
-                borderLeft: "4px solid var(--brand-primary)",
+                borderLeft: "4px solid var(--rs-olive)",
               }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>{c.icon}</div>
-                <h3 style={{ fontWeight: 700, color: "var(--brand-dark)", marginBottom: 8, fontSize: 17 }}>{c.title}</h3>
-                <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.75, margin: 0 }}>{c.desc}</p>
+                <h3 style={{ fontWeight: 700, color: "var(--rs-deep)", marginBottom: 8, fontSize: 17 }}>{c.title}</h3>
+                <p style={{ fontSize: 14, color: "var(--rs-text)", lineHeight: 1.75, margin: 0 }}>{c.desc}</p>
               </div>
             ))}
           </div>
@@ -184,10 +184,10 @@ export default function AboutContent() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 36 }}>
           <div>
             <div style={{ fontSize: 32, marginBottom: 12 }}>👥</div>
-            <h3 style={{ fontWeight: 700, color: "var(--brand-dark)", marginBottom: 10, fontSize: 17 }}>
+            <h3 style={{ fontWeight: 700, color: "var(--rs-deep)", marginBottom: 10, fontSize: 17 }}>
               Born from Real Buyer Feedback
             </h3>
-            <p style={{ fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.85 }}>
+            <p style={{ fontSize: 15, color: "var(--rs-text)", lineHeight: 1.85 }}>
               Royal Swag Lung Detox Tea was not created in a boardroom. It was developed directly
               from feedback collected from our existing herbal cigarette customers — real buyers who
               told us exactly what their lungs needed next. After extensive customer trials across
@@ -197,25 +197,25 @@ export default function AboutContent() {
           </div>
           <div>
             <div style={{ fontSize: 32, marginBottom: 12 }}>👨‍⚕️</div>
-            <h3 style={{ fontWeight: 700, color: "var(--brand-dark)", marginBottom: 10, fontSize: 17 }}>
+            <h3 style={{ fontWeight: 700, color: "var(--rs-deep)", marginBottom: 10, fontSize: 17 }}>
               Validated with Medical Guidance
             </h3>
-            <p style={{ fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.85, marginBottom: 16 }}>
+            <p style={{ fontSize: 15, color: "var(--rs-text)", lineHeight: 1.85, marginBottom: 16 }}>
               Before finalising the formula, we consulted qualified Ayurvedic doctors and healthcare
               professionals to validate the herb selection, therapeutic ratios, and safe daily dosage.
               Their clinical input ensured every ingredient serves a defined, evidence-aligned purpose.
             </p>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "var(--brand-dark)", fontStyle: "italic", margin: 0 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "var(--rs-deep)", fontStyle: "italic", margin: 0 }}>
               &ldquo;This is not a marketing product. It is a health product built with clinical respect
               and buyer honesty at its core.&rdquo;
             </p>
           </div>
         </div>
         <div style={{
-          marginTop: 32, background: "var(--brand-light)", borderRadius: 10,
-          padding: "20px 24px", borderLeft: "4px solid var(--brand-primary)",
+          marginTop: 32, background: "var(--rs-cream)", borderRadius: 10,
+          padding: "20px 24px", borderLeft: "4px solid var(--rs-olive)",
         }}>
-          <p style={{ margin: 0, fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.75, fontStyle: "italic" }}>
+          <p style={{ margin: 0, fontSize: 15, color: "var(--rs-text)", lineHeight: 1.75, fontStyle: "italic" }}>
             Most brands launch a product, then find customers. We did the opposite. Our Lung Detox
             Tea formula was stress-tested by real buyers first — and only launched when the results
             earned their approval.
@@ -224,9 +224,9 @@ export default function AboutContent() {
       </section>
 
       {/* ── CERTIFICATIONS ── */}
-      <section style={{ background: "var(--brand-dark)", color: "#fff", padding: "60px 24px" }}>
+      <section style={{ background: "var(--rs-deep)", color: "#fff", padding: "60px 24px" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
-          <p style={{ ...label, color: "#F5A623", textAlign: "center" }}>Quality Standards</p>
+          <p style={{ ...label, color: "var(--rs-gold)", textAlign: "center" }}>Quality Standards</p>
           <h2 style={{ ...sectionHeading, color: "#fff", textAlign: "center", marginBottom: 12 }}>
             Our Manufacturing Standard
           </h2>
@@ -241,7 +241,7 @@ export default function AboutContent() {
                 background: "rgba(255,255,255,0.07)", borderRadius: 8, padding: "16px 20px",
               }}>
                 <span style={{
-                  background: "#F5A623", color: "#1A1A1A", borderRadius: 6,
+                  background: "var(--rs-gold)", color: "#1A1A1A", borderRadius: 6,
                   padding: "4px 12px", fontWeight: 800, fontSize: 11,
                   flexShrink: 0, alignSelf: "center", letterSpacing: 1,
                 }}>
@@ -264,7 +264,7 @@ export default function AboutContent() {
           <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 8 }}>
             The 7-Herb Ayurvedic Formula
           </h2>
-          <p style={{ textAlign: "center", color: "var(--text-secondary)", marginBottom: 40, fontSize: 15 }}>
+          <p style={{ textAlign: "center", color: "var(--rs-text)", marginBottom: 40, fontSize: 15 }}>
             Rooted in the Charaka Samhita — 5,000 years of wisdom. Zero fillers. Zero extracts.
           </p>
           <div style={{
@@ -274,15 +274,15 @@ export default function AboutContent() {
           }}>
             {herbs.map((h, i) => (
               <div key={h.name} style={{
-                background: "var(--brand-light)", borderRadius: 12, padding: "24px 20px",
-                borderTop: "3px solid var(--brand-primary)",
+                background: "var(--rs-cream)", borderRadius: 12, padding: "24px 20px",
+                borderTop: "3px solid var(--rs-olive)",
               }}>
-                <div style={{ fontSize: 11, color: "var(--brand-primary)", fontWeight: 700, marginBottom: 6, letterSpacing: 2 }}>
+                <div style={{ fontSize: 11, color: "var(--rs-olive)", fontWeight: 700, marginBottom: 6, letterSpacing: 2 }}>
                   HERB {String(i + 1).padStart(2, "0")}
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: "var(--brand-dark)", marginBottom: 2 }}>{h.name}</div>
-                <div style={{ fontSize: 12, fontStyle: "italic", color: "var(--text-secondary)", marginBottom: 12 }}>{h.botanical}</div>
-                <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>{h.benefit}</p>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "var(--rs-deep)", marginBottom: 2 }}>{h.name}</div>
+                <div style={{ fontSize: 12, fontStyle: "italic", color: "var(--rs-text)", marginBottom: 12 }}>{h.botanical}</div>
+                <p style={{ fontSize: 14, color: "var(--rs-text)", lineHeight: 1.7, margin: 0 }}>{h.benefit}</p>
               </div>
             ))}
           </div>
@@ -290,7 +290,7 @@ export default function AboutContent() {
       </section>
 
       {/* ── TRUST BULLETS ── */}
-      <section style={{ background: "var(--brand-light)", padding: "60px 24px" }}>
+      <section style={{ background: "var(--rs-cream)", padding: "60px 24px" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
           <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 36 }}>
             Why You Can Trust Royal Swag
@@ -298,8 +298,8 @@ export default function AboutContent() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14 }}>
             {trustPoints.map((point) => (
               <div key={point} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                <span style={{ color: "var(--brand-primary)", fontSize: 18, flexShrink: 0, marginTop: 2, fontWeight: 700 }}>✓</span>
-                <span style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7 }}>{point}</span>
+                <span style={{ color: "var(--rs-olive)", fontSize: 18, flexShrink: 0, marginTop: 2, fontWeight: 700 }}>✓</span>
+                <span style={{ fontSize: 14, color: "var(--rs-text)", lineHeight: 1.7 }}>{point}</span>
               </div>
             ))}
           </div>
@@ -320,24 +320,24 @@ export default function AboutContent() {
           }}>
             {founders.map((f) => (
               <div key={f.name} style={{
-                background: "var(--brand-light)", borderRadius: 16, padding: "36px 28px",
+                background: "var(--rs-cream)", borderRadius: 16, padding: "36px 28px",
                 textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center",
               }}>
                 <div style={{
                   width: 68, height: 68, borderRadius: "50%",
-                  background: "var(--brand-primary)", color: "#fff",
+                  background: "var(--rs-olive)", color: "#fff",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 22, fontWeight: 800, marginBottom: 18, flexShrink: 0,
                 }}>
                   {f.initials}
                 </div>
-                <h3 style={{ fontWeight: 800, color: "var(--brand-dark)", marginBottom: 4, fontSize: 17 }}>
+                <h3 style={{ fontWeight: 800, color: "var(--rs-deep)", marginBottom: 4, fontSize: 17 }}>
                   {f.name}
                 </h3>
-                <p style={{ fontSize: 12, color: "var(--brand-primary)", fontWeight: 700, marginBottom: 16, lineHeight: 1.4 }}>
+                <p style={{ fontSize: 12, color: "var(--rs-olive)", fontWeight: 700, marginBottom: 16, lineHeight: 1.4 }}>
                   {f.role}
                 </p>
-                <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.75, margin: 0 }}>
+                <p style={{ fontSize: 14, color: "var(--rs-text)", lineHeight: 1.75, margin: 0 }}>
                   {f.bio}
                 </p>
               </div>
@@ -348,7 +348,7 @@ export default function AboutContent() {
 
       {/* ── FINAL CTA ── */}
       <section style={{
-        background: "linear-gradient(135deg, #1A4A1A 0%, #2D6A2D 100%)",
+        background: "linear-gradient(135deg, var(--rs-deep) 0%, var(--rs-olive) 100%)",
         color: "#fff", padding: "64px 24px", textAlign: "center",
       }}>
         <h2 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 800, marginBottom: 12 }}>
@@ -362,7 +362,7 @@ export default function AboutContent() {
         </p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/product" style={{
-            background: "#F5A623", color: "#1A1A1A", padding: "15px 36px",
+            background: "var(--rs-gold)", color: "#1A1A1A", padding: "15px 36px",
             borderRadius: 8, fontWeight: 800, fontSize: 17, textDecoration: "none",
           }}>
             Order Now — ₹349 →

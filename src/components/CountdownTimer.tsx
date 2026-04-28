@@ -48,12 +48,12 @@ export default function CountdownTimer() {
 
   return (
     <p
-      className="text-sm font-bold text-red-600 min-h-[1.25rem] max-w-full break-words"
+      style={{ fontSize: 14, fontWeight: 700, color: "#dc2626", minHeight: "1.25rem", wordBreak: "break-word" }}
       aria-live="polite"
       aria-label={`Offer ends in ${time}`}
     >
-      <span className="text-red-600">⏰ Offer ends in: </span>
-      <span className="font-mono tabular-nums text-red-600">{time}</span>
+      <span>⏰ Offer ends in: </span>
+      <span style={{ fontFamily: "monospace" }}>{time}</span>
     </p>
   );
 }

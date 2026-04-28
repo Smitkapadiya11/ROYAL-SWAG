@@ -1,236 +1,148 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef } from "react";
-import StarRating48 from "@/components/conversion/StarRating48";
+import Link from "next/link";
 
 const REVIEWS = [
   {
-    id: "r1",
-    initials: "SP",
-    line: "Sneha Patil, 38, Mumbai",
-    tier: "Was: High Risk",
+    id: "r1",  initials: "SP", line: "Sneha Patil, 38, Mumbai",    tier: "High Risk",
     before: "I lived near a textile belt — stairs left me winded before 11 a.m.",
-    after: "After 4 weeks I climb three floors without pausing. Mornings feel normal again.",
+    after:  "After 4 weeks I climb three floors without pausing. Mornings feel normal again.",
   },
   {
-    id: "r2",
-    initials: "AV",
-    line: "Aditya Verma, 44, Delhi",
-    tier: "Was: Moderate Risk",
+    id: "r2",  initials: "AV", line: "Aditya Verma, 44, Delhi",    tier: "Moderate Risk",
     before: "Every winter I woke up with a rattling chest for hours — I thought it was just Delhi life.",
-    after: "Second year on Royal Swag; by week 2 the morning rattle was half what it used to be.",
+    after:  "Second year on Royal Swag; by week 2 the morning rattle was half what it used to be.",
   },
   {
-    id: "r3",
-    initials: "KN",
-    line: "Kavitha Nair, 41, Bengaluru",
-    tier: "Was: Mild Risk",
-    before: "I assumed it was fancy chai — didn’t expect anything measurable.",
-    after: "Six weeks in, my ENT noted clearer airway readings at follow-up. I’m a convert.",
+    id: "r3",  initials: "KN", line: "Kavitha Nair, 41, Bengaluru", tier: "Mild Risk",
+    before: "I assumed it was fancy chai — didn't expect anything measurable.",
+    after:  "Six weeks in, my ENT noted clearer airway readings at follow-up. I'm a convert.",
   },
   {
-    id: "r4",
-    initials: "VM",
-    line: "Vikram Mehta, 49, Surat",
-    tier: "Was: High Risk",
+    id: "r4",  initials: "VM", line: "Vikram Mehta, 49, Surat",    tier: "High Risk",
     before: "Quit smoking 2 years ago but chest heaviness never left — nothing else moved the needle.",
-    after: "Three weeks of Royal Swag and the weight in my chest finally eased. I tell every ex-smoker I know.",
+    after:  "Three weeks of Royal Swag and the weight in my chest finally eased.",
   },
   {
-    id: "r5",
-    initials: "PS",
-    line: "Pooja Sharma, 36, Ahmedabad",
-    tier: "Was: Moderate Risk",
-    before: "My husband’s mild asthma meant we feared trying anything new without doctor buy-in.",
-    after: "45 days in — fewer rescue inhaler days and more energy. His chest doctor said keep going.",
+    id: "r5",  initials: "PS", line: "Pooja Sharma, 36, Ahmedabad", tier: "Moderate Risk",
+    before: "My husband's mild asthma meant we feared trying anything new without doctor buy-in.",
+    after:  "45 days in — fewer rescue inhaler days and more energy. His chest doctor said keep going.",
   },
   {
-    id: "r6",
-    initials: "RK",
-    line: "Rajesh Kumar, 52, Kanpur",
-    tier: "Was: Mild Risk",
+    id: "r6",  initials: "RK", line: "Rajesh Kumar, 52, Kanpur",   tier: "Mild Risk",
     before: "Kanpur air + sinus pressure wore me down daily; I expected another gimmick.",
-    after: "Symptoms didn’t vanish but they’re manageable now — and I actually like the taste.",
+    after:  "Symptoms didn't vanish but they're manageable now — and I actually like the taste.",
   },
   {
-    id: "r7",
-    initials: "AS",
-    line: "Anita Singh, 35, Lucknow",
-    tier: "Was: High Risk",
-    before: "My father’s spirometry was flat for a year — we’d tried everything else.",
-    after: "Two months of morning tea later, numbers improved. Doctor asked what changed.",
+    id: "r7",  initials: "AS", line: "Anita Singh, 35, Lucknow",   tier: "High Risk",
+    before: "My father's spirometry was flat for a year — we'd tried everything else.",
+    after:  "Two months of morning tea later, numbers improved. Doctor asked what changed.",
   },
   {
-    id: "r8",
-    initials: "SR",
-    line: "Suresh Rao, 47, Chennai",
-    tier: "Was: Moderate Risk",
+    id: "r8",  initials: "SR", line: "Suresh Rao, 47, Chennai",    tier: "Moderate Risk",
     before: "Humidity + paint fumes from work left my chest tight every evening.",
-    after: "Morning + evening cups — I walk off the job site breathing easier than I have in years.",
+    after:  "Morning + evening cups — I walk off the job site breathing easier than I have in years.",
   },
   {
-    id: "r9",
-    initials: "PJ",
-    line: "Priya Joshi, 33, Pune",
-    tier: "Was: Mild Risk",
+    id: "r9",  initials: "PJ", line: "Priya Joshi, 33, Pune",      tier: "Mild Risk",
     before: "March and October allergies owned my calendar — I dreaded the season flip.",
-    after: "I start Royal Swag three weeks early now; the transition barely registers.",
+    after:  "I start Royal Swag three weeks early now; the transition barely registers.",
   },
   {
-    id: "r10",
-    initials: "DG",
-    line: "Deepak Gupta, 51, Jaipur",
-    tier: "Was: High Risk",
+    id: "r10", initials: "DG", line: "Deepak Gupta, 51, Jaipur",   tier: "High Risk",
     before: "Fifteen years around diesel — talking full sentences without coughing felt impossible.",
-    after: "Three months in, people comment on how I sound on calls. Breathing feels deeper.",
+    after:  "Three months in, people comment on how I sound on calls. Breathing feels deeper.",
   },
 ];
 
 export default function ReviewsPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const productRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let ctx: any;
-
-    const init = async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      const lowPerf = window.navigator.hardwareConcurrency <= 4;
-
-      ctx = gsap.context(() => {
-        // Per-card triggers only — batch fires for ALL cards when the first enters,
-        // which leaves every other card at opacity 0 (huge empty gaps on mobile).
-        const cards = gsap.utils.toArray<HTMLElement>(".review-card");
-        cards.forEach((card) => {
-          gsap.fromTo(
-            card,
-            { opacity: 0, y: 24 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.45,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: card,
-                start: "top 92%",
-                once: true,
-              },
-            }
-          );
-        });
-
-        // Product float
-        if (!lowPerf && productRef.current) {
-          gsap.to(productRef.current, {
-            y: -8,
-            duration: 2,
-            yoyo: true,
-            repeat: -1,
-            ease: "power2.out",
-          });
-        }
-      }, containerRef);
-    };
-
-    init();
-    return () => ctx?.revert();
-  }, []);
-
   return (
-    <div
-      ref={containerRef}
-      className="reviews-section relative z-[1] min-h-0 overflow-visible bg-[var(--brand-ivory)] pb-12 pt-6 min-[769px]:pb-20"
-    >
-      <div className="container-rs">
-
-        {/* Header */}
-        <div className="text-center mb-10">
-          <p className="rs-section-label text-[var(--brand-gold)]">
-            Verified Reviews
-          </p>
-          <h1
-            className="text-4xl sm:text-5xl font-bold text-[var(--brand-dark)] mb-4"
-            style={{ fontFamily: "var(--font-playfair)" }}
-          >
-            What Our Customers Say
-          </h1>
-          <p className="text-base text-[var(--brand-dark)]/55">
-            847+ verified reviews · detailed city + age + symptom stories
-          </p>
-        </div>
-
-        {/* Layout: sticky product image + scrolling reviews */}
-        <div className="items-start lg:grid lg:grid-cols-[280px_1fr] lg:gap-10 min-[1200px]:gap-12">
-
-          {/* Sticky product image (desktop) */}
-          <div
-            ref={productRef}
-            className="hidden lg:block sticky top-28 self-start"
-            aria-hidden="true"
-          >
-            <div className="relative aspect-square w-full overflow-hidden rounded-lg border border-[var(--brand-sage)] bg-[var(--brand-sage)]/30 min-[769px]:rounded-xl">
-              <Image
-                src="/images/product/product-3.jpg"
-                alt="Royal Swag Lung Detox Tea"
-                fill
-                className="object-cover"
-                sizes="280px"
-              />
-            </div>
-            <div className="mt-4 text-center">
-              <p className="font-bold text-[var(--brand-dark)] text-sm" style={{ fontFamily: "var(--font-playfair)" }}>
-                Royal Swag Lung Detox Tea
-              </p>
-              <div className="flex justify-center mt-1.5">
-                <StarRating48 />
+    <div style={{ background: "var(--rs-cream)", minHeight: "100vh" }}>
+      {/* Header */}
+      <section style={{ background: "var(--rs-deep)", padding: "64px var(--section-px) 48px", textAlign: "center" }}>
+        <span className="eyebrow" style={{ color: "rgba(196,154,42,0.8)" }}>Verified Reviews</span>
+        <h1 style={{ color: "var(--rs-cream)", marginBottom: 12 }}>
+          What Our Customers Say
+        </h1>
+        <div className="divider divider--center" style={{ background: "var(--rs-gold)" }} />
+        <p style={{ color: "rgba(242,230,206,0.65)", fontSize: 15, marginBottom: 0 }}>
+          847+ verified reviews · real buyers · real breathing results
+        </p>
+        <div style={{ display: "flex", gap: 32, justifyContent: "center", flexWrap: "wrap", marginTop: 32 }}>
+          {[
+            { value: "4.7★", label: "Amazon Rating" },
+            { value: "847+", label: "Verified Reviews" },
+            { value: "10",   label: "Cities Across India" },
+            { value: "30",   label: "Day Guarantee" },
+          ].map((s) => (
+            <div key={s.label} style={{ textAlign: "center" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: 24, fontWeight: 700, color: "var(--rs-gold)" }}>
+                {s.value}
               </div>
-              <p className="text-xs text-[var(--brand-dark)]/40 mt-1">4.7 / 5 · 847+ reviews</p>
+              <div style={{ fontSize: 12, color: "rgba(242,230,206,0.5)", letterSpacing: 0.5 }}>{s.label}</div>
             </div>
-          </div>
+          ))}
+        </div>
+      </section>
 
-          {/* Mobile: single column flex (stable height). md+: two-column grid — avoid multi-column + batch animation gaps. */}
-          <div className="reviews-container flex flex-col gap-5 md:grid md:grid-cols-2 md:gap-6">
+      {/* Reviews grid */}
+      <section className="section section--white">
+        <div className="container">
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: 24,
+          }}>
             {REVIEWS.map(({ id, initials, line, tier, before, after }) => (
-              <article
-                key={id}
-                id={`review-${id}`}
-                className="review-card premium-card-hover relative rounded-2xl border border-[var(--brand-sage)] bg-white p-4 shadow-sm min-[769px]:p-6"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[var(--brand-green)] text-[var(--brand-gold)] font-bold text-xs flex items-center justify-center shrink-0">
+              <article key={id} className="card" style={{ padding: "28px 24px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: "50%",
+                      background: "var(--rs-olive)", color: "var(--rs-gold)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontWeight: 700, fontSize: 13, flexShrink: 0,
+                    }}>
                       {initials}
                     </div>
-                    <div>
-                      <p className="font-semibold text-xs text-[var(--brand-dark)] leading-tight">{line}</p>
-                    </div>
+                    <p style={{ fontWeight: 600, fontSize: 13, color: "var(--rs-dark)", margin: 0 }}>{line}</p>
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-widest bg-[var(--brand-gold)]/10 text-[var(--brand-gold)] px-2 py-1 rounded-full border border-[var(--brand-gold)]/20 shrink-0 ml-2">
+                  <span style={{
+                    fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase",
+                    background: "rgba(196,154,42,0.1)", color: "var(--rs-gold)",
+                    padding: "4px 10px", borderRadius: 20, border: "1px solid rgba(196,154,42,0.2)",
+                    flexShrink: 0, whiteSpace: "nowrap",
+                  }}>
                     {tier}
                   </span>
                 </div>
-                <StarRating48 />
-                <p className="mt-3 text-sm text-[var(--brand-dark)]/60 leading-relaxed">
-                  <span className="font-semibold text-[var(--brand-dark)]/45">Before:</span> {before}
-                </p>
-                <p className="mt-2 text-sm text-[var(--brand-dark)]/80 leading-relaxed">
-                  <span className="font-semibold text-[var(--brand-gold)]">After:</span> {after}
-                </p>
-                <div className="mt-3 flex items-center gap-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                    ✓ Verified Buyer
-                  </span>
+                <div style={{ color: "var(--rs-gold)", fontSize: 16, marginBottom: 14, letterSpacing: 2 }}>
+                  ★★★★★
                 </div>
+                <p style={{ fontSize: 14, color: "var(--rs-text)", lineHeight: 1.7, marginBottom: 10 }}>
+                  <strong style={{ color: "var(--rs-dark)" }}>Before:</strong> {before}
+                </p>
+                <p style={{ fontSize: 14, color: "var(--rs-dark)", lineHeight: 1.7, marginBottom: 14 }}>
+                  <strong style={{ color: "var(--rs-olive)" }}>After:</strong> {after}
+                </p>
+                <span style={{
+                  fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase",
+                  color: "var(--rs-olive)", background: "rgba(74,100,34,0.08)",
+                  padding: "4px 10px", borderRadius: 20,
+                }}>
+                  ✓ Verified Buyer
+                </span>
               </article>
             ))}
           </div>
 
+          <div style={{ textAlign: "center", marginTop: 48 }}>
+            <Link href="/product" className="btn-primary">
+              Order Now — ₹349 →
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

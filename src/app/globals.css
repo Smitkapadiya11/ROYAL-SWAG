@@ -1,365 +1,206 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
-@custom-variant dark (&:is(.dark *));
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-playfair);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-}
-
-/* ━━━ BRAND TOKENS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 :root {
-  /* ── New semantic aliases (tasks 1–9) ── */
-  --brand-primary:  #2D6A2D;
-  --brand-accent:   #F5A623;
-  --brand-light:    #E8F5E9;
-  --brand-urgent:   #C0392B;
-  --text-primary:   #1A1A1A;
-  --text-secondary: #555555;
-  --white:          #FFFFFF;
+  /* ── BRAND COLORS ── */
+  --rs-olive:  #4A6422;
+  --rs-deep:   #2D3D15;
+  --rs-cream:  #F2E6CE;
+  --rs-gold:   #C49A2A;
+  --rs-sand:   #D4C8A8;
+  --rs-text:   #5C5647;
+  --rs-white:  #FFFFFF;
+  --rs-dark:   #1A1A14;
 
-  /* Brand colours */
-  --brand-ivory:  #faf7f2;
-  --brand-green:  #1a3a2a;
-  --brand-gold:   #c9a84c;
-  --brand-sage:   #e8f0ea;
-  --brand-dark:   #1a1a1a;
+  /* ── TYPOGRAPHY ── */
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', -apple-system, sans-serif;
 
-  /* Semantic tokens (OKLCH) */
-  --background:         oklch(98.2% 0.008 88);   /* #faf7f2 */
-  --foreground:         oklch(13%  0.035 152);    /* #1a1a1a */
-  --card:               oklch(99%  0.004 80);
-  --card-foreground:    oklch(13%  0.035 152);
-  --popover:            oklch(99%  0.004 80);
-  --popover-foreground: oklch(13%  0.035 152);
-  --primary:            oklch(22%  0.072 152);    /* #1a3a2a */
-  --primary-foreground: oklch(99%  0     0);
-  --secondary:          oklch(90%  0.018 130);
-  --secondary-foreground: oklch(22% 0.072 152);
-  --muted:              oklch(91%  0.016 130);    /* #e8f0ea */
-  --muted-foreground:   oklch(50%  0.03  145);
-  --accent:             oklch(71%  0.11  78);     /* #c9a84c */
-  --accent-foreground:  oklch(99%  0     0);
-  --destructive:        oklch(60%  0.2   20);
-  --border:             oklch(89%  0.016 130);
-  --input:              oklch(92%  0.012 125);
-  --ring:               oklch(71%  0.11  78);
-  --radius:             1rem;
+  /* ── SPACING ── */
+  --section-py: 96px;
+  --section-px: 24px;
+  --max-w:      1100px;
 
-  /* Sidebar */
-  --sidebar:              oklch(98.2% 0.008 88);
-  --sidebar-foreground:   oklch(13%  0.035 152);
-  --sidebar-primary:      oklch(22%  0.072 152);
-  --sidebar-primary-foreground: oklch(99% 0 0);
-  --sidebar-accent:       oklch(91%  0.016 130);
-  --sidebar-accent-foreground: oklch(22% 0.072 152);
-  --sidebar-border:       oklch(89%  0.016 130);
-  --sidebar-ring:         oklch(71%  0.11  78);
+  /* ── RADIUS ── */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
 }
 
-/* ━━━ BASE TYPOGRAPHY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-@layer base {
-  * {
-    @apply border-border;
-    box-sizing: border-box;
-  }
+html { scroll-behavior: smooth; }
 
-  html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-geist, 'Geist', system-ui, sans-serif);
-    line-height: 1.6;
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-playfair, 'Playfair Display', Georgia, serif);
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-  }
-
-  img, video {
-    max-width: 100%;
-    height: auto;
-  }
-
-  ::selection {
-    background-color: var(--brand-gold);
-    color: #fff;
-  }
-}
-
-/* ━━━ GSAP ANIMATION HELPERS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.will-animate {
-  will-change: transform, opacity;
-}
-
-.animation-done {
-  will-change: auto;
-}
-
-/* Initial hidden state for GSAP — prevents flash */
-.gsap-hidden {
-  opacity: 0;
-  transform: translateY(24px);
-}
-
-/* ━━━ LAYOUT UTILITIES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.container-rs {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .container-rs {
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-}
-
-/* ━━━ SCROLLBAR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--brand-ivory);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--brand-sage);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-green);
-}
-
-html,
 body {
+  font-family: var(--font-body);
+  background: var(--rs-cream);
+  color: var(--rs-text);
+  font-size: 16px;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  color: var(--rs-dark);
+  line-height: 1.2;
+  font-weight: 600;
 }
 
-/* ━━━ PREMIUM SPACING & TYPOGRAPHY ━━━━━━━━━━━━━━━━━━━━━━ */
-.rs-section-label {
+h1 { font-size: clamp(36px, 5vw, 60px); }
+h2 { font-size: clamp(28px, 3.5vw, 42px); }
+h3 { font-size: clamp(18px, 2vw, 22px); }
+
+p { color: var(--rs-text); }
+
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; display: block; }
+
+/* ── UTILITY CLASSES ── */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--section-px);
+}
+
+.section {
+  padding: var(--section-py) 0;
+}
+
+.section--dark {
+  background: var(--rs-deep);
+  color: var(--rs-cream);
+}
+
+.section--olive {
+  background: var(--rs-olive);
+  color: var(--rs-cream);
+}
+
+.section--cream {
+  background: var(--rs-cream);
+}
+
+.section--white {
+  background: var(--rs-white);
+}
+
+/* ── EYEBROW LABEL ── */
+.eyebrow {
+  font-family: var(--font-body);
   font-size: 11px;
+  font-weight: 600;
   letter-spacing: 3px;
-  opacity: 0.7;
-  margin-bottom: 12px;
-  font-weight: 700;
   text-transform: uppercase;
+  color: var(--rs-gold);
+  margin-bottom: 12px;
+  display: block;
 }
 
-/* Primary CTA — scoped (avoid warping every link/button) */
-.rs-cta-primary {
-  min-height: 48px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease,
-    background-color 0.2s ease,
-    color 0.2s ease;
+/* ── BUTTONS ── */
+.btn-primary {
+  display: inline-block;
+  background: var(--rs-olive);
+  color: var(--rs-cream);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 32px;
+  border-radius: var(--r-md);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
 }
-@media (min-width: 769px) {
-  .rs-cta-primary {
-    min-height: 52px;
-  }
+.btn-primary:hover { background: var(--rs-deep); }
+
+.btn-outline {
+  display: inline-block;
+  background: transparent;
+  color: var(--rs-olive);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 13px 32px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--rs-olive);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.rs-cta-primary:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+.btn-outline:hover { background: var(--rs-olive); color: var(--rs-cream); }
+
+.btn-gold {
+  display: inline-block;
+  background: var(--rs-gold);
+  color: var(--rs-deep);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 32px;
+  border-radius: var(--r-md);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.rs-cta-primary:active {
-  transform: translateY(0);
+.btn-gold:hover { opacity: 0.88; }
+
+/* ── DIVIDER ── */
+.divider {
+  width: 48px;
+  height: 2px;
+  background: var(--rs-gold);
+  margin: 16px 0 32px;
+}
+.divider--center { margin: 16px auto 32px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--rs-white);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--rs-sand);
+  overflow: hidden;
 }
 
-/* Gold / ivory CTA variant */
-.rs-cta-gold {
-  min-height: 48px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  box-shadow: 0 4px 16px rgba(201, 168, 76, 0.35);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
-}
-@media (min-width: 769px) {
-  .rs-cta-gold {
-    min-height: 52px;
-  }
-}
-.rs-cta-gold:hover {
-  filter: brightness(1.08);
-  transform: translateY(-2px);
-}
-
-/* Card hover — premium lift (GSAP cards keep their own handlers) */
-.premium-card-hover {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-.premium-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-}
-
-/* Dark green sections — subtle grain */
-.rs-brand-dark-grain {
-  position: relative;
-  isolation: isolate;
-}
-.rs-brand-dark-grain::before {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-}
-.rs-brand-dark-grain > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Navbar scrolled (used with JS toggle) */
-.navbar-rs-scrolled {
-  background-color: rgba(13, 59, 31, 0.95) !important;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
-}
-
-/* Reviews / testimonials: stable mobile stack (no collapsed height / overlap).
-   767px max so we don’t fight Tailwind md: (768px+) grid. */
-@media (max-width: 767px) {
-  .reviews-section {
-    position: relative;
-    z-index: 1;
-    overflow: visible;
-  }
-  .reviews-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow: visible;
-  }
-}
-
-/* Mobile: review / testimonial cards — no phantom height from GSAP transforms */
-@media (max-width: 768px) {
-  .review-card,
-  .testimonial-card {
-    opacity: 1 !important;
-    transform: none !important;
-    position: relative !important;
-  }
-
-  /* Benefits cards — flat (3D hover / batch animations break narrow layouts) */
-  .benefits-section .benefit-card {
-    transform: none !important;
-  }
-  .benefits-section .benefit-card.premium-card-hover:hover {
-    transform: none !important;
-  }
-
-  /* Formula section: real herb cards only (never match .herb-float — that caused layout voids) */
-  .ingredients-section .ingredient-card {
-    transform: none !important;
-  }
-  .ingredients-section .ingredient-card.premium-card-hover:hover {
-    transform: none !important;
-  }
-
-  /* Decorative leaves: hide on small screens so they cannot clip or steal layout */
-  .ingredients-section .herb-float {
-    display: none !important;
-  }
-}
-
-/* ── MARQUEE TRUST STRIP ── */
+/* ── MARQUEE (trust strip) ── */
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-25%); }
 }
 
-/* ── MOBILE FIXES (Tasks 8) ── */
+/* ── MOBILE GLOBALS ── */
 @media (max-width: 768px) {
-
-  /* Reviews: kill stacking/carousel transforms, go flat */
-  [class*="review"], [class*="Review"] {
-    transform: none !important; position: relative !important;
-    width: 100% !important;     height: auto !important;
-    min-height: 0 !important;  opacity: 1 !important;
-    left: auto !important;      top: auto !important;
+  :root {
+    --section-py: 60px;
+    --section-px: 20px;
   }
-  [class*="reviewsContainer"], [class*="reviews-container"] {
-    display: flex !important; flex-direction: column !important;
-    gap: 16px !important;     height: auto !important;
-    min-height: 0 !important; overflow: visible !important;
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Hero — stack vertically */
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Steps — stack vertically */
+  .steps-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Remove all inherited transforms */
+  [class*="review"], [class*="herb"], [class*="card"] {
+    transform: none !important;
     position: relative !important;
+    opacity: 1 !important;
   }
 
-  /* No horizontal overflow anywhere */
   section, main { overflow-x: hidden; max-width: 100vw; }
-
-  /* Minimum tap targets */
   button, a { min-height: 44px; }
-
-  body { font-size: 14px; }
 }

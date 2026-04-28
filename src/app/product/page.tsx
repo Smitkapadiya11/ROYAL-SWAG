@@ -326,6 +326,29 @@ export default function ProductPage() {
 
   return (
     <div className="pb-20 min-[769px]:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: "Royal Swag Lung Detox Tea",
+          image: "https://royalswag.in/images/product/product-1.jpg",
+          description: "7 Ayurvedic herbs for lung detox. FSSAI certified. Free delivery.",
+          brand: { "@type": "Brand", name: "Royal Swag" },
+          offers: {
+            "@type": "Offer",
+            price: "349",
+            priceCurrency: "INR",
+            availability: "https://schema.org/InStock",
+            seller: { "@type": "Organization", name: "Eximburg International Pvt. Ltd." }
+          },
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.7",
+            reviewCount: "847"
+          }
+        })}}
+      />
       {/* ── Hero ── */}
       <section
         ref={introRef}
@@ -460,7 +483,7 @@ export default function ProductPage() {
               />
 
               <p className="mt-4 text-sm text-[var(--brand-dark)]/75 leading-snug">
-                Rs 699 = Rs 23/day = less than one cup of chai from a café. Your lungs work 24 hours a day. This costs
+                ₹349 = Rs 17/day = less than one cup of chai from a café. Your lungs work 24 hours a day. This costs
                 less than your morning snack.
               </p>
               <p className="mt-2 text-sm font-medium text-green-800">

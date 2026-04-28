@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   computeLungTestScore,
   getLungTestRiskBand,
@@ -240,9 +240,36 @@ export default function LungTestResultClient() {
   const [stored, setStored] = useState<LungTestStored | null>(null);
   const [loaded, setLoaded] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     try {
+      // Priority 1: URL params (?score=N&name=...)
+      const urlScore = searchParams?.get("score") ?? null;
+      const urlName = searchParams?.get("name") ?? null;
+      if (urlScore !== null) {
+        const score = parseInt(urlScore, 10);
+        if (!Number.isNaN(score)) {
+          // Build a synthetic stored object from URL params; answers not available
+          // so we approximate by generating a score-consistent answers object
+          const fakeAnswers: AnswersShape = {
+            q1: score >= 1, q2: score >= 2, q3: score >= 3, q4: score >= 4,
+            q5: score >= 5, q6: score >= 6, q7: score >= 7, q8: score >= 8,
+          };
+          setStored({
+            name: urlName ? decodeURIComponent(urlName) : "Friend",
+            email: "",
+            phone: "",
+            score,
+            maxScore: LUNG_TEST_MAX_SCORE,
+            answers: fakeAnswers,
+          });
+          setLoaded(true);
+          return;
+        }
+      }
+
+      // Priority 2: localStorage fallback
       const raw = localStorage.getItem("lungTestResult");
       if (!raw) {
         setStored(null);
@@ -268,7 +295,8 @@ export default function LungTestResultClient() {
     } finally {
       setLoaded(true);
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams?.toString()]);
 
   const maxScore = stored?.maxScore ?? LUNG_TEST_MAX_SCORE;
   const band = useMemo(
@@ -470,7 +498,7 @@ export default function LungTestResultClient() {
             href="/product"
             className="rs-cta-primary mt-5 flex w-full items-center justify-center rounded-xl bg-[#15803d] px-4 py-4 text-center text-base font-bold text-white min-[769px]:min-h-[52px] sm:text-lg"
           >
-            Start My 30-Day Detox — Rs 699 →
+            Start My 30-Day Detox — ₹349 →
           </Link>
 
           <p className="mt-3 text-center text-sm font-semibold text-amber-200/90">

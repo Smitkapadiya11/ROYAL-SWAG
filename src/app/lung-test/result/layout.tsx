@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { pageMetadata } from "@/lib/seo-metadata";
 
-export const metadata: Metadata = pageMetadata("/lung-test/result", {
-  title: "Your Lung Health Results",
+export const metadata: Metadata = {
+  title: "Your Lung Health Results — Royal Swag",
   description:
     "See your lung health risk level, personalised herb cards, and next steps from Royal Swag based on your answers.",
-});
+  alternates: { canonical: "https://royalswag.in/lung-test/result" },
+};
 
 export default function LungTestResultLayout({ children }: { children: ReactNode }) {
   return children;

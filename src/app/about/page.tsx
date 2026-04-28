@@ -1,11 +1,13 @@
+import type { Metadata } from "next";
 import AboutContent from "./AboutContent";
-import { pageMetadata } from "@/lib/seo-metadata";
 
-export const metadata = pageMetadata("/about", {
-  title: "About Royal Swag | Our Story, Mission & Team",
+export const metadata: Metadata = {
+  title: "About Royal Swag | 10 Years Ayurvedic Manufacturing | Surat Gujarat",
   description:
-    "Born in Surat in 2016, Royal Swag was founded to help India breathe better with proven Ayurvedic herbs.",
-});
+    "Founded 2015. AYUSH certified. ISO, GMP, FSSAI certified. Featured in Mirzapur (Amazon Prime) & Dhurndhar (Netflix). 4.7★ on Amazon.",
+  alternates: { canonical: "https://royalswag.in/about" },
+};
+
 export default function AboutPage() {
   return <AboutContent />;
 }

@@ -159,7 +159,7 @@ export default function ReviewsPage() {
             What Our Customers Say
           </h1>
           <p className="text-base text-[var(--brand-dark)]/55">
-            2,400+ verified reviews · detailed city + age + symptom stories
+            847+ verified reviews · detailed city + age + symptom stories
           </p>
         </div>
 
@@ -188,7 +188,7 @@ export default function ReviewsPage() {
               <div className="flex justify-center mt-1.5">
                 <StarRating48 />
               </div>
-              <p className="text-xs text-[var(--brand-dark)]/40 mt-1">4.8 / 5 · 2,400+ reviews</p>
+              <p className="text-xs text-[var(--brand-dark)]/40 mt-1">4.7 / 5 · 847+ reviews</p>
             </div>
           </div>
 

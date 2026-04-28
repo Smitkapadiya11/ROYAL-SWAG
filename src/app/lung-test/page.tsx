@@ -97,7 +97,8 @@ export default function LungTestPage() {
 
     setSubmitting(true);
     window.setTimeout(() => {
-      router.push("/lung-test/result");
+      const name = encodeURIComponent(payload.name || "there");
+      router.push(`/lung-test/result?score=${score}&name=${name}`);
     }, 1000);
   };
 

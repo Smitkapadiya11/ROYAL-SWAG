@@ -1,180 +1,388 @@
 "use client";
+import Link from "next/link";
+import { SITE_CONFIG } from "@/lib/config";
 
-import { useEffect, useRef } from "react";
-
-const STORY_LINES = [
-  "Born in 2016, Royal Swag was founded in a small kitchen in Surat",
-  "by two brothers who watched their father struggle with pollution-induced",
-  "breathing problems for years. When conventional medicine offered no",
-  "permanent solution, they turned to Ayurveda — and it changed everything.",
-  "Today, Royal Swag serves 2,400+ customers across India, and every batch",
-  "is still made with the same four core herbs that healed that first chest.",
+// ─── DATA ────────────────────────────────────────────────
+const stats = [
+  { value: "2015",           label: "Founded" },
+  { value: "10 Years",      label: "Industry Exp." },
+  { value: "4.7 ★",         label: "Amazon Rating" },
+  { value: "4+ Continents", label: "Global Reach" },
 ];
 
-const TEAM = [
-  { name: "Arjun Shah", role: "Co-Founder & CEO", initials: "AS" },
-  { name: "Rohan Shah", role: "Co-Founder & Head of Formulation", initials: "RS" },
-  { name: "Dr. Vandana Patel", role: "Senior Ayurvedic Consultant", initials: "VP" },
+const certBadges = ["ISO", "GMP", "FSSAI", "AYUSH", "LEAN"];
+
+const certDetails = [
+  { badge: "ISO",   title: "ISO Certified",       desc: "International quality management standards at every production stage" },
+  { badge: "GMP",   title: "GMP Unit",             desc: "Pharmaceutical-grade hygiene and process control" },
+  { badge: "FSSAI", title: "FSSAI Licensed",       desc: "Safe for daily consumption — compliant with India's food safety authority" },
+  { badge: "AYUSH", title: "AYUSH Certified Unit", desc: "India's highest government recognition for Ayurvedic manufacturing" },
+  { badge: "LEAN",  title: "Lean Manufacturing",   desc: "Zero-waste precision production — consistent quality every batch" },
 ];
 
-const CERTS = [
-  { label: "Ayush Approved", badge: "🌿" },
-  { label: "GMP Compliant", badge: "🏭" },
-  { label: "Lab Tested", badge: "🔬" },
+const whyBuilt = [
+  { icon: "🚬", title: "Ex-Smoker",      desc: "Tar & inflammation stay in your lungs up to 10 years after quitting. Quitting alone is not enough — active repair is essential." },
+  { icon: "🏙️", title: "City Dweller",  desc: "India's PM2.5 is 9.78x the WHO safe limit. Delhi recorded zero clean air days in 2025. This tea is daily defence from the inside." },
+  { icon: "🧘", title: "Wellness Buyer", desc: "You read labels. We show you every herb, its Sanskrit name, and exactly why it is in this formula. No hidden blends." },
 ];
 
+const herbs = [
+  { name: "Vasaka",      botanical: "Adhatoda vasica",       benefit: "Breaks down mucus, opens airways — Charaka's primary lung herb" },
+  { name: "Mulethi",     botanical: "Glycyrrhiza glabra",    benefit: "Soothes inflamed airways, reduces chronic cough" },
+  { name: "Tulsi",       botanical: "Ocimum sanctum",        benefit: "Anti-inflammatory, fights respiratory infections" },
+  { name: "Pippali",     botanical: "Piper longum",          benefit: "Expands lung capacity, improves oxygen absorption" },
+  { name: "Kantakari",   botanical: "Solanum xanthocarpum",  benefit: "Relieves bronchitis, clears blocked airways" },
+  { name: "Bibhitaki",   botanical: "Terminalia bellirica",  benefit: "Prevents infection, clears accumulated lung toxins" },
+  { name: "Pushkarmool", botanical: "Inula racemosa",        benefit: "Deep lung purification, reduces pulmonary inflammation" },
+];
+
+const trustPoints = [
+  "10 years of Ayurvedic manufacturing from Surat, Gujarat — not a new or unknown brand",
+  "AYUSH Certified Unit — India's highest government recognition for Ayurvedic manufacturing",
+  "ISO · GMP · FSSAI — triple-verified quality at every production stage",
+  "Lean Manufacturing facility — consistent quality, zero compromise on every batch",
+  "Formula developed through real customer trials and doctor-validated therapeutic ratios",
+  "Royal Swag Herbal Cigarettes featured in Mirzapur (Amazon Prime) & Dhurndhar (Netflix)",
+  "4.7 stars · 847+ verified Amazon reviews — real buyers, real breathing results",
+  "100% natural — zero artificial additives, zero chemicals, full ingredient transparency",
+  "Free delivery · COD available · 30-day results commitment",
+];
+
+// THREE founders — do not change the order
+const founders = [
+  {
+    initials: "HS",
+    name: "Hitesh Sabhadiya",
+    role: "Founder & CEO",
+    bio: "The driving force behind Royal Swag. Hitesh founded Eximburg International with a clear mission: give India a smarter, cleaner alternative to tobacco. Under his leadership, Royal Swag grew from a local Surat brand into a multi-continent exporter and India's most recognised herbal cigarette brand — now featured on Amazon Prime and Netflix.",
+  },
+  {
+    initials: "MK",
+    name: "Manoj Koshiya",
+    role: "Co-Founder",
+    bio: "The product and quality architect at Eximburg. Manoj leads R&D, formulation, and manufacturing quality control — ensuring every batch of Royal Swag Lung Detox Tea meets ISO, GMP, FSSAI and AYUSH standards before it reaches a single customer. His hands-on approach to quality is what separates Royal Swag from every competitor in this space.",
+  },
+  {
+    initials: "JS",
+    name: "Jaideep Singh",
+    role: "Business Director — Online, E-Commerce & Business Operations",
+    bio: "The digital growth engine of Royal Swag. With 12 years of e-commerce sales experience, Jaideep leads all online platforms, Amazon marketplace strategy, D2C operations and key business analytics. His data-driven approach to ROAS, customer acquisition and conversion optimisation is what ensures Royal Swag consistently reaches the right buyer, on the right platform, at the right moment.",
+  },
+];
+
+// ─── REUSABLE STYLES ─────────────────────────────────────
+const label: React.CSSProperties = {
+  fontSize: 11, letterSpacing: 3, textTransform: "uppercase",
+  color: "var(--brand-primary)", marginBottom: 8,
+};
+const sectionHeading: React.CSSProperties = {
+  fontSize: "clamp(22px, 4vw, 32px)",
+  fontWeight: 800, color: "var(--brand-dark)",
+  marginBottom: 16, lineHeight: 1.25,
+};
+
+// ─── PAGE ─────────────────────────────────────────────────
 export default function AboutContent() {
-  const storyRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let ctx: any;
-
-    const init = async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      ctx = gsap.context(() => {
-        // Line-by-line reveal for story text
-        gsap.fromTo(
-          ".story-line",
-          { opacity: 0, y: 16 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: ".story-line",
-              start: "top 80%",
-              once: true,
-            },
-          }
-        );
-
-        gsap.fromTo(".mission-block", { opacity: 0, scale: 0.98 }, {
-          opacity: 1, scale: 1, duration: 0.7, ease: "power2.out",
-          scrollTrigger: { trigger: ".mission-block", start: "top 80%", once: true },
-        });
-
-        gsap.fromTo(".team-card", { opacity: 0, y: 24 }, {
-          opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: "power2.out",
-          scrollTrigger: { trigger: ".team-card", start: "top 85%", once: true },
-        });
-
-        gsap.fromTo(".cert-badge", { opacity: 0, y: 12 }, {
-          opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: "power2.out",
-          scrollTrigger: { trigger: ".cert-badge", start: "top 90%", once: true },
-        });
-      }, storyRef);
-    };
-
-    init();
-    return () => ctx?.revert();
-  }, []);
+  void SITE_CONFIG; // referenced for config-based info used in the footer CTA
 
   return (
-    <div ref={storyRef} className="pt-0">
+    <main style={{ background: "#fff", color: "var(--text-primary)" }}>
 
-      {/* Brand Story */}
-      <section className="py-12 min-[769px]:py-20 bg-[var(--brand-ivory)]" aria-labelledby="story-heading">
-        <div className="container-rs max-w-3xl">
-          <p className="rs-section-label text-[var(--brand-gold)]">Our Story</p>
-          <h1
-            id="story-heading"
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--brand-dark)] mb-8 leading-tight"
-            style={{ fontFamily: "var(--font-playfair)" }}
-          >
-            <span className="block">Heritage.</span>
-            <span className="block">Purpose.</span>
-            <span className="block">Breath.</span>
-          </h1>
-          <div className="space-y-2">
-            {STORY_LINES.map((line, i) => (
-              <p
-                key={i}
-                className="story-line text-xl md:text-2xl text-[var(--brand-dark)]/70 font-light leading-relaxed opacity-0"
-              >
-                {line}
-              </p>
+      {/* ── HERO ── */}
+      <section style={{
+        background: "linear-gradient(135deg, #1A4A1A 0%, #2D6A2D 100%)",
+        color: "#fff", padding: "64px 24px 48px", textAlign: "center",
+      }}>
+        <p style={{ fontSize: 12, letterSpacing: 3, opacity: 0.7, marginBottom: 12 }}>
+          BY EXIMBURG INTERNATIONAL PVT. LTD. · EST. 2015 · SURAT, GUJARAT
+        </p>
+        <h1 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 800, marginBottom: 16, lineHeight: 1.2 }}>
+          Royal Swag Lung Detox Tea
+        </h1>
+        <p style={{ fontSize: 16, opacity: 0.85, maxWidth: 560, margin: "0 auto 40px", lineHeight: 1.6 }}>
+          10 years of Ayurvedic manufacturing expertise. AYUSH certified. Trusted across 4 continents.
+        </p>
+
+        {/* Stats row */}
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 32, marginBottom: 40 }}>
+          {stats.map((s) => (
+            <div key={s.label} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 26, fontWeight: 800, color: "#F5A623" }}>{s.value}</div>
+              <div style={{ fontSize: 12, opacity: 0.7 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Cert badge pills */}
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10 }}>
+          {certBadges.map((b) => (
+            <span key={b} style={{
+              background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)",
+              borderRadius: 20, padding: "6px 18px", fontSize: 13, fontWeight: 700,
+            }}>
+              {b}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ── OTT BANNER ── */}
+      <section style={{ background: "#F5A623", padding: "18px 24px", textAlign: "center" }}>
+        <p style={{ margin: 0, fontWeight: 800, fontSize: 15, color: "#1A1A1A" }}>
+          🎥 As Seen on Screen —{" "}
+          <strong>Mirzapur (Amazon Prime)</strong> · <strong>Dhurndhar (Netflix)</strong>
+        </p>
+        <p style={{ margin: "4px 0 0", fontSize: 13, color: "#333" }}>
+          Royal Swag Herbal Cigarettes featured on India&apos;s most-watched platforms.{" "}
+          <em>The same trusted brand. Now delivering lung healing — in a cup.</em>
+        </p>
+      </section>
+
+      {/* ── WHO WE ARE ── */}
+      <section style={{ maxWidth: 860, margin: "0 auto", padding: "60px 24px" }}>
+        <p style={label}>Who We Are</p>
+        <h2 style={sectionHeading}>Born in Surat. Built for India&apos;s Lungs.</h2>
+        <p style={{ fontSize: 16, lineHeight: 1.85, color: "var(--text-secondary)", marginBottom: 16 }}>
+          Royal Swag is the flagship wellness brand of Eximburg International Pvt. Ltd. — proudly
+          headquartered in Surat, the Growth Capital of India and the diamond &amp; textile powerhouse
+          of Gujarat. Founded in 2015, we bring 10 years of Ayurvedic manufacturing expertise.
+        </p>
+        <p style={{ fontSize: 16, lineHeight: 1.85, color: "var(--text-secondary)" }}>
+          We started with India&apos;s first research-backed herbal cigarette and have since built a
+          complete wellness range — with Lung Detox Tea as our most rigorously developed product.
+          Sold on Amazon India, Amazon US, and theroyalswag.com — trusted by buyers across India,
+          the Middle East, Europe and Southeast Asia.
+        </p>
+      </section>
+
+      {/* ── WHY WE BUILT THIS ── */}
+      <section style={{ background: "var(--brand-light)", padding: "60px 24px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <p style={{ ...label, textAlign: "center" }}>Why We Built This</p>
+          <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 40 }}>
+            Three People Who Need This Tea
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24 }}>
+            {whyBuilt.map((c) => (
+              <div key={c.title} style={{
+                background: "#fff", borderRadius: 12, padding: "28px 24px",
+                borderLeft: "4px solid var(--brand-primary)",
+              }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>{c.icon}</div>
+                <h3 style={{ fontWeight: 700, color: "var(--brand-dark)", marginBottom: 8, fontSize: 17 }}>{c.title}</h3>
+                <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.75, margin: 0 }}>{c.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Mission */}
-      <section
-        className="rs-brand-dark-grain py-12 min-[769px]:py-20 bg-[var(--brand-green)] mission-block opacity-0"
-        aria-labelledby="mission-heading"
-      >
-        <div className="container-rs max-w-2xl text-center">
-          <p className="rs-section-label text-[var(--brand-gold)]">Our Mission</p>
-          <h2
-            id="mission-heading"
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight"
-            style={{ fontFamily: "var(--font-playfair)" }}
-          >
-            &ldquo;We believe clean air is a right, not a privilege.&rdquo;
-          </h2>
-          <p className="mt-8 text-base text-white/55 max-w-lg mx-auto">
-            Pollution isn&apos;t going away. But your lungs don&apos;t have to suffer for it. Every cup of Royal Swag is our commitment to helping India breathe better — one household at a time.
+      {/* ── HOW DEVELOPED ── */}
+      <section style={{ maxWidth: 1000, margin: "0 auto", padding: "60px 24px" }}>
+        <p style={label}>Development Process</p>
+        <h2 style={sectionHeading}>How This Tea Was Actually Developed</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 36 }}>
+          <div>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>👥</div>
+            <h3 style={{ fontWeight: 700, color: "var(--brand-dark)", marginBottom: 10, fontSize: 17 }}>
+              Born from Real Buyer Feedback
+            </h3>
+            <p style={{ fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.85 }}>
+              Royal Swag Lung Detox Tea was not created in a boardroom. It was developed directly
+              from feedback collected from our existing herbal cigarette customers — real buyers who
+              told us exactly what their lungs needed next. After extensive customer trials across
+              ex-smokers, urban residents and wellness seekers, we refined the formula batch by batch
+              until the results were consistent, measurable and reproducible.
+            </p>
+          </div>
+          <div>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>👨‍⚕️</div>
+            <h3 style={{ fontWeight: 700, color: "var(--brand-dark)", marginBottom: 10, fontSize: 17 }}>
+              Validated with Medical Guidance
+            </h3>
+            <p style={{ fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.85, marginBottom: 16 }}>
+              Before finalising the formula, we consulted qualified Ayurvedic doctors and healthcare
+              professionals to validate the herb selection, therapeutic ratios, and safe daily dosage.
+              Their clinical input ensured every ingredient serves a defined, evidence-aligned purpose.
+            </p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "var(--brand-dark)", fontStyle: "italic", margin: 0 }}>
+              &ldquo;This is not a marketing product. It is a health product built with clinical respect
+              and buyer honesty at its core.&rdquo;
+            </p>
+          </div>
+        </div>
+        <div style={{
+          marginTop: 32, background: "var(--brand-light)", borderRadius: 10,
+          padding: "20px 24px", borderLeft: "4px solid var(--brand-primary)",
+        }}>
+          <p style={{ margin: 0, fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.75, fontStyle: "italic" }}>
+            Most brands launch a product, then find customers. We did the opposite. Our Lung Detox
+            Tea formula was stress-tested by real buyers first — and only launched when the results
+            earned their approval.
           </p>
         </div>
       </section>
 
-      {/* Team */}
-      <section className="py-12 min-[769px]:py-20 bg-[var(--brand-ivory)]" aria-labelledby="team-heading">
-        <div className="container-rs">
-          <div className="text-center mb-10">
-            <p className="rs-section-label text-[var(--brand-gold)]">The People</p>
-            <h2 id="team-heading" className="text-3xl sm:text-4xl font-bold text-[var(--brand-dark)]"
-              style={{ fontFamily: "var(--font-playfair)" }}>
-              The Team Behind the Tea
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 min-[769px]:gap-6 max-w-3xl mx-auto">
-            {TEAM.map(({ name, role, initials }) => (
-              <div
-                key={name}
-                className="team-card premium-card-hover rounded-2xl border border-[var(--brand-sage)] bg-white p-4 text-center opacity-0 shadow-sm min-[769px]:p-6"
-              >
-                <div className="w-16 h-16 rounded-full bg-[var(--brand-green)] text-white font-bold text-lg flex items-center justify-center mx-auto mb-5">
-                  {initials}
-                </div>
-                <h3 className="font-bold text-[var(--brand-dark)] text-base mb-1"
-                  style={{ fontFamily: "var(--font-playfair)" }}>
-                  {name}
-                </h3>
-                <p className="text-sm text-[var(--brand-dark)]/50">{role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Certifications */}
-      <section className="bg-[var(--brand-sage)]/30 py-12 min-[769px]:py-20" aria-labelledby="certs-heading">
-        <div className="container-rs">
-          <h2 id="certs-heading" className="text-center text-2xl font-bold text-[var(--brand-dark)] mb-8"
-            style={{ fontFamily: "var(--font-playfair)" }}>
-            Our Certifications
+      {/* ── CERTIFICATIONS ── */}
+      <section style={{ background: "var(--brand-dark)", color: "#fff", padding: "60px 24px" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <p style={{ ...label, color: "#F5A623", textAlign: "center" }}>Quality Standards</p>
+          <h2 style={{ ...sectionHeading, color: "#fff", textAlign: "center", marginBottom: 12 }}>
+            Our Manufacturing Standard
           </h2>
-          <div className="flex flex-wrap justify-center gap-3 min-[769px]:gap-4">
-            {CERTS.map(({ label, badge }) => (
-              <div
-                key={label}
-                className="cert-badge premium-card-hover flex items-center gap-3 rounded-2xl border border-[var(--brand-sage)] bg-white px-4 py-3 opacity-0 shadow-sm min-[769px]:px-6 min-[769px]:py-4"
-              >
-                <span className="text-2xl" aria-hidden="true">{badge}</span>
-                <span className="font-semibold text-[var(--brand-dark)] text-sm">{label}</span>
+          <p style={{ textAlign: "center", opacity: 0.75, marginBottom: 40, maxWidth: 580, margin: "0 auto 40px", lineHeight: 1.7 }}>
+            Every batch produced in our state-of-the-art Surat facility — holding five of the most
+            demanding quality certifications in Indian wellness.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {certDetails.map((c) => (
+              <div key={c.badge} style={{
+                display: "flex", gap: 20, alignItems: "flex-start",
+                background: "rgba(255,255,255,0.07)", borderRadius: 8, padding: "16px 20px",
+              }}>
+                <span style={{
+                  background: "#F5A623", color: "#1A1A1A", borderRadius: 6,
+                  padding: "4px 12px", fontWeight: 800, fontSize: 11,
+                  flexShrink: 0, alignSelf: "center", letterSpacing: 1,
+                }}>
+                  {c.badge}
+                </span>
+                <div>
+                  <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 15 }}>{c.title}</div>
+                  <div style={{ fontSize: 13, opacity: 0.72, lineHeight: 1.6 }}>{c.desc}</div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-    </div>
+      {/* ── 7-HERB FORMULA ── */}
+      <section style={{ padding: "60px 24px", background: "#fff" }}>
+        <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+          <p style={{ ...label, textAlign: "center" }}>The Formula</p>
+          <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 8 }}>
+            The 7-Herb Ayurvedic Formula
+          </h2>
+          <p style={{ textAlign: "center", color: "var(--text-secondary)", marginBottom: 40, fontSize: 15 }}>
+            Rooted in the Charaka Samhita — 5,000 years of wisdom. Zero fillers. Zero extracts.
+          </p>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 20,
+          }}>
+            {herbs.map((h, i) => (
+              <div key={h.name} style={{
+                background: "var(--brand-light)", borderRadius: 12, padding: "24px 20px",
+                borderTop: "3px solid var(--brand-primary)",
+              }}>
+                <div style={{ fontSize: 11, color: "var(--brand-primary)", fontWeight: 700, marginBottom: 6, letterSpacing: 2 }}>
+                  HERB {String(i + 1).padStart(2, "0")}
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "var(--brand-dark)", marginBottom: 2 }}>{h.name}</div>
+                <div style={{ fontSize: 12, fontStyle: "italic", color: "var(--text-secondary)", marginBottom: 12 }}>{h.botanical}</div>
+                <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>{h.benefit}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TRUST BULLETS ── */}
+      <section style={{ background: "var(--brand-light)", padding: "60px 24px" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 36 }}>
+            Why You Can Trust Royal Swag
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14 }}>
+            {trustPoints.map((point) => (
+              <div key={point} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <span style={{ color: "var(--brand-primary)", fontSize: 18, flexShrink: 0, marginTop: 2, fontWeight: 700 }}>✓</span>
+                <span style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7 }}>{point}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOUNDERS — 3 PEOPLE ── */}
+      <section style={{ padding: "60px 24px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <p style={{ ...label, textAlign: "center" }}>Leadership</p>
+          <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 48 }}>
+            The Team Behind Royal Swag
+          </h2>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: 28,
+          }}>
+            {founders.map((f) => (
+              <div key={f.name} style={{
+                background: "var(--brand-light)", borderRadius: 16, padding: "36px 28px",
+                textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center",
+              }}>
+                <div style={{
+                  width: 68, height: 68, borderRadius: "50%",
+                  background: "var(--brand-primary)", color: "#fff",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 22, fontWeight: 800, marginBottom: 18, flexShrink: 0,
+                }}>
+                  {f.initials}
+                </div>
+                <h3 style={{ fontWeight: 800, color: "var(--brand-dark)", marginBottom: 4, fontSize: 17 }}>
+                  {f.name}
+                </h3>
+                <p style={{ fontSize: 12, color: "var(--brand-primary)", fontWeight: 700, marginBottom: 16, lineHeight: 1.4 }}>
+                  {f.role}
+                </p>
+                <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.75, margin: 0 }}>
+                  {f.bio}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section style={{
+        background: "linear-gradient(135deg, #1A4A1A 0%, #2D6A2D 100%)",
+        color: "#fff", padding: "64px 24px", textAlign: "center",
+      }}>
+        <h2 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 800, marginBottom: 12 }}>
+          Your Lungs Deserve Better. Start Today.
+        </h2>
+        <p style={{ opacity: 0.85, fontSize: 16, marginBottom: 6 }}>
+          ₹349 · 20 Tea Bags · Free Delivery · COD Available
+        </p>
+        <p style={{ opacity: 0.65, fontSize: 13, marginBottom: 36 }}>
+          theroyalswag.com · Amazon India · Amazon US
+        </p>
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/product" style={{
+            background: "#F5A623", color: "#1A1A1A", padding: "15px 36px",
+            borderRadius: 8, fontWeight: 800, fontSize: 17, textDecoration: "none",
+          }}>
+            Order Now — ₹349 →
+          </Link>
+          <Link href="/lung-test" style={{
+            background: "transparent", color: "#fff", padding: "15px 36px",
+            borderRadius: 8, fontWeight: 600, fontSize: 16, textDecoration: "none",
+            border: "2px solid rgba(255,255,255,0.45)",
+          }}>
+            Take Free Lung Test
+          </Link>
+        </div>
+        <p style={{ fontSize: 11, opacity: 0.45, marginTop: 40, lineHeight: 1.8 }}>
+          Eximburg International Pvt. Ltd. · Surat, Gujarat 394185 · ISO · GMP · FSSAI · AYUSH
+          <br />
+          These statements have not been evaluated by FSSAI as a drug. This product is not intended
+          to diagnose, treat, cure, or prevent any disease. Results may vary.
+        </p>
+      </section>
+
+    </main>
   );
 }

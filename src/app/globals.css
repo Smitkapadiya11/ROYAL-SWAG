@@ -44,6 +44,15 @@
 
 /* ━━━ BRAND TOKENS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 :root {
+  /* ── New semantic aliases (tasks 1–9) ── */
+  --brand-primary:  #2D6A2D;
+  --brand-accent:   #F5A623;
+  --brand-light:    #E8F5E9;
+  --brand-urgent:   #C0392B;
+  --text-primary:   #1A1A1A;
+  --text-secondary: #555555;
+  --white:          #FFFFFF;
+
   /* Brand colours */
   --brand-ivory:  #faf7f2;
   --brand-green:  #1a3a2a;
@@ -321,4 +330,36 @@ body {
   .ingredients-section .herb-float {
     display: none !important;
   }
+}
+
+/* ── MARQUEE TRUST STRIP ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-25%); }
+}
+
+/* ── MOBILE FIXES (Tasks 8) ── */
+@media (max-width: 768px) {
+
+  /* Reviews: kill stacking/carousel transforms, go flat */
+  [class*="review"], [class*="Review"] {
+    transform: none !important; position: relative !important;
+    width: 100% !important;     height: auto !important;
+    min-height: 0 !important;  opacity: 1 !important;
+    left: auto !important;      top: auto !important;
+  }
+  [class*="reviewsContainer"], [class*="reviews-container"] {
+    display: flex !important; flex-direction: column !important;
+    gap: 16px !important;     height: auto !important;
+    min-height: 0 !important; overflow: visible !important;
+    position: relative !important;
+  }
+
+  /* No horizontal overflow anywhere */
+  section, main { overflow-x: hidden; max-width: 100vw; }
+
+  /* Minimum tap targets */
+  button, a { min-height: 44px; }
+
+  body { font-size: 14px; }
 }

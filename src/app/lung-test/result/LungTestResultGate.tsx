@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
 const LungTestResultClient = dynamic(() => import("./LungTestResultClient"), {
@@ -12,5 +13,15 @@ const LungTestResultClient = dynamic(() => import("./LungTestResultClient"), {
 });
 
 export default function LungTestResultGate() {
-  return <LungTestResultClient />;
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[70svh] items-center justify-center bg-[#061408] px-4 py-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#16a34a] border-t-transparent" />
+        </div>
+      }
+    >
+      <LungTestResultClient />
+    </Suspense>
+  );
 }

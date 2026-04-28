@@ -53,7 +53,7 @@ export default function ScrollDepthReminder() {
         ✕
       </button>
       <p className="pr-8 text-xs text-white/90 leading-snug">
-        Still reading? {DETOX_COUNTER_TARGET.toLocaleString("en-IN")} Indians have already started their detox. Rs 699 ·
+        Still reading? {DETOX_COUNTER_TARGET.toLocaleString("en-IN")} Indians have already started their detox. ₹349 ·
         Free delivery · 30-day guarantee
       </p>
       <Link

@@ -8,7 +8,7 @@ export default function Footer() {
           {/* Brand */}
           <div style={{ flex: "1 1 220px" }}>
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>ROYAL SWAG</div>
-            <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 12 }}>estd. 2016</div>
+            <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 12 }}>estd. {SITE_CONFIG.founded}</div>
             <p style={{ fontSize: 13, opacity: 0.8, lineHeight: 1.6, marginBottom: 8 }}>
               Premium Ayurvedic lung detox tea crafted from ancient herbs. Breathe clean. Live free.
             </p>
@@ -86,6 +86,12 @@ export default function Footer() {
           ))}
         </div>
 
+        {/* Legal disclaimer */}
+        <p style={{ fontSize: 11, opacity: 0.45, lineHeight: 1.7, marginBottom: 16 }}>
+          These statements have not been evaluated by FSSAI as a drug. This product is not intended
+          to diagnose, treat, cure, or prevent any disease. Results may vary.
+        </p>
+
         {/* Bottom Bar */}
         <div
           style={{
@@ -99,7 +105,7 @@ export default function Footer() {
           }}
         >
           <p style={{ fontSize: 12, opacity: 0.6, margin: 0 }}>
-            © 2016–2026 Royal Swag. All rights reserved.
+            © {SITE_CONFIG.founded}–2026 Royal Swag. All rights reserved.
           </p>
           <div style={{ display: "flex", gap: 16 }}>
             <a

@@ -31,6 +31,27 @@ const INGREDIENTS = [
     badge: "The Reviver",
     desc: "Long pepper that supercharges oxygen uptake, burns toxins, and restores the energy lost to poor respiratory function.",
   },
+  {
+    id: "kantakari",
+    name: "Kantakari",
+    sanskrit: "Solanum xanthocarpum",
+    badge: "The Airway Clearer",
+    desc: "Relieves bronchitis and clears blocked airways. Used in classical Ayurveda for chest congestion and respiratory obstruction.",
+  },
+  {
+    id: "bibhitaki",
+    name: "Bibhitaki",
+    sanskrit: "Terminalia bellirica",
+    badge: "The Protector",
+    desc: "Prevents respiratory infections and clears accumulated lung toxins. A cornerstone herb of Ayurvedic lung therapy.",
+  },
+  {
+    id: "pushkarmool",
+    name: "Pushkarmool",
+    sanskrit: "Inula racemosa",
+    badge: "The Deep Cleanser",
+    desc: "Deep lung purification and reduction of pulmonary inflammation. Traditionally prescribed for severe respiratory conditions.",
+  },
 ];
 
 export default function IngredientsSection() {
@@ -150,11 +171,11 @@ export default function IngredientsSection() {
             <div className="ingredients-underline absolute -bottom-3 left-0 w-full h-[3px] bg-[var(--brand-gold)] opacity-50 block" />
           </div>
           <p className="ingredients-title mt-4 text-base text-[var(--brand-dark)]/55 max-w-lg mx-auto">
-            Four centuries-old Ayurvedic herbs, precisely combined for the polluted world we live in.
+            Seven centuries-old Ayurvedic herbs, precisely combined for the polluted world we live in.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-[769px]:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-[769px]:gap-6">
           {INGREDIENTS.map(({ id, name, sanskrit, badge, desc }) => (
             <div
               key={id}

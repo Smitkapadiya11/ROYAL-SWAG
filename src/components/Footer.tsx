@@ -29,16 +29,16 @@ export default function Footer() {
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
             <div style={{
               width: 44, height: 44, borderRadius: "50%",
-              background: "rgba(255,255,255,0.08)",
-              border: "1.5px solid rgba(196,154,42,0.3)",
+              background: "#F2E6CE",
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
             }}>
               <Image
                 src="/images/royal-swag-logo.png"
                 alt="Royal Swag"
-                width={26} height={26}
-                style={{ filter: "brightness(0) invert(1)", opacity: 0.8, objectFit: "contain" }}
+                width={30} height={30}
+                style={{ objectFit: "contain", width: 30, height: 30 }}
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>

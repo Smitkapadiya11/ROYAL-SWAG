@@ -42,40 +42,36 @@ export default function Nav() {
           {/* Logo */}
           <Link href="/" style={{
             display: "flex", alignItems: "center",
-            gap: 12, textDecoration: "none", flexShrink: 0,
+            gap: 14, textDecoration: "none", flexShrink: 0,
+            height: "100%", paddingTop: 4, paddingBottom: 4,
           }}>
             <div style={{
               width: 48, height: 48,
-              background: "rgba(255,255,255,0.08)",
               borderRadius: "50%",
+              background: "#F2E6CE",
               display: "flex", alignItems: "center", justifyContent: "center",
-              border: "1.5px solid rgba(196,154,42,0.4)",
               flexShrink: 0,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
             }}>
               <Image
                 src="/images/royal-swag-logo.png"
                 alt="Royal Swag"
-                width={30}
-                height={30}
+                width={36}
+                height={36}
                 priority
-                style={{
-                  filter: "brightness(0) invert(1)",
-                  opacity: 0.95,
-                  objectFit: "contain",
-                }}
+                style={{ objectFit: "contain", width: 36, height: 36 }}
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
               <span style={{
                 fontFamily: "var(--ff-head)",
-                fontSize: 18, fontWeight: 600,
+                fontSize: 17, fontWeight: 700,
                 color: "#F2E6CE", letterSpacing: "2.5px",
               }}>ROYAL SWAG</span>
               <span style={{
-                fontSize: 9,
-                color: "rgba(196,154,42,0.7)",
-                letterSpacing: "2px",
-                marginTop: 4,
+                fontSize: 9, fontWeight: 500,
+                color: "rgba(242,230,206,0.55)",
+                letterSpacing: "3px", marginTop: 2,
               }}>ESTD 2015</span>
             </div>
           </Link>

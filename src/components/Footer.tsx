@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { S } from "@/lib/config";
 
 export default function Footer() {
@@ -32,11 +33,12 @@ export default function Footer() {
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
             }}>
-              <img
+              <Image
                 src="/images/royal-swag-logo.png"
                 alt="Royal Swag"
-                width={32} height={32}
-                style={{ width: 32, height: 32, objectFit: "contain", display: "block" }}
+                width={32}
+                height={32}
+                style={{ objectFit: "contain", display: "block" }}
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -46,7 +48,7 @@ export default function Footer() {
                 color: "#F2E6CE", letterSpacing: "2px",
               }}>ROYAL SWAG</span>
               <span style={{ fontSize: 9, color: "rgba(242,230,206,0.45)", letterSpacing: "2.5px" }}>
-                ESTD 2015
+                ESTD 2016
               </span>
             </div>
           </div>
@@ -131,7 +133,7 @@ export default function Footer() {
           display: "flex", justifyContent: "space-between",
           flexWrap: "wrap", gap: 12, alignItems: "center",
         }}>
-          <p style={{ fontSize: 12 }}>© 2015–2026 {S.company}</p>
+          <p style={{ fontSize: 12 }}>© 2016–2026 {S.company}</p>
           <div style={{ display: "flex", gap: 24 }}>
             <Link href="/privacy" style={{ fontSize: 12 }}>Privacy</Link>
             <Link href="/terms" style={{ fontSize: 12 }}>Terms</Link>

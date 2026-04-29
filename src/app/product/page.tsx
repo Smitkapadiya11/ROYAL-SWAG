@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { S } from "@/lib/config";
 import RazorpayButton from "@/components/RazorpayButton";
 
@@ -16,6 +15,8 @@ const PRODUCT_IMAGES = [
   "/images/product-1.jpg",
   "/images/product-3.jpg",
   "/images/product-4.jpg",
+  "/images/product-10.jpg",
+  "/images/product-11.jpg",
 ];
 
 export default function ProductPage() {
@@ -148,7 +149,8 @@ export default function ProductPage() {
                 Royal Swag Lung Detox Tea
               </h1>
               <p style={{ fontSize: 14, color: "#5C5647", marginBottom: 20 }}>
-                7 Ayurvedic herbs. Zero fillers. Zero extracts. Charaka Samhita formulation.
+                7 Ayurvedic herbs. No fillers. No extracts. Rooted in the Charaka Samhita.
+                Brewed for India&apos;s lungs.
               </p>
 
               {/* Countdown */}
@@ -496,24 +498,27 @@ export default function ProductPage() {
             <h2>The 7-Herb Formula</h2>
             <div className="rl-c" />
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {S.herbs.map(h => (
               <div key={h.id} style={{
-                display: "flex", gap: 14, alignItems: "flex-start",
-                padding: "14px 0",
-                borderBottom: "1px solid rgba(212,200,168,0.4)",
+                display: "flex", gap: 16, alignItems: "center",
+                padding: "12px 16px",
+                background: "#fff",
+                borderRadius: 10,
               }}>
                 <div style={{
-                  width: 56, height: 56, borderRadius: 6,
+                  width: 52, height: 52, borderRadius: "50%",
                   overflow: "hidden", flexShrink: 0, position: "relative",
+                  boxShadow: "0 2px 8px rgba(74,100,34,0.12)",
+                  background: "#F9F6F0",
                 }}>
                   <Image src={h.img} alt={h.name} fill
-                    style={{ objectFit: "cover" }} sizes="56px" />
+                    style={{ objectFit: "cover" }} sizes="52px" />
                 </div>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#1A1A14", marginBottom: 2 }}>{h.name}</p>
-                  <p style={{ fontSize: 11, fontStyle: "italic", color: "#aaa", marginBottom: 4 }}>{h.bot}</p>
-                  <p style={{ fontSize: 12, color: "#5C5647", lineHeight: 1.6 }}>{h.benefit}</p>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A14", marginBottom: 1 }}>{h.name}</p>
+                  <p style={{ fontSize: 11, fontStyle: "italic", color: "#bbb", marginBottom: 3 }}>{h.bot}</p>
+                  <p style={{ fontSize: 12, color: "#5C5647", lineHeight: 1.6, margin: 0 }}>{h.benefit}</p>
                 </div>
               </div>
             ))}

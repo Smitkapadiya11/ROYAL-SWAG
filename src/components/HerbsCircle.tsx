@@ -2,18 +2,19 @@ import Image from "next/image";
 import { S } from "@/lib/config";
 
 /**
- * 7-herb showcase in a radial flower grid.
- * Desktop: center hub + 6 surrounding, 7th spans full.
- * Mobile: 2-column circular cards.
+ * 7-herb showcase.
+ * Images clipped into clean round shapes on pure white backgrounds.
+ * Borderless, modern card layout.
  */
 export default function HerbsCircle() {
   return (
     <section style={{
-      background: "transparent", padding: "80px 0",
+      background: "#fff",
+      padding: "88px 0",
       borderTop: "1px solid rgba(212,200,168,0.5)",
     }} id="herbs">
       <div className="w">
-        <div style={{ textAlign: "center", marginBottom: 60 }}>
+        <div style={{ textAlign: "center", marginBottom: 64 }}>
           <span className="ey">The Formula</span>
           <h2>
             Seven Herbs.<br />
@@ -21,30 +22,30 @@ export default function HerbsCircle() {
           </h2>
           <div className="rl-c" />
           <p style={{
-            maxWidth: 400, margin: "0 auto",
-            fontSize: 15, color: "#5C5647",
+            maxWidth: 420, margin: "0 auto",
+            fontSize: 15, color: "#5C5647", lineHeight: 1.75,
           }}>
-            No extracts. No fillers. Every herb chosen for one specific reason.
+            No extracts. No fillers. Every herb chosen for exactly one reason —
+            because your lungs deserve the real thing.
           </p>
         </div>
 
-        {/* ── Flower grid ── */}
+        {/* ── Grid: 3 columns, 7th full-width ── */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",
-          gridTemplateRows: "auto",
-          gap: 20,
-          maxWidth: 860,
+          gap: 28,
+          maxWidth: 900,
           margin: "0 auto",
         }} id="herbs-grid">
 
-          {S.herbs.slice(0, 6).map((h, i) => (
-            <HerbCard key={h.id} h={h} index={i} />
+          {S.herbs.slice(0, 6).map((h) => (
+            <HerbCard key={h.id} h={h} />
           ))}
 
           {/* 7th herb — full width */}
           <div style={{ gridColumn: "1 / -1" }}>
-            <HerbCard h={S.herbs[6]} index={6} wide />
+            <HerbCard h={S.herbs[6]} wide />
           </div>
         </div>
       </div>
@@ -53,7 +54,7 @@ export default function HerbsCircle() {
         @media (max-width: 640px) {
           #herbs-grid {
             grid-template-columns: 1fr 1fr !important;
-            gap: 12px !important;
+            gap: 16px !important;
           }
           #herbs-grid > div:last-child {
             grid-column: 1 / -1 !important;
@@ -65,65 +66,71 @@ export default function HerbsCircle() {
 }
 
 function HerbCard({
-  h, index, wide,
+  h, wide,
 }: {
   h: typeof import("@/lib/config").S.herbs[number];
-  index: number;
   wide?: boolean;
 }) {
   return (
     <div style={{
       background: "#fff",
-      borderRadius: 14,
-      border: "1px solid #D4C8A8",
+      borderRadius: 18,
       overflow: "hidden",
       display: "flex",
       flexDirection: wide ? "row" : "column",
       alignItems: wide ? "center" : "flex-start",
-      gap: wide ? 24 : 0,
+      gap: wide ? 32 : 0,
+      boxShadow: "0 2px 20px rgba(45,61,21,0.07)",
     }}>
-      {/* Image */}
+      {/* ── Round herb image on white background ── */}
       <div style={{
-        position: "relative",
-        width: wide ? 220 : "100%",
-        aspectRatio: wide ? "4/3" : "4/3",
-        background: "#F2E6CE",
+        width: wide ? 160 : "100%",
         flexShrink: 0,
-        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: wide ? "28px 0 28px 28px" : "28px 28px 0",
       }}>
-        <Image
-          src={h.img}
-          alt={h.name}
-          fill
-          sizes={wide ? "220px" : "(max-width:640px) 50vw, 280px"}
-          style={{ objectFit: "cover" }}
-        />
         <div style={{
-          position: "absolute", top: 10, left: 10,
-          background: "#2D3D15", color: "#C49A2A",
-          fontSize: 9, fontWeight: 700, letterSpacing: 2,
-          padding: "3px 8px", borderRadius: 4,
+          width: wide ? 120 : 96,
+          height: wide ? 120 : 96,
+          borderRadius: "50%",
+          overflow: "hidden",
+          background: "#F9F6F0",
+          border: "3px solid #F2E6CE",
+          position: "relative",
+          flexShrink: 0,
+          boxShadow: "0 4px 16px rgba(74,100,34,0.12)",
         }}>
-          {String(index + 1).padStart(2, "0")}
+          <Image
+            src={h.img}
+            alt={h.name}
+            fill
+            sizes={wide ? "120px" : "96px"}
+            style={{ objectFit: "cover" }}
+          />
         </div>
       </div>
 
-      {/* Text */}
-      <div style={{ padding: wide ? "0 24px 0 0" : "18px 18px 22px" }}>
+      {/* ── Text ── */}
+      <div style={{
+        padding: wide ? "28px 28px 28px 0" : "16px 24px 28px",
+        flex: 1,
+      }}>
         <span style={{
-          fontSize: 9, letterSpacing: 2.5, fontWeight: 600,
+          fontSize: 9, letterSpacing: 2.5, fontWeight: 700,
           color: "#C49A2A", textTransform: "uppercase" as const,
-          display: "block", marginBottom: 4,
+          display: "block", marginBottom: 6,
         }}>{h.role}</span>
         <h3 style={{
-          fontSize: 17, marginBottom: 2, color: "#1A1A14",
+          fontSize: wide ? 20 : 16, marginBottom: 2, color: "#1A1A14", fontWeight: 700,
         }}>{h.name}</h3>
         <p style={{
           fontSize: 11, fontStyle: "italic",
-          color: "#aaa", marginBottom: 8,
+          color: "#999", marginBottom: 10, lineHeight: 1.4,
         }}>{h.bot}</p>
         <p style={{
-          fontSize: 13, lineHeight: 1.65, color: "#5C5647",
+          fontSize: 13, lineHeight: 1.7, color: "#5C5647",
         }}>{h.benefit}</p>
       </div>
     </div>

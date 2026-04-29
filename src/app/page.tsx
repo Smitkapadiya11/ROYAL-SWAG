@@ -22,13 +22,14 @@ export default function Home() {
               <h1 style={{ color: "#2D3D15", marginBottom: 4, letterSpacing: "-0.5px" }}>
                 Your lungs work hard.<br />
                 <em style={{ fontStyle: "italic", color: "#4A6422" }}>
-                  Give them a hand.
+                  Give them a break.
                 </em>
               </h1>
               <div className="rl" />
               <p style={{ fontSize: 17, maxWidth: 400, marginBottom: 28, color: "#5C5647", lineHeight: 1.75 }}>
-                7 herbs your lungs have been waiting for — because every day in India,
-                your lungs absorb what they were never built to handle.
+                7 Ayurvedic herbs, a cup a day — because every morning in India,
+                your lungs absorb what they were never designed to handle.
+                Time to actually do something about it.
               </p>
 
               {/* Price badge */}
@@ -223,50 +224,22 @@ export default function Home() {
         `}</style>
       </section>
 
-      {/* ══ DETOX BRIDGE ════════════════════════════════════════════ */}
-      <section style={{
-        background: "#F2E6CE",
-        padding: "88px 0",
-        borderTop: "1px solid rgba(212,200,168,0.4)",
-        textAlign: "center",
-      }}>
-        <div className="w">
-          <span className="ey">The goal</span>
-          <h2 style={{ color: "#2D3D15", maxWidth: 640, margin: "0 auto 16px" }}>
-            Detox your lungs.<br />
-            <em style={{ fontStyle: "italic", color: "#4A6422" }}>
-              Land on the healthy side.
-            </em>
-          </h2>
-          <div className="rl-c" />
-          <p style={{
-            fontSize: 17, color: "#5C5647",
-            maxWidth: 460, margin: "0 auto 36px", lineHeight: 1.8,
-          }}>
-            Two versions of your lungs exist.
-            Which one you end up with depends entirely on what you do
-            in the next 30 days.
-          </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/product" className="btn btn-olive">Start My 30-Day Detox →</a>
-            <a href="/lung-test" className="btn btn-ghost">Test My Lungs First</a>
-          </div>
-        </div>
-      </section>
-
-      {/* ══ MADE FOR ════════════════════════════════════════════════ */}
+      {/* ══ MADE FOR (includes Detox Bridge heading) ═══════════════ */}
       <MadeFor />
 
       {/* ═══ 8. FINAL CTA ══════════════════════════════════════════ */}
-      <section style={{ background: "#2D3D15", padding: "80px 0", textAlign: "center" }}>
+      <section style={{ background: "#2D3D15", padding: "88px 0", textAlign: "center" }}>
         <div className="w">
           <span className="ey" style={{ color: "rgba(196,154,42,0.7)" }}>Start Today</span>
           <h2 style={{ color: "#F2E6CE", maxWidth: 520, margin: "0 auto 16px" }}>
             Your Lungs Have<br />Waited Long Enough.
           </h2>
           <div className="rl-c" style={{ background: "#C49A2A" }} />
-          <p style={{ color: "rgba(242,230,206,0.72)", fontSize: 16, marginBottom: 32 }}>
+          <p style={{ color: "rgba(242,230,206,0.72)", fontSize: 16, marginBottom: 8 }}>
             {S.price.now} · 20 Tea Bags · Free Delivery · COD Available
+          </p>
+          <p style={{ color: "rgba(242,230,206,0.45)", fontSize: 13, marginBottom: 36 }}>
+            Ships within 24 hours · 30-day money-back guarantee
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/product" className="b b-gold">Order Now — {S.price.now} →</Link>

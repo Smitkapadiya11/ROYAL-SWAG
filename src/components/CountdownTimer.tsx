@@ -3,20 +3,20 @@
 import { useEffect, useState } from "react";
 
 function useCountdown(hours: number) {
-  const getTarget = () => {
-    const stored = localStorage.getItem("rs_timer_target");
-    if (stored) {
-      const t = parseInt(stored, 10);
-      if (t > Date.now()) return t;
-    }
-    const t = Date.now() + hours * 60 * 60 * 1000;
-    localStorage.setItem("rs_timer_target", t.toString());
-    return t;
-  };
-
   const [display, setDisplay] = useState("00:00:00");
 
   useEffect(() => {
+    const getTarget = () => {
+      const stored = localStorage.getItem("rs_timer_target");
+      if (stored) {
+        const t = parseInt(stored, 10);
+        if (t > Date.now()) return t;
+      }
+      const t = Date.now() + hours * 60 * 60 * 1000;
+      localStorage.setItem("rs_timer_target", t.toString());
+      return t;
+    };
+
     let target = getTarget();
 
     const tick = () => {

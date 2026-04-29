@@ -65,8 +65,8 @@ function Result() {
   const name = decodeURIComponent(params?.get("name") ?? "there");
   const [photoError, setPhotoError] = useState(false);
 
-  if (!scoreStr && typeof window !== "undefined") {
-    window.location.href = "/lung-test";
+  if (!scoreStr) {
+    router.replace("/lung-test");
     return null;
   }
 

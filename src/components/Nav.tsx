@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { S } from "@/lib/config";
 
 const LINKS = [
@@ -21,15 +22,17 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  const logoSize = scrolled ? 40 : 48;
+
   return (
     <>
       {/* ── Main bar ── */}
       <header style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
         background: scrolled ? "#2D3D15" : "#4A6422",
-        transition: "background 0.3s",
+        transition: "background 0.3s, height 0.3s",
         borderBottom: "1px solid rgba(255,255,255,0.07)",
-        height: 76,
+        height: scrolled ? 64 : 76,
         display: "flex", alignItems: "center",
       }}>
         <div className="w" style={{
@@ -49,11 +52,10 @@ export default function Nav() {
               flexShrink: 0,
             }}
           >
-            {/* Cream pill — keeps logo visible on any dark/green background */}
             <div
               style={{
-                width: 52,
-                height: 52,
+                width: logoSize,
+                height: logoSize,
                 borderRadius: "50%",
                 backgroundColor: "#F2E6CE",
                 display: "flex",
@@ -61,27 +63,27 @@ export default function Nav() {
                 justifyContent: "center",
                 flexShrink: 0,
                 boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+                transition: "width 0.3s, height 0.3s",
               }}
             >
-              {/* Plain img avoids Next.js Image layout constraints */}
-              <img
+              <Image
                 src="/images/royal-swag-logo.png"
                 alt="Royal Swag logo"
-                width={38}
-                height={38}
-                style={{ width: 38, height: 38, objectFit: "contain", display: "block" }}
+                width={logoSize - 12}
+                height={logoSize - 12}
+                style={{ objectFit: "contain", transition: "width 0.3s, height 0.3s" }}
               />
             </div>
-            {/* Wordmark */}
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <span
                 style={{
                   fontFamily: "var(--ff-head, Georgia, serif)",
-                  fontSize: 18,
+                  fontSize: scrolled ? 15 : 18,
                   fontWeight: 700,
                   color: "#F2E6CE",
                   letterSpacing: "2px",
                   lineHeight: 1,
+                  transition: "font-size 0.3s",
                 }}
               >
                 ROYAL SWAG
@@ -95,7 +97,7 @@ export default function Nav() {
                   lineHeight: 1,
                 }}
               >
-                ESTD 2015
+                ESTD 2016
               </span>
             </div>
           </Link>
@@ -151,7 +153,7 @@ export default function Nav() {
       {/* ── Mobile drawer ── */}
       {open && (
         <div style={{
-          position: "fixed", top: 76, left: 0, right: 0, bottom: 0,
+          position: "fixed", top: scrolled ? 64 : 76, left: 0, right: 0, bottom: 0,
           zIndex: 199, background: "#2D3D15",
           overflowY: "auto", padding: "8px 0 40px",
         }}>

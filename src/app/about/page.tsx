@@ -13,12 +13,12 @@ export default function AboutPage() {
       }}>
         <div className="w">
           <span className="ey" style={{ color: "rgba(196,154,42,0.7)" }}>
-            Est. 2015 · Surat, Gujarat
+            Est. 2016 · Surat, Gujarat
           </span>
           <h1 style={{
             color: "#F2E6CE", maxWidth: 680, margin: "0 auto 16px",
           }}>
-            Ten years of making<br />
+            Nearly a decade of making<br />
             <em style={{ fontStyle: "italic", color: "#C49A2A" }}>
               Ayurvedic products that actually work.
             </em>
@@ -95,7 +95,7 @@ export default function AboutPage() {
               </h2>
               <div className="rl" />
               <p style={{ fontSize: 16, color: "#5C5647", lineHeight: 1.85, marginBottom: 16 }}>
-                Royal Swag was born in Surat in 2015 with one product: India&apos;s first
+                Royal Swag was born in Surat in 2016 with one product: India&apos;s first
                 research-backed herbal cigarette. That product found its customers in
                 ex-smokers who wanted the ritual without the poison.
                 And those customers told us something that changed everything.
@@ -178,7 +178,7 @@ export default function AboutPage() {
               <p style={{ marginBottom: 16, fontSize: 15, lineHeight: 1.85, color: "#5C5647" }}>
                 Royal Swag is the flagship wellness brand of Eximburg International
                 Pvt. Ltd. — headquartered in Surat, the Growth Capital of India.
-                Founded in 2015, we bring 10 years of Ayurvedic manufacturing
+                Founded in 2016, we bring nearly a decade of Ayurvedic manufacturing
                 expertise to every product we make.
               </p>
               <p style={{ fontSize: 15, lineHeight: 1.85, color: "#5C5647" }}>

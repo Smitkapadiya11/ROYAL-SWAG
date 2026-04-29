@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    // Replace with live keys before launch
-    if (!RAZORPAY_KEY_SECRET) {
-      return NextResponse.json({ error: "Razorpay key secret is not configured" }, { status: 500 });
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret) {
+      console.error("[verify-payment] RAZORPAY_KEY_SECRET not configured.");
+      return NextResponse.json(
+        { error: "Payment gateway configuration error." },
+        { status: 500 }
+      );
     }
 
     const body = await request.json();
@@ -18,46 +23,51 @@ export async function POST(request: NextRequest) {
     } = body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return NextResponse.json({ error: "Missing payment fields" }, { status: 400 });
+      return NextResponse.json({ error: "Missing payment fields." }, { status: 400 });
     }
 
-    // Verify Razorpay signature
-    const generatedSignature = crypto
-      .createHmac("sha256", RAZORPAY_KEY_SECRET)
+    // ── HMAC SHA256 — constant-time comparison to prevent timing attacks ──
+    const expectedSignature = crypto
+      .createHmac("sha256", secret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    if (generatedSignature !== razorpay_signature) {
-      return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
+    let isValid = false;
+    try {
+      const sigBuffer = Buffer.from(razorpay_signature, "hex");
+      const expBuffer = Buffer.from(expectedSignature, "hex");
+      isValid =
+        sigBuffer.length === expBuffer.length &&
+        crypto.timingSafeEqual(sigBuffer, expBuffer);
+    } catch {
+      isValid = false;
     }
 
-    // TODO: Save order to Supabase orders table
-    // Supabase SQL to create orders table:
-    // CREATE TABLE orders (
-    //   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    //   razorpay_order_id text UNIQUE NOT NULL,
-    //   razorpay_payment_id text,
-    //   customer_name text,
-    //   customer_phone text,
-    //   customer_email text,
-    //   address text,
-    //   city text,
-    //   state text,
-    //   pincode text,
-    //   amount integer DEFAULT 69900,
-    //   status text DEFAULT 'paid',
-    //   created_at timestamptz DEFAULT now()
-    // );
-    // ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-    // CREATE POLICY "service insert" ON orders FOR INSERT TO service_role WITH CHECK (true);
+    if (!isValid) {
+      console.error("[verify-payment] Signature mismatch.", {
+        orderId: razorpay_order_id,
+        paymentId: razorpay_payment_id,
+      });
+      return NextResponse.json(
+        { error: "Payment verification failed. Signature invalid." },
+        { status: 400 }
+      );
+    }
+
+    console.log("[verify-payment] Verified.", {
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      timestamp: new Date().toISOString(),
+    });
 
     return NextResponse.json({
       success: true,
+      ok: true,
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
     });
-  } catch (err: any) {
-    console.error("verify-payment error:", err?.message ?? err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("[verify-payment] Error:", err);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }
 }

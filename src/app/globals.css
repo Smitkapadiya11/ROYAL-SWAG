@@ -22,6 +22,17 @@
   --r:    12px;
   --r-sm: 6px;
 
+  /* ── rs-* aliases used by legacy component files ── */
+  --rs-olive:  #4A6422;
+  --rs-deep:   #2D3D15;
+  --rs-cream:  #F2E6CE;
+  --rs-gold:   #C49A2A;
+  --rs-sand:   #D4C8A8;
+  --rs-muted:  #5C5647;
+  --rs-dark:   #1A1A14;
+  --rs-white:  #FFFFFF;
+  --rs-text:   #5C5647;
+
   /* Legacy spacing vars — used by secondary pages */
   --px: clamp(20px, 4vw, 48px);
   --py: clamp(64px, 8vw, 112px);

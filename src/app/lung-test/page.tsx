@@ -254,43 +254,134 @@ export default function LungTestPage() {
             {/* Visual engagement context card */}
             <div style={{
               marginTop: 32,
-              padding: "18px 20px",
-              background: "#fff",
-              borderRadius: 10,
-              border: "1px solid #D4C8A8",
-              display: "flex", gap: 16, alignItems: "flex-start",
+              borderRadius: 14,
+              overflow: "hidden",
+              boxShadow: "0 4px 20px rgba(45,61,21,0.1)",
             }}>
+              {/* Image strip — b&w visual for engagement */}
               <div style={{
-                width: 52, height: 52, borderRadius: "50%",
-                background: "#F2E6CE",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 24, flexShrink: 0,
-                filter: "grayscale(80%)",
+                height: 160,
+                background: [
+                  "linear-gradient(135deg,#2D3D15,#4A6422)",
+                  "linear-gradient(135deg,#1A1A14,#3D2D14)",
+                  "linear-gradient(135deg,#2D3D15,#4A6422)",
+                  "linear-gradient(135deg,#1A4432,#2D6A44)",
+                  "linear-gradient(135deg,#2A2A2A,#4A3A28)",
+                ][qIdx] ?? "linear-gradient(135deg,#2D3D15,#4A6422)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
               }}>
-                {(["🏙️", "🚬", "😮‍💨", "🫁", "⚙️"] as const)[qIdx] ?? "🫁"}
-              </div>
-              <div>
-                <p style={{
-                  fontSize: 10, fontWeight: 700, letterSpacing: 2.5,
-                  color: "#C49A2A", marginBottom: 4,
-                  textTransform: "uppercase" as const,
+                <svg
+                  viewBox="0 0 320 160"
+                  style={{ width: "100%", height: "100%", position: "absolute", inset: 0, opacity: 0.18 }}
+                  preserveAspectRatio="xMidYMid slice"
+                >
+                  {/* Abstract lung / breath visualisation per question */}
+                  {qIdx === 0 && (
+                    /* City skyline silhouette */
+                    <>
+                      <rect x="0" y="100" width="30" height="60" fill="#fff" opacity="0.6"/>
+                      <rect x="35" y="70" width="25" height="90" fill="#fff" opacity="0.6"/>
+                      <rect x="65" y="110" width="20" height="50" fill="#fff" opacity="0.5"/>
+                      <rect x="90" y="60" width="40" height="100" fill="#fff" opacity="0.7"/>
+                      <rect x="135" y="85" width="28" height="75" fill="#fff" opacity="0.5"/>
+                      <rect x="170" y="50" width="35" height="110" fill="#fff" opacity="0.65"/>
+                      <rect x="210" y="90" width="22" height="70" fill="#fff" opacity="0.5"/>
+                      <rect x="240" y="75" width="38" height="85" fill="#fff" opacity="0.6"/>
+                      <rect x="285" y="105" width="35" height="55" fill="#fff" opacity="0.45"/>
+                      {/* Smog layers */}
+                      <ellipse cx="160" cy="95" rx="180" ry="30" fill="#fff" opacity="0.08"/>
+                      <ellipse cx="160" cy="75" rx="160" ry="20" fill="#fff" opacity="0.05"/>
+                    </>
+                  )}
+                  {qIdx === 1 && (
+                    /* Cigarette smoke curl */
+                    <>
+                      <path d="M160 140 Q155 120 165 100 Q155 80 165 60 Q155 40 160 20" stroke="#fff" strokeWidth="3" fill="none" opacity="0.6"/>
+                      <path d="M170 140 Q180 115 165 95 Q175 75 165 55 Q175 35 168 15" stroke="#fff" strokeWidth="2" fill="none" opacity="0.4"/>
+                      <rect x="130" y="140" width="60" height="8" rx="4" fill="#fff" opacity="0.5"/>
+                      <rect x="120" y="148" width="80" height="5" rx="2" fill="#fff" opacity="0.3"/>
+                    </>
+                  )}
+                  {qIdx === 2 && (
+                    /* Lung outline */
+                    <>
+                      <path d="M120 130 Q90 110 85 80 Q80 50 100 40 Q115 35 125 50 Q130 60 130 75 L130 130 Z" stroke="#fff" strokeWidth="2.5" fill="none" opacity="0.6"/>
+                      <path d="M200 130 Q230 110 235 80 Q240 50 220 40 Q205 35 195 50 Q190 60 190 75 L190 130 Z" stroke="#fff" strokeWidth="2.5" fill="none" opacity="0.6"/>
+                      <line x1="130" y1="75" x2="160" y2="75" stroke="#fff" strokeWidth="2" opacity="0.5"/>
+                      <line x1="160" y1="40" x2="160" y2="75" stroke="#fff" strokeWidth="3" opacity="0.5"/>
+                      {/* Airways */}
+                      <path d="M130 90 Q140 80 130 70" stroke="#fff" strokeWidth="1.5" fill="none" opacity="0.4"/>
+                      <path d="M190 90 Q180 80 190 70" stroke="#fff" strokeWidth="1.5" fill="none" opacity="0.4"/>
+                    </>
+                  )}
+                  {qIdx === 3 && (
+                    /* Breath wave */
+                    <>
+                      <path d="M20 80 Q50 40 80 80 Q110 120 140 80 Q170 40 200 80 Q230 120 260 80 Q280 60 300 80" stroke="#fff" strokeWidth="3" fill="none" opacity="0.65"/>
+                      <path d="M20 80 Q50 60 80 80 Q110 100 140 80 Q170 60 200 80 Q230 100 260 80 Q280 70 300 80" stroke="#fff" strokeWidth="1.5" fill="none" opacity="0.3"/>
+                      {/* Oxygen molecules */}
+                      <circle cx="80" cy="80" r="8" fill="#fff" opacity="0.2"/>
+                      <circle cx="160" cy="80" r="8" fill="#fff" opacity="0.2"/>
+                      <circle cx="240" cy="80" r="8" fill="#fff" opacity="0.2"/>
+                    </>
+                  )}
+                  {qIdx === 4 && (
+                    /* Industrial/gear silhouette */
+                    <>
+                      <circle cx="100" cy="80" r="35" stroke="#fff" strokeWidth="3" fill="none" opacity="0.5"/>
+                      <circle cx="100" cy="80" r="18" stroke="#fff" strokeWidth="2" fill="none" opacity="0.4"/>
+                      <line x1="100" y1="40" x2="100" y2="50" stroke="#fff" strokeWidth="4" opacity="0.5"/>
+                      <line x1="100" y1="110" x2="100" y2="120" stroke="#fff" strokeWidth="4" opacity="0.5"/>
+                      <line x1="60" y1="80" x2="70" y2="80" stroke="#fff" strokeWidth="4" opacity="0.5"/>
+                      <line x1="130" y1="80" x2="140" y2="80" stroke="#fff" strokeWidth="4" opacity="0.5"/>
+                      {/* Smoke from factory */}
+                      <path d="M200 140 Q198 120 205 100 Q200 85 207 70" stroke="#fff" strokeWidth="2.5" fill="none" opacity="0.45"/>
+                      <path d="M225 140 Q228 118 220 98 Q226 83 218 65" stroke="#fff" strokeWidth="2" fill="none" opacity="0.35"/>
+                      <rect x="185" y="140" width="60" height="20" rx="3" fill="#fff" opacity="0.3"/>
+                    </>
+                  )}
+                </svg>
+                {/* Question label overlay */}
+                <div style={{
+                  position: "relative", zIndex: 1,
+                  textAlign: "center",
                 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, letterSpacing: 3,
+                    color: "rgba(255,255,255,0.85)",
+                    background: "rgba(0,0,0,0.25)",
+                    padding: "4px 14px",
+                    borderRadius: 20,
+                    display: "inline-block",
+                  }}>
+                    {[
+                      "POLLUTION RISK",
+                      "SMOKING RISK",
+                      "AIRWAY HEALTH",
+                      "BREATHING CAPACITY",
+                      "OCCUPATIONAL RISK",
+                    ][qIdx] ?? "LUNG HEALTH"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Fact panel */}
+              <div style={{
+                padding: "16px 20px",
+                background: "#fff",
+              }}>
+                <p style={{ fontSize: 13, color: "#5C5647", lineHeight: 1.65, margin: 0 }}>
                   {[
-                    "POLLUTION RISK",
-                    "SMOKING RISK",
-                    "AIRWAY HEALTH",
-                    "BREATHING CAPACITY",
-                    "OCCUPATIONAL RISK",
-                  ][qIdx] ?? "LUNG HEALTH"}
-                </p>
-                <p style={{ fontSize: 13, color: "#5C5647", lineHeight: 1.65 }}>
-                  {[
-                    "Living in a high-pollution city is the number one non-smoking cause of lung damage in India. Your body doesn't tell you — it just absorbs.",
-                    "Nicotine clears your system in days. The tar and particle deposits from smoking can take 7–10 years to clear without targeted herbs.",
-                    "A morning cough means your lungs spent the night fighting inflammation they couldn't resolve. It is a signal, not a coincidence.",
-                    "Breathlessness on mild exertion is measurable. It means your oxygen transfer capacity has dropped — and that can be reversed.",
-                    "Occupational lung exposure is the most underdiagnosed cause of chronic respiratory decline in India. Most people attribute it to 'just getting older.'",
-                  ][qIdx] ?? "Your answers are building your personalised lung health report."}
+                    "Living in a high-pollution city is the number one non-smoking cause of lung damage in India. Your body doesn't warn you — it just quietly absorbs.",
+                    "Nicotine clears your system within days. Tar and particle deposits from smoking take 7–10 years to clear without targeted herbal help.",
+                    "That morning cough means your lungs spent the night fighting inflammation they couldn't fully resolve. It's not a quirk — it's a signal.",
+                    "Breathlessness on mild exertion is measurable. It means your oxygen transfer capacity has dropped — and that is reversible.",
+                    "Occupational lung exposure is the most underdiagnosed cause of respiratory decline in India. Most people chalk it up to 'getting older.'",
+                  ][qIdx] ?? "Every answer you give is building your personalised lung health report."}
                 </p>
               </div>
             </div>

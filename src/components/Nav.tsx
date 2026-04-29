@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { S } from "@/lib/config";
 
 const LINKS = [
@@ -40,39 +39,64 @@ export default function Nav() {
           justifyContent: "space-between",
         }}>
           {/* Logo */}
-          <Link href="/" style={{
-            display: "flex", alignItems: "center",
-            gap: 14, textDecoration: "none", flexShrink: 0,
-            height: "100%", paddingTop: 4, paddingBottom: 4,
-          }}>
-            <div style={{
-              width: 48, height: 48,
-              borderRadius: "50%",
-              background: "#F2E6CE",
-              display: "flex", alignItems: "center", justifyContent: "center",
+          <Link
+            href="/"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              textDecoration: "none",
               flexShrink: 0,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
-            }}>
-              <Image
+            }}
+          >
+            {/* Cream pill — keeps logo visible on any dark/green background */}
+            <div
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: "50%",
+                backgroundColor: "#F2E6CE",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+              }}
+            >
+              {/* Plain img avoids Next.js Image layout constraints */}
+              <img
                 src="/images/royal-swag-logo.png"
-                alt="Royal Swag"
-                width={36}
-                height={36}
-                priority
-                style={{ objectFit: "contain", width: 36, height: 36 }}
+                alt="Royal Swag logo"
+                width={38}
+                height={38}
+                style={{ width: 38, height: 38, objectFit: "contain", display: "block" }}
               />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-              <span style={{
-                fontFamily: "var(--ff-head)",
-                fontSize: 17, fontWeight: 700,
-                color: "#F2E6CE", letterSpacing: "2.5px",
-              }}>ROYAL SWAG</span>
-              <span style={{
-                fontSize: 9, fontWeight: 500,
-                color: "rgba(242,230,206,0.55)",
-                letterSpacing: "3px", marginTop: 2,
-              }}>ESTD 2015</span>
+            {/* Wordmark */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <span
+                style={{
+                  fontFamily: "var(--ff-head, Georgia, serif)",
+                  fontSize: 18,
+                  fontWeight: 700,
+                  color: "#F2E6CE",
+                  letterSpacing: "2px",
+                  lineHeight: 1,
+                }}
+              >
+                ROYAL SWAG
+              </span>
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 400,
+                  color: "rgba(242,230,206,0.5)",
+                  letterSpacing: "3px",
+                  lineHeight: 1,
+                }}
+              >
+                ESTD 2015
+              </span>
             </div>
           </Link>
 

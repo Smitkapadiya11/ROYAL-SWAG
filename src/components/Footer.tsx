@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { S } from "@/lib/config";
 
 export default function Footer() {
@@ -26,27 +25,27 @@ export default function Footer() {
       }}>
         {/* Brand column */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
             <div style={{
               width: 44, height: 44, borderRadius: "50%",
-              background: "#F2E6CE",
+              backgroundColor: "#F2E6CE",
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
             }}>
-              <Image
+              <img
                 src="/images/royal-swag-logo.png"
                 alt="Royal Swag"
-                width={30} height={30}
-                style={{ objectFit: "contain", width: 30, height: 30 }}
+                width={32} height={32}
+                style={{ width: 32, height: 32, objectFit: "contain", display: "block" }}
               />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <span style={{
-                fontFamily: "var(--ff-head)", color: "var(--cream)",
-                fontSize: 15, fontWeight: 600, letterSpacing: 2,
+                fontFamily: "var(--ff-head, Georgia, serif)",
+                fontSize: 15, fontWeight: 700,
+                color: "#F2E6CE", letterSpacing: "2px",
               }}>ROYAL SWAG</span>
-              <span style={{ fontSize: 9, color: "rgba(196,154,42,0.6)", letterSpacing: 2, marginTop: 4 }}>
+              <span style={{ fontSize: 9, color: "rgba(242,230,206,0.45)", letterSpacing: "2.5px" }}>
                 ESTD 2015
               </span>
             </div>

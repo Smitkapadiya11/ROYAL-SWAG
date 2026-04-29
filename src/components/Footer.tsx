@@ -18,7 +18,7 @@ export default function Footer() {
       color: "rgba(242,230,206,0.55)",
     }}>
       {/* Top grid */}
-      <div className="wrap footer-grid" style={{
+      <div className="w footer-grid" style={{
         display: "grid",
         gridTemplateColumns: "2fr 1fr 1fr",
         gap: 48,
@@ -115,7 +115,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "20px var(--px)" }}>
-        <div className="wrap" style={{
+        <div className="w" style={{
           display: "flex", justifyContent: "space-between",
           flexWrap: "wrap", gap: 12, alignItems: "center",
         }}>
@@ -125,7 +125,7 @@ export default function Footer() {
             <Link href="/terms" style={{ fontSize: 12 }}>Terms</Link>
           </div>
         </div>
-        <div className="wrap" style={{ marginTop: 12 }}>
+        <div className="w" style={{ marginTop: 12 }}>
           <p style={{ fontSize: 11, lineHeight: 1.7, opacity: 0.4 }}>
             FSSAI Lic. No. {S.fssai} &nbsp;·&nbsp;
             These statements have not been evaluated by FSSAI as a drug.

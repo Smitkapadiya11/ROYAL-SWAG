@@ -35,25 +35,25 @@ export default function LungTestPage() {
     const progress = (current / QUESTIONS.length) * 100;
     return (
       <section style={{
-        minHeight: "100svh", background: "var(--cream)",
+        minHeight: "100svh", background: "#F2E6CE",
         display: "flex", alignItems: "center",
-        padding: "80px var(--px) 60px",
+        padding: "80px 0 60px",
       }}>
-        <div className="wrap" style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}>
+        <div className="w" style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}>
           {/* Progress bar */}
           <div style={{
-            height: 3, background: "var(--sand)",
+            height: 3, background: "#D4C8A8",
             borderRadius: 2, marginBottom: 48, overflow: "hidden",
           }}>
             <div style={{
-              height: "100%", background: "var(--olive)",
+              height: "100%", background: "#4A6422",
               width: `${progress}%`, transition: "width 0.3s ease",
             }} />
           </div>
 
           <span style={{
             fontSize: 11, fontWeight: 600, letterSpacing: 2,
-            color: "var(--gold)", display: "block", marginBottom: 12,
+            color: "#C49A2A", display: "block", marginBottom: 12,
           }}>
             QUESTION {current + 1} OF {QUESTIONS.length}
           </span>
@@ -61,11 +61,11 @@ export default function LungTestPage() {
             {QUESTIONS[current]}
           </h2>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-            <button onClick={() => answer(true)} className="btn btn-olive"
+            <button onClick={() => answer(true)} className="b b-olive"
               style={{ padding: "18px", fontSize: 16, justifyContent: "center" }}>
               Yes
             </button>
-            <button onClick={() => answer(false)} className="btn btn-ghost"
+            <button onClick={() => answer(false)} className="b b-ghost"
               style={{ padding: "18px", fontSize: 16, justifyContent: "center" }}>
               No
             </button>
@@ -73,7 +73,7 @@ export default function LungTestPage() {
           {current > 0 && (
             <button onClick={() => setCurrent(c => c - 1)}
               style={{
-                background: "none", border: "none", color: "var(--muted)",
+                background: "none", border: "none", color: "#5C5647",
                 fontSize: 13, marginTop: 24, cursor: "pointer", padding: 0,
               }}>
               ← Back
@@ -86,17 +86,17 @@ export default function LungTestPage() {
 
   return (
     <section style={{
-      minHeight: "100svh", background: "var(--cream)",
+      minHeight: "100svh", background: "#F2E6CE",
       display: "flex", alignItems: "center",
-      padding: "80px var(--px) 60px",
+      padding: "80px 0 60px",
     }}>
-      <div className="wrap" style={{ maxWidth: 520, margin: "0 auto", width: "100%" }}>
-        <span className="eyebrow">Free Assessment</span>
+      <div className="w" style={{ maxWidth: 520, margin: "0 auto", width: "100%" }}>
+        <span className="ey">Free Assessment</span>
         <h1 style={{ fontSize: "clamp(28px, 4vw, 42px)", marginBottom: 12 }}>
           Know Your<br />
-          <em style={{ color: "var(--olive)" }}>Lung Health Score.</em>
+          <em style={{ color: "#4A6422" }}>Lung Health Score.</em>
         </h1>
-        <div className="rule" />
+        <div className="rl" />
         <p style={{ marginBottom: 36, fontSize: 15 }}>
           5 questions. 2 minutes. Personalised Ayurvedic recommendations.
         </p>
@@ -110,8 +110,7 @@ export default function LungTestPage() {
             <div key={f.label}>
               <label style={{
                 display: "block", fontSize: 11, fontWeight: 600,
-                letterSpacing: 1.5, color: "var(--muted)",
-                marginBottom: 6,
+                letterSpacing: 1.5, color: "#5C5647", marginBottom: 6,
               }}>
                 {f.label.toUpperCase()}
               </label>
@@ -122,10 +121,8 @@ export default function LungTestPage() {
                 placeholder={f.placeholder}
                 style={{
                   width: "100%", padding: "13px 16px",
-                  border: "1px solid var(--sand)",
-                  borderRadius: "var(--r-sm)",
-                  background: "var(--white)",
-                  fontSize: 15, color: "var(--dark)",
+                  border: "1px solid #D4C8A8", borderRadius: 6,
+                  background: "#fff", fontSize: 15, color: "#1A1A14",
                   outline: "none",
                 }}
               />
@@ -133,7 +130,7 @@ export default function LungTestPage() {
           ))}
           <button
             onClick={() => name.trim() && setStep("quiz")}
-            className="btn btn-olive"
+            className="b b-olive"
             style={{
               width: "100%", justifyContent: "center",
               padding: 16, fontSize: 15, marginTop: 8,
@@ -143,7 +140,7 @@ export default function LungTestPage() {
             Start Free Lung Test →
           </button>
         </div>
-        <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 16, lineHeight: 1.6, opacity: 0.7 }}>
+        <p style={{ fontSize: 11, color: "#5C5647", marginTop: 16, lineHeight: 1.6, opacity: 0.7 }}>
           Your details are private. Used only to personalise your lung health report.
         </p>
       </div>

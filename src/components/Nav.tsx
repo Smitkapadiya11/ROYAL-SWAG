@@ -22,94 +22,120 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const bg = scrolled ? "var(--deep)" : "var(--olive)";
-
   return (
     <>
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: bg, transition: "background 0.35s ease",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+      {/* ── Main bar ── */}
+      <header style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
+        background: scrolled ? "#2D3D15" : "#4A6422",
+        transition: "background 0.3s",
+        borderBottom: "1px solid rgba(255,255,255,0.07)",
+        height: 64,
+        display: "flex", alignItems: "center",
       }}>
-        <div className="wrap" style={{
-          display: "flex", alignItems: "center",
-          justifyContent: "space-between", height: 64,
+        <div className="w" style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}>
           {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <Link href="/" style={{
+            display: "flex", alignItems: "center", gap: 10, flexShrink: 0,
+          }}>
             <Image
-              src="/images/ROYAL SWAG_logo.png"
+              src="/images/royal-swag-logo.png"
               alt="Royal Swag"
-              width={36} height={36}
-              style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
+              width={36}
+              height={36}
+              priority
+              style={{
+                filter: "brightness(0) invert(1)",
+                opacity: 0.9,
+                width: 36, height: 36,
+                objectFit: "contain",
+              }}
             />
             <span style={{
-              fontFamily: "var(--ff-head)", fontSize: 16,
-              fontWeight: 600, color: "var(--cream)",
-              letterSpacing: "2px",
+              fontFamily: "var(--ff-head)",
+              fontSize: 16, fontWeight: 600,
+              color: "#F2E6CE", letterSpacing: "2px",
             }}>
               ROYAL SWAG
             </span>
           </Link>
 
-          {/* Desktop links */}
-          <div className="nav-desktop" style={{ display: "flex", alignItems: "center", gap: 28 }}>
+          {/* Desktop nav */}
+          <nav className="nav-d" style={{
+            display: "flex", alignItems: "center", gap: 28,
+          }}>
             {LINKS.map(l => (
-              <Link key={l.href} href={l.href} style={{
-                color: "rgba(242,230,206,0.72)", fontSize: 13,
-                fontWeight: 400, letterSpacing: "0.2px",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = "var(--cream)")}
-              onMouseLeave={e => (e.currentTarget.style.color = "rgba(242,230,206,0.72)")}
+              <Link key={l.href} href={l.href}
+                style={{ color: "rgba(242,230,206,0.72)", fontSize: 13, transition: "color 0.2s" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "#F2E6CE")}
+                onMouseLeave={e => (e.currentTarget.style.color = "rgba(242,230,206,0.72)")}
               >
                 {l.label}
               </Link>
             ))}
-            <Link href="/product" className="btn btn-gold"
+            <Link href="/product" className="b b-gold"
               style={{ fontSize: 13, padding: "9px 20px" }}>
               Buy Now — {S.price.now}
             </Link>
-          </div>
+          </nav>
 
           {/* Hamburger */}
           <button
+            className="nav-m"
             onClick={() => setOpen(v => !v)}
-            className="nav-burger"
-            style={{ background: "none", border: "none", padding: 6, display: "none" }}
-            aria-label="Menu"
+            aria-label="Open menu"
+            style={{
+              background: "none", border: "none", padding: 8,
+              display: "none", flexDirection: "column", gap: 5,
+            }}
           >
-            <svg width="22" height="16" viewBox="0 0 22 16">
-              <rect y="0"  width="22" height="1.5" rx="1" fill="var(--cream)" />
-              <rect y="7"  width="22" height="1.5" rx="1" fill="var(--cream)" />
-              <rect y="14" width="22" height="1.5" rx="1" fill="var(--cream)" />
-            </svg>
+            <span style={{
+              display: "block", width: 22, height: 2,
+              background: "#F2E6CE", borderRadius: 2, transition: "all 0.2s",
+              transform: open ? "rotate(45deg) translate(5px,5px)" : "none",
+            }} />
+            <span style={{
+              display: "block", width: 22, height: 2,
+              background: "#F2E6CE", borderRadius: 2, transition: "all 0.2s",
+              opacity: open ? 0 : 1,
+            }} />
+            <span style={{
+              display: "block", width: 22, height: 2,
+              background: "#F2E6CE", borderRadius: 2, transition: "all 0.2s",
+              transform: open ? "rotate(-45deg) translate(5px,-5px)" : "none",
+            }} />
           </button>
         </div>
-      </nav>
+      </header>
 
-      {/* Mobile drawer */}
+      {/* ── Mobile drawer ── */}
       {open && (
         <div style={{
-          position: "fixed", top: 64, left: 0, right: 0, zIndex: 99,
-          background: "var(--deep)",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          padding: "8px 0 24px",
+          position: "fixed", top: 64, left: 0, right: 0, bottom: 0,
+          zIndex: 199, background: "#2D3D15",
+          overflowY: "auto", padding: "8px 0 40px",
         }}>
           {LINKS.map(l => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+            <Link key={l.href} href={l.href}
+              onClick={() => setOpen(false)}
               style={{
-                display: "block", color: "rgba(242,230,206,0.8)",
-                fontSize: 16, padding: "13px 24px",
+                display: "block", color: "rgba(242,230,206,0.85)",
+                fontSize: 17, padding: "16px 24px",
                 borderBottom: "1px solid rgba(255,255,255,0.05)",
-              }}>
+              }}
+            >
               {l.label}
             </Link>
           ))}
-          <div style={{ padding: "16px 24px 0" }}>
+          <div style={{ padding: "20px 24px 0" }}>
             <Link href="/product" onClick={() => setOpen(false)}
-              className="btn btn-gold"
-              style={{ width: "100%", justifyContent: "center" }}>
+              className="b b-gold"
+              style={{ width: "100%", fontSize: 16, padding: 16 }}>
               Buy Now — {S.price.now}
             </Link>
           </div>
@@ -118,8 +144,8 @@ export default function Nav() {
 
       <style>{`
         @media (max-width: 768px) {
-          .nav-desktop { display: none !important; }
-          .nav-burger  { display: block !important; }
+          .nav-d { display: none !important; }
+          .nav-m { display: flex !important; }
         }
       `}</style>
     </>

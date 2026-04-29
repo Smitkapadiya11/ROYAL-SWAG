@@ -45,72 +45,57 @@ function Result() {
     <>
       {/* Header */}
       <section style={{
-        background: "var(--deep)", color: "var(--cream)",
-        padding: "clamp(80px,8vw,120px) var(--px) 64px",
+        background: "#2D3D15", color: "#F2E6CE",
+        padding: "clamp(80px,8vw,120px) 0 64px",
         textAlign: "center",
       }}>
-        <div className="wrap">
-          <span className="eyebrow" style={{ color: "rgba(196,154,42,0.7)" }}>
-            Lung Health Report
-          </span>
-          <h1 style={{ color: "var(--cream)", marginBottom: 8 }}>
+        <div className="w">
+          <span className="ey" style={{ color: "rgba(196,154,42,0.7)" }}>Lung Health Report</span>
+          <h1 style={{ color: "#F2E6CE", marginBottom: 8 }}>
             Hi {name},<br />
-            <em style={{ color: "var(--gold)" }}>your report is ready.</em>
+            <em style={{ color: "#C49A2A" }}>your report is ready.</em>
           </h1>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--cream)" }}>
-        <div className="wrap" style={{ maxWidth: 640, margin: "0 auto" }}>
+      <section style={{ background: "#F2E6CE", padding: "80px 0" }}>
+        <div className="w" style={{ maxWidth: 640, margin: "0 auto" }}>
           {/* Risk badge */}
           <div style={{
-            background: R.bg,
-            border: `2px solid ${R.color}`,
-            borderRadius: "var(--r)",
-            padding: "36px 32px",
-            textAlign: "center",
-            marginBottom: 32,
+            background: R.bg, border: `2px solid ${R.color}`,
+            borderRadius: 12, padding: "36px 32px",
+            textAlign: "center", marginBottom: 32,
           }}>
             <div style={{
               fontFamily: "var(--ff-head)", fontSize: 28,
               fontWeight: 600, color: R.color, marginBottom: 12,
-            }}>
-              {R.label}
-            </div>
-            <h3 style={{ fontSize: 17, color: "var(--dark)", marginBottom: 10 }}>
-              {R.headline}
-            </h3>
-            <p style={{ fontSize: 14, lineHeight: 1.75, color: "var(--muted)" }}>
-              {R.detail}
-            </p>
+            }}>{R.label}</div>
+            <h3 style={{ fontSize: 17, color: "#1A1A14", marginBottom: 10 }}>{R.headline}</h3>
+            <p style={{ fontSize: 14, lineHeight: 1.75, color: "#5C5647" }}>{R.detail}</p>
           </div>
 
           {/* Relevant herbs */}
           <div style={{ marginBottom: 32 }}>
             <p style={{
               fontSize: 11, fontWeight: 600, letterSpacing: 2,
-              color: "var(--muted)", marginBottom: 14,
-            }}>
-              HERBS IN ROYAL SWAG THAT HELP YOUR PROFILE
-            </p>
+              color: "#5C5647", marginBottom: 14,
+            }}>HERBS IN ROYAL SWAG THAT HELP YOUR PROFILE</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
               {R.herbs.map(h => {
                 const herb = S.herbs.find(x => x.name === h);
                 return (
                   <div key={h} style={{
-                    background: "var(--white)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--r-sm)",
-                    padding: "8px 16px",
+                    background: "#fff", border: "1px solid rgba(212,200,168,0.6)",
+                    borderRadius: 6, padding: "8px 16px",
                     display: "flex", alignItems: "center", gap: 8,
                   }}>
                     <div style={{
                       width: 8, height: 8, borderRadius: "50%",
-                      background: "var(--olive)", flexShrink: 0,
+                      background: "#4A6422", flexShrink: 0,
                     }} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "var(--dark)" }}>{h}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#1A1A14" }}>{h}</span>
                     {herb && (
-                      <span style={{ fontSize: 11, color: "var(--muted)" }}>
+                      <span style={{ fontSize: 11, color: "#5C5647" }}>
                         — {herb.benefit.split(",")[0]}
                       </span>
                     )}
@@ -122,22 +107,17 @@ function Result() {
 
           {/* CTA card */}
           <div style={{
-            background: "var(--olive)",
-            borderRadius: "var(--r)",
-            padding: "36px 32px",
-            textAlign: "center",
+            background: "#4A6422", borderRadius: 12,
+            padding: "36px 32px", textAlign: "center",
           }}>
             <p style={{ color: "rgba(242,230,206,0.65)", fontSize: 13, marginBottom: 6 }}>
               Based on your lung health profile, we recommend:
             </p>
-            <h3 style={{
-              color: "var(--cream)", fontSize: 20,
-              marginBottom: 24, lineHeight: 1.3,
-            }}>
+            <h3 style={{ color: "#F2E6CE", fontSize: 20, marginBottom: 24, lineHeight: 1.3 }}>
               Royal Swag Lung Detox Tea<br />
-              <span style={{ color: "var(--gold)" }}>7 Herbs · 20 Bags · {S.price.now}</span>
+              <span style={{ color: "#C49A2A" }}>7 Herbs · 20 Bags · {S.price.now}</span>
             </h3>
-            <Link href="/product" className="btn btn-gold"
+            <Link href="/product" className="b b-gold"
               style={{ width: "100%", justifyContent: "center", padding: 16, fontSize: 16 }}>
               Start Your Lung Detox — {S.price.now} →
             </Link>
@@ -155,7 +135,7 @@ export default function ResultPage() {
   return (
     <Suspense fallback={
       <div style={{ minHeight: "100svh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ color: "var(--muted)", fontSize: 15 }}>Loading your results…</p>
+        <p style={{ color: "#5C5647", fontSize: 15 }}>Loading your results…</p>
       </div>
     }>
       <Result />

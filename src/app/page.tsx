@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       {/* ═══ 1. HERO ═══════════════════════════════════════════════ */}
-      <section style={{ background: "#F2E6CE", padding: "48px 0 64px" }}>
+      <section style={{ background: "transparent", padding: "48px 0 64px" }}>
         <div className="w">
           <div id="hero-grid" style={{
             display: "grid",
@@ -122,7 +122,10 @@ export default function Home() {
       </div>
 
       {/* ═══ 3. LUNG COMPARISON ════════════════════════════════════ */}
-      <section style={{ background: "#fff", padding: "80px 0" }}>
+      <section style={{
+        background: "transparent", padding: "80px 0",
+        borderTop: "1px solid rgba(212,200,168,0.5)",
+      }}>
         <div className="w">
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <span className="ey">Why It Matters</span>
@@ -241,9 +244,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Stat strip */}
+          {/* Stat strip — white card with olive numbers */}
           <div id="lung-stats" style={{
-            background: "#2D3D15", borderRadius: 12, padding: "32px 40px",
+            background: "#fff",
+            border: "1px solid #D4C8A8",
+            borderRadius: 12, padding: "32px 40px",
             display: "grid", gridTemplateColumns: "repeat(4,1fr)",
             gap: 24, textAlign: "center",
           }}>
@@ -256,9 +261,9 @@ export default function Home() {
               <div key={s.v}>
                 <div style={{
                   fontFamily: "var(--ff-head)", fontSize: 26,
-                  fontWeight: 600, color: "#C49A2A", marginBottom: 6,
+                  fontWeight: 600, color: "#4A6422", marginBottom: 6,
                 }}>{s.v}</div>
-                <div style={{ fontSize: 12, color: "rgba(242,230,206,0.5)", lineHeight: 1.5 }}>{s.l}</div>
+                <div style={{ fontSize: 12, color: "#5C5647", lineHeight: 1.5 }}>{s.l}</div>
               </div>
             ))}
           </div>
@@ -273,7 +278,10 @@ export default function Home() {
       </section>
 
       {/* ═══ 4. HERBS ══════════════════════════════════════════════ */}
-      <section style={{ background: "#F2E6CE", padding: "80px 0" }} id="herbs">
+      <section style={{
+        background: "transparent", padding: "80px 0",
+        borderTop: "1px solid rgba(212,200,168,0.5)",
+      }} id="herbs">
         <div className="w">
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <span className="ey">The Formula</span>
@@ -329,7 +337,10 @@ export default function Home() {
       </section>
 
       {/* ═══ 5. HOW IT WORKS ═══════════════════════════════════════ */}
-      <section style={{ background: "#fff", padding: "80px 0" }}>
+      <section style={{
+        background: "transparent", padding: "80px 0",
+        borderTop: "1px solid rgba(212,200,168,0.5)",
+      }}>
         <div className="w">
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <span className="ey">Simple Routine</span>
@@ -348,7 +359,7 @@ export default function Home() {
               <div key={s.n} style={{ background: "#fff", padding: "48px 32px", textAlign: "center" }}>
                 <div style={{
                   fontFamily: "var(--ff-head)", fontSize: 52, fontWeight: 700,
-                  color: "#F2E6CE", lineHeight: 1, marginBottom: 20,
+                  color: "#D4C8A8", lineHeight: 1, marginBottom: 20,
                 }}>{s.n}</div>
                 <h3 style={{ fontSize: 20, marginBottom: 12 }}>{s.title}</h3>
                 <p style={{ fontSize: 14, lineHeight: 1.75, color: "#5C5647", maxWidth: 200, margin: "0 auto" }}>
@@ -364,7 +375,10 @@ export default function Home() {
       </section>
 
       {/* ═══ 6. REVIEWS ════════════════════════════════════════════ */}
-      <section style={{ background: "#F2E6CE", padding: "80px 0" }}>
+      <section style={{
+        background: "transparent", padding: "80px 0",
+        borderTop: "1px solid rgba(212,200,168,0.5)",
+      }}>
         <div className="w">
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <span className="ey">Real Results</span>
@@ -414,26 +428,29 @@ export default function Home() {
       </section>
 
       {/* ═══ 7. WHO NEEDS THIS ═════════════════════════════════════ */}
-      <section style={{ background: "#2D3D15", padding: "80px 0" }}>
+      <section style={{
+        background: "transparent", padding: "80px 0",
+        borderTop: "1px solid rgba(212,200,168,0.5)",
+      }}>
         <div className="w">
           <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <span className="ey" style={{ color: "rgba(196,154,42,0.7)" }}>Who It&apos;s For</span>
-            <h2 style={{ color: "#F2E6CE" }}>Made for Three People</h2>
-            <div className="rl-c" style={{ background: "#C49A2A" }} />
+            <span className="ey">Who It&apos;s For</span>
+            <h2>Made for Three People</h2>
+            <div className="rl-c" />
           </div>
           <div id="who-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
             {[
-              { title: "Ex-Smokers",     desc: "Tar stays in your lungs up to 10 years after quitting. Quitting alone is not enough — active repair is essential." },
-              { title: "City Dwellers",  desc: "India's PM2.5 is 9.78× the WHO safe limit. This tea is your daily defence from the inside out." },
+              { title: "Ex-Smokers",      desc: "Tar stays in your lungs up to 10 years after quitting. Quitting alone is not enough — active repair is essential." },
+              { title: "City Dwellers",   desc: "India's PM2.5 is 9.78× the WHO safe limit. This tea is your daily defence from the inside out." },
               { title: "Wellness Buyers", desc: "Every herb shown with its Sanskrit name and exact purpose. No hidden blends. Full transparency." },
             ].map(c => (
               <div key={c.title} style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "#fff",
+                border: "1px solid rgba(74,100,34,0.15)",
                 borderRadius: 12, padding: "32px 26px",
               }}>
-                <h3 style={{ color: "#F2E6CE", fontSize: 18, marginBottom: 12 }}>{c.title}</h3>
-                <p style={{ fontSize: 14, lineHeight: 1.8, color: "rgba(242,230,206,0.6)" }}>{c.desc}</p>
+                <h3 style={{ color: "#1A1A14", fontSize: 18, marginBottom: 12 }}>{c.title}</h3>
+                <p style={{ fontSize: 14, lineHeight: 1.8, color: "#5C5647" }}>{c.desc}</p>
               </div>
             ))}
           </div>
@@ -444,7 +461,7 @@ export default function Home() {
       </section>
 
       {/* ═══ 8. FINAL CTA ══════════════════════════════════════════ */}
-      <section style={{ background: "#4A6422", padding: "80px 0", textAlign: "center" }}>
+      <section style={{ background: "#2D3D15", padding: "80px 0", textAlign: "center" }}>
         <div className="w">
           <span className="ey" style={{ color: "rgba(196,154,42,0.7)" }}>Start Today</span>
           <h2 style={{ color: "#F2E6CE", maxWidth: 520, margin: "0 auto 16px" }}>

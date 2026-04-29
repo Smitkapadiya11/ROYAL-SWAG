@@ -24,7 +24,7 @@ export default function ReviewsPage() {
       </section>
 
       {/* Reviews grid */}
-      <section style={{ background: "#F2E6CE", padding: "80px 0" }}>
+      <section style={{ background: "transparent", padding: "80px 0" }}>
         <div className="w">
           <div style={{
             display: "grid",

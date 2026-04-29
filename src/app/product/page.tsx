@@ -36,7 +36,7 @@ export default function ProductPage() {
   return (
     <>
       {/* ── PRODUCT HERO ── */}
-      <section style={{ background: "#F2E6CE", padding: "clamp(40px,6vw,80px) 0" }}>
+      <section style={{ background: "transparent", padding: "clamp(40px,6vw,80px) 0" }}>
         <div className="w">
           <div id="product-grid" style={{
             display: "grid",
@@ -185,7 +185,7 @@ export default function ProductPage() {
                 ].map(g => (
                   <div key={g.label} style={{
                     textAlign: "center", padding: "14px 8px",
-                    background: "#F2E6CE", borderRadius: 6,
+                    background: "#fff", borderRadius: 6,
                     border: "1px solid rgba(212,200,168,0.6)",
                   }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: "#4A6422", marginBottom: 2 }}>
@@ -208,7 +208,7 @@ export default function ProductPage() {
       </section>
 
       {/* ── HERB STRIP ── */}
-      <section style={{ background: "#fff", padding: "80px 0" }}>
+      <section style={{ background: "transparent", padding: "80px 0", borderTop: "1px solid rgba(212,200,168,0.5)" }}>
         <div className="w">
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <span className="ey">What&apos;s Inside</span>
@@ -223,7 +223,7 @@ export default function ProductPage() {
             {S.herbs.map(h => (
               <div key={h.id} style={{
                 display: "flex", gap: 14, alignItems: "flex-start",
-                padding: "16px", background: "#F2E6CE",
+                padding: "16px", background: "#fff",
                 borderRadius: 6, border: "1px solid rgba(212,200,168,0.6)",
               }}>
                 <div style={{

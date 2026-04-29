@@ -75,7 +75,7 @@ export default function AboutPage() {
       </div>
 
       {/* ── WHO WE ARE ── */}
-      <section style={{ background: "var(--cream)", padding: "var(--py) 0" }}>
+      <section style={{ background: "transparent", padding: "var(--py) 0" }}>
         <div className="wrap">
           <div data-grid style={{
             display: "grid", gridTemplateColumns: "1fr 1fr",
@@ -127,7 +127,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── CERTIFICATIONS ── */}
-      <section style={{ background: "var(--white)", padding: "var(--py) 0" }}>
+      <section style={{ background: "transparent", padding: "var(--py) 0", borderTop: "1px solid rgba(212,200,168,0.5)" }}>
         <div className="wrap">
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <span className="eyebrow">Manufacturing</span>
@@ -149,7 +149,7 @@ export default function AboutPage() {
               <div key={c.badge} style={{
                 display: "flex", gap: 24, alignItems: "center",
                 padding: "20px 28px",
-                background: i % 2 === 0 ? "var(--cream)" : "var(--white)",
+                background: i % 2 === 0 ? "rgba(212,200,168,0.25)" : "transparent",
               }}>
                 <span style={{
                   flexShrink: 0, width: 64,
@@ -171,7 +171,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── TEAM ── */}
-      <section style={{ background: "var(--cream)", padding: "var(--py) 0" }}>
+      <section style={{ background: "transparent", padding: "var(--py) 0", borderTop: "1px solid rgba(212,200,168,0.5)" }}>
         <div className="wrap">
           <div style={{ textAlign: "center", marginBottom: 64 }}>
             <span className="eyebrow">Leadership</span>
@@ -220,7 +220,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section style={{ background: "var(--olive)", textAlign: "center", padding: "var(--py) 0" }}>
+      <section style={{ background: "#2D3D15", textAlign: "center", padding: "var(--py) 0" }}>
         <div className="wrap">
           <h2 style={{ color: "var(--cream)", marginBottom: 12 }}>
             Your Lungs Deserve Better.

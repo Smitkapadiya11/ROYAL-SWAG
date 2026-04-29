@@ -26,17 +26,30 @@ export default function Footer() {
       }}>
         {/* Brand column */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-            <Image
-              src="/images/royal-swag-logo.png"
-              alt="Royal Swag"
-              width={36} height={36}
-              style={{ filter: "brightness(0) invert(1)", opacity: 0.7 }}
-            />
-            <span style={{
-              fontFamily: "var(--ff-head)", color: "var(--cream)",
-              fontSize: 15, fontWeight: 600, letterSpacing: 2,
-            }}>ROYAL SWAG</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: "50%",
+              background: "rgba(255,255,255,0.08)",
+              border: "1.5px solid rgba(196,154,42,0.3)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <Image
+                src="/images/royal-swag-logo.png"
+                alt="Royal Swag"
+                width={26} height={26}
+                style={{ filter: "brightness(0) invert(1)", opacity: 0.8, objectFit: "contain" }}
+              />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+              <span style={{
+                fontFamily: "var(--ff-head)", color: "var(--cream)",
+                fontSize: 15, fontWeight: 600, letterSpacing: 2,
+              }}>ROYAL SWAG</span>
+              <span style={{ fontSize: 9, color: "rgba(196,154,42,0.6)", letterSpacing: 2, marginTop: 4 }}>
+                ESTD 2015
+              </span>
+            </div>
           </div>
           <p style={{ fontSize: 14, lineHeight: 1.8, maxWidth: 260, marginBottom: 24 }}>
             Ayurvedic lung detox tea. 7 herbs.

@@ -41,7 +41,7 @@ export default function RootLayout({
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body>
         <Nav />
-        <main style={{ paddingTop: 64 }}>{children}</main>
+        <main style={{ paddingTop: 76 }}>{children}</main>
         <Footer />
       </body>
     </html>

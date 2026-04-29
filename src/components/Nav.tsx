@@ -30,7 +30,7 @@ export default function Nav() {
         background: scrolled ? "#2D3D15" : "#4A6422",
         transition: "background 0.3s",
         borderBottom: "1px solid rgba(255,255,255,0.07)",
-        height: 64,
+        height: 76,
         display: "flex", alignItems: "center",
       }}>
         <div className="w" style={{
@@ -41,28 +41,43 @@ export default function Nav() {
         }}>
           {/* Logo */}
           <Link href="/" style={{
-            display: "flex", alignItems: "center", gap: 10, flexShrink: 0,
+            display: "flex", alignItems: "center",
+            gap: 12, textDecoration: "none", flexShrink: 0,
           }}>
-            <Image
-              src="/images/royal-swag-logo.png"
-              alt="Royal Swag"
-              width={36}
-              height={36}
-              priority
-              style={{
-                filter: "brightness(0) invert(1)",
-                opacity: 0.9,
-                width: 36, height: 36,
-                objectFit: "contain",
-              }}
-            />
-            <span style={{
-              fontFamily: "var(--ff-head)",
-              fontSize: 16, fontWeight: 600,
-              color: "#F2E6CE", letterSpacing: "2px",
+            <div style={{
+              width: 48, height: 48,
+              background: "rgba(255,255,255,0.08)",
+              borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              border: "1.5px solid rgba(196,154,42,0.4)",
+              flexShrink: 0,
             }}>
-              ROYAL SWAG
-            </span>
+              <Image
+                src="/images/royal-swag-logo.png"
+                alt="Royal Swag"
+                width={30}
+                height={30}
+                priority
+                style={{
+                  filter: "brightness(0) invert(1)",
+                  opacity: 0.95,
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+              <span style={{
+                fontFamily: "var(--ff-head)",
+                fontSize: 18, fontWeight: 600,
+                color: "#F2E6CE", letterSpacing: "2.5px",
+              }}>ROYAL SWAG</span>
+              <span style={{
+                fontSize: 9,
+                color: "rgba(196,154,42,0.7)",
+                letterSpacing: "2px",
+                marginTop: 4,
+              }}>ESTD 2015</span>
+            </div>
           </Link>
 
           {/* Desktop nav */}
@@ -116,7 +131,7 @@ export default function Nav() {
       {/* ── Mobile drawer ── */}
       {open && (
         <div style={{
-          position: "fixed", top: 64, left: 0, right: 0, bottom: 0,
+          position: "fixed", top: 76, left: 0, right: 0, bottom: 0,
           zIndex: 199, background: "#2D3D15",
           overflowY: "auto", padding: "8px 0 40px",
         }}>

@@ -10,9 +10,18 @@ const PACKS = [
   { id: "60", bags: "60 Bags", days: "90-Day Supply", price: 899, mrp: 1299, tag: "Best Value" },
 ];
 
+const PRODUCT_IMAGES = [
+  "/images/product-2.jpg",
+  "/images/product-1.jpg",
+  "/images/product-3.jpg",
+  "/images/product-4.jpg",
+];
+
 export default function ProductPage() {
   const [pack, setPack] = useState(PACKS[0]);
   const [time, setTime] = useState("--:--:--");
+  const [activeImage, setActiveImage] = useState(0);
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     const KEY = "rs_offer_end";
@@ -33,6 +42,57 @@ export default function ProductPage() {
     return () => clearInterval(id);
   }, []);
 
+  const handleRazorpay = async () => {
+    setPaying(true);
+    try {
+      /* Load Razorpay SDK if needed */
+      if (!(window as any).Razorpay) {
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://checkout.razorpay.com/v1/checkout.js";
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error("Failed to load Razorpay"));
+          document.body.appendChild(s);
+        });
+      }
+
+      /* Create order on server */
+      const res = await fetch("/api/razorpay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: pack.price }),
+      });
+      const data = await res.json();
+
+      if (!data.orderId) {
+        alert("Could not start payment. Please try WhatsApp order instead.");
+        setPaying(false);
+        return;
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: "INR",
+        name: "Royal Swag",
+        description: `Lung Detox Tea — ${pack.bags}`,
+        order_id: data.orderId,
+        handler: (response: any) => {
+          window.location.href = `/order-success?id=${response.razorpay_payment_id}`;
+        },
+        prefill: { name: "", email: "", contact: "" },
+        theme: { color: "#4A6422" },
+        modal: { ondismiss: () => setPaying(false) },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch {
+      alert("Payment unavailable. Please order via WhatsApp.");
+      setPaying(false);
+    }
+  };
+
   return (
     <>
       {/* ── PRODUCT HERO ── */}
@@ -44,26 +104,58 @@ export default function ProductPage() {
             gap: "clamp(40px, 6vw, 80px)",
             alignItems: "flex-start",
           }}>
-            {/* Image panel */}
-            <div style={{
-              position: "sticky", top: 80,
-              background: "#fff",
-              borderRadius: 12,
-              border: "1px solid rgba(212,200,168,0.6)",
-              padding: 32,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              minHeight: 480,
-            }}>
-              <Image
-                src="/images/product-2.jpg"
-                alt="Royal Swag Tar Out Lung Detox Tea"
-                width={460} height={460}
-                priority
-                style={{ objectFit: "contain", width: "100%", height: "auto" }}
-              />
+            {/* ── Image gallery panel ── */}
+            <div style={{ position: "sticky", top: 88 }}>
+              {/* Main image */}
+              <div style={{
+                background: "#fff",
+                borderRadius: 16,
+                border: "1px solid #D4C8A8",
+                padding: 32,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                minHeight: 460,
+                marginBottom: 14,
+              }}>
+                <Image
+                  src={PRODUCT_IMAGES[activeImage]}
+                  alt="Royal Swag Lung Detox Tea"
+                  width={460} height={460}
+                  priority
+                  style={{ objectFit: "contain", width: "100%", height: "auto", maxHeight: 420 }}
+                />
+              </div>
+              {/* Thumbnails */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${PRODUCT_IMAGES.length}, 1fr)`,
+                gap: 10,
+              }}>
+                {PRODUCT_IMAGES.map((src, i) => (
+                  <button
+                    key={src}
+                    onClick={() => setActiveImage(i)}
+                    style={{
+                      background: "#fff",
+                      borderRadius: 8,
+                      border: activeImage === i ? "2px solid #4A6422" : "1px solid #D4C8A8",
+                      padding: 8,
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                      opacity: activeImage === i ? 1 : 0.65,
+                    }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`View ${i + 1}`}
+                      width={100} height={80}
+                      style={{ objectFit: "contain", width: "100%", height: 72 }}
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Info panel */}
+            {/* ── Info panel ── */}
             <div>
               {/* Cert badges */}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
@@ -108,8 +200,7 @@ export default function ProductPage() {
                 {PACKS.map(p => (
                   <button key={p.id} onClick={() => setPack(p)}
                     style={{
-                      display: "flex", alignItems: "center",
-                      justifyContent: "space-between",
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
                       padding: "16px 20px", borderRadius: 6,
                       border: `2px solid ${pack.id === p.id ? "#4A6422" : "rgba(212,200,168,0.6)"}`,
                       background: pack.id === p.id ? "rgba(74,100,34,0.04)" : "#fff",
@@ -151,14 +242,20 @@ export default function ProductPage() {
                 ))}
               </div>
 
-              {/* Primary CTA */}
-              <a href={S.wa.url} target="_blank" rel="noopener noreferrer"
+              {/* Order Now — Razorpay */}
+              <button
+                onClick={handleRazorpay}
+                disabled={paying}
                 className="b b-olive"
-                style={{ width: "100%", justifyContent: "center", fontSize: 15, padding: 16, marginBottom: 12 }}>
-                Order Now — ₹{pack.price} →
-              </a>
+                style={{
+                  width: "100%", justifyContent: "center",
+                  fontSize: 15, padding: 16, marginBottom: 12,
+                  opacity: paying ? 0.7 : 1,
+                }}>
+                {paying ? "Opening payment…" : `Order Now — ₹${pack.price} →`}
+              </button>
 
-              {/* WhatsApp CTA */}
+              {/* WhatsApp fallback */}
               <a href={S.wa.url} target="_blank" rel="noopener noreferrer"
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center",

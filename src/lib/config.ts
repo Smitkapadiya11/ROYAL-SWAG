@@ -34,8 +34,8 @@ export const S = {
     { id: "mulethi",     name: "Mulethi",     bot: "Glycyrrhiza glabra",    role: "The Soother",        benefit: "Soothes inflamed airways, eases chronic cough.",        img: "/images/Mulethi.webp" },
     { id: "tulsi",       name: "Tulsi",       bot: "Ocimum sanctum",        role: "The Sacred Healer",  benefit: "Anti-inflammatory, fights respiratory infections.",      img: "/images/Tulsi.webp" },
     { id: "pippali",     name: "Pippali",     bot: "Piper longum",          role: "The Reviver",        benefit: "Expands lung capacity, improves oxygen absorption.",     img: "/images/Pippali.jpg" },
-    // TODO: replace with clean Kantakari herb photo (current Kantakari.webp has text baked in)
-    { id: "kantakari",   name: "Kantakari",   bot: "Solanum xanthocarpum",  role: "The Cleanser",       benefit: "Relieves bronchitis, clears blocked airways.",            img: "/images/Bibhitakit.jpg" },
+    // TODO: replace with actual Kantakari photo (Kantakari.webp has text baked in)
+    { id: "kantakari",   name: "Kantakari",   bot: "Solanum xanthocarpum",  role: "The Cleanser",       benefit: "Relieves bronchitis, clears blocked airways.",            img: "/images/Tulsi.webp" },
     { id: "bibhitaki",   name: "Bibhitaki",   bot: "Terminalia bellirica",  role: "The Protector",      benefit: "Prevents infection, clears accumulated lung toxins.",     img: "/images/Bibhitakit.jpg" },
     { id: "pushkarmool", name: "Pushkarmool", bot: "Inula racemosa",        role: "The Deep Purifier",  benefit: "Deep lung purification, reduces pulmonary inflammation.", img: "/images/pushkarmool.webp" },
   ],

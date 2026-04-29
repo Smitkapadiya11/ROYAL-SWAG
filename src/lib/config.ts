@@ -1,56 +1,77 @@
-export const SITE = {
+export const S = {
   name:    "Royal Swag",
   tagline: "Breathe Clean. Live Free.",
-  price:   { display: "₹349", mrp: "₹499", savings: "Save ₹150" },
+  price:   { now: "₹349", was: "₹499" },
   company: "Eximburg International Pvt. Ltd.",
-  founded: "2015",
   address: {
-    line1: "Plot No. 150, 3rd Floor, Amrut Udhyognagar",
-    line2: "Kholvad, Kamrej, Surat — Gujarat 394185",
+    l1: "Plot No. 150, 3rd Floor, Amrut Udhyognagar",
+    l2: "Kholvad, Kamrej, Surat — Gujarat 394185",
   },
-  phone:  { display: "+91 70965 53300", raw: "917096553300" },
-  email:  "info@eximburginternational.in",
-  fssai:  "TODO_INSERT_FSSAI_NUMBER",
-  whatsapp: {
-    number:  "917096553300",
-    message: encodeURIComponent("Hi, I want to order Royal Swag Lung Detox Tea. Please share pack details."),
-    get url() { return `https://wa.me/${this.number}?text=${this.message}`; },
+  phone:    "+91 70965 53300",
+  phoneRaw: "917096553300",
+  email:   "info@eximburginternational.in",
+  fssai:   "TODO_FSSAI_NUMBER",
+  wa: {
+    num: "917096553300",
+    msg: encodeURIComponent("Hi, I want to order Royal Swag Lung Detox Tea. Please share pack details."),
+    get url() { return `https://wa.me/${this.num}?text=${this.msg}`; },
   },
   social: {
-    instagram: "https://www.instagram.com/royalswag_official/",
-    youtube:   "https://www.youtube.com/@royalswagofficial",
-    facebook:  "https://www.facebook.com/royalswag.herbal.cigarette/",
-    twitter:   "https://twitter.com/royalswag",
+    ig: "https://www.instagram.com/royalswag_official/",
+    yt: "https://www.youtube.com/@royalswagofficial",
+    fb: "https://www.facebook.com/royalswag.herbal.cigarette/",
+    tw: "https://twitter.com/royalswag",
   },
-  amazon: {
-    india: "https://www.amazon.in/royalswag",
-    us:    "https://www.amazon.com/royalswag",
-  },
+  certs: ["ISO", "GMP", "FSSAI", "AYUSH", "LEAN"],
   stats: [
-    { value: "2015",   label: "Founded" },
-    { value: "10 Yrs", label: "Experience" },
-    { value: "4.7★",   label: "Amazon Rating" },
-    { value: "847+",   label: "Verified Reviews" },
+    { v: "2015",   l: "Founded" },
+    { v: "10 Yrs", l: "Experience" },
+    { v: "4.7★",   l: "Amazon Rating" },
+    { v: "847+",   l: "Reviews" },
   ],
-  certifications: ["ISO", "GMP", "FSSAI", "AYUSH", "LEAN"] as string[],
   herbs: [
-    { id: "vasaka",      name: "Vasaka",      botanical: "Adhatoda vasica",      role: "The Airway Opener",  benefit: "Breaks down mucus and opens airways.",         image: "/images/vasaka.webp" },
-    { id: "mulethi",     name: "Mulethi",     botanical: "Glycyrrhiza glabra",   role: "The Soother",        benefit: "Soothes inflamed airways, eases cough.",        image: "/images/Mulethi.webp" },
-    { id: "tulsi",       name: "Tulsi",       botanical: "Ocimum sanctum",       role: "The Sacred Healer",  benefit: "Anti-inflammatory, fights infections.",          image: "/images/Tulsi.webp" },
-    { id: "pippali",     name: "Pippali",     botanical: "Piper longum",         role: "The Reviver",        benefit: "Expands lung capacity, boosts oxygen.",          image: "/images/Pippali.jpg" },
-    { id: "kantakari",   name: "Kantakari",   botanical: "Solanum xanthocarpum", role: "The Cleanser",       benefit: "Relieves bronchitis, clears airways.",            image: "/images/Kantakari.webp" },
-    { id: "bibhitaki",   name: "Bibhitaki",   botanical: "Terminalia bellirica", role: "The Protector",      benefit: "Prevents infection, clears lung toxins.",         image: "/images/Bibhitakit.jpg" },
-    { id: "pushkarmool", name: "Pushkarmool", botanical: "Inula racemosa",       role: "The Deep Purifier",  benefit: "Deep lung purification, reduces inflammation.",   image: "/images/pushkarmool.webp" },
+    { id: "vasaka",      name: "Vasaka",      bot: "Adhatoda vasica",       role: "The Airway Opener",  benefit: "Breaks down mucus, opens bronchial passages.",         img: "/images/vasaka.webp" },
+    { id: "mulethi",     name: "Mulethi",     bot: "Glycyrrhiza glabra",    role: "The Soother",        benefit: "Soothes inflamed airways, eases chronic cough.",        img: "/images/Mulethi.webp" },
+    { id: "tulsi",       name: "Tulsi",       bot: "Ocimum sanctum",        role: "The Sacred Healer",  benefit: "Anti-inflammatory, fights respiratory infections.",      img: "/images/Tulsi.webp" },
+    { id: "pippali",     name: "Pippali",     bot: "Piper longum",          role: "The Reviver",        benefit: "Expands lung capacity, improves oxygen absorption.",     img: "/images/Pippali.jpg" },
+    { id: "kantakari",   name: "Kantakari",   bot: "Solanum xanthocarpum",  role: "The Cleanser",       benefit: "Relieves bronchitis, clears blocked airways.",            img: "/images/Kantakari.webp" },
+    { id: "bibhitaki",   name: "Bibhitaki",   bot: "Terminalia bellirica",  role: "The Protector",      benefit: "Prevents infection, clears accumulated lung toxins.",     img: "/images/Bibhitakit.jpg" },
+    { id: "pushkarmool", name: "Pushkarmool", bot: "Inula racemosa",        role: "The Deep Purifier",  benefit: "Deep lung purification, reduces pulmonary inflammation.", img: "/images/pushkarmool.webp" },
   ],
   team: [
-    { id: "hitesh",  name: "Hitesh Sabhadiya", role: "Founder & CEO",      image: "/images/hitesh.jpeg",                  bio: "Founded Eximburg in 2015. Grew Royal Swag from Surat to 4 continents. Featured on Amazon Prime & Netflix." },
-    { id: "manoj",   name: "Manoj Koshiya",    role: "Co-Founder",         image: "/images/manoj.jpeg",                   bio: "Leads R&D and manufacturing. Ensures every batch meets ISO, GMP, FSSAI & AYUSH standards." },
-    { id: "jaideep", name: "Jaideep Singh",    role: "Business Director",  image: "/images/jaideep%20singh.jpeg",         bio: "12 years e-commerce experience. Leads Amazon strategy, D2C operations and growth analytics." },
+    { id: "hitesh",  initials: "HS", name: "Hitesh Sabhadiya", role: "Founder & CEO",     img: "/images/hitesh.jpeg",             bio: "Founded Eximburg in 2015. Grew Royal Swag from Surat to 4 continents. Now featured on Amazon Prime & Netflix." },
+    { id: "manoj",   initials: "MK", name: "Manoj Koshiya",    role: "Co-Founder",        img: "/images/manoj.jpeg",              bio: "Leads R&D and manufacturing. Every batch meets ISO, GMP, FSSAI & AYUSH before it ships." },
+    { id: "jaideep", initials: "JS", name: "Jaideep Singh",    role: "Business Director", img: "/images/jaideep%20singh.jpeg",    bio: "12 years e-commerce experience. Leads Amazon strategy, D2C operations and performance analytics." },
+  ],
+  reviews: [
+    { initials: "RK", name: "Ramesh K., 44, Ahmedabad", risk: "Moderate Risk", before: "Coughed every morning for 20 minutes before work.", after: "By week 3 it dropped to barely 5 minutes — felt in control again." },
+    { initials: "SP", name: "Sneha P., 39, Delhi",      risk: "High Risk",     before: "Stairs left me winded. Paused halfway up every evening.", after: "After a month I walk up without stopping. My husband noticed first." },
+    { initials: "VM", name: "Vikram M., 51, Mumbai",    risk: "Mild Risk",     before: "Post-Diwali smog shut my chest down for two weeks straight.", after: "Started early this year — tightness eased within 10 days." },
+    { initials: "PT", name: "Priya T., 33, Bengaluru",  risk: "Moderate Risk", before: "Seasonal allergies every October without fail.", after: "Sailed through this year. Zero antihistamines for the first time." },
+    { initials: "AK", name: "Arjun K., 47, Surat",      risk: "High Risk",     before: "Ex-smoker, 8 months clean but chest still felt heavy.", after: "Two weeks in and I could take a full breath again." },
+    { initials: "NM", name: "Neha M., 29, Pune",         risk: "Mild Risk",     before: "Work near traffic every day — constant dry throat.", after: "Throat cleared, sleep improved. Have ordered three packs now." },
   ],
 } as const;
 
-/** Backward-compat alias — existing pages and API routes use SITE_CONFIG */
-export const SITE_CONFIG = SITE;
+// ── Backward-compat aliases for pages/routes not being rewritten ──
+export const SITE = {
+  name:    S.name,
+  tagline: S.tagline,
+  price:   { display: S.price.now, mrp: S.price.was, savings: "Save ₹150" },
+  company: S.company,
+  founded: "2015",
+  address: { line1: S.address.l1, line2: S.address.l2 },
+  phone:   { display: S.phone, raw: S.phoneRaw },
+  email:   S.email,
+  fssai:   S.fssai,
+  whatsapp: { number: S.wa.num, message: S.wa.msg, get url() { return S.wa.url; } },
+  social:  { instagram: S.social.ig, youtube: S.social.yt, facebook: S.social.fb, twitter: S.social.tw },
+  amazon:  { india: "https://www.amazon.in/royalswag", us: "https://www.amazon.com/royalswag" },
+  stats:   S.stats.map(s => ({ value: s.v, label: s.l })),
+  certifications: [...S.certs] as string[],
+  herbs:   S.herbs.map(h => ({ id: h.id, name: h.name, botanical: h.bot, role: h.role, benefit: h.benefit, image: h.img })),
+  team:    S.team.map(m => ({ id: m.id, name: m.name, role: m.role, image: m.img, bio: m.bio })),
+} as const;
 
-/** Canonical site origin (no trailing slash) */
+export const SITE_CONFIG = SITE;
 export const SITE_ORIGIN = "https://royalswag.in";

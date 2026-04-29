@@ -1,472 +1,267 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
-import MobileStickyBar from "@/components/MobileStickyBar";
-import CountdownTimer from "@/components/CountdownTimer";
-import PricingSelector from "@/components/PricingSelector";
-import {
-  buildPricingPlans,
-  planToAmountPaise,
-  razorpayDescriptionForPlan,
-  type PlanId,
-} from "@/lib/product-pricing";
-import { getSeasonalUrgencyMessage } from "@/lib/seasonal-urgency";
-import { SITE } from "@/lib/config";
+import { S } from "@/lib/config";
 
-declare global {
-  interface Window { Razorpay?: any; }
-}
-
-const PRODUCT_NAME = "Royal Swag Lung Detox Tea";
-const CHECKOUT_CURRENCY = "INR";
-const PRICING_PLANS = buildPricingPlans();
-const STOCK_COUNT = process.env.NEXT_PUBLIC_STOCK_COUNT ?? "47";
+const PACKS = [
+  { id: "20", bags: "20 Bags", days: "30-Day Supply", price: 349, mrp: 499, tag: "" },
+  { id: "40", bags: "40 Bags", days: "60-Day Supply", price: 649, mrp: 899, tag: "Most Popular" },
+  { id: "60", bags: "60 Bags", days: "90-Day Supply", price: 899, mrp: 1299, tag: "Best Value" },
+];
 
 export default function ProductPage() {
-  const seasonalUrgencyMessage = useMemo(() => getSeasonalUrgencyMessage(), []);
-  const [isPrefillOpen, setIsPrefillOpen] = useState(false);
-  const [isPaying, setIsPaying] = useState(false);
-  const [prefill, setPrefill] = useState({ name: "", email: "", contact: "" });
-  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>("40");
-  const deepLinkOpenedRef = useRef(false);
+  const [pack, setPack] = useState(PACKS[0]);
+  const [time, setTime] = useState("--:--:--");
 
-  const selectedPlan = useMemo(
-    () => PRICING_PLANS.find((p) => p.id === selectedPlanId) ?? PRICING_PLANS[1],
-    [selectedPlanId]
-  );
-  const perDayForButton = useMemo(
-    () => (selectedPlan.priceRupees / selectedPlan.days).toFixed(2),
-    [selectedPlan]
-  );
-
-  const loadRazorpay = () =>
-    new Promise<boolean>((resolve) => {
-      if (typeof window === "undefined") return resolve(false);
-      if (window.Razorpay) return resolve(true);
-      const SRC = "https://checkout.razorpay.com/v1/checkout.js";
-      const existing = document.querySelector<HTMLScriptElement>(`script[src="${SRC}"]`);
-      const timeout = window.setTimeout(() => resolve(!!window.Razorpay), 10000);
-      const cleanup = (script?: HTMLScriptElement) => {
-        window.clearTimeout(timeout);
-        if (!script) return;
-        script.removeEventListener("load", onLoad);
-        script.removeEventListener("error", onError);
-      };
-      const onLoad = () => { cleanup(existing ?? undefined); resolve(true); };
-      const onError = () => { cleanup(existing ?? undefined); resolve(false); };
-      if (existing) {
-        if (window.Razorpay) { cleanup(existing); return resolve(true); }
-        existing.addEventListener("load", onLoad, { once: true });
-        existing.addEventListener("error", onError, { once: true });
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = SRC;
-      script.async = true;
-      script.addEventListener("load", () => { cleanup(script); resolve(true); }, { once: true });
-      script.addEventListener("error", () => { cleanup(script); resolve(false); }, { once: true });
-      document.body.appendChild(script);
-    });
-
-  const startPayment = async () => {
-    if (isPaying) return;
-    setIsPaying(true);
-    try {
-      const scriptOk = await loadRazorpay();
-      if (!scriptOk) throw new Error("Failed to load Razorpay Checkout");
-      const amountPaise = planToAmountPaise(selectedPlan);
-      const res = await fetch("/api/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: amountPaise, currency: CHECKOUT_CURRENCY }),
-      });
-      const data = (await res.json()) as
-        | { orderId: string; amount: number; currency: string; keyId: string }
-        | { error: string };
-      if (!res.ok || "error" in data) throw new Error("error" in data ? data.error : "Failed to create order");
-      const options = {
-        key: data.keyId, amount: data.amount, currency: data.currency,
-        name: PRODUCT_NAME, description: razorpayDescriptionForPlan(selectedPlan),
-        order_id: data.orderId,
-        prefill: { name: prefill.name, email: prefill.email, contact: prefill.contact },
-        handler: async (response: any) => {
-          try {
-            const verifyRes = await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response?.razorpay_order_id ?? data.orderId,
-                razorpay_payment_id: response?.razorpay_payment_id,
-                razorpay_signature: response?.razorpay_signature,
-                customerName: prefill.name, customerPhone: prefill.contact,
-                customerEmail: prefill.email, amountPaise,
-              }),
-            });
-            const verifyData = (await verifyRes.json()) as
-              | { success: true; orderId: string; paymentId: string }
-              | { error: string };
-            if (!verifyRes.ok || "error" in verifyData)
-              throw new Error("error" in verifyData ? verifyData.error : "Payment verification failed");
-            const qp = new URLSearchParams({
-              orderId: verifyData.orderId, paymentId: verifyData.paymentId,
-              amountPaise: String(amountPaise),
-            });
-            window.location.href = `/order-success?${qp.toString()}`;
-          } catch (err) {
-            alert(err instanceof Error ? err.message : "Payment verification failed");
-            setIsPaying(false);
-          }
-        },
-        modal: { ondismiss: () => setIsPaying(false) },
-        theme: { color: "#4A6422" },
-      };
-      const rz = new window.Razorpay(options);
-      rz.open();
-      setIsPrefillOpen(false);
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "Payment failed");
-      setIsPaying(false);
+  useEffect(() => {
+    const KEY = "rs_offer_end";
+    let end = parseInt(localStorage.getItem(KEY) || "0");
+    if (!end || end < Date.now()) {
+      end = Date.now() + 48 * 3600 * 1000;
+      localStorage.setItem(KEY, String(end));
     }
-  };
+    const tick = () => {
+      const d = Math.max(0, end - Date.now());
+      const h = String(Math.floor(d / 3600000)).padStart(2, "0");
+      const m = String(Math.floor((d % 3600000) / 60000)).padStart(2, "0");
+      const s = String(Math.floor((d % 60000) / 1000)).padStart(2, "0");
+      setTime(`${h}:${m}:${s}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
-    <div style={{ paddingBottom: 80 }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org", "@type": "Product",
-          name: "Royal Swag Lung Detox Tea",
-          description: "7 Ayurvedic herbs for lung detox. FSSAI certified. Free delivery.",
-          brand: { "@type": "Brand", name: "Royal Swag" },
-          offers: {
-            "@type": "Offer", price: "349", priceCurrency: "INR",
-            availability: "https://schema.org/InStock",
-            seller: { "@type": "Organization", name: "Eximburg International Pvt. Ltd." },
-          },
-          aggregateRating: { "@type": "AggregateRating", ratingValue: "4.7", reviewCount: "847" },
-        })}}
-      />
-
-      {/* ── Hero ── */}
+    <>
+      {/* ── PRODUCT HERO ── */}
       <section style={{
-        background: "linear-gradient(160deg, var(--rs-deep) 0%, var(--rs-olive) 100%)",
-        padding: "80px var(--section-px) 64px", minHeight: "60vh",
-        display: "flex", alignItems: "center",
+        background: "var(--cream)",
+        padding: "clamp(40px,6vw,80px) var(--px)",
       }}>
-        <div className="container hero-grid" style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 56, alignItems: "center", width: "100%",
+        <div className="wrap" style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "clamp(40px, 6vw, 80px)",
+          alignItems: "flex-start",
         }}>
+          {/* Image panel */}
+          <div style={{
+            position: "sticky", top: 80,
+            background: "var(--white)",
+            borderRadius: "var(--r)",
+            border: "1px solid var(--border)",
+            padding: 32,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            minHeight: 480,
+          }}>
+            <Image
+              src="/images/product/product-2.jpg"
+              alt="Royal Swag Tar Out Lung Detox Tea"
+              width={460} height={460}
+              priority
+              style={{ objectFit: "contain", width: "100%", height: "auto" }}
+            />
+          </div>
+
+          {/* Info panel */}
           <div>
-            <span style={{ fontSize: 11, letterSpacing: 3, color: "var(--rs-gold)", fontWeight: 600, display: "block", marginBottom: 16, textTransform: "uppercase" }}>
-              Ayurvedic Lung Detox Tea
-            </span>
-            <h1 style={{ color: "var(--rs-cream)", marginBottom: 16, fontSize: "clamp(32px, 4vw, 52px)" }}>
-              Royal Swag<br />Lung Detox Tea
+            {/* Cert badges */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+              {S.certs.map(c => (
+                <span key={c} style={{
+                  fontSize: 10, fontWeight: 600, letterSpacing: 1.5,
+                  border: "1px solid var(--olive)",
+                  color: "var(--olive)", borderRadius: 4, padding: "3px 9px",
+                }}>{c}</span>
+              ))}
+            </div>
+
+            <span className="eyebrow">Tar Out · Lung Detox Tea</span>
+            <h1 style={{ fontSize: "clamp(28px, 3vw, 38px)", marginBottom: 4 }}>
+              Royal Swag Lung Detox Tea
             </h1>
-            <p style={{ color: "rgba(242,230,206,0.75)", fontSize: 17, marginBottom: 32, lineHeight: 1.8, maxWidth: 440 }}>
-              7 Ayurvedic herbs. FSSAI certified. Free delivery. 30-day money-back guarantee.
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 20 }}>
+              7 Ayurvedic herbs. Zero fillers. Zero extracts. Charaka Samhita formulation.
             </p>
-            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-              <button
-                onClick={() => setIsPrefillOpen(true)}
-                disabled={isPaying}
-                style={{
-                  background: "var(--rs-gold)", color: "var(--rs-deep)",
-                  border: "none", borderRadius: "var(--r-md)",
-                  padding: "14px 32px", fontSize: 16, fontWeight: 700,
-                  cursor: isPaying ? "not-allowed" : "pointer",
-                  opacity: isPaying ? 0.6 : 1,
-                }}
-              >
-                Buy Now — Rs {selectedPlan.priceRupees}
-              </button>
-              <Link href="/lung-test" style={{
-                color: "rgba(242,230,206,0.7)", border: "1px solid rgba(242,230,206,0.3)",
-                borderRadius: "var(--r-md)", padding: "14px 28px", fontSize: 15,
-                display: "inline-flex", alignItems: "center",
-              }}>
-                Free Lung Test First
-              </Link>
-            </div>
-          </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+
+            {/* Countdown */}
             <div style={{
-              background: "rgba(242,230,206,0.08)", border: "1px solid rgba(242,230,206,0.15)",
-              borderRadius: "var(--r-lg)", padding: 32, textAlign: "center", maxWidth: 320, width: "100%",
+              background: "var(--deep)", borderRadius: "var(--r-sm)",
+              padding: "12px 16px", marginBottom: 24,
+              display: "flex", alignItems: "center", gap: 12,
             }}>
-              <Image
-                src={SITE.herbs[0].image}
-                alt="Vasaka — key herb in Royal Swag"
-                width={160} height={160}
-                style={{ objectFit: "cover", borderRadius: "50%", margin: "0 auto 20px",
-                         border: "3px solid rgba(196,154,42,0.4)" }}
-              />
-              <p style={{ color: "var(--rs-gold)", fontSize: 13, fontWeight: 700, letterSpacing: 1, marginBottom: 8 }}>
-                ⭐ 4.7 · 847+ Reviews
-              </p>
-              <p style={{ color: "rgba(242,230,206,0.6)", fontSize: 12 }}>
-                ISO · GMP · FSSAI · AYUSH Certified
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Urgency strip ── */}
-      <section style={{ background: "var(--rs-olive)", padding: "14px var(--section-px)" }}>
-        <div className="container" style={{ textAlign: "center" }}>
-          <p style={{ color: "rgba(242,230,206,0.9)", fontSize: 13, margin: 0 }}>
-            {seasonalUrgencyMessage} · Only <strong>{STOCK_COUNT}</strong> units left at this price
-          </p>
-        </div>
-      </section>
-
-      {/* ── Main product section ── */}
-      <section style={{ background: "var(--rs-white)", padding: "var(--section-py) 0" }}>
-        <div className="container" style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-          gap: 56, alignItems: "start",
-        }}>
-          {/* Left: info + purchase */}
-          <div>
-            <h2 style={{ marginBottom: 8, color: "var(--rs-dark)" }}>Order Your Pack</h2>
-            <p style={{ marginBottom: 24 }}>
-              Choose the pack that fits your detox journey.
-            </p>
-
-            <div style={{ marginBottom: 16, padding: "12px 16px", background: "var(--rs-cream)", borderRadius: "var(--r-md)", fontSize: 14 }}>
-              <CountdownTimer />
+              <span style={{ fontSize: 12, color: "rgba(242,230,206,0.6)", flexShrink: 0 }}>
+                Offer ends in
+              </span>
+              <span style={{
+                fontFamily: "var(--ff-head)", fontSize: 20, fontWeight: 600,
+                color: "var(--gold)", letterSpacing: 2,
+              }}>{time}</span>
             </div>
 
-            <div style={{ marginBottom: 24 }}>
-              <PricingSelector plans={PRICING_PLANS} value={selectedPlanId} onChange={setSelectedPlanId} />
-            </div>
-
-            <p style={{ fontSize: 13, color: "var(--rs-text)", marginBottom: 8 }}>
-              Rs {selectedPlan.priceRupees} = Rs {perDayForButton}/day — less than one cup of chai.
-            </p>
-            <p style={{ fontSize: 13, color: "var(--rs-olive)", fontWeight: 600, marginBottom: 24 }}>
-              ✓ Free delivery · Ships in 24 hours
-            </p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <p style={{ fontSize: 13, color: "var(--rs-text)", background: "var(--rs-cream)", borderRadius: "var(--r-md)", padding: "12px 16px" }}>
-                Every day without lung detox, PM2.5 particles accumulate further. It&apos;s reversible — but only if you start.
-              </p>
-              <button
-                onClick={() => setIsPrefillOpen(true)}
-                disabled={isPaying}
-                style={{
-                  background: "var(--rs-olive)", color: "var(--rs-cream)",
-                  border: "none", borderRadius: "var(--r-md)", padding: "16px",
-                  fontSize: 17, fontWeight: 700, cursor: isPaying ? "not-allowed" : "pointer",
-                  opacity: isPaying ? 0.6 : 1, width: "100%",
-                }}
-              >
-                Buy Now — Rs {selectedPlan.priceRupees} ({selectedPlan.days}-Day Pack)
-              </button>
-              <p style={{ textAlign: "center", fontSize: 12, color: "var(--rs-text)" }}>
-                Secure checkout · Razorpay · Ships tomorrow
-              </p>
-              <Link href="/lung-test" style={{
-                display: "block", textAlign: "center", padding: "14px",
-                border: "1.5px solid var(--rs-sand)", borderRadius: "var(--r-md)",
-                color: "var(--rs-text)", fontSize: 14,
-              }}>
-                Take the Free Lung Test First →
-              </Link>
-            </div>
-          </div>
-
-          {/* Right: product details & trust */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            <div style={{ background: "var(--rs-cream)", borderRadius: "var(--r-lg)", padding: "28px 24px" }}>
-              <h3 style={{ marginBottom: 16 }}>Product Details</h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  { icon: "🌿", label: "Ingredients", val: "Vasaka, Tulsi, Mulethi, Pippali, Kantakari, Bibhitaki, Pushkarmool" },
-                  { icon: "📦", label: "Size",        val: "20, 40, or 60 tea bags" },
-                  { icon: "🏷️", label: "Weight",      val: "75g per pack" },
-                  { icon: "📅", label: "Shelf Life",  val: "24 months from manufacture" },
-                ].map(({ icon, label, val }) => (
-                  <div key={label} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 16, flexShrink: 0, marginTop: 2 }}>{icon}</span>
+            {/* Pack selector */}
+            <p style={{
+              fontSize: 11, fontWeight: 600, letterSpacing: 2,
+              color: "var(--muted)", marginBottom: 12,
+            }}>SELECT PACK</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+              {PACKS.map(p => (
+                <button key={p.id} onClick={() => setPack(p)}
+                  style={{
+                    display: "flex", alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "16px 20px",
+                    borderRadius: "var(--r-sm)",
+                    border: `2px solid ${pack.id === p.id ? "var(--olive)" : "var(--border)"}`,
+                    background: pack.id === p.id ? "rgba(74,100,34,0.04)" : "var(--white)",
+                    cursor: "pointer", transition: "all 0.15s",
+                    textAlign: "left",
+                  }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{
+                      width: 18, height: 18, borderRadius: "50%",
+                      border: `2px solid ${pack.id === p.id ? "var(--olive)" : "var(--sand)"}`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      {pack.id === p.id && (
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--olive)" }} />
+                      )}
+                    </div>
                     <div>
-                      <span style={{ fontWeight: 600, fontSize: 13, color: "var(--rs-dark)" }}>{label}: </span>
-                      <span style={{ fontSize: 13, color: "var(--rs-text)" }}>{val}</span>
+                      <p style={{ fontSize: 14, fontWeight: 500, color: "var(--dark)", margin: 0 }}>
+                        {p.bags}
+                      </p>
+                      <p style={{ fontSize: 12, color: "var(--muted)", margin: 0 }}>{p.days}</p>
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div style={{ textAlign: "right" }}>
+                    <span style={{
+                      fontFamily: "var(--ff-head)", fontSize: 18,
+                      fontWeight: 600, color: "var(--olive)",
+                    }}>₹{p.price}</span>
+                    <span style={{
+                      fontSize: 12, color: "var(--sand)",
+                      textDecoration: "line-through", marginLeft: 6,
+                    }}>₹{p.mrp}</span>
+                    {p.tag && (
+                      <div style={{
+                        fontSize: 9, fontWeight: 600, letterSpacing: 1,
+                        background: "var(--gold)", color: "var(--deep)",
+                        borderRadius: 3, padding: "2px 6px", marginTop: 3,
+                      }}>{p.tag.toUpperCase()}</div>
+                    )}
+                  </div>
+                </button>
+              ))}
             </div>
 
-            {[
-              { icon: "🌿", label: "100% Ayurvedic",  sub: "No artificial ingredients" },
-              { icon: "🛡️", label: "No Side Effects",  sub: "Safe for long-term daily use" },
-              { icon: "🔄", label: "30-Day Guarantee", sub: "Full refund, no questions asked" },
-              { icon: "🚚", label: "Free Delivery",    sub: "Pan-India · Ships in 24 hours" },
-            ].map(({ icon, label, sub }) => (
-              <div key={label} style={{
-                display: "flex", gap: 16, alignItems: "center",
-                background: "var(--rs-cream)", borderRadius: "var(--r-md)",
-                padding: "16px 20px", border: "1px solid var(--rs-sand)",
+            {/* Primary CTA */}
+            <a href={S.wa.url} target="_blank" rel="noopener noreferrer"
+              className="btn btn-olive"
+              style={{
+                width: "100%", justifyContent: "center",
+                fontSize: 15, padding: 16, marginBottom: 12,
               }}>
-                <span style={{ fontSize: 24, flexShrink: 0 }}>{icon}</span>
-                <div>
-                  <p style={{ fontWeight: 600, color: "var(--rs-dark)", margin: 0, fontSize: 14 }}>{label}</p>
-                  <p style={{ color: "var(--rs-text)", margin: 0, fontSize: 12 }}>{sub}</p>
+              Order Now — ₹{pack.price} →
+            </a>
+
+            {/* WhatsApp CTA */}
+            <a href={S.wa.url} target="_blank" rel="noopener noreferrer"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                gap: 8, width: "100%", padding: "13px 16px",
+                background: "#E7F7EE", borderRadius: "var(--r-sm)",
+                color: "#1A7A3A", fontSize: 14, fontWeight: 500,
+                border: "1px solid #c3e6cb", textDecoration: "none",
+              }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#1A7A3A">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              Order on WhatsApp
+            </a>
+
+            {/* Guarantee pills */}
+            <div style={{
+              display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 12, marginTop: 20,
+            }}>
+              {[
+                { label: "Free Delivery",    sub: "Pan India" },
+                { label: "30-Day Guarantee", sub: "Full refund" },
+                { label: "Ships in 24hrs",   sub: "Weekdays" },
+              ].map(g => (
+                <div key={g.label} style={{
+                  textAlign: "center",
+                  padding: "14px 8px",
+                  background: "var(--cream)",
+                  borderRadius: "var(--r-sm)",
+                  border: "1px solid var(--border)",
+                }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "var(--olive)", marginBottom: 2 }}>
+                    {g.label}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--muted)" }}>{g.sub}</div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
+
+        <style>{`
+          @media (max-width: 768px) {
+            .product-grid { grid-template-columns: 1fr !important; }
+            .product-sticky { position: static !important; }
+          }
+        `}</style>
       </section>
 
-      {/* ── Herb showcase ── */}
-      <section style={{ background: "var(--rs-cream)", padding: "var(--section-py) 0" }}>
-        <div className="container">
+      {/* ── HERB STRIP ── */}
+      <section className="section" style={{ background: "var(--white)" }}>
+        <div className="wrap">
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <span className="eyebrow">Inside Every Bag</span>
+            <span className="eyebrow">What&apos;s Inside</span>
             <h2>The 7-Herb Formula</h2>
-            <div className="divider divider--center" />
+            <div className="rule rule-c" />
           </div>
           <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: 20,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 16,
           }}>
-            {SITE.herbs.map((herb) => (
-              <div key={herb.id} style={{
-                background: "var(--rs-white)", borderRadius: "var(--r-lg)",
-                border: "1px solid var(--rs-sand)", overflow: "hidden",
+            {S.herbs.map(h => (
+              <div key={h.id} style={{
+                display: "flex", gap: 14, alignItems: "flex-start",
+                padding: "16px",
+                background: "var(--cream)",
+                borderRadius: "var(--r-sm)",
+                border: "1px solid var(--border)",
               }}>
-                <div style={{ position: "relative", paddingBottom: "65%", overflow: "hidden" }}>
-                  <Image
-                    src={herb.image}
-                    alt={herb.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    style={{ objectFit: "cover" }}
-                  />
+                <div style={{
+                  width: 56, height: 56, borderRadius: "var(--r-sm)",
+                  overflow: "hidden", flexShrink: 0,
+                  position: "relative",
+                }}>
+                  <Image src={h.img} alt={h.name} fill
+                    style={{ objectFit: "cover" }} sizes="56px" />
                 </div>
-                <div style={{ padding: "16px 18px" }}>
-                  <span style={{ fontSize: 10, color: "var(--rs-gold)", fontWeight: 700, letterSpacing: 2 }}>
-                    {herb.role.toUpperCase()}
-                  </span>
-                  <h3 style={{ fontSize: 16, marginTop: 4, marginBottom: 6 }}>{herb.name}</h3>
-                  <p style={{ fontSize: 13, lineHeight: 1.6, margin: 0 }}>{herb.benefit}</p>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "var(--dark)", marginBottom: 2 }}>
+                    {h.name}
+                  </p>
+                  <p style={{ fontSize: 11, fontStyle: "italic", color: "#aaa", marginBottom: 4 }}>
+                    {h.bot}
+                  </p>
+                  <p style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>
+                    {h.benefit}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
-
-      <PrefillModal
-        isOpen={isPrefillOpen}
-        isBusy={isPaying}
-        values={prefill}
-        onChange={setPrefill}
-        onClose={() => setIsPrefillOpen(false)}
-        onContinue={startPayment}
-      />
-
-      <MobileStickyBar
-        onBuyNow={() => setIsPrefillOpen(true)}
-        subline={`Rs ${selectedPlan.priceRupees} · Secure checkout · Ships tomorrow`}
-      />
-    </div>
-  );
-}
-
-function PrefillModal(props: {
-  isOpen: boolean;
-  isBusy: boolean;
-  values: { name: string; email: string; contact: string };
-  onChange: (v: { name: string; email: string; contact: string }) => void;
-  onClose: () => void;
-  onContinue: () => void;
-}) {
-  const { isOpen, isBusy, values, onChange, onClose, onContinue } = props;
-  if (!isOpen) return null;
-
-  const canContinue =
-    values.name.trim().length >= 2 &&
-    values.email.trim().includes("@") &&
-    values.contact.trim().length >= 8;
-
-  const inputStyle: React.CSSProperties = {
-    width: "100%", borderRadius: "var(--r-md)",
-    border: "1.5px solid var(--rs-sand)", padding: "12px 16px",
-    fontSize: 15, fontFamily: "var(--font-body)",
-    outline: "none", background: "var(--rs-white)",
-    color: "var(--rs-dark)", marginTop: 6,
-  };
-
-  return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 1000,
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
-    }}>
-      <button
-        aria-label="Close"
-        onClick={onClose}
-        type="button"
-        style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", border: "none", cursor: "pointer" }}
-      />
-      <div style={{
-        position: "relative", width: "100%", maxWidth: 440,
-        background: "var(--rs-white)", borderRadius: "var(--r-lg)", padding: 28,
-        boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-      }}>
-        <h3 style={{ marginBottom: 4, fontSize: 20 }}>Enter your details</h3>
-        <p style={{ fontSize: 14, color: "var(--rs-text)", marginBottom: 24 }}>
-          We&apos;ll prefill these in Razorpay Checkout.
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <label>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--rs-dark)" }}>Name</span>
-            <input style={inputStyle} value={values.name}
-              onChange={(e) => onChange({ ...values, name: e.target.value })}
-              placeholder="Your full name" autoComplete="name" />
-          </label>
-          <label>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--rs-dark)" }}>Email</span>
-            <input style={inputStyle} value={values.email}
-              onChange={(e) => onChange({ ...values, email: e.target.value })}
-              placeholder="you@example.com" inputMode="email" autoComplete="email" />
-          </label>
-          <label>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--rs-dark)" }}>Mobile</span>
-            <input style={inputStyle} value={values.contact}
-              onChange={(e) => onChange({ ...values, contact: e.target.value })}
-              placeholder="10-digit mobile" inputMode="tel" autoComplete="tel" />
-            <p style={{ fontSize: 12, color: "var(--rs-text)", marginTop: 4 }}>
-              Never shared. Only used for order updates.
-            </p>
-          </label>
-        </div>
-        <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
-          <button
-            type="button"
-            onClick={onContinue}
-            disabled={!canContinue || isBusy}
-            style={{
-              background: "var(--rs-olive)", color: "var(--rs-cream)",
-              border: "none", borderRadius: "var(--r-md)", padding: "16px",
-              fontSize: 16, fontWeight: 700, cursor: (!canContinue || isBusy) ? "not-allowed" : "pointer",
-              opacity: (!canContinue || isBusy) ? 0.55 : 1, width: "100%",
-            }}
-          >
-            Continue to Payment
-          </button>
-          <p style={{ fontSize: 12, textAlign: "center", color: "var(--rs-text)" }}>
-            Secure · Razorpay protected · Ships tomorrow
-          </p>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

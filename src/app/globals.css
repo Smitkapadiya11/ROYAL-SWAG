@@ -188,6 +188,8 @@ img { max-width: 100%; display: block; }
   .hero-grid {
     grid-template-columns: 1fr !important;
   }
+  .hero-image { order: -1; }
+  .hero-text  { order: 1;  }
 
   /* Steps — stack vertically */
   .steps-grid {

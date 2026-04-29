@@ -10,7 +10,7 @@ export default function HomePage() {
         minHeight: "92vh",
         background: "linear-gradient(160deg, #F2E6CE 0%, #EAD9B5 100%)",
         display: "flex", alignItems: "center",
-        padding: "80px var(--section-px) 60px",
+        padding: "40px var(--section-px) 60px",
       }}>
         <div className="container hero-grid" style={{
           display: "grid",
@@ -19,7 +19,7 @@ export default function HomePage() {
           width: "100%",
         }}>
           {/* Left */}
-          <div>
+          <div className="hero-text">
             <span className="eyebrow">Tar Out · Lung Detox Tea</span>
             <h1 style={{ marginBottom: 20, color: "var(--rs-deep)" }}>
               Your Lungs<br />Deserve Better.
@@ -54,47 +54,26 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right — product visual */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <div style={{
-              background: "linear-gradient(135deg, var(--rs-olive) 0%, var(--rs-deep) 100%)",
-              borderRadius: "var(--r-lg)", padding: 40,
-              display: "flex", flexDirection: "column", alignItems: "center",
-              gap: 24, maxWidth: 400, width: "100%",
-            }}>
-              <Image
-                src={SITE.herbs[0].image}
-                alt="Vasaka herb — Royal Swag Lung Detox Tea"
-                width={180}
-                height={180}
-                style={{ objectFit: "cover", borderRadius: "50%", border: "4px solid rgba(196,154,42,0.4)" }}
-              />
-              <div style={{ textAlign: "center", color: "var(--rs-cream)" }}>
-                <div style={{
-                  fontFamily: "var(--font-heading)", fontSize: 24,
-                  fontWeight: 700, marginBottom: 6,
-                }}>
-                  Royal Swag
-                </div>
-                <div style={{ fontSize: 13, opacity: 0.75, letterSpacing: 1 }}>
-                  LUNG DETOX TEA · 20 BAGS
-                </div>
-              </div>
-              <div style={{
-                background: "rgba(196,154,42,0.2)", border: "1px solid rgba(196,154,42,0.4)",
-                borderRadius: "var(--r-md)", padding: "12px 24px", textAlign: "center",
-              }}>
-                <span style={{ color: "var(--rs-gold)", fontWeight: 700, fontSize: 22 }}>
-                  {SITE.price.display}
-                </span>
-                <span style={{ color: "rgba(242,230,206,0.5)", fontSize: 13, marginLeft: 8, textDecoration: "line-through" }}>
-                  {SITE.price.mrp}
-                </span>
-                <div style={{ color: "rgba(242,230,206,0.65)", fontSize: 11, marginTop: 4, letterSpacing: 0.5 }}>
-                  FREE DELIVERY · COD AVAILABLE
-                </div>
-              </div>
-            </div>
+          {/* Right — product image */}
+          <div className="hero-image" style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+            <Image
+              src="/product/product-2.jpg"
+              alt="Royal Swag Tar Out Lung Detox Tea — 20 tea bags"
+              width={540}
+              height={540}
+              priority
+              style={{
+                objectFit: "contain",
+                maxWidth: "100%",
+                width: "100%",
+                height: "auto",
+                borderRadius: "var(--r-lg)",
+              }}
+            />
           </div>
         </div>
       </section>

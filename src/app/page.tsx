@@ -6,6 +6,46 @@ import HerbsCircle from "@/components/HerbsCircle";
 import MadeFor from "@/components/MadeFor";
 
 export default function Home() {
+  const routineSteps = [
+    {
+      n: "01",
+      title: "Brew",
+      desc: "One bag in 85–95°C water. Steep 5 minutes. No milk.",
+      icon: (
+        <svg viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
+          <path d="M10 16h24v16a8 8 0 0 1-8 8h-8a8 8 0 0 1-8-8V16Z" fill="none" stroke="#4A6422" strokeWidth="2.2" />
+          <path d="M34 20h4a4 4 0 0 1 0 8h-4" fill="none" stroke="#4A6422" strokeWidth="2.2" />
+          <path d="M16 11c0-2 2-2.8 2-4.5M23 11c0-2 2-2.8 2-4.5M30 11c0-2 2-2.8 2-4.5" fill="none" stroke="#C49A2A" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      n: "02",
+      title: "Drink",
+      desc: "Twice daily — morning empty stomach and before bed.",
+      icon: (
+        <svg viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
+          <path d="M14 10h20l-2.5 24a4 4 0 0 1-4 3.6h-7a4 4 0 0 1-4-3.6L14 10Z" fill="none" stroke="#4A6422" strokeWidth="2.2" />
+          <path d="M14 15h20" stroke="#C49A2A" strokeWidth="2.2" />
+          <circle cx="24" cy="24" r="4.5" fill="none" stroke="#4A6422" strokeWidth="2.2" />
+        </svg>
+      ),
+    },
+    {
+      n: "03",
+      title: "Breathe",
+      desc: "Feel change by Day 7. Full lung detox in 30 days.",
+      icon: (
+        <svg viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
+          <path d="M24 9v30" stroke="#4A6422" strokeWidth="2.2" />
+          <path d="M24 19c-2-4-7-6-11-3.2-4.8 3.3-3.7 12.2 2 14.2 5.3 1.8 8.4-2.9 9-7.1" fill="none" stroke="#4A6422" strokeWidth="2.2" />
+          <path d="M24 19c2-4 7-6 11-3.2 4.8 3.3 3.7 12.2-2 14.2-5.3 1.8-8.4-2.9-9-7.1" fill="none" stroke="#4A6422" strokeWidth="2.2" />
+          <path d="M10 36c2.5 1.8 5.1 2.7 8 2.7M30 38.7c3 0 5.5-.9 8-2.7" fill="none" stroke="#C49A2A" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <>
       {/* ═══ 1. HERO ═══════════════════════════════════════════════ */}
@@ -148,12 +188,21 @@ export default function Home() {
             display: "grid", gridTemplateColumns: "repeat(3,1fr)",
             gap: 2, background: "#D4C8A8", borderRadius: 12, overflow: "hidden",
           }}>
-            {[
-              { n: "01", title: "Brew",    desc: "One bag in 85–95°C water. Steep 5 minutes. No milk." },
-              { n: "02", title: "Drink",   desc: "Twice daily — morning empty stomach and before bed." },
-              { n: "03", title: "Breathe", desc: "Feel change by Day 7. Full lung detox in 30 days." },
-            ].map(s => (
+            {routineSteps.map(s => (
               <div key={s.n} style={{ background: "#fff", padding: "48px 32px", textAlign: "center" }}>
+                <div style={{
+                  width: 58,
+                  height: 58,
+                  margin: "0 auto 18px",
+                  borderRadius: "50%",
+                  border: "1px solid #D4C8A8",
+                  background: "#F9F6F0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  {s.icon}
+                </div>
                 <div style={{
                   fontFamily: "var(--ff-head)", fontSize: 52, fontWeight: 700,
                   color: "#D4C8A8", lineHeight: 1, marginBottom: 20,

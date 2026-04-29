@@ -27,6 +27,10 @@ export default function ProductPage() {
   // ── 2-HOUR COUPON DEADLINE ────────────────────────────────────
   const [couponDisplay, setCouponDisplay] = useState("02:00:00");
   const [couponDead,    setCouponDead]    = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponMsg, setCouponMsg] = useState<string | null>(null);
+  const [couponMsgType, setCouponMsgType] = useState<"success" | "error" | null>(null);
 
   useEffect(() => {
     const KEY = "rs_offer_end";
@@ -67,6 +71,46 @@ export default function ProductPage() {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
+
+  const isCouponApplied = appliedCoupon === "LUNG25";
+  const discountAmount = isCouponApplied ? Math.round(pack.price * 0.25) : 0;
+  const payableAmount = pack.price - discountAmount;
+
+  const applyCoupon = (rawCode: string) => {
+    const normalized = rawCode.trim().toLowerCase();
+
+    if (couponDead) {
+      setCouponMsgType("error");
+      setCouponMsg("Coupon window expired. It resets every 2 hours.");
+      setAppliedCoupon(null);
+      return;
+    }
+
+    if (normalized === "lung25") {
+      setAppliedCoupon("LUNG25");
+      setCouponMsgType("success");
+      setCouponMsg("Coupon applied successfully. 25% off unlocked.");
+      return;
+    }
+
+    if (normalized.length > 0) {
+      setAppliedCoupon(null);
+      setCouponMsgType("error");
+      setCouponMsg("Invalid coupon code.");
+    } else {
+      setAppliedCoupon(null);
+      setCouponMsgType(null);
+      setCouponMsg(null);
+    }
+  };
+
+  useEffect(() => {
+    if (couponDead && appliedCoupon) {
+      setAppliedCoupon(null);
+      setCouponMsgType("error");
+      setCouponMsg("Coupon window expired. It resets every 2 hours.");
+    }
+  }, [couponDead, appliedCoupon]);
 
 
   return (
@@ -267,27 +311,34 @@ export default function ProductPage() {
                       display: "flex", alignItems: "center", gap: 10,
                       background: "#fff",
                       border: "1.5px dashed rgba(196,154,42,0.6)",
-                      borderRadius: 8, padding: "10px 16px",
+                      borderRadius: 8, padding: "10px",
                     }}>
-                      <span style={{
-                        fontFamily: "'Courier New', monospace",
-                        fontSize: 20, fontWeight: 800,
-                        color: "#4A6422", letterSpacing: "4px", flex: 1,
-                      }}>LUNG25</span>
+                      <input
+                        value={couponInput}
+                        onChange={(e) => {
+                          const next = e.target.value.toUpperCase();
+                          setCouponInput(next);
+                          applyCoupon(next);
+                        }}
+                        placeholder="Enter coupon code"
+                        aria-label="Coupon code"
+                        style={{
+                          flex: 1,
+                          border: "1px solid rgba(212,200,168,0.9)",
+                          borderRadius: 6,
+                          padding: "10px 12px",
+                          fontSize: 14,
+                          fontWeight: 600,
+                          color: "#2D3D15",
+                          textTransform: "uppercase",
+                          letterSpacing: "1px",
+                          outline: "none",
+                        }}
+                      />
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText("LUNG25").then(() => {
-                            const el = document.getElementById("rs-copy-btn");
-                            if (el) {
-                              el.textContent = "Copied ✓";
-                              el.style.background = "#2D3D15";
-                              setTimeout(() => {
-                                if (el) { el.textContent = "Copy"; el.style.background = "#4A6422"; }
-                              }, 2200);
-                            }
-                          });
+                          applyCoupon(couponInput);
                         }}
-                        id="rs-copy-btn"
                         style={{
                           background: "#4A6422", color: "#F2E6CE",
                           border: "none", borderRadius: 6,
@@ -295,8 +346,24 @@ export default function ProductPage() {
                           fontWeight: 600, cursor: "pointer",
                           transition: "background 0.2s",
                         }}
-                      >Copy</button>
+                      >
+                        Apply
+                      </button>
                     </div>
+
+                    {couponMsg && (
+                      <p
+                        role="status"
+                        style={{
+                          marginTop: 10,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: couponMsgType === "success" ? "#2D7A4A" : "#9A2A2A",
+                        }}
+                      >
+                        {couponMsg}
+                      </p>
+                    )}
 
                     <p style={{
                       fontSize: 11, color: "#5C5647",
@@ -310,10 +377,30 @@ export default function ProductPage() {
               </div>
 
               {/* Order Now — Razorpay */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 10,
+                gap: 12,
+                flexWrap: "wrap" as const,
+              }}>
+                <p style={{ fontSize: 13, color: "#5C5647" }}>
+                  Payable now:
+                  <strong style={{ color: "#2D3D15", marginLeft: 6 }}>
+                    ₹{payableAmount}
+                  </strong>
+                </p>
+                {isCouponApplied && (
+                  <p style={{ fontSize: 12, color: "#2D7A4A", fontWeight: 600 }}>
+                    LUNG25 saved ₹{discountAmount}
+                  </p>
+                )}
+              </div>
               <RazorpayButton
-                amount={pack.price}
+                amount={payableAmount}
                 packLabel={`${pack.bags} (${pack.days})`}
-                label={`Order Now — ₹${pack.price} →`}
+                label={`Order Now — ₹${payableAmount} →`}
                 fullWidth
               />
 

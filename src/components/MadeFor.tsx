@@ -11,8 +11,8 @@ export default function MadeFor() {
       body:
         "Nicotine clears in 72 hours. The tar and particle deposits from smoking take up to a decade without targeted herbs. Quitting is the hard part — clearing what is left behind is what Royal Swag is for.",
       bg: "/images/product-7.jpg",
-      filter: "grayscale(80%) brightness(0.55)",
-      overlay: "rgba(0,0,0,0.28)",
+      filter: "grayscale(88%) brightness(0.45)",
+      overlay: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.72) 100%)",
     },
     {
       label: "City Dwellers",
@@ -21,8 +21,8 @@ export default function MadeFor() {
       body:
         "Delhi recorded zero clean-air days in 2025. Mumbai, Surat, Bengaluru aren't far behind. Every commute, every open window — your lungs absorb what they were never built to handle.",
       bg: "/images/product-8.jpg",
-      filter: "grayscale(80%) brightness(0.55)",
-      overlay: "rgba(0,0,0,0.28)",
+      filter: "grayscale(88%) brightness(0.45)",
+      overlay: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.74) 100%)",
     },
     {
       label: "Wellness Buyers",
@@ -31,8 +31,8 @@ export default function MadeFor() {
       body:
         "You read labels. Good. Every ingredient here comes with its Sanskrit name, its botanical name, and the precise reason it is in this formula. No hidden blends. No proprietary noise.",
       bg: "/images/product-9.jpg",
-      filter: "brightness(0.72) saturate(1.3)",
-      overlay: "rgba(20,40,0,0.22)",
+      filter: "brightness(0.72) saturate(1.2)",
+      overlay: "linear-gradient(180deg, rgba(12,30,0,0.06) 0%, rgba(12,30,0,0.68) 100%)",
     },
   ];
 
@@ -87,9 +87,9 @@ export default function MadeFor() {
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 3,
+            gap: 12,
             borderRadius: 18,
-            overflow: "hidden",
+            overflow: "visible",
           }} id="madefor-grid">
             {cards.map((c) => (
               <div
@@ -97,6 +97,8 @@ export default function MadeFor() {
                 style={{
                   position: "relative",
                   minHeight: 420,
+                  borderRadius: 18,
+                  isolation: "isolate",
                   overflow: "hidden",
                   display: "flex",
                   flexDirection: "column",
@@ -123,8 +125,17 @@ export default function MadeFor() {
                 {/* Content */}
                 <div style={{
                   position: "relative", zIndex: 2,
-                  padding: "36px 30px",
+                  padding: "24px",
+                  background:
+                    "linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.65) 32%, rgba(0,0,0,0.86) 100%)",
                 }}>
+                  <div style={{
+                    border: "1px solid rgba(255,255,255,0.16)",
+                    borderRadius: 14,
+                    background: "rgba(0,0,0,0.24)",
+                    backdropFilter: "blur(1px)",
+                    padding: "18px 18px 16px",
+                  }}>
                   {/* Big stat */}
                   <div style={{
                     fontFamily: "var(--ff-head)",
@@ -153,6 +164,7 @@ export default function MadeFor() {
                     color: "rgba(255,255,255,0.88)",
                     textShadow: "0 1px 6px rgba(0,0,0,0.7)",
                   }}>{c.body}</p>
+                  </div>
                 </div>
               </div>
             ))}

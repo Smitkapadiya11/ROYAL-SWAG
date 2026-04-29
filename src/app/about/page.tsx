@@ -184,34 +184,36 @@ export default function AboutPage() {
             gap: 24,
           }}>
             {S.team.map(m => (
-              <div key={m.id} className="card" style={{ overflow: "hidden" }}>
-                <div style={{
-                  position: "relative", width: "100%", paddingBottom: "80%",
-                  background: "var(--olive)",
-                }}>
-                  <Image
-                    src={m.img}
-                    alt={m.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 360px"
-                    style={{ objectFit: "cover" }}
-                  />
+              <div key={m.id} className="card" style={{ overflow: "hidden", textAlign: "center" }}>
+                {/* Circular photo */}
+                <div style={{ padding: "32px 28px 20px", display: "flex", justifyContent: "center" }}>
                   <div style={{
-                    position: "absolute", inset: 0,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontFamily: "var(--ff-head)", fontSize: 40,
-                    fontWeight: 600, color: "rgba(242,230,206,0.3)",
-                    zIndex: 0,
-                  }}>{m.initials}</div>
+                    position: "relative",
+                    width: 160, height: 160,
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    border: "4px solid #F2E6CE",
+                    boxShadow: "0 0 0 2px #4A6422",
+                    background: "#4A6422",
+                  }}>
+                    <Image
+                      src={m.img}
+                      alt={m.name}
+                      fill
+                      sizes="160px"
+                      style={{ objectFit: "cover", objectPosition: "top center" }}
+                    />
+                  </div>
                 </div>
-                <div style={{ padding: "24px 24px 28px" }}>
-                  <h3 style={{ fontSize: 19, marginBottom: 4 }}>{m.name}</h3>
+                {/* Text */}
+                <div style={{ padding: "0 24px 32px" }}>
+                  <h3 style={{ fontSize: 19, color: "#1A1A14", marginBottom: 4, fontWeight: 600 }}>{m.name}</h3>
                   <p style={{
-                    fontSize: 11, fontWeight: 600, letterSpacing: 2,
-                    color: "var(--gold)", marginBottom: 12,
-                    textTransform: "uppercase",
+                    fontSize: 11, fontWeight: 700, letterSpacing: 2,
+                    color: "#C49A2A", textTransform: "uppercase" as const, marginBottom: 14,
                   }}>{m.role}</p>
-                  <p style={{ fontSize: 13, lineHeight: 1.75 }}>{m.bio}</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.75, color: "#5C5647" }}>{m.bio}</p>
                 </div>
               </div>
             ))}

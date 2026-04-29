@@ -28,7 +28,7 @@ export default function Footer() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
             <Image
-              src="/images/ROYAL SWAG_logo.png"
+              src="/images/royal-swag-logo.png"
               alt="Royal Swag"
               width={36} height={36}
               style={{ filter: "brightness(0) invert(1)", opacity: 0.7 }}

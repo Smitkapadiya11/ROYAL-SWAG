@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { S } from "@/lib/config";
+import LungSlider from "@/components/LungSlider";
 
 export default function Home() {
   return (
@@ -121,161 +122,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ═══ 3. LUNG COMPARISON ════════════════════════════════════ */}
-      <section style={{
-        background: "transparent", padding: "80px 0",
-        borderTop: "1px solid rgba(212,200,168,0.5)",
-      }}>
-        <div className="w">
-          <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <span className="ey">Why It Matters</span>
-            <h2>Healthy Lungs vs<br />
-              <em style={{ fontStyle: "italic", color: "#4A6422" }}>Polluted Lungs</em>
-            </h2>
-            <div className="rl-c" />
-            <p style={{ maxWidth: 440, margin: "0 auto", fontSize: 15, color: "#5C5647" }}>
-              See exactly what pollution and smoking do inside your lungs —
-              and how Royal Swag reverses it.
-            </p>
-          </div>
-
-          {/* Before / After */}
-          <div id="lung-compare" style={{
-            display: "grid", gridTemplateColumns: "1fr 1fr",
-            gap: 2, background: "#D4C8A8", borderRadius: 12,
-            overflow: "hidden", marginBottom: 48,
-          }}>
-            {/* Unhealthy */}
-            <div style={{ background: "#fff", padding: "40px 32px", textAlign: "center" }}>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                background: "rgba(160,32,32,0.08)", border: "1px solid rgba(160,32,32,0.2)",
-                borderRadius: 20, padding: "5px 16px", marginBottom: 28,
-              }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#A02020", display: "inline-block" }} />
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#A02020" }}>POLLUTED LUNGS</span>
-              </div>
-              <svg viewBox="0 0 200 220" width="160" height="176" style={{ margin: "0 auto 24px", display: "block" }}>
-                <rect x="92" y="10" width="16" height="40" rx="8" fill="#8B4513" opacity="0.7"/>
-                <ellipse cx="70" cy="130" rx="52" ry="70" fill="#8B4513" opacity="0.3"/>
-                <ellipse cx="70" cy="130" rx="45" ry="62" fill="#A0522D" opacity="0.4"/>
-                <ellipse cx="130" cy="130" rx="52" ry="70" fill="#8B4513" opacity="0.3"/>
-                <ellipse cx="130" cy="130" rx="45" ry="62" fill="#A0522D" opacity="0.4"/>
-                <circle cx="58" cy="110" r="12" fill="#5C3317" opacity="0.6"/>
-                <circle cx="80" cy="145" r="9" fill="#5C3317" opacity="0.5"/>
-                <circle cx="55" cy="155" r="7" fill="#5C3317" opacity="0.45"/>
-                <circle cx="140" cy="105" r="11" fill="#5C3317" opacity="0.6"/>
-                <circle cx="122" cy="140" r="8" fill="#5C3317" opacity="0.5"/>
-                <circle cx="148" cy="155" r="10" fill="#5C3317" opacity="0.55"/>
-                <path d="M50 120 Q60 130 55 145" stroke="#8B6914" strokeWidth="4" fill="none" opacity="0.6"/>
-                <path d="M138 115 Q148 128 143 148" stroke="#8B6914" strokeWidth="4" fill="none" opacity="0.6"/>
-                <path d="M100 50 Q80 70 70 90" stroke="#6B3A2A" strokeWidth="5" fill="none" strokeLinecap="round"/>
-                <path d="M100 50 Q120 70 130 90" stroke="#6B3A2A" strokeWidth="5" fill="none" strokeLinecap="round"/>
-              </svg>
-              <div style={{ marginBottom: 20 }}>
-                {[
-                  { label: "Airways", status: "Blocked",    color: "#A02020" },
-                  { label: "Mucus",   status: "Excessive",  color: "#A02020" },
-                  { label: "Oxygen",  status: "Restricted", color: "#A02020" },
-                  { label: "Energy",  status: "Depleted",   color: "#A02020" },
-                ].map(r => (
-                  <div key={r.label} style={{
-                    display: "flex", justifyContent: "space-between", alignItems: "center",
-                    padding: "8px 0", borderBottom: "1px solid #f0e8e8",
-                  }}>
-                    <span style={{ fontSize: 13, color: "#5C5647" }}>{r.label}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: r.color }}>{r.status}</span>
-                  </div>
-                ))}
-              </div>
-              <p style={{ fontSize: 13, color: "#A02020", fontStyle: "italic", lineHeight: 1.6 }}>
-                Daily symptoms: morning cough, breathlessness, chest heaviness, fatigue
-              </p>
-            </div>
-
-            {/* Healthy */}
-            <div style={{ background: "#F7FBF4", padding: "40px 32px", textAlign: "center" }}>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                background: "rgba(74,100,34,0.08)", border: "1px solid rgba(74,100,34,0.25)",
-                borderRadius: 20, padding: "5px 16px", marginBottom: 28,
-              }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#4A6422", display: "inline-block" }} />
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#4A6422" }}>AFTER ROYAL SWAG</span>
-              </div>
-              <svg viewBox="0 0 200 220" width="160" height="176" style={{ margin: "0 auto 24px", display: "block" }}>
-                <rect x="92" y="10" width="16" height="40" rx="8" fill="#4A6422" opacity="0.8"/>
-                <ellipse cx="70" cy="130" rx="52" ry="70" fill="#4A6422" opacity="0.15"/>
-                <ellipse cx="70" cy="130" rx="45" ry="62" fill="#4A6422" opacity="0.25"/>
-                <ellipse cx="130" cy="130" rx="52" ry="70" fill="#4A6422" opacity="0.15"/>
-                <ellipse cx="130" cy="130" rx="45" ry="62" fill="#4A6422" opacity="0.25"/>
-                <path d="M100 50 Q80 70 70 90" stroke="#4A6422" strokeWidth="5" fill="none" strokeLinecap="round"/>
-                <path d="M100 50 Q120 70 130 90" stroke="#4A6422" strokeWidth="5" fill="none" strokeLinecap="round"/>
-                <path d="M70 90 Q58 105 55 120" stroke="#6B9B5A" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                <path d="M70 90 Q75 110 72 130" stroke="#6B9B5A" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                <path d="M130 90 Q142 105 145 120" stroke="#6B9B5A" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                <path d="M130 90 Q125 110 128 130" stroke="#6B9B5A" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                <circle cx="58" cy="125" r="8" fill="#C49A2A" opacity="0.3"/>
-                <circle cx="78" cy="150" r="6" fill="#C49A2A" opacity="0.25"/>
-                <circle cx="142" cy="122" r="8" fill="#C49A2A" opacity="0.3"/>
-                <circle cx="122" cy="148" r="6" fill="#C49A2A" opacity="0.25"/>
-                <path d="M52 125 L57 130 L66 120" stroke="#4A6422" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M136 122 L141 127 L150 117" stroke="#4A6422" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <div style={{ marginBottom: 20 }}>
-                {[
-                  { label: "Airways",  status: "Clear",     color: "#4A6422" },
-                  { label: "Mucus",    status: "Dissolved", color: "#4A6422" },
-                  { label: "Oxygen",   status: "Flowing",   color: "#4A6422" },
-                  { label: "Energy",   status: "Restored",  color: "#4A6422" },
-                ].map(r => (
-                  <div key={r.label} style={{
-                    display: "flex", justifyContent: "space-between", alignItems: "center",
-                    padding: "8px 0", borderBottom: "1px solid rgba(74,100,34,0.1)",
-                  }}>
-                    <span style={{ fontSize: 13, color: "#5C5647" }}>{r.label}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: r.color }}>{r.status}</span>
-                  </div>
-                ))}
-              </div>
-              <p style={{ fontSize: 13, color: "#4A6422", fontStyle: "italic", lineHeight: 1.6 }}>
-                Most customers feel the difference by Day 7. Full detox in 30 days.
-              </p>
-            </div>
-          </div>
-
-          {/* Stat strip — white card with olive numbers */}
-          <div id="lung-stats" style={{
-            background: "#fff",
-            border: "1px solid #D4C8A8",
-            borderRadius: 12, padding: "32px 40px",
-            display: "grid", gridTemplateColumns: "repeat(4,1fr)",
-            gap: 24, textAlign: "center",
-          }}>
-            {[
-              { v: "9.78×",   l: "India PM2.5 vs WHO limit" },
-              { v: "10 Yrs",  l: "Tar stays after quitting" },
-              { v: "Day 7",   l: "When customers feel change" },
-              { v: "30 Days", l: "Full detox cycle" },
-            ].map(s => (
-              <div key={s.v}>
-                <div style={{
-                  fontFamily: "var(--ff-head)", fontSize: 26,
-                  fontWeight: 600, color: "#4A6422", marginBottom: 6,
-                }}>{s.v}</div>
-                <div style={{ fontSize: 12, color: "#5C5647", lineHeight: 1.5 }}>{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <style>{`
-          @media (max-width: 768px) {
-            #lung-compare { grid-template-columns: 1fr !important; }
-            #lung-stats   { grid-template-columns: repeat(2,1fr) !important; }
-          }
-        `}</style>
-      </section>
+      {/* ═══ 3. LUNG SLIDER ════════════════════════════════════════ */}
+      <LungSlider />
 
       {/* ═══ 4. HERBS ══════════════════════════════════════════════ */}
       <section style={{
@@ -300,16 +148,20 @@ export default function Home() {
             overflow: "hidden", border: "1px solid #D4C8A8",
           }}>
             {S.herbs.map((h, i) => (
-              <div key={h.id} style={{ background: "#fff" }}>
+              <div key={h.id} style={{
+                background: "#fff",
+                gridColumn: i === 6 ? "1 / -1" : "auto",
+              }}>
                 <div style={{
                   position: "relative", width: "100%",
-                  aspectRatio: "4/3", overflow: "hidden", background: "#F2E6CE",
+                  aspectRatio: i === 6 ? "16/5" : "4/3",
+                  overflow: "hidden", background: "#F2E6CE",
                 }}>
                   <Image
                     src={h.img}
                     alt={h.name}
                     fill
-                    sizes="(max-width:768px) 100vw, 300px"
+                    sizes={i === 6 ? "100vw" : "(max-width:768px) 100vw, 300px"}
                     style={{ objectFit: "cover" }}
                   />
                   <div style={{

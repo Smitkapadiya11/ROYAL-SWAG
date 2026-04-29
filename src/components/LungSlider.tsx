@@ -1,350 +1,278 @@
 "use client";
-
-// BEFORE & AFTER: separate photographic assets.
-
-import Image from "next/image";
-import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
-
-const BEFORE_IMAGE = "/images/lungs-before.png";
-const AFTER_IMAGE = "/images/lungs-after.png";
-
-const BEFORE_FILTER = "brightness(0.85) contrast(1.1)";
-const AFTER_FILTER = "brightness(1.05) saturate(1.1)";
-
-/** Fixed smoke particles (inside clipped BEFORE layer only). */
-const SMOKE_PARTICLES = [
-  { id: "s1", x: 8, y: 72, size: 28, duration: 7, delay: 0 },
-  { id: "s2", x: 18, y: 58, size: 22, duration: 6, delay: 1.2 },
-  { id: "s3", x: 28, y: 80, size: 32, duration: 8, delay: 0.4 },
-  { id: "s4", x: 38, y: 65, size: 20, duration: 5.5, delay: 2 },
-  { id: "s5", x: 48, y: 78, size: 26, duration: 7.5, delay: 0.8 },
-  { id: "s6", x: 15, y: 42, size: 18, duration: 6.5, delay: 1.5 },
-  { id: "s7", x: 55, y: 55, size: 24, duration: 7, delay: 2.5 },
-  { id: "s8", x: 62, y: 70, size: 20, duration: 5, delay: 0.2 },
-  { id: "s9", x: 72, y: 62, size: 30, duration: 8, delay: 1 },
-  { id: "s10", x: 22, y: 88, size: 22, duration: 6, delay: 3 },
-] as const;
+import { useRef, useState, useCallback, useEffect } from "react";
 
 export default function LungSlider() {
-  const [sliderPos, setSliderPos] = useState(72);
-  const [isDragging, setIsDragging] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState(50);
+  const [dragging, setDragging] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(860);
 
+  /* track container width for the clipped overlay */
   useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  const updateSlider = useCallback((clientX: number) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const pct = Math.min(Math.max((x / rect.width) * 100, 3), 97);
-    setSliderPos(pct);
-  }, []);
-
-  useEffect(() => {
-    if (!isDragging) return;
-    const move = (e: PointerEvent) => updateSlider(e.clientX);
-    const up = () => setIsDragging(false);
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-    window.addEventListener("pointercancel", up);
-    return () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-      window.removeEventListener("pointercancel", up);
+    const update = () => {
+      if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth);
     };
-  }, [isDragging, updateSlider]);
+    update();
+    const obs = new ResizeObserver(update);
+    if (containerRef.current) obs.observe(containerRef.current);
+    return () => obs.disconnect();
+  }, []);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    e.preventDefault();
-    try {
-      (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
-    }
-    setIsDragging(true);
-    updateSlider(e.clientX);
-  };
+  const updatePosition = useCallback((clientX: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    setPosition((x / rect.width) * 100);
+  }, []);
 
-  const clipBefore = `inset(0 ${100 - sliderPos}% 0 0)`;
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => { if (dragging) updatePosition(e.clientX); };
+    const onUp = () => setDragging(false);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [dragging, updatePosition]);
 
-  if (!mounted) {
-    return (
-      <section
-        style={{ background: "linear-gradient(180deg, #030d06 0%, #071a0a 100%)" }}
-        className="flex min-h-[600px] w-full items-center justify-center px-4 py-16"
-      >
-        <div className="h-96 w-full max-w-3xl animate-pulse rounded-2xl bg-[#0a2010]" />
-      </section>
-    );
-  }
+  const pct = `${position}%`;
+
+  const UNHEALTHY_ROWS = [
+    { k: "Airways", v: "Blocked",    c: "#A02020" },
+    { k: "Mucus",   v: "Excessive",  c: "#A02020" },
+    { k: "Oxygen",  v: "Restricted", c: "#A02020" },
+    { k: "Energy",  v: "Depleted",   c: "#A02020" },
+  ];
+  const HEALTHY_ROWS = [
+    { k: "Airways", v: "Clear",     c: "#4A6422" },
+    { k: "Mucus",   v: "Dissolved", c: "#4A6422" },
+    { k: "Oxygen",  v: "Flowing",   c: "#4A6422" },
+    { k: "Energy",  v: "Restored",  c: "#4A6422" },
+  ];
 
   return (
-    <section
-      style={{ background: "linear-gradient(180deg, #020b05 0%, #061508 50%, #020b05 100%)" }}
-      className="relative w-full overflow-hidden px-4 py-14"
-    >
-      <style>{`
-        @keyframes lungSliderBreatheImg {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.03) translateY(-3px); }
-        }
-        .lung-slider-after-breathe {
-          animation: lungSliderBreatheImg 4s ease-in-out infinite;
-        }
-        @keyframes lungSliderSmokeRise {
-          0% { transform: translateY(0) scale(1); opacity: 0.35; }
-          40% { opacity: 0.22; }
-          100% { transform: translateY(-42px) scale(1.2); opacity: 0; }
-        }
-      `}</style>
-
-      <div className="pointer-events-none absolute inset-0">
-        <div
-          className="absolute"
-          style={{
-            top: "20%",
-            left: "15%",
-            width: "300px",
-            height: "300px",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(220,38,38,0.08) 0%, transparent 70%)",
-            filter: "blur(40px)",
-          }}
-        />
-        <div
-          className="absolute"
-          style={{
-            top: "20%",
-            right: "15%",
-            width: "300px",
-            height: "300px",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(22,163,74,0.1) 0%, transparent 70%)",
-            filter: "blur(40px)",
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 mb-3 text-center">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#4ade80]">
-          The Science Behind Royal Swag
-        </p>
-        <h2 className="mb-3 text-3xl font-bold text-white md:text-5xl" style={{ fontFamily: "serif" }}>
-          See The Difference
-        </h2>
-        <p className="mx-auto max-w-md text-sm text-[#6b9e7a] md:text-base">
-          Drag the slider ← → to reveal your lung transformation in 30 days
-        </p>
-      </div>
-
-      <div className="relative z-10 mx-auto mb-3 flex max-w-3xl justify-between px-1">
-        <span className="text-xs font-bold uppercase tracking-widest text-[#ef4444]">← BEFORE</span>
-        <span className="text-xs font-bold uppercase tracking-widest text-[#4ade80]">AFTER 30 DAYS →</span>
-      </div>
-
-      <div
-        ref={containerRef}
-        className="relative mx-auto h-[300px] touch-none overflow-hidden rounded-2xl md:h-[420px]"
-        style={{
-          width: "100%",
-          maxWidth: "700px",
-          cursor: isDragging ? "grabbing" : "grab",
-          userSelect: "none",
-          boxShadow: "0 0 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05)",
-        }}
-        onPointerDown={handlePointerDown}
-      >
-        {/* LAYER 1 — AFTER (full width, bottom; badges only visible where BEFORE clip does not cover) */}
-        <div
-          className="absolute inset-0 z-0"
-          style={{ background: "linear-gradient(135deg, #041a08, #0a3015)" }}
-        >
-          <div className="lung-slider-after-breathe relative h-full w-full">
-            <Image
-              src={AFTER_IMAGE}
-              alt="Healthy lungs after care"
-              fill
-              sizes="(max-width: 768px) 100vw, 700px"
-              className="object-cover"
-              style={{ filter: AFTER_FILTER }}
-              draggable={false}
-            />
-          </div>
-          <div
-            className="pointer-events-none absolute inset-0 z-[1]"
-            style={{ background: "rgba(10, 60, 20, 0.2)" }}
-          />
-          <div
-            className="pointer-events-none absolute right-4 top-4 z-10 flex flex-col items-end gap-2"
-            aria-hidden="true"
-          >
-            {[
-              { icon: "💚", text: "Detoxified" },
-              { icon: "🌿", text: "Clear Airways" },
-            ].map(({ icon, text }) => (
-              <div
-                key={text}
-                className="flex items-center gap-1.5 rounded-full border border-green-400/30 bg-green-800/90 px-3 py-1.5 text-[11px] font-bold text-green-50 shadow-lg backdrop-blur-sm"
-              >
-                <span>{icon}</span>
-                <span>{text}</span>
-              </div>
-            ))}
-          </div>
-          <div
-            className="pointer-events-none absolute bottom-16 right-4 z-10 flex flex-col items-end gap-2"
-            aria-hidden="true"
-          >
-            {[
-              { icon: "⚡", text: "Full Energy" },
-              { icon: "🫁", text: "Strong Lungs" },
-            ].map(({ icon, text }) => (
-              <div
-                key={text}
-                className="flex items-center gap-1.5 rounded-full border border-green-400/30 bg-green-800/90 px-3 py-1.5 text-[11px] font-bold text-green-50 shadow-lg backdrop-blur-sm"
-              >
-                <span>{icon}</span>
-                <span>{text}</span>
-              </div>
-            ))}
-          </div>
+    <section style={{
+      background: "transparent",
+      padding: "80px 0",
+      borderTop: "1px solid rgba(212,200,168,0.5)",
+    }}>
+      <div className="w">
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <span className="ey">Why It Matters</span>
+          <h2 style={{ fontSize: "clamp(26px,3.5vw,42px)", marginBottom: 8 }}>
+            Healthy Lungs vs<br />
+            <em style={{ fontStyle: "italic", color: "#4A6422" }}>Polluted Lungs</em>
+          </h2>
+          <div className="rl-c" />
+          <p style={{ maxWidth: 420, margin: "0 auto", fontSize: 15, color: "#5C5647" }}>
+            Drag the slider to see exactly what pollution and smoking do inside
+            your lungs — and how Royal Swag reverses it.
+          </p>
         </div>
 
-        {/* LAYER 2 — BEFORE (clipped to left of slider); badges + smoke only appear in this region */}
-        <div className="absolute inset-0 z-[5]" style={{ clipPath: clipBefore }}>
-          <div
-            className="absolute inset-0"
-            style={{ background: "linear-gradient(135deg, #1a0404, #2a0606)" }}
-          />
-          <div className="relative h-full w-full">
-            <Image
-              src={BEFORE_IMAGE}
-              alt="Polluted lungs before Royal Swag"
-              fill
-              sizes="(max-width: 768px) 100vw, 700px"
-              className="object-cover object-center"
-              style={{ filter: BEFORE_FILTER }}
-              draggable={false}
-            />
-          </div>
-          <div
-            className="pointer-events-none absolute inset-0 z-[1]"
-            style={{ background: "rgba(80, 5, 5, 0.35)" }}
-          />
-          {SMOKE_PARTICLES.map((p) => (
-            <div
-              key={p.id}
-              className="pointer-events-none absolute rounded-full z-[2]"
-              style={{
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-                width: p.size,
-                height: p.size,
-                background: "radial-gradient(circle, rgba(180,120,80,0.35) 0%, transparent 70%)",
-                animation: `lungSliderSmokeRise ${p.duration}s ${p.delay}s ease-out infinite`,
-              }}
-            />
-          ))}
-          <div
-            className="pointer-events-none absolute left-4 top-4 z-10 flex flex-col gap-2"
-            aria-hidden="true"
-          >
-            {[
-              { icon: "🚬", text: "Smoking" },
-              { icon: "🏭", text: "Air Pollution" },
-            ].map(({ icon, text }) => (
-              <div
-                key={text}
-                className="flex items-center gap-1.5 rounded-full border border-red-400/20 bg-black/[0.82] px-3 py-1.5 text-[11px] font-bold text-white shadow-lg backdrop-blur-md"
-              >
-                <span>{icon}</span>
-                <span>{text}</span>
-              </div>
-            ))}
-          </div>
-          <div
-            className="pointer-events-none absolute bottom-16 left-4 z-10 flex flex-col gap-2"
-            aria-hidden="true"
-          >
-            {[
-              { icon: "😮‍💨", text: "Poor Breathing" },
-              { icon: "😴", text: "Low Energy" },
-            ].map(({ icon, text }) => (
-              <div
-                key={text}
-                className="flex items-center gap-1.5 rounded-full border border-red-400/20 bg-black/[0.82] px-3 py-1.5 text-[11px] font-bold text-white shadow-lg backdrop-blur-md"
-              >
-                <span>{icon}</span>
-                <span>{text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
+        {/* ── Slider container ── */}
         <div
-          className="absolute top-0 bottom-0 z-30 flex items-center justify-center"
-          style={{ left: `${sliderPos}%`, transform: "translateX(-50%)", width: "4px" }}
+          ref={containerRef}
+          onMouseDown={() => setDragging(true)}
+          onTouchStart={(e) => { setDragging(true); updatePosition(e.touches[0].clientX); }}
+          onTouchMove={(e) => { e.preventDefault(); updatePosition(e.touches[0].clientX); }}
+          style={{
+            position: "relative",
+            width: "100%",
+            maxWidth: 860,
+            margin: "0 auto",
+            borderRadius: 16,
+            overflow: "hidden",
+            cursor: "col-resize",
+            userSelect: "none",
+            border: "1px solid #D4C8A8",
+            boxShadow: "0 4px 32px rgba(45,61,21,0.08)",
+          }}
         >
-          <div className="absolute top-0 bottom-0 w-0.5 bg-white/90 shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
-          <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M8 5l-7 7 7 7M16 5l7 7-7 7"
-                stroke="#166534"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+          {/* ── BASE: POLLUTED (always visible, full width) ── */}
+          <div style={{
+            background: "#FFF8F5",
+            padding: "40px 6% 36px",
+            display: "flex", flexDirection: "column", alignItems: "center",
+          }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: "rgba(160,32,32,0.08)", border: "1px solid rgba(160,32,32,0.2)",
+              borderRadius: 20, padding: "5px 16px", marginBottom: 28,
+            }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#A02020", display: "inline-block" }} />
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#A02020" }}>POLLUTED LUNGS</span>
+            </div>
+
+            {/* Unhealthy lung SVG */}
+            <svg viewBox="0 0 260 280" width="200" height="215" style={{ marginBottom: 28, display: "block" }}>
+              <rect x="121" y="12" width="18" height="48" rx="9" fill="#9B5A3A" opacity="0.8"/>
+              <path d="M121 56 Q95 72 80 95" stroke="#7A3A22" strokeWidth="7" fill="none" strokeLinecap="round"/>
+              <path d="M139 56 Q165 72 180 95" stroke="#7A3A22" strokeWidth="7" fill="none" strokeLinecap="round"/>
+              <ellipse cx="75" cy="170" rx="58" ry="72" fill="#C4826A" opacity="0.35"/>
+              <ellipse cx="75" cy="170" rx="50" ry="64" fill="#A0522D" opacity="0.45"/>
+              <ellipse cx="185" cy="170" rx="58" ry="72" fill="#C4826A" opacity="0.35"/>
+              <ellipse cx="185" cy="170" rx="50" ry="64" fill="#A0522D" opacity="0.45"/>
+              <circle cx="62" cy="148" r="14" fill="#5C2E10" opacity="0.65"/>
+              <circle cx="85" cy="180" r="10" fill="#5C2E10" opacity="0.55"/>
+              <circle cx="58" cy="198" r="8" fill="#5C2E10" opacity="0.5"/>
+              <circle cx="80" cy="220" r="7" fill="#5C2E10" opacity="0.45"/>
+              <circle cx="198" cy="145" r="13" fill="#5C2E10" opacity="0.65"/>
+              <circle cx="175" cy="178" r="10" fill="#5C2E10" opacity="0.55"/>
+              <circle cx="200" cy="200" r="9" fill="#5C2E10" opacity="0.5"/>
+              <circle cx="177" cy="222" r="7" fill="#5C2E10" opacity="0.45"/>
+              <path d="M58 160 Q65 175 60 195" stroke="#8B6914" strokeWidth="5" fill="none" opacity="0.6" strokeLinecap="round"/>
+              <path d="M195 158 Q202 173 198 193" stroke="#8B6914" strokeWidth="5" fill="none" opacity="0.6" strokeLinecap="round"/>
+              <circle cx="75" cy="170" r="50" fill="none" stroke="#A02020" strokeWidth="2" opacity="0.2" strokeDasharray="6 4"/>
+              <circle cx="185" cy="170" r="50" fill="none" stroke="#A02020" strokeWidth="2" opacity="0.2" strokeDasharray="6 4"/>
             </svg>
-          </div>
-        </div>
 
-        <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center">
-          <div className="flex items-center gap-2 rounded-full bg-black/65 px-4 py-1.5 backdrop-blur-md">
-            <span className="text-[12px] text-[#ef4444]">● BEFORE</span>
-            <span className="text-[11px] text-gray-400">← drag →</span>
-            <span className="text-[12px] text-[#4ade80]">AFTER ●</span>
+            <div style={{ width: "100%", maxWidth: 300 }}>
+              {UNHEALTHY_ROWS.map(r => (
+                <div key={r.k} style={{
+                  display: "flex", justifyContent: "space-between",
+                  padding: "9px 0", borderBottom: "1px solid rgba(160,32,32,0.1)",
+                }}>
+                  <span style={{ fontSize: 14, color: "#5C5647" }}>{r.k}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: r.c, letterSpacing: 0.5 }}>{r.v}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ marginTop: 16, fontSize: 13, color: "#A02020", fontStyle: "italic", textAlign: "center", lineHeight: 1.6 }}>
+              Morning cough · Breathlessness · Chest heaviness
+            </p>
           </div>
-        </div>
-      </div>
 
-      <div className="relative z-10 mt-8 flex flex-wrap justify-center gap-3">
-        {[
-          { emoji: "🌿", name: "Tulsi", benefit: "Antibacterial" },
-          { emoji: "🍃", name: "Vasaka", benefit: "Clears Toxins" },
-          { emoji: "🌱", name: "Mulethi", benefit: "Repairs Lining" },
-          { emoji: "🫚", name: "Pippali", benefit: "Lung Strength" },
-        ].map(({ emoji, name, benefit }) => (
-          <div
-            key={name}
-            className="flex items-center gap-2 rounded-full border border-green-400/20 bg-[rgba(22,101,52,0.3)] px-4 py-2 backdrop-blur-sm"
-          >
-            <span className="text-base">{emoji}</span>
-            <div>
-              <p className="text-xs font-semibold leading-tight text-white">{name}</p>
-              <p className="text-[10px] text-[#4ade80]">{benefit}</p>
+          {/* ── OVERLAY: HEALTHY (clipped to slider position) ── */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, bottom: 0,
+            width: pct, overflow: "hidden", pointerEvents: "none",
+          }}>
+            <div style={{
+              background: "#F4FBF4",
+              padding: "40px 6% 36px",
+              width: containerWidth,
+              display: "flex", flexDirection: "column", alignItems: "center",
+            }}>
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: "rgba(74,100,34,0.08)", border: "1px solid rgba(74,100,34,0.25)",
+                borderRadius: 20, padding: "5px 16px", marginBottom: 28,
+              }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#4A6422", display: "inline-block" }} />
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#4A6422" }}>AFTER ROYAL SWAG</span>
+              </div>
+
+              {/* Healthy lung SVG */}
+              <svg viewBox="0 0 260 280" width="200" height="215" style={{ marginBottom: 28, display: "block" }}>
+                <rect x="121" y="12" width="18" height="48" rx="9" fill="#4A6422" opacity="0.85"/>
+                <path d="M121 56 Q95 72 80 95" stroke="#4A6422" strokeWidth="7" fill="none" strokeLinecap="round"/>
+                <path d="M139 56 Q165 72 180 95" stroke="#4A6422" strokeWidth="7" fill="none" strokeLinecap="round"/>
+                <path d="M80 95 Q66 115 62 140" stroke="#6B9B5A" strokeWidth="4" fill="none" strokeLinecap="round"/>
+                <path d="M80 95 Q85 118 82 145" stroke="#6B9B5A" strokeWidth="4" fill="none" strokeLinecap="round"/>
+                <path d="M80 95 Q68 132 72 165" stroke="#6B9B5A" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.6"/>
+                <path d="M180 95 Q194 115 198 140" stroke="#6B9B5A" strokeWidth="4" fill="none" strokeLinecap="round"/>
+                <path d="M180 95 Q175 118 178 145" stroke="#6B9B5A" strokeWidth="4" fill="none" strokeLinecap="round"/>
+                <path d="M180 95 Q192 132 188 165" stroke="#6B9B5A" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.6"/>
+                <ellipse cx="75" cy="170" rx="58" ry="72" fill="#4A6422" opacity="0.1"/>
+                <ellipse cx="75" cy="170" rx="50" ry="64" fill="#4A6422" opacity="0.18"/>
+                <ellipse cx="185" cy="170" rx="58" ry="72" fill="#4A6422" opacity="0.1"/>
+                <ellipse cx="185" cy="170" rx="50" ry="64" fill="#4A6422" opacity="0.18"/>
+                <circle cx="60" cy="155" r="10" fill="#C49A2A" opacity="0.25"/>
+                <circle cx="85" cy="190" r="8" fill="#C49A2A" opacity="0.2"/>
+                <circle cx="65" cy="215" r="7" fill="#C49A2A" opacity="0.2"/>
+                <circle cx="200" cy="152" r="10" fill="#C49A2A" opacity="0.25"/>
+                <circle cx="175" cy="188" r="8" fill="#C49A2A" opacity="0.2"/>
+                <circle cx="198" cy="215" r="7" fill="#C49A2A" opacity="0.2"/>
+                <path d="M53 155 L59 161 L70 149" stroke="#4A6422" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M193 152 L199 158 L210 146" stroke="#4A6422" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+
+              <div style={{ width: "100%", maxWidth: 300 }}>
+                {HEALTHY_ROWS.map(r => (
+                  <div key={r.k} style={{
+                    display: "flex", justifyContent: "space-between",
+                    padding: "9px 0", borderBottom: "1px solid rgba(74,100,34,0.1)",
+                  }}>
+                    <span style={{ fontSize: 14, color: "#5C5647" }}>{r.k}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: r.c, letterSpacing: 0.5 }}>{r.v}</span>
+                  </div>
+                ))}
+              </div>
+              <p style={{ marginTop: 16, fontSize: 13, color: "#4A6422", fontStyle: "italic", textAlign: "center", lineHeight: 1.6 }}>
+                Feel the difference by Day 7. Full detox in 30 days.
+              </p>
             </div>
           </div>
-        ))}
+
+          {/* ── DRAG HANDLE ── */}
+          <div
+            onMouseDown={() => setDragging(true)}
+            onTouchStart={(e) => { setDragging(true); updatePosition(e.touches[0].clientX); }}
+            style={{
+              position: "absolute", top: 0, bottom: 0,
+              left: pct, transform: "translateX(-50%)",
+              width: 48,
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              cursor: "col-resize", zIndex: 10, pointerEvents: "all",
+            }}
+          >
+            <div style={{
+              position: "absolute", top: 0, bottom: 0, left: "50%",
+              transform: "translateX(-50%)", width: 2,
+              background: "#4A6422", opacity: 0.7,
+            }} />
+            <div style={{
+              width: 44, height: 44, borderRadius: "50%",
+              background: "#2D3D15", border: "3px solid #F2E6CE",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 2px 16px rgba(0,0,0,0.25)", zIndex: 1, flexShrink: 0,
+            }}>
+              <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                <path d="M7 1L1 7L7 13" stroke="#F2E6CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M13 1L19 7L13 13" stroke="#F2E6CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <p style={{ textAlign: "center", marginTop: 16, fontSize: 12, color: "#5C5647", opacity: 0.6 }}>
+          ← Drag to compare →
+        </p>
+
+        {/* Stats strip */}
+        <div id="lung-stats" style={{
+          display: "grid", gridTemplateColumns: "repeat(4,1fr)",
+          gap: 16, marginTop: 48,
+          padding: "28px 32px",
+          background: "#fff", borderRadius: 12, border: "1px solid #D4C8A8",
+        }}>
+          {[
+            { v: "9.78×",   l: "India PM2.5 vs WHO" },
+            { v: "10 Yrs",  l: "Tar stays after quitting" },
+            { v: "Day 7",   l: "When customers feel change" },
+            { v: "30 Days", l: "Full detox cycle" },
+          ].map(s => (
+            <div key={s.v} style={{ textAlign: "center" }}>
+              <div style={{
+                fontFamily: "var(--ff-head)", fontSize: 24,
+                fontWeight: 600, color: "#4A6422", marginBottom: 4,
+              }}>{s.v}</div>
+              <div style={{ fontSize: 12, color: "#5C5647", lineHeight: 1.5 }}>{s.l}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="relative z-10 mt-8 text-center">
-        <p className="mb-4 text-sm text-[#6b9e7a]">Trusted by 5000+ customers across India</p>
-        <Link
-          href="/product"
-          className="inline-block rounded-xl bg-gradient-to-br from-green-600 to-green-700 px-10 py-4 text-lg font-bold text-white shadow-[0_8px_32px_rgba(22,163,74,0.4)] transition hover:-translate-y-0.5"
-        >
-          Start Your 30-Day Lung Detox — Rs 359 →
-        </Link>
-        <p className="mt-3 text-xs text-[#4b7a59]">
-          🔒 Secure Payment &nbsp;|&nbsp; 🚚 Free Delivery &nbsp;|&nbsp; ↩️ 30-Day Guarantee
-        </p>
-      </div>
+      <style>{`
+        @media (max-width: 768px) {
+          #lung-stats { grid-template-columns: repeat(2,1fr) !important; padding: 20px 16px !important; }
+        }
+      `}</style>
     </section>
   );
 }

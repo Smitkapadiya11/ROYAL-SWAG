@@ -23,6 +23,10 @@ export default function ProductPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [paying, setPaying] = useState(false);
 
+  // ── 2-HOUR COUPON DEADLINE ────────────────────────────────────
+  const [couponDisplay, setCouponDisplay] = useState("02:00:00");
+  const [couponDead,    setCouponDead]    = useState(false);
+
   useEffect(() => {
     const KEY = "rs_offer_end";
     let end = parseInt(localStorage.getItem(KEY) || "0");
@@ -36,6 +40,27 @@ export default function ProductPage() {
       const m = String(Math.floor((d % 3600000) / 60000)).padStart(2, "0");
       const s = String(Math.floor((d % 60000) / 1000)).padStart(2, "0");
       setTime(`${h}:${m}:${s}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const KEY = "rs_coupon_end";
+    const TWO_HRS = 2 * 60 * 60 * 1000;
+    let end = parseInt(localStorage.getItem(KEY) || "0");
+    if (!end || end < Date.now()) {
+      end = Date.now() + TWO_HRS;
+      localStorage.setItem(KEY, String(end));
+    }
+    const tick = () => {
+      const diff = Math.max(0, end - Date.now());
+      if (diff === 0) { setCouponDead(true); setCouponDisplay("00:00:00"); return; }
+      const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+      setCouponDisplay(`${h}:${m}:${s}`);
     };
     tick();
     const id = setInterval(tick, 1000);
@@ -105,54 +130,54 @@ export default function ProductPage() {
             alignItems: "flex-start",
           }}>
             {/* ── Image gallery panel ── */}
-            <div style={{ position: "sticky", top: 88 }}>
+            <div style={{
+              position: "sticky", top: 88,
+              background: "#fff",
+              borderRadius: 16, border: "1px solid #D4C8A8",
+              padding: 24,
+              display: "flex", flexDirection: "column", gap: 14,
+            }}>
               {/* Main image */}
               <div style={{
-                background: "#fff",
-                borderRadius: 16,
-                border: "1px solid #D4C8A8",
-                padding: 32,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                minHeight: 460,
-                marginBottom: 14,
+                aspectRatio: "1", position: "relative",
+                background: "#F2E6CE", borderRadius: 12, overflow: "hidden",
               }}>
                 <Image
-                  src={PRODUCT_IMAGES[activeImage]}
+                  src={PRODUCT_IMAGES[activeImage] ?? PRODUCT_IMAGES[0]}
                   alt="Royal Swag Lung Detox Tea"
-                  width={460} height={460}
+                  fill
                   priority
-                  style={{ objectFit: "contain", width: "100%", height: "auto", maxHeight: 420 }}
+                  sizes="(max-width: 768px) 100vw, 480px"
+                  style={{ objectFit: "contain", padding: 16 }}
                 />
               </div>
               {/* Thumbnails */}
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${PRODUCT_IMAGES.length}, 1fr)`,
-                gap: 10,
-              }}>
-                {PRODUCT_IMAGES.map((src, i) => (
-                  <button
-                    key={src}
-                    onClick={() => setActiveImage(i)}
-                    style={{
-                      background: "#fff",
-                      borderRadius: 8,
-                      border: activeImage === i ? "2px solid #4A6422" : "1px solid #D4C8A8",
-                      padding: 8,
-                      cursor: "pointer",
-                      transition: "all 0.15s",
-                      opacity: activeImage === i ? 1 : 0.65,
-                    }}
-                  >
-                    <Image
-                      src={src}
-                      alt={`View ${i + 1}`}
-                      width={100} height={80}
-                      style={{ objectFit: "contain", width: "100%", height: 72 }}
-                    />
-                  </button>
-                ))}
-              </div>
+              {PRODUCT_IMAGES.length > 1 && (
+                <div style={{ display: "flex", gap: 8 }}>
+                  {PRODUCT_IMAGES.map((src, i) => (
+                    <button
+                      key={src}
+                      onClick={() => setActiveImage(i)}
+                      style={{
+                        flex: 1, aspectRatio: "1",
+                        position: "relative",
+                        background: "#F2E6CE",
+                        border: activeImage === i ? "2px solid #4A6422" : "1px solid #D4C8A8",
+                        borderRadius: 8, padding: 6,
+                        cursor: "pointer", overflow: "hidden",
+                      }}
+                    >
+                      <Image
+                        src={src}
+                        alt={`Product view ${i + 1}`}
+                        fill
+                        sizes="72px"
+                        style={{ objectFit: "contain", padding: 4 }}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* ── Info panel ── */}
@@ -242,6 +267,96 @@ export default function ProductPage() {
                 ))}
               </div>
 
+              {/* ══ COUPON SECTION ══════════════════════════════════ */}
+              <div style={{
+                borderRadius: 10,
+                border: couponDead
+                  ? "1px solid rgba(212,200,168,0.6)"
+                  : "1.5px solid rgba(196,154,42,0.45)",
+                background: couponDead
+                  ? "rgba(212,200,168,0.12)"
+                  : "linear-gradient(135deg,rgba(196,154,42,0.07),rgba(74,100,34,0.07))",
+                padding: "18px 20px",
+                marginBottom: 16,
+              }}>
+                {couponDead ? (
+                  <p style={{ fontSize: 13, color: "#aaa", textAlign: "center" }}>
+                    This offer has expired. It resets every 2 hours.
+                  </p>
+                ) : (
+                  <>
+                    <div style={{
+                      display: "flex", justifyContent: "space-between",
+                      alignItems: "center", marginBottom: 12,
+                      flexWrap: "wrap" as const, gap: 10,
+                    }}>
+                      <div>
+                        <p style={{
+                          fontSize: 10, fontWeight: 700, letterSpacing: 2,
+                          color: "#C49A2A", marginBottom: 3,
+                        }}>⚡ SPECIAL OFFER — 25% OFF</p>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A14" }}>
+                          Apply at checkout for an extra 25% off
+                        </p>
+                      </div>
+                      <div style={{
+                        background: "#2D3D15", borderRadius: 8,
+                        padding: "8px 16px",
+                        fontFamily: "var(--ff-head)",
+                        fontSize: 22, fontWeight: 700,
+                        color: "#C49A2A", letterSpacing: "2px",
+                        fontVariantNumeric: "tabular-nums",
+                      }}>
+                        {couponDisplay}
+                      </div>
+                    </div>
+
+                    <div style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      background: "#fff",
+                      border: "1.5px dashed rgba(196,154,42,0.6)",
+                      borderRadius: 8, padding: "10px 16px",
+                    }}>
+                      <span style={{
+                        fontFamily: "'Courier New', monospace",
+                        fontSize: 20, fontWeight: 800,
+                        color: "#4A6422", letterSpacing: "4px", flex: 1,
+                      }}>LUNG25</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText("LUNG25").then(() => {
+                            const el = document.getElementById("rs-copy-btn");
+                            if (el) {
+                              el.textContent = "Copied ✓";
+                              el.style.background = "#2D3D15";
+                              setTimeout(() => {
+                                if (el) { el.textContent = "Copy"; el.style.background = "#4A6422"; }
+                              }, 2200);
+                            }
+                          });
+                        }}
+                        id="rs-copy-btn"
+                        style={{
+                          background: "#4A6422", color: "#F2E6CE",
+                          border: "none", borderRadius: 6,
+                          padding: "7px 16px", fontSize: 12,
+                          fontWeight: 600, cursor: "pointer",
+                          transition: "background 0.2s",
+                        }}
+                      >Copy</button>
+                    </div>
+
+                    <p style={{
+                      fontSize: 11, color: "#5C5647",
+                      marginTop: 8, opacity: 0.75, lineHeight: 1.5,
+                    }}>
+                      Offer expires in {couponDisplay}. Coupon resets every 2 hours.
+                      Use at checkout — valid once per order.
+                    </p>
+                  </>
+                )}
+              </div>
+
               {/* Order Now — Razorpay */}
               <button
                 onClick={handleRazorpay}
@@ -304,6 +419,128 @@ export default function ProductPage() {
         `}</style>
       </section>
 
+      {/* ══ HOW TO USE ══════════════════════════════════════════════ */}
+      <section style={{ padding: "80px 0", borderTop: "1px solid rgba(212,200,168,0.4)" }}>
+        <div className="w">
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <span className="ey">Instructions</span>
+            <h2>
+              Two cups a day.<br />
+              <em style={{ fontStyle: "italic", color: "#4A6422" }}>
+                That is genuinely all it takes.
+              </em>
+            </h2>
+            <div className="rl-c" />
+          </div>
+
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 2, background: "#D4C8A8",
+            borderRadius: 14, overflow: "hidden",
+          }} id="how-to-grid">
+            {[
+              {
+                n: "01", title: "Brew it properly",
+                desc: "Boil water to 90–95°C. Drop one bag in. Steep for 5 minutes — no less, no rushing. Skip the milk. A squeeze of lemon or a half-teaspoon of honey works fine.",
+              },
+              {
+                n: "02", title: "Drink it twice",
+                desc: "Morning, on an empty stomach before breakfast. Evening, 30 minutes before bed. Consistency beats intensity — show up daily.",
+              },
+              {
+                n: "03", title: "Give it the time",
+                desc: "Most people feel something by Day 7. A full detox cycle runs 30 days. For ex-smokers or heavy exposure — plan for 60 to 90 days.",
+              },
+            ].map(s => (
+              <div key={s.n} style={{ background: "#fff", padding: "44px 32px" }}>
+                <div style={{
+                  fontFamily: "var(--ff-head)", fontSize: 52, fontWeight: 700,
+                  color: "#F2E6CE", lineHeight: 1, marginBottom: 20,
+                }}>{s.n}</div>
+                <h3 style={{ fontSize: 20, marginBottom: 12 }}>{s.title}</h3>
+                <p style={{ fontSize: 14, color: "#5C5647", lineHeight: 1.8 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <style>{`@media (max-width: 768px) { #how-to-grid { grid-template-columns: 1fr !important; } }`}</style>
+      </section>
+
+      {/* ══ TIME EFFECT TIMELINE ════════════════════════════════════ */}
+      <section style={{ background: "#2D3D15", padding: "80px 0" }}>
+        <div className="w">
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <span className="ey" style={{ color: "rgba(196,154,42,0.7)" }}>What actually changes</span>
+            <h2 style={{ color: "#F2E6CE" }}>
+              The effects are real.<br />
+              <em style={{ fontStyle: "italic", color: "#C49A2A" }}>Here is the timeline.</em>
+            </h2>
+            <div className="rl-c" style={{ background: "#C49A2A" }} />
+          </div>
+
+          {/* 90-day badge */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 20,
+            background: "rgba(196,154,42,0.1)",
+            border: "1px solid rgba(196,154,42,0.28)",
+            borderRadius: 12, padding: "20px 28px", marginBottom: 48,
+            flexWrap: "wrap" as const,
+          }}>
+            <div style={{
+              fontFamily: "var(--ff-head)", fontSize: 56, fontWeight: 700,
+              color: "#C49A2A", lineHeight: 1, flexShrink: 0,
+            }}>90</div>
+            <div>
+              <p style={{ color: "#F2E6CE", fontWeight: 600, fontSize: 17, marginBottom: 4 }}>
+                Days — the full deep restoration cycle
+              </p>
+              <p style={{ color: "rgba(242,230,206,0.6)", fontSize: 14 }}>
+                Recommended for ex-smokers, high-pollution exposure, and chronic symptoms.
+                Most people start feeling it around Day 7. Real restoration takes longer.
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline rows */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, borderRadius: 12, overflow: "hidden" }}>
+            {[
+              { day: "Day 3–5",   color: "#C49A2A", title: "First signals",
+                desc: "Morning throat feels less sticky. Waking up without the automatic urge to clear your chest. Small — but you will notice." },
+              { day: "Day 7–10",  color: "#6B9B5A", title: "Breathing starts to open",
+                desc: "Stairs, walking fast, the commute — you are doing these without your chest feeling tight. Most customers send us a message around here." },
+              { day: "Day 14–21", color: "#4A6422", title: "Active clearing",
+                desc: "The body is actively moving accumulated buildup. Some experience temporary increase in expectoration — this is the detox working, not a side effect." },
+              { day: "Day 30",    color: "#3A7A4A", title: "First cycle complete",
+                desc: "Airways noticeably clearer. Energy levels improved. For most people, a second month locks in the results permanently." },
+              { day: "Day 60–90", color: "#2A6A3A", title: "Deep tissue restoration",
+                desc: "Where the real work happens for ex-smokers. Tar deposits break down at this depth. The Charaka Samhita formulation was designed for exactly this." },
+            ].map(t => (
+              <div key={t.day} style={{
+                display: "flex", gap: 24, alignItems: "flex-start",
+                background: "rgba(255,255,255,0.03)",
+                padding: "22px 28px",
+                borderLeft: `4px solid ${t.color}`,
+              }}>
+                <div style={{ minWidth: 88, flexShrink: 0 }}>
+                  <span style={{
+                    fontFamily: "var(--ff-head)", fontSize: 14,
+                    fontWeight: 600, color: t.color,
+                  }}>{t.day}</span>
+                </div>
+                <div>
+                  <p style={{ fontWeight: 600, fontSize: 15, color: "#F2E6CE", marginBottom: 5 }}>
+                    {t.title}
+                  </p>
+                  <p style={{ fontSize: 14, color: "rgba(242,230,206,0.62)", lineHeight: 1.75 }}>
+                    {t.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── HERB STRIP ── */}
       <section style={{ background: "transparent", padding: "80px 0", borderTop: "1px solid rgba(212,200,168,0.5)" }}>
         <div className="w">
@@ -312,16 +549,12 @@ export default function ProductPage() {
             <h2>The 7-Herb Formula</h2>
             <div className="rl-c" />
           </div>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-            gap: 16,
-          }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
             {S.herbs.map(h => (
               <div key={h.id} style={{
                 display: "flex", gap: 14, alignItems: "flex-start",
-                padding: "16px", background: "#fff",
-                borderRadius: 6, border: "1px solid rgba(212,200,168,0.6)",
+                padding: "14px 0",
+                borderBottom: "1px solid rgba(212,200,168,0.4)",
               }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 6,

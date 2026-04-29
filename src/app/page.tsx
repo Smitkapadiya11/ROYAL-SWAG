@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { S } from "@/lib/config";
 import LungSlider from "@/components/LungSlider";
+import HerbsCircle from "@/components/HerbsCircle";
+import MadeFor from "@/components/MadeFor";
 
 export default function Home() {
   return (
@@ -18,13 +20,15 @@ export default function Home() {
             <div>
               <span className="ey">Tar Out · Lung Detox Tea</span>
               <h1 style={{ color: "#2D3D15", marginBottom: 4, letterSpacing: "-0.5px" }}>
-                Your Lungs<br />
-                <em style={{ fontStyle: "italic", color: "#4A6422" }}>Deserve Better.</em>
+                Your lungs work hard.<br />
+                <em style={{ fontStyle: "italic", color: "#4A6422" }}>
+                  Give them a hand.
+                </em>
               </h1>
               <div className="rl" />
               <p style={{ fontSize: 17, maxWidth: 400, marginBottom: 28, color: "#5C5647", lineHeight: 1.75 }}>
-                7 ancient Ayurvedic herbs — formulated to cleanse, repair,
-                and protect your lungs from pollution and smoking damage.
+                7 herbs your lungs have been waiting for — because every day in India,
+                your lungs absorb what they were never built to handle.
               </p>
 
               {/* Price badge */}
@@ -126,67 +130,7 @@ export default function Home() {
       <LungSlider />
 
       {/* ═══ 4. HERBS ══════════════════════════════════════════════ */}
-      <section style={{
-        background: "transparent", padding: "80px 0",
-        borderTop: "1px solid rgba(212,200,168,0.5)",
-      }} id="herbs">
-        <div className="w">
-          <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <span className="ey">The Formula</span>
-            <h2>Seven Herbs.<br />
-              <em style={{ fontStyle: "italic", color: "#4A6422" }}>One Purpose.</em>
-            </h2>
-            <div className="rl-c" />
-            <p style={{ maxWidth: 400, margin: "0 auto", fontSize: 15, color: "#5C5647" }}>
-              No extracts. No fillers. Every herb chosen for one specific reason.
-            </p>
-          </div>
-
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap: 2, background: "#D4C8A8", borderRadius: 12,
-            overflow: "hidden", border: "1px solid #D4C8A8",
-          }}>
-            {S.herbs.map((h, i) => (
-              <div key={h.id} style={{
-                background: "#fff",
-                gridColumn: i === 6 ? "1 / -1" : "auto",
-              }}>
-                <div style={{
-                  position: "relative", width: "100%",
-                  aspectRatio: i === 6 ? "16/5" : "4/3",
-                  overflow: "hidden", background: "#F2E6CE",
-                }}>
-                  <Image
-                    src={h.img}
-                    alt={h.name}
-                    fill
-                    sizes={i === 6 ? "100vw" : "(max-width:768px) 100vw, 300px"}
-                    style={{ objectFit: "cover" }}
-                  />
-                  <div style={{
-                    position: "absolute", top: 12, left: 12,
-                    background: "#2D3D15", color: "#C49A2A",
-                    fontSize: 10, fontWeight: 700, letterSpacing: 2,
-                    padding: "4px 10px", borderRadius: 4,
-                  }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </div>
-                </div>
-                <div style={{ padding: "20px 22px 26px" }}>
-                  <span style={{
-                    fontSize: 10, letterSpacing: 2.5, fontWeight: 600,
-                    color: "#C49A2A", textTransform: "uppercase" as const,
-                  }}>{h.role}</span>
-                  <h3 style={{ fontSize: 18, marginTop: 6, marginBottom: 3, color: "#1A1A14" }}>{h.name}</h3>
-                  <p style={{ fontSize: 12, fontStyle: "italic", color: "#aaa", marginBottom: 8 }}>{h.bot}</p>
-                  <p style={{ fontSize: 14, lineHeight: 1.65, color: "#5C5647" }}>{h.benefit}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HerbsCircle />
 
       {/* ═══ 5. HOW IT WORKS ═══════════════════════════════════════ */}
       <section style={{
@@ -279,38 +223,39 @@ export default function Home() {
         `}</style>
       </section>
 
-      {/* ═══ 7. WHO NEEDS THIS ═════════════════════════════════════ */}
+      {/* ══ DETOX BRIDGE ════════════════════════════════════════════ */}
       <section style={{
-        background: "transparent", padding: "80px 0",
-        borderTop: "1px solid rgba(212,200,168,0.5)",
+        background: "#F2E6CE",
+        padding: "88px 0",
+        borderTop: "1px solid rgba(212,200,168,0.4)",
+        textAlign: "center",
       }}>
         <div className="w">
-          <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <span className="ey">Who It&apos;s For</span>
-            <h2>Made for Three People</h2>
-            <div className="rl-c" />
-          </div>
-          <div id="who-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
-            {[
-              { title: "Ex-Smokers",      desc: "Tar stays in your lungs up to 10 years after quitting. Quitting alone is not enough — active repair is essential." },
-              { title: "City Dwellers",   desc: "India's PM2.5 is 9.78× the WHO safe limit. This tea is your daily defence from the inside out." },
-              { title: "Wellness Buyers", desc: "Every herb shown with its Sanskrit name and exact purpose. No hidden blends. Full transparency." },
-            ].map(c => (
-              <div key={c.title} style={{
-                background: "#fff",
-                border: "1px solid rgba(74,100,34,0.15)",
-                borderRadius: 12, padding: "32px 26px",
-              }}>
-                <h3 style={{ color: "#1A1A14", fontSize: 18, marginBottom: 12 }}>{c.title}</h3>
-                <p style={{ fontSize: 14, lineHeight: 1.8, color: "#5C5647" }}>{c.desc}</p>
-              </div>
-            ))}
+          <span className="ey">The goal</span>
+          <h2 style={{ color: "#2D3D15", maxWidth: 640, margin: "0 auto 16px" }}>
+            Detox your lungs.<br />
+            <em style={{ fontStyle: "italic", color: "#4A6422" }}>
+              Land on the healthy side.
+            </em>
+          </h2>
+          <div className="rl-c" />
+          <p style={{
+            fontSize: 17, color: "#5C5647",
+            maxWidth: 460, margin: "0 auto 36px", lineHeight: 1.8,
+          }}>
+            Two versions of your lungs exist.
+            Which one you end up with depends entirely on what you do
+            in the next 30 days.
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/product" className="btn btn-olive">Start My 30-Day Detox →</a>
+            <a href="/lung-test" className="btn btn-ghost">Test My Lungs First</a>
           </div>
         </div>
-        <style>{`
-          @media (max-width: 768px) { #who-grid { grid-template-columns: 1fr !important; } }
-        `}</style>
       </section>
+
+      {/* ══ MADE FOR ════════════════════════════════════════════════ */}
+      <MadeFor />
 
       {/* ═══ 8. FINAL CTA ══════════════════════════════════════════ */}
       <section style={{ background: "#2D3D15", padding: "80px 0", textAlign: "center" }}>

@@ -1,7 +1,8 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Suspense } from "react";
+import Image from "next/image";
+import { Suspense, useState } from "react";
 
 const RISK = {
   mild: {
@@ -50,11 +51,19 @@ const RISK = {
 
 type RiskKey = keyof typeof RISK;
 
+// Image paths — update to exact filenames if/when specific risk-level photos are added
+const LUNG_PHOTOS: Record<"mild" | "moderate" | "high", string> = {
+  mild:     "/images/lungs-after.png",     // healthy lungs — best match for mild risk
+  moderate: "/images/lungs-before.png",    // polluted lungs — best match for moderate/high
+  high:     "/images/lungs-before.png",
+};
+
 function Result() {
   const params = useSearchParams();
   const router = useRouter();
   const scoreStr = params?.get("score");
   const name = decodeURIComponent(params?.get("name") ?? "there");
+  const [photoError, setPhotoError] = useState(false);
 
   if (!scoreStr && typeof window !== "undefined") {
     window.location.href = "/lung-test";
@@ -123,6 +132,48 @@ function Result() {
                 }}
               >↻ Retake test</button>
             </div>
+
+            {/* Conditional lung photo */}
+            {!photoError ? (
+              <div style={{
+                position: "relative", width: "100%", height: 220,
+                borderRadius: 10, overflow: "hidden",
+                marginBottom: 28, background: R.bg,
+              }}>
+                <Image
+                  src={LUNG_PHOTOS[level]}
+                  alt={`${R.label} lung profile`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 760px"
+                  style={{
+                    objectFit: "cover", objectPosition: "center",
+                    filter:
+                      level === "high"     ? "sepia(15%) saturate(0.85)" :
+                      level === "moderate" ? "sepia(8%)" :
+                      "none",
+                  }}
+                  onError={() => setPhotoError(true)}
+                />
+                <div style={{
+                  position: "absolute", bottom: 14, left: 14,
+                  background: `${R.color}DD`, color: "#fff",
+                  padding: "5px 14px", borderRadius: 20,
+                  fontSize: 10, fontWeight: 700, letterSpacing: 2,
+                }}>
+                  {R.label.toUpperCase()} — YOUR PROFILE
+                </div>
+              </div>
+            ) : (
+              <div style={{
+                height: 100, background: R.bg,
+                borderRadius: 10, marginBottom: 28,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <span style={{ fontFamily: "var(--ff-head)", fontSize: 48, color: R.color }}>
+                  {level === "high" ? "⚠" : level === "moderate" ? "◉" : "✓"}
+                </span>
+              </div>
+            )}
 
             {/* Risk meter */}
             <div style={{ marginBottom: 28 }}>

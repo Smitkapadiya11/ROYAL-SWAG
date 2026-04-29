@@ -251,6 +251,50 @@ export default function LungTestPage() {
               >No</button>
             </div>
 
+            {/* Visual engagement context card */}
+            <div style={{
+              marginTop: 32,
+              padding: "18px 20px",
+              background: "#fff",
+              borderRadius: 10,
+              border: "1px solid #D4C8A8",
+              display: "flex", gap: 16, alignItems: "flex-start",
+            }}>
+              <div style={{
+                width: 52, height: 52, borderRadius: "50%",
+                background: "#F2E6CE",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 24, flexShrink: 0,
+                filter: "grayscale(80%)",
+              }}>
+                {(["🏙️", "🚬", "😮‍💨", "🫁", "⚙️"] as const)[qIdx] ?? "🫁"}
+              </div>
+              <div>
+                <p style={{
+                  fontSize: 10, fontWeight: 700, letterSpacing: 2.5,
+                  color: "#C49A2A", marginBottom: 4,
+                  textTransform: "uppercase" as const,
+                }}>
+                  {[
+                    "POLLUTION RISK",
+                    "SMOKING RISK",
+                    "AIRWAY HEALTH",
+                    "BREATHING CAPACITY",
+                    "OCCUPATIONAL RISK",
+                  ][qIdx] ?? "LUNG HEALTH"}
+                </p>
+                <p style={{ fontSize: 13, color: "#5C5647", lineHeight: 1.65 }}>
+                  {[
+                    "Living in a high-pollution city is the number one non-smoking cause of lung damage in India. Your body doesn't tell you — it just absorbs.",
+                    "Nicotine clears your system in days. The tar and particle deposits from smoking can take 7–10 years to clear without targeted herbs.",
+                    "A morning cough means your lungs spent the night fighting inflammation they couldn't resolve. It is a signal, not a coincidence.",
+                    "Breathlessness on mild exertion is measurable. It means your oxygen transfer capacity has dropped — and that can be reversed.",
+                    "Occupational lung exposure is the most underdiagnosed cause of chronic respiratory decline in India. Most people attribute it to 'just getting older.'",
+                  ][qIdx] ?? "Your answers are building your personalised lung health report."}
+                </p>
+              </div>
+            </div>
+
             {qIdx > 0 && (
               <button
                 onClick={() => setQIdx(qIdx - 1)}

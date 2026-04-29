@@ -10,7 +10,7 @@ export default function Home() {
         minHeight: "100svh",
         background: "var(--cream)",
         display: "flex", alignItems: "center",
-        padding: "80px var(--px) 60px",
+        padding: "clamp(32px, 4vw, 60px) var(--px) 60px",
       }}>
         <div className="wrap" style={{
           display: "grid",
@@ -144,6 +144,160 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* ══ LUNG HEALTH JOURNEY ══════════════════════════════ */}
+      <section style={{
+        background: "var(--white)",
+        padding: "var(--py) 0",
+        overflow: "hidden",
+      }}>
+        <div className="wrap">
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <span className="eyebrow">Why It Matters</span>
+            <h2>What Happens Inside<br />
+              <em style={{ fontStyle: "italic", color: "var(--olive)" }}>
+                Your Lungs Every Day
+              </em>
+            </h2>
+            <div className="rule rule-c" />
+            <p style={{ maxWidth: 460, margin: "0 auto", fontSize: 15 }}>
+              Every breath in a polluted city deposits microscopic particles
+              that accumulate over years. Here is what the damage looks like —
+              and how Royal Swag reverses it.
+            </p>
+          </div>
+
+          {/* Timeline cards */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: 2,
+            background: "var(--sand)",
+            borderRadius: "var(--r)",
+            overflow: "hidden",
+            border: "1px solid var(--sand)",
+            marginBottom: 64,
+          }}>
+            {[
+              {
+                icon: (
+                  <svg viewBox="0 0 48 48" width="40" height="40" fill="none">
+                    <ellipse cx="16" cy="28" rx="10" ry="14" stroke="#4A6422" strokeWidth="2"/>
+                    <ellipse cx="32" cy="28" rx="10" ry="14" stroke="#4A6422" strokeWidth="2"/>
+                    <path d="M16 14 Q24 6 32 14" stroke="#4A6422" strokeWidth="2" fill="none"/>
+                    <path d="M20 22 Q16 26 18 32" stroke="#C49A2A" strokeWidth="1.5" fill="none"/>
+                    <path d="M28 22 Q32 26 30 32" stroke="#C49A2A" strokeWidth="1.5" fill="none"/>
+                  </svg>
+                ),
+                phase: "Phase 1", title: "Daily Exposure",
+                desc: "Every breath in Indian cities deposits PM2.5 particles into bronchial passages. Your lungs filter — but they accumulate.",
+                color: "var(--olive)",
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 48 48" width="40" height="40" fill="none">
+                    <ellipse cx="16" cy="28" rx="10" ry="14" stroke="#8B6914" strokeWidth="2"/>
+                    <ellipse cx="32" cy="28" rx="10" ry="14" stroke="#8B6914" strokeWidth="2"/>
+                    <path d="M16 14 Q24 6 32 14" stroke="#8B6914" strokeWidth="2" fill="none"/>
+                    <circle cx="18" cy="26" r="3" fill="#C49A2A" opacity="0.4"/>
+                    <circle cx="30" cy="30" r="2" fill="#C49A2A" opacity="0.4"/>
+                    <circle cx="22" cy="34" r="2.5" fill="#C49A2A" opacity="0.4"/>
+                  </svg>
+                ),
+                phase: "Phase 2", title: "Mucus & Blockage",
+                desc: "Airways narrow. Mucus thickens. Morning cough begins. Breathing becomes heavier, especially on exertion.",
+                color: "#8B6914",
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 48 48" width="40" height="40" fill="none">
+                    <ellipse cx="16" cy="28" rx="10" ry="14" stroke="#A02020" strokeWidth="2"/>
+                    <ellipse cx="32" cy="28" rx="10" ry="14" stroke="#A02020" strokeWidth="2"/>
+                    <path d="M16 14 Q24 6 32 14" stroke="#A02020" strokeWidth="2" fill="none"/>
+                    <path d="M12 24 Q16 28 12 34" stroke="#A02020" strokeWidth="1.5" opacity="0.6"/>
+                    <path d="M36 24 Q32 28 36 34" stroke="#A02020" strokeWidth="1.5" opacity="0.6"/>
+                    <circle cx="16" cy="30" r="4" fill="#A02020" opacity="0.15"/>
+                    <circle cx="32" cy="30" r="4" fill="#A02020" opacity="0.15"/>
+                  </svg>
+                ),
+                phase: "Phase 3", title: "Inflammation",
+                desc: "Chronic inflammation sets in. Tar residue from smoking or pollution bonds to lung tissue. Oxygen capacity drops.",
+                color: "#A02020",
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 48 48" width="40" height="40" fill="none">
+                    <ellipse cx="16" cy="28" rx="10" ry="14" stroke="#2D6A2D" strokeWidth="2"/>
+                    <ellipse cx="32" cy="28" rx="10" ry="14" stroke="#2D6A2D" strokeWidth="2"/>
+                    <path d="M16 14 Q24 6 32 14" stroke="#2D6A2D" strokeWidth="2" fill="none"/>
+                    <path d="M12 26 Q14 30 12 34" stroke="#4A6422" strokeWidth="1.5"/>
+                    <path d="M36 26 Q34 30 36 34" stroke="#4A6422" strokeWidth="1.5"/>
+                    <path d="M18 28 Q20 22 24 26 Q28 22 30 28" stroke="#C49A2A" strokeWidth="1.5" fill="none"/>
+                  </svg>
+                ),
+                phase: "Royal Swag", title: "Active Repair",
+                desc: "Vasaka dissolves mucus. Mulethi reduces inflammation. Pippali expands capacity. 7 herbs working together — daily.",
+                color: "var(--olive)",
+              },
+            ].map((s) => (
+              <div key={s.phase} style={{
+                background: "var(--white)",
+                padding: "36px 28px",
+                textAlign: "center",
+                display: "flex", flexDirection: "column", alignItems: "center",
+              }}>
+                <div style={{
+                  width: 72, height: 72,
+                  background: "var(--cream)", borderRadius: "50%",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  marginBottom: 20,
+                  border: `2px solid ${s.color}20`,
+                }}>
+                  {s.icon}
+                </div>
+                <span style={{
+                  fontSize: 10, fontWeight: 700, letterSpacing: 2,
+                  color: s.color, display: "block", marginBottom: 8,
+                }}>
+                  {s.phase.toUpperCase()}
+                </span>
+                <h3 style={{ fontSize: 17, marginBottom: 12, color: "var(--dark)" }}>
+                  {s.title}
+                </h3>
+                <p style={{ fontSize: 13, lineHeight: 1.75, color: "var(--muted)" }}>
+                  {s.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Lung stat bar */}
+          <div style={{
+            background: "var(--deep)", borderRadius: "var(--r)",
+            padding: "36px 40px",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: 24, textAlign: "center",
+          }}>
+            {[
+              { stat: "9.78×",  label: "India's PM2.5 vs WHO safe limit" },
+              { stat: "10 Yrs", label: "Tar stays after quitting smoking" },
+              { stat: "0",      label: "Clean air days in Delhi, 2025" },
+              { stat: "Day 7",  label: "When most customers notice change" },
+            ].map((s) => (
+              <div key={s.stat}>
+                <div style={{
+                  fontFamily: "var(--ff-head)", fontSize: 28,
+                  fontWeight: 600, color: "var(--gold)", marginBottom: 6,
+                }}>{s.stat}</div>
+                <div style={{
+                  fontSize: 12, color: "rgba(242,230,206,0.55)", lineHeight: 1.5,
+                }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ══ HERBS ═════════════════════════════════════════ */}
       <section className="section" id="herbs"
@@ -379,6 +533,80 @@ export default function Home() {
               .reviews-3col { grid-template-columns: 1fr !important; }
             }
           `}</style>
+        </div>
+      </section>
+
+      {/* ══ LUNG TEST CTA ═════════════════════════════════ */}
+      <section style={{
+        background: "var(--cream)",
+        padding: "var(--py) 0",
+        borderTop: "1px solid var(--border)",
+      }}>
+        <div className="wrap">
+          <div data-grid style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 64, alignItems: "center",
+          }}>
+            {/* Left */}
+            <div>
+              <span className="eyebrow">Free Assessment</span>
+              <h2 style={{ marginBottom: 12 }}>
+                Know Your<br />
+                <em style={{ fontStyle: "italic", color: "var(--olive)" }}>
+                  Lung Health Score.
+                </em>
+              </h2>
+              <div className="rule" />
+              <p style={{ marginBottom: 32, fontSize: 15 }}>
+                5 questions. 2 minutes. Get a personalised report
+                showing your lung risk level and which herbs
+                your profile needs most.
+              </p>
+              <Link href="/lung-test" className="btn btn-olive">
+                Take Free Lung Test →
+              </Link>
+            </div>
+
+            {/* Right — risk level visual */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {[
+                { level: "Mild Risk",     color: "#C49A2A", bg: "rgba(196,154,42,0.08)",  pct: 35, herbs: "Tulsi · Pippali" },
+                { level: "Moderate Risk", color: "#B85C00", bg: "rgba(184,92,0,0.08)",    pct: 60, herbs: "Vasaka · Mulethi · Tulsi" },
+                { level: "High Risk",     color: "#A02020", bg: "rgba(160,32,32,0.08)",   pct: 90, herbs: "Vasaka · Mulethi · Kantakari +2" },
+              ].map((r) => (
+                <div key={r.level} style={{
+                  background: r.bg,
+                  border: `1px solid ${r.color}30`,
+                  borderRadius: "var(--r-sm)",
+                  padding: "18px 20px",
+                }}>
+                  <div style={{
+                    display: "flex", justifyContent: "space-between",
+                    alignItems: "center", marginBottom: 10,
+                  }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: r.color }}>{r.level}</span>
+                    <span style={{ fontSize: 11, color: "var(--muted)" }}>{r.herbs}</span>
+                  </div>
+                  <div style={{
+                    height: 4, background: "rgba(0,0,0,0.08)",
+                    borderRadius: 2, overflow: "hidden",
+                  }}>
+                    <div style={{
+                      height: "100%", width: `${r.pct}%`,
+                      background: r.color, borderRadius: 2,
+                    }} />
+                  </div>
+                </div>
+              ))}
+              <p style={{
+                fontSize: 12, color: "var(--muted)",
+                textAlign: "center", marginTop: 4,
+              }}>
+                Your result includes personalised herb recommendations
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

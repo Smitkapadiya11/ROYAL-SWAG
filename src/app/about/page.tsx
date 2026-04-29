@@ -75,62 +75,59 @@ export default function AboutPage() {
       </div>
 
       {/* ── WHO WE ARE ── */}
-      <section className="section" style={{ background: "var(--cream)" }}>
-        <div className="wrap" style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 64, alignItems: "center",
-        }}>
-          <div>
-            <span className="eyebrow">Who We Are</span>
-            <h2>Born in Surat.<br />Built for India&apos;s Lungs.</h2>
-            <div className="rule" />
-            <p style={{ marginBottom: 16 }}>
-              Royal Swag is the flagship wellness brand of Eximburg International
-              Pvt. Ltd. — headquartered in Surat, the Growth Capital of India.
-              Founded in 2015, we bring 10 years of Ayurvedic manufacturing
-              expertise to every product we make.
-            </p>
-            <p>
-              We started with India&apos;s first research-backed herbal cigarette.
-              Lung Detox Tea is our most rigorously developed product to date —
-              sold on Amazon India, Amazon US, and trusted by buyers across
-              India, the Middle East, Europe and Southeast Asia.
-            </p>
-          </div>
-          <div style={{
+      <section style={{ background: "var(--cream)", padding: "var(--py) 0" }}>
+        <div className="wrap">
+          <div data-grid style={{
             display: "grid", gridTemplateColumns: "1fr 1fr",
-            gap: 12,
+            gap: 64, alignItems: "center",
           }}>
-            {[
-              { v: "4+ Continents", l: "Global Reach" },
-              { v: "847+",          l: "Amazon Reviews" },
-              { v: "5 Certs",       l: "Quality Standards" },
-              { v: "Zero",          l: "Fillers or Extracts" },
-            ].map(c => (
-              <div key={c.l} style={{
-                background: "var(--white)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--r)",
-                padding: "28px 24px",
-              }}>
-                <div style={{
-                  fontFamily: "var(--ff-head)", fontSize: 24,
-                  fontWeight: 600, color: "var(--olive)", marginBottom: 6,
-                }}>{c.v}</div>
-                <div style={{ fontSize: 12, color: "var(--muted)" }}>{c.l}</div>
-              </div>
-            ))}
+            <div>
+              <span className="eyebrow">Who We Are</span>
+              <h2>Born in Surat.<br />Built for India&apos;s Lungs.</h2>
+              <div className="rule" />
+              <p style={{ marginBottom: 16 }}>
+                Royal Swag is the flagship wellness brand of Eximburg International
+                Pvt. Ltd. — headquartered in Surat, the Growth Capital of India.
+                Founded in 2015, we bring 10 years of Ayurvedic manufacturing
+                expertise to every product we make.
+              </p>
+              <p>
+                We started with India&apos;s first research-backed herbal cigarette.
+                Lung Detox Tea is our most rigorously developed product to date —
+                sold on Amazon India, Amazon US, and trusted by buyers across
+                India, the Middle East, Europe and Southeast Asia.
+              </p>
+            </div>
+            <div style={{
+              display: "grid", gridTemplateColumns: "1fr 1fr",
+              gap: 12,
+            }}>
+              {[
+                { v: "4+ Continents", l: "Global Reach" },
+                { v: "847+",          l: "Amazon Reviews" },
+                { v: "5 Certs",       l: "Quality Standards" },
+                { v: "Zero",          l: "Fillers or Extracts" },
+              ].map(c => (
+                <div key={c.l} style={{
+                  background: "var(--white)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--r)",
+                  padding: "28px 24px",
+                }}>
+                  <div style={{
+                    fontFamily: "var(--ff-head)", fontSize: 24,
+                    fontWeight: 600, color: "var(--olive)", marginBottom: 6,
+                  }}>{c.v}</div>
+                  <div style={{ fontSize: 12, color: "var(--muted)" }}>{c.l}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <style>{`
-          @media (max-width: 768px) {
-            .about-who { grid-template-columns: 1fr !important; }
-          }
-        `}</style>
       </section>
 
       {/* ── CERTIFICATIONS ── */}
-      <section className="section" style={{ background: "var(--white)" }}>
+      <section style={{ background: "var(--white)", padding: "var(--py) 0" }}>
         <div className="wrap">
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <span className="eyebrow">Manufacturing</span>
@@ -174,14 +171,14 @@ export default function AboutPage() {
       </section>
 
       {/* ── TEAM ── */}
-      <section className="section" style={{ background: "var(--cream)" }}>
+      <section style={{ background: "var(--cream)", padding: "var(--py) 0" }}>
         <div className="wrap">
           <div style={{ textAlign: "center", marginBottom: 64 }}>
             <span className="eyebrow">Leadership</span>
             <h2>The Founders</h2>
             <div className="rule rule-c" />
           </div>
-          <div style={{
+          <div data-grid style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: 24,
@@ -199,7 +196,6 @@ export default function AboutPage() {
                     sizes="(max-width: 768px) 100vw, 360px"
                     style={{ objectFit: "cover" }}
                   />
-                  {/* Initials shown behind photo as fallback */}
                   <div style={{
                     position: "absolute", inset: 0,
                     display: "flex", alignItems: "center", justifyContent: "center",
@@ -220,16 +216,11 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-          <style>{`
-            @media (max-width: 768px) {
-              .team-3col { grid-template-columns: 1fr !important; }
-            }
-          `}</style>
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section className="section" style={{ background: "var(--olive)", textAlign: "center" }}>
+      <section style={{ background: "var(--olive)", textAlign: "center", padding: "var(--py) 0" }}>
         <div className="wrap">
           <h2 style={{ color: "var(--cream)", marginBottom: 12 }}>
             Your Lungs Deserve Better.

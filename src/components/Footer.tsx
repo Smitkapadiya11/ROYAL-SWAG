@@ -18,7 +18,7 @@ export default function Footer() {
       color: "rgba(242,230,206,0.55)",
     }}>
       {/* Top grid */}
-      <div className="wrap" style={{
+      <div className="wrap footer-grid" style={{
         display: "grid",
         gridTemplateColumns: "2fr 1fr 1fr",
         gap: 48,
@@ -152,7 +152,7 @@ export default function Footer() {
 
       <style>{`
         @media (max-width: 768px) {
-          footer > div:first-child > .wrap {
+          .footer-grid {
             grid-template-columns: 1fr !important;
             gap: 40px !important;
           }

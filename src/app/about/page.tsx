@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { S } from "@/lib/config";
 
 export default function AboutPage() {
@@ -52,7 +53,7 @@ export default function AboutPage() {
                   fontWeight: 600, color: "#C49A2A", marginBottom: 4,
                 }}>{s.v}</div>
                 <div style={{
-                  fontSize: 11, letterSpacing: 1, opacity: 0.5, color: "#F2E6CE",
+                  fontSize: 11, opacity: 0.5, color: "#F2E6CE",
                 }}>{s.l}</div>
               </div>
             ))}
@@ -94,18 +95,18 @@ export default function AboutPage() {
                 </em>
               </h2>
               <div className="rl" />
-              <p style={{ fontSize: 16, color: "#5C5647", lineHeight: 1.85, marginBottom: 16 }}>
+              <p style={{ fontSize: 16, color: "#5C5647", lineHeight: 1.67, marginBottom: 16 }}>
                 Royal Swag was born in Surat in 2016 with one product: India&apos;s first
                 research-backed herbal cigarette. That product found its customers in
                 ex-smokers who wanted the ritual without the poison.
                 And those customers told us something that changed everything.
               </p>
-              <p style={{ fontSize: 16, color: "#5C5647", lineHeight: 1.85, marginBottom: 16 }}>
+              <p style={{ fontSize: 16, color: "#5C5647", lineHeight: 1.67, marginBottom: 16 }}>
                 They had quit smoking. But their lungs still felt wrong. The cough.
                 The heaviness. Breathlessness that lingered months after the last cigarette.
                 They were doing everything right — and their bodies hadn&apos;t caught up.
               </p>
-              <p style={{ fontSize: 16, color: "#5C5647", lineHeight: 1.85 }}>
+              <p style={{ fontSize: 16, color: "#5C5647", lineHeight: 1.67 }}>
                 Lung Detox Tea was built to answer that.
                 Not in a lab with extracts and fillers — through 18 months
                 of customer trials, Ayurvedic consultation,
@@ -128,7 +129,7 @@ export default function AboutPage() {
                 We found our customers first —
                 and then built the product they were asking for.&rdquo;
               </p>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#4A6422", letterSpacing: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#4A6422" }}>
                 — Hitesh Sabhadiya, Founder &amp; CEO
               </p>
               <div style={{
@@ -175,17 +176,14 @@ export default function AboutPage() {
               <span className="ey">Who We Are</span>
               <h2>Born in Surat.<br />Built for India&apos;s Lungs.</h2>
               <div className="rl" />
-              <p style={{ marginBottom: 16, fontSize: 15, lineHeight: 1.85, color: "#5C5647" }}>
-                Royal Swag is the flagship wellness brand of Eximburg International
-                Pvt. Ltd. — headquartered in Surat, the Growth Capital of India.
-                Founded in 2016, we bring nearly a decade of Ayurvedic manufacturing
-                expertise to every product we make.
+              <p style={{ marginBottom: 16, fontSize: 15, lineHeight: 1.67, color: "#5C5647" }}>
+                Royal Swag is Eximburg International&apos;s tea and herbal line — based in Surat, Gujarat.
+                We&apos;ve been making Ayurvedic goods since 2016.
               </p>
-              <p style={{ fontSize: 15, lineHeight: 1.85, color: "#5C5647" }}>
-                We started with India&apos;s first research-backed herbal cigarette.
-                Lung Detox Tea is our most rigorously developed product to date —
-                sold on Amazon India, Amazon US, and trusted by buyers across
-                India, the Middle East, Europe and Southeast Asia.
+              <p style={{ fontSize: 15, lineHeight: 1.67, color: "#5C5647" }}>
+                We began with India&apos;s first research-backed herbal cigarette.
+                Lung Detox Tea took longer to get right — more trials, more tweaks.
+                It ships on Amazon India, Amazon US, and our site to buyers here and abroad.
               </p>
             </div>
             <div style={{
@@ -257,7 +255,7 @@ export default function AboutPage() {
                   <p style={{ fontWeight: 600, color: "#1A1A14", fontSize: 15, marginBottom: 2 }}>
                     {c.title}
                   </p>
-                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "#5C5647" }}>{c.desc}</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.67, color: "#5C5647" }}>{c.desc}</p>
                 </div>
               </div>
             ))}
@@ -308,10 +306,11 @@ export default function AboutPage() {
                 <div style={{ padding: "0 24px 32px", textAlign: "center" }}>
                   <h3 style={{ fontSize: 18, marginBottom: 4 }}>{m.name}</h3>
                   <p style={{
-                    fontSize: 10, fontWeight: 700, letterSpacing: 2,
+                    fontSize: 10, fontWeight: 700,
+                    letterSpacing: "0.08em",
                     color: "#C49A2A", textTransform: "uppercase" as const, marginBottom: 14,
                   }}>{m.role}</p>
-                  <p style={{ fontSize: 13, color: "#5C5647", lineHeight: 1.75 }}>
+                  <p style={{ fontSize: 13, color: "#5C5647", lineHeight: 1.67 }}>
                     {m.bio}
                   </p>
                 </div>
@@ -340,9 +339,9 @@ export default function AboutPage() {
             {S.price.now} · 20 Tea Bags · Free Delivery · COD Available
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/product" className="b b-gold">
+            <LeadGuardLink href="/product" className="b b-gold">
               Order Now — {S.price.now} →
-            </Link>
+            </LeadGuardLink>
             <Link href="/lung-test" className="b b-ghost-w">
               Free Lung Test
             </Link>

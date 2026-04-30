@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuiz } from "@/store/quiz-store";
 import { supabase } from "@/lib/supabase";
@@ -12,6 +11,8 @@ import {
   type LungHealthTier,
 } from "@/lib/quiz-data";
 import CheckoutModal from "@/components/CheckoutModal";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
+import { useLeadCapture } from "@/hooks/useLeadCapture";
 
 // ━━━ SVG Circular Gauge ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ScoreGauge({ score, maxScore, color }: { score: number; maxScore: number; color: string }) {
@@ -81,6 +82,7 @@ function ShareButton({ tier }: { tier: LungHealthTier }) {
 export default function LungTestReportPage() {
   const { state, reset } = useQuiz();
   const router = useRouter();
+  const { openLeadModal } = useLeadCapture();
   const redirected = useRef(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -217,7 +219,7 @@ export default function LungTestReportPage() {
           </p>
           <button
             id="report-buy-now-btn"
-            onClick={() => setIsCheckoutOpen(true)}
+            onClick={() => openLeadModal(() => setIsCheckoutOpen(true))}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-gold)] text-[var(--brand-green)] font-bold text-base shadow-lg hover:opacity-90 transition-all active:scale-95 w-full sm:w-auto"
           >
             🛒 Buy Now — from Rs 359
@@ -227,13 +229,13 @@ export default function LungTestReportPage() {
 
         {/* Secondary CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 items-center report-ctas opacity-0">
-          <Link
+          <LeadGuardLink
             href="/product"
             id="report-cta-product"
             className="flex-1 text-center px-7 py-4 rounded-full border-2 border-[var(--brand-green)] text-[var(--brand-green)] font-semibold text-base hover:bg-[var(--brand-sage)] transition-all active:scale-95"
           >
             View Product Details →
-          </Link>
+          </LeadGuardLink>
           <ShareButton tier={tier} />
         </div>
 

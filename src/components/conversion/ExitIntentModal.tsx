@@ -53,10 +53,11 @@ export default function ExitIntentModal() {
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="exit-intent-title" className="text-xl font-bold text-white sm:text-2xl" style={{ fontFamily: "var(--font-playfair)" }}>
-          Wait — your lung score is still unsaved.
+          Heading out already?
         </h2>
-        <p className="mt-3 text-sm text-white/75 leading-relaxed">
-          You haven&apos;t seen your personal result yet. It takes 60 seconds and it&apos;s free.
+        <p className="mt-3 text-sm text-white/75 leading-[1.65]">
+          The lung quiz is free and takes a couple of minutes.
+          You get a simple score plus herb notes — handy before you order tea.
         </p>
         <Link
           href="/lung-test"
@@ -70,7 +71,7 @@ export default function ExitIntentModal() {
           onClick={() => setOpen(false)}
           className="mt-3 w-full text-center text-xs text-white/40 underline underline-offset-2 hover:text-white/60"
         >
-          No thanks, I&apos;ll ignore my lung health
+          Maybe later
         </button>
       </div>
     </div>

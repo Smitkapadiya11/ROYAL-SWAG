@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DETOX_COUNTER_TARGET } from "@/lib/conversion-constants";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 
 const SESSION_KEY = "rs_scroll_reminder_dismissed";
 
@@ -40,7 +40,7 @@ export default function ScrollDepthReminder() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[10050] md:hidden border-t border-white/10 bg-[#0D3B1F] px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,0.35)]"
+      className="fixed bottom-0 left-0 right-0 z-[9980] md:hidden border-t border-white/10 bg-[#0D3B1F] px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,0.35)]"
       role="region"
       aria-label="Reminder"
     >
@@ -52,17 +52,17 @@ export default function ScrollDepthReminder() {
       >
         ✕
       </button>
-      <p className="pr-8 text-xs text-white/90 leading-snug">
-        Still reading? {DETOX_COUNTER_TARGET.toLocaleString("en-IN")} Indians have already started their detox. ₹349 ·
-        Free delivery · 30-day guarantee
+      <p className="pr-8 text-xs text-white/90 leading-[1.65]">
+        Still scrolling? More than {DETOX_COUNTER_TARGET.toLocaleString("en-IN")} buyers chose this tea recently.
+        ₹349 · free delivery · 30-day guarantee.
       </p>
-      <Link
+      <LeadGuardLink
         href="/product"
-        onClick={close}
+        onProceed={close}
         className="mt-2 inline-flex min-h-[40px] items-center rounded-lg bg-[#16a34a] px-4 py-2 text-sm font-bold text-white"
       >
         Order Now →
-      </Link>
+      </LeadGuardLink>
     </div>
   );
 }

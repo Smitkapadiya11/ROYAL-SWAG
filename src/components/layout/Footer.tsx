@@ -9,8 +9,9 @@ export default function Footer() {
           <div style={{ flex: "1 1 220px" }}>
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>ROYAL SWAG</div>
             <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 12 }}>estd. {SITE_CONFIG.founded}</div>
-            <p style={{ fontSize: 13, opacity: 0.8, lineHeight: 1.6, marginBottom: 8 }}>
-              Premium Ayurvedic lung detox tea crafted from ancient herbs. Breathe clean. Live free.
+            <p style={{ fontSize: 13, opacity: 0.8, lineHeight: 1.65, marginBottom: 8 }}>
+              Lung detox tea with seven Ayurvedic herbs — Tulsi, Vasaka, Mulethi, Pippali, and more.
+              Breathe Clean. Live Free.
             </p>
             <p style={{ fontSize: 12, opacity: 0.6 }}>
               {SITE_CONFIG.company}

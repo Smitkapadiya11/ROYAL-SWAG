@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
+import { isProductPath } from "@/lib/is-product-path";
 
 export default function MadeFor() {
   const CARDS = [
@@ -7,7 +9,7 @@ export default function MadeFor() {
       label: "If you smoke — or used to",
       title: "Your lungs remember every cigarette.\nEven the ones you stopped.",
       body:
-        "Tar deposits don't leave on their own. They sit in lung tissue for up to 10 years after the last cigarette. You did the hard part. This is the follow-through.",
+        "Tar doesn't vanish the day you quit. It can sit in lung tissue for years. You already did the hardest thing. A daily cup helps your body clear what's left.",
       cta: "See what tar does to lungs →",
       href: "/#herbs",
       gradient: "linear-gradient(160deg, #1A1A14 0%, #2C2C2C 50%, #1A1A14 100%)",
@@ -19,7 +21,7 @@ export default function MadeFor() {
       label: "If you live in a city",
       title: "India's air is 9.78×\nthe WHO safe limit.",
       body:
-        "Delhi recorded zero clean-air days in 2025. You breathe it on your commute, at work, in traffic. Your lungs are filtering it all — right now.",
+        "Delhi saw zero clean-air days in 2025. You pull this air in on the commute, at work, in traffic. Your lungs are dealing with it today — not someday.",
       cta: "Start your daily detox →",
       href: "/product",
       gradient: "linear-gradient(160deg, #111820 0%, #1C2830 50%, #111820 100%)",
@@ -31,7 +33,7 @@ export default function MadeFor() {
       label: "If you take health seriously",
       title: "You read labels.\nGood. We'll show you everything.",
       body:
-        "Every herb has a Sanskrit name, a botanical name, and a clinical reason for being in this formula. No proprietary blends. Full transparency, because you earned it.",
+        "Each herb here has a Sanskrit name, a botanical name, and a clear job in the mix. No mystery blends. What you see on the label is what you steep in the cup.",
       cta: "Read the full formula →",
       href: "/#herbs",
       gradient: "linear-gradient(160deg, #141A12 0%, #1E2A18 50%, #141A12 100%)",
@@ -60,10 +62,10 @@ export default function MadeFor() {
           <div className="rl-c" />
           <p style={{
             fontSize: 17, color: "#5C5647",
-            maxWidth: 480, margin: "0 auto 0", lineHeight: 1.8,
+            maxWidth: 480, margin: "0 auto 0", lineHeight: 1.67,
           }}>
-            Two versions of your lungs exist. Which one you end up with depends entirely on
-            what you do in the next 30 days.
+            Where your lungs are a month from now is mostly habit — what you eat, what you breathe, what you drink each morning.
+            Small steps add up.
           </p>
         </div>
       </section>
@@ -78,7 +80,7 @@ export default function MadeFor() {
           <div style={{ textAlign: "center", padding: "72px 0 48px" }}>
             <span style={{
               display: "block", fontSize: 11, fontWeight: 600,
-              letterSpacing: 3, color: "rgba(196,154,42,0.7)", marginBottom: 12,
+              letterSpacing: "0.06em", color: "rgba(196,154,42,0.7)", marginBottom: 12,
             }}>WHO IT&apos;S FOR</span>
             <h2 style={{ color: "#F2E6CE", maxWidth: 520, margin: "0 auto" }}>
               Made for three<br />
@@ -140,7 +142,7 @@ export default function MadeFor() {
                   <p style={{
                     fontSize: 10,
                     fontWeight: 700,
-                    letterSpacing: "3.5px",
+                    letterSpacing: "0.08em",
                     color: c.accentColor,
                     marginBottom: 14,
                     textTransform: "uppercase",
@@ -161,26 +163,41 @@ export default function MadeFor() {
                   </h3>
                   <p style={{
                     fontSize: 14,
-                    lineHeight: 1.8,
+                    lineHeight: 1.67,
                     color: "rgba(242,230,206,0.72)",
                     marginBottom: 24,
                   }}>
                     {c.body}
                   </p>
-                  <Link
-                    href={c.href}
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      letterSpacing: "0.3px",
-                      color: c.accentColor,
-                      textDecoration: "none",
-                      borderBottom: `1px solid ${c.accentColor}45`,
-                      paddingBottom: 2,
-                    }}
-                  >
-                    {c.cta}
-                  </Link>
+                  {isProductPath(c.href) ? (
+                    <LeadGuardLink
+                      href={c.href}
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: c.accentColor,
+                        textDecoration: "none",
+                        borderBottom: `1px solid ${c.accentColor}45`,
+                        paddingBottom: 2,
+                      }}
+                    >
+                      {c.cta}
+                    </LeadGuardLink>
+                  ) : (
+                    <Link
+                      href={c.href}
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: c.accentColor,
+                        textDecoration: "none",
+                        borderBottom: `1px solid ${c.accentColor}45`,
+                        paddingBottom: 2,
+                      }}
+                    >
+                      {c.cta}
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}

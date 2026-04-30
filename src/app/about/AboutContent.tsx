@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 import Image from "next/image";
 import { SITE_CONFIG } from "@/lib/config";
 
@@ -22,9 +23,9 @@ const certDetails = [
 ];
 
 const whyBuilt = [
-  { icon: "🚬", title: "Ex-Smoker",      desc: "Tar & inflammation stay in your lungs up to 10 years after quitting. Quitting alone is not enough — active repair is essential." },
-  { icon: "🏙️", title: "City Dweller",  desc: "India's PM2.5 is 9.78x the WHO safe limit. Delhi recorded zero clean air days in 2025. This tea is daily defence from the inside." },
-  { icon: "🧘", title: "Wellness Buyer", desc: "You read labels. We show you every herb, its Sanskrit name, and exactly why it is in this formula. No hidden blends." },
+  { icon: "🚬", title: "Ex-Smoker",      desc: "Tar and irritation can stay in lung tissue for years after you quit. Stopping smoking was step one. Clearing what's left needs daily help." },
+  { icon: "🏙️", title: "City Dweller",  desc: "India's PM2.5 is nearly 10× what WHO calls safe. Delhi saw zero clean-air days in 2025. One cup a day won't fix the air — it backs up what your lungs are already fighting." },
+  { icon: "🧘", title: "If you read labels", desc: "You want Sanskrit names, botanical names, and why each herb is here — not a \"proprietary blend\" hide-and-seek game. We lay it all out." },
 ];
 
 const herbs = [
@@ -38,15 +39,15 @@ const herbs = [
 ];
 
 const trustPoints = [
-  "10 years of Ayurvedic manufacturing from Surat, Gujarat — not a new or unknown brand",
-  "AYUSH Certified Unit — India's highest government recognition for Ayurvedic manufacturing",
-  "ISO · GMP · FSSAI — triple-verified quality at every production stage",
-  "Lean Manufacturing facility — consistent quality, zero compromise on every batch",
-  "Formula developed through real customer trials and doctor-validated therapeutic ratios",
-  "Royal Swag Herbal Cigarettes featured in Mirzapur (Amazon Prime) & Dhurndhar (Netflix)",
-  "4.7 stars · 847+ verified Amazon reviews — real buyers, real breathing results",
-  "100% natural — zero artificial additives, zero chemicals, full ingredient transparency",
-  "Free delivery · COD available · 30-day results commitment",
+  "Ten years of Ayurvedic manufacturing from Surat — we're not a fly-by-night label.",
+  "AYUSH-certified unit: that's the government stamp serious Ayurveda factories chase.",
+  "Every batch clears ISO, GMP, and FSSAI checks before it leaves Surat.",
+  "Lean production here means less mess between batches — fewer surprises for you.",
+  "This tea was revised again and again using feedback from real buyers, then checked with doctors.",
+  "Same Royal Swag family as the herbal cigarettes you saw in Mirzapur (Prime) and Dhurndhar (Netflix).",
+  "4.7★ and 847+ Amazon reviews — normal people, normal cough-and-traffic stories.",
+  "What's on the label is what goes in the cup. No mystery powders.",
+  "Pan-India free delivery, COD where we offer it, and a 30-day window if it's not your thing.",
 ];
 
 // THREE founders — do not change the order
@@ -56,33 +57,33 @@ const founders = [
     name: "Hitesh Sabhadiya",
     role: "Founder & CEO",
     img: "/images/hitesh.jpeg",
-    bio: "The driving force behind Royal Swag. Hitesh built Eximburg International with one goal: give India a smarter, cleaner alternative to tobacco. Under his leadership, Royal Swag grew from a local Surat brand into a multi-continent exporter — now featured on Amazon Prime and Netflix.",
+    bio: "Started Eximburg to give India a cleaner ritual than tobacco. Royal Swag grew from Surat into something people order across continents — you've probably spotted us on Prime or Netflix.",
   },
   {
     initials: "MK",
     name: "Manoj Koshiya",
     role: "Co-Founder",
     img: "/images/manoj.jpeg",
-    bio: "The quality and product architect at Eximburg. Manoj leads R&D, formulation, and manufacturing quality control — ensuring every batch meets ISO, GMP, FSSAI and AYUSH standards before it ships. His attention to process consistency is what makes Royal Swag's results reproducible at scale.",
+    bio: "Owns R&D and the shop floor. If ISO, GMP, FSSAI, or AYUSH flags something, that batch doesn't ship. Full stop.",
   },
   {
     initials: "JS",
     name: "Jaideep Singh",
     role: "Business Director — E-Commerce & Operations",
     img: "/images/jaideep singh.jpeg",
-    bio: "The digital growth engine of Royal Swag. 12 years of e-commerce experience. Jaideep leads Amazon strategy, D2C operations and business analytics — making sure Royal Swag reaches the right buyer, on the right platform, at exactly the right moment.",
+    bio: "Twelve years selling online. He runs Amazon listings, our site, and the spreadsheets that show what's actually moving each week.",
   },
 ];
 
 // ─── REUSABLE STYLES ─────────────────────────────────────
 const label: React.CSSProperties = {
-  fontSize: 11, letterSpacing: 3, textTransform: "uppercase",
+  fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase",
   color: "#4A6422", marginBottom: 8,
 };
 const sectionHeading: React.CSSProperties = {
   fontSize: "clamp(22px, 4vw, 32px)",
   fontWeight: 800, color: "#2D3D15",
-  marginBottom: 16, lineHeight: 1.25,
+  marginBottom: 16, lineHeight: 1.3,
 };
 
 // ─── PAGE ─────────────────────────────────────────────────
@@ -97,14 +98,14 @@ export default function AboutContent() {
         background: "linear-gradient(135deg, #2D3D15 0%, #4A6422 100%)",
         color: "#fff", padding: "64px 24px 48px", textAlign: "center",
       }}>
-        <p style={{ fontSize: 12, letterSpacing: 3, opacity: 0.7, marginBottom: 12 }}>
+        <p style={{ fontSize: 12, letterSpacing: "0.06em", opacity: 0.7, marginBottom: 12 }}>
           BY EXIMBURG INTERNATIONAL PVT. LTD. · EST. 2016 · SURAT, GUJARAT
         </p>
         <h1 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 800, marginBottom: 16, lineHeight: 1.2 }}>
           Royal Swag Lung Detox Tea
         </h1>
-        <p style={{ fontSize: 16, opacity: 0.85, maxWidth: 560, margin: "0 auto 40px", lineHeight: 1.6 }}>
-          10 years of Ayurvedic manufacturing expertise. AYUSH certified. Trusted across 4 continents.
+        <p style={{ fontSize: 16, opacity: 0.85, maxWidth: 560, margin: "0 auto 40px", lineHeight: 1.67 }}>
+          Ten years making Ayurvedic goods from Surat. AYUSH-certified factory. Buyers in four continents reorder.
         </p>
 
         {/* Stats row */}
@@ -136,9 +137,9 @@ export default function AboutContent() {
           🎥 As Seen on Screen —{" "}
           <strong>Mirzapur (Amazon Prime)</strong> · <strong>Dhurndhar (Netflix)</strong>
         </p>
-        <p style={{ margin: "4px 0 0", fontSize: 13, color: "#333" }}>
-          Royal Swag Herbal Cigarettes featured on India&apos;s most-watched platforms.{" "}
-          <em>The same trusted brand. Now delivering lung healing — in a cup.</em>
+        <p style={{ margin: "4px 0 0", fontSize: 13, color: "#333", lineHeight: 1.62 }}>
+          Royal Swag herbal smokes showed up on big streaming shows in India.{" "}
+          <em>Same team. This time it&apos;s lung-care tea in your kitchen.</em>
         </p>
       </section>
 
@@ -146,16 +147,15 @@ export default function AboutContent() {
       <section style={{ maxWidth: 860, margin: "0 auto", padding: "60px 24px" }}>
         <p style={label}>Who We Are</p>
         <h2 style={sectionHeading}>Born in Surat. Built for India&apos;s Lungs.</h2>
-        <p style={{ fontSize: 16, lineHeight: 1.85, color: "#5C5647", marginBottom: 16 }}>
-          Royal Swag is the flagship wellness brand of Eximburg International Pvt. Ltd. — proudly
-          headquartered in Surat, the Growth Capital of India and the diamond &amp; textile powerhouse
-          of Gujarat. Founded in 2016, we bring nearly a decade of Ayurvedic manufacturing expertise.
+        <p style={{ fontSize: 16, lineHeight: 1.67, color: "#5C5647", marginBottom: 16 }}>
+          Royal Swag is Eximburg International&apos;s consumer brand — home base Surat, Gujarat.
+          We&apos;ve run this factory lane since 2016.
         </p>
-        <p style={{ fontSize: 16, lineHeight: 1.85, color: "#5C5647" }}>
-          We started with India&apos;s first research-backed herbal cigarette and have since built a
-          complete wellness range — with Lung Detox Tea as our most rigorously developed product.
-          Sold on Amazon India, Amazon US, and theroyalswag.com — trusted by buyers across India,
-          the Middle East, Europe and Southeast Asia.
+        <p style={{ fontSize: 16, lineHeight: 1.67, color: "#5C5647" }}>
+          We began with India&apos;s first research-backed herbal cigarette.
+          Lung Detox Tea ate the most R&amp;D hours — every tweak came from buyer feedback and doctor sign-off.
+          Amazon India, Amazon US, and theroyalswag.com ship it.
+          Buyers reorder from India, the Gulf, Europe, and Southeast Asia.
         </p>
       </section>
 
@@ -191,12 +191,10 @@ export default function AboutContent() {
             <h3 style={{ fontWeight: 700, color: "#2D3D15", marginBottom: 10, fontSize: 17 }}>
               Born from Real Buyer Feedback
             </h3>
-            <p style={{ fontSize: 15, color: "#5C5647", lineHeight: 1.85 }}>
-              Royal Swag Lung Detox Tea wasn&apos;t created in a boardroom. It came directly from our
-              existing herbal cigarette customers — real people who told us what their lungs still
-              needed after quitting. We ran trials across ex-smokers, urban commuters, and wellness
-              buyers, refining the formula batch by batch until the results were consistent and
-              repeatable. No shortcuts. No guesswork.
+            <p style={{ fontSize: 15, color: "#5C5647", lineHeight: 1.67 }}>
+              Lung Detox Tea didn&apos;t start on a whiteboard. Our herbal-cigarette buyers kept saying their chest still felt heavy after quitting.
+              We listened. We ran small batches for ex-smokers, office commuters, and people who simply read every ingredient line.
+              Adjusted ratios until cough-and-winded feedback looked the same month after month.
             </p>
           </div>
           <div>
@@ -204,13 +202,12 @@ export default function AboutContent() {
             <h3 style={{ fontWeight: 700, color: "#2D3D15", marginBottom: 10, fontSize: 17 }}>
               Validated with Medical Guidance
             </h3>
-            <p style={{ fontSize: 15, color: "#5C5647", lineHeight: 1.85, marginBottom: 16 }}>
-              Before we shipped a single box, we sat down with qualified Ayurvedic doctors and
-              healthcare professionals to validate every herb, ratio, and dose. Every ingredient has
-              a defined reason for being there. Nothing is in this formula for show.
+            <p style={{ fontSize: 15, color: "#5C5647", lineHeight: 1.67, marginBottom: 16 }}>
+              Before cartons left Surat, Ayurvedic doctors checked each herb, ratio, and dose.
+              Anything that was there only because marketing liked the ring of it did not stay in the mix.
             </p>
             <p style={{ fontSize: 14, fontWeight: 700, color: "#2D3D15", fontStyle: "italic", margin: 0 }}>
-              &ldquo;This is a health product built with clinical respect and complete buyer honesty.&rdquo;
+              &ldquo;We treated this like medicine paperwork — not a trending hashtag.&rdquo;
             </p>
           </div>
         </div>
@@ -218,10 +215,9 @@ export default function AboutContent() {
           marginTop: 32, background: "#F2E6CE", borderRadius: 10,
           padding: "20px 24px", borderLeft: "4px solid #4A6422",
         }}>
-          <p style={{ margin: 0, fontSize: 15, color: "#5C5647", lineHeight: 1.75, fontStyle: "italic" }}>
-            Most brands launch a product, then find customers. We did the opposite. Our Lung Detox
-            Tea formula was stress-tested by real buyers first — and only launched when the results
-            earned their approval.
+          <p style={{ margin: 0, fontSize: 15, color: "#5C5647", lineHeight: 1.67, fontStyle: "italic" }}>
+            Plenty of labels launch first and hunt for buyers later. We had buyers asking for a lung tea before the SKU even had a barcode.
+            We shipped wide only once those same people said the cup actually helped.
           </p>
         </div>
       </section>
@@ -233,9 +229,8 @@ export default function AboutContent() {
           <h2 style={{ ...sectionHeading, color: "#fff", textAlign: "center", marginBottom: 12 }}>
             Our Manufacturing Standard
           </h2>
-          <p style={{ textAlign: "center", opacity: 0.75, marginBottom: 40, maxWidth: 580, margin: "0 auto 40px", lineHeight: 1.7 }}>
-            Every batch produced in our state-of-the-art Surat facility — holding five of the most
-            demanding quality certifications in Indian wellness.
+          <p style={{ textAlign: "center", opacity: 0.75, marginBottom: 40, maxWidth: 580, margin: "0 auto 40px", lineHeight: 1.67 }}>
+            Made in our Surat plant — ISO, GMP, FSSAI, AYUSH, LEAN on the wall because customs officers and moms both ask.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {certDetails.map((c) => (
@@ -246,7 +241,7 @@ export default function AboutContent() {
                 <span style={{
                   background: "var(--rs-gold)", color: "#1A1A1A", borderRadius: 6,
                   padding: "4px 12px", fontWeight: 800, fontSize: 11,
-                  flexShrink: 0, alignSelf: "center", letterSpacing: 1,
+                  flexShrink: 0, alignSelf: "center",
                 }}>
                   {c.badge}
                 </span>
@@ -267,8 +262,9 @@ export default function AboutContent() {
           <h2 style={{ ...sectionHeading, textAlign: "center", marginBottom: 8 }}>
             The 7-Herb Ayurvedic Formula
           </h2>
-          <p style={{ textAlign: "center", color: "var(--rs-text)", marginBottom: 40, fontSize: 15 }}>
-            Rooted in the Charaka Samhita — 5,000 years of wisdom. Zero fillers. Zero extracts.
+          <p style={{ textAlign: "center", color: "var(--rs-text)", marginBottom: 40, fontSize: 15, lineHeight: 1.67 }}>
+            The blend nods to Charaka Samhita thinking — old-school Ayurveda text, not a lab gimmick.
+            Still zero fillers and zero extracts today.
           </p>
           <div style={{
             display: "grid",
@@ -280,7 +276,7 @@ export default function AboutContent() {
                 background: "var(--rs-cream)", borderRadius: 12, padding: "24px 20px",
                 borderTop: "3px solid var(--rs-olive)",
               }}>
-                <div style={{ fontSize: 11, color: "var(--rs-olive)", fontWeight: 700, marginBottom: 6, letterSpacing: 2 }}>
+                <div style={{ fontSize: 11, color: "var(--rs-olive)", fontWeight: 700, marginBottom: 6, letterSpacing: "0.06em" }}>
                   HERB <span className="brand-number-sm">{String(i + 1).padStart(2, "0")}</span>
                 </div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: "var(--rs-deep)", marginBottom: 2 }}>{h.name}</div>
@@ -302,7 +298,7 @@ export default function AboutContent() {
             {trustPoints.map((point) => (
               <div key={point} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                 <span style={{ color: "var(--rs-olive)", fontSize: 18, flexShrink: 0, marginTop: 2, fontWeight: 700 }}>✓</span>
-                <span style={{ fontSize: 14, color: "var(--rs-text)", lineHeight: 1.7 }}>{point}</span>
+                <span style={{ fontSize: 14, color: "var(--rs-text)", lineHeight: 1.67 }}>{point}</span>
               </div>
             ))}
           </div>
@@ -344,10 +340,10 @@ export default function AboutContent() {
                 <h3 style={{ fontWeight: 800, color: "#2D3D15", marginBottom: 4, fontSize: 17 }}>
                   {f.name}
                 </h3>
-                <p style={{ fontSize: 12, color: "#4A6422", fontWeight: 700, marginBottom: 16, lineHeight: 1.4 }}>
+                <p style={{ fontSize: 12, color: "#4A6422", fontWeight: 700, marginBottom: 16, lineHeight: 1.6 }}>
                   {f.role}
                 </p>
-                <p style={{ fontSize: 14, color: "#5C5647", lineHeight: 1.75, margin: 0 }}>
+                <p style={{ fontSize: 14, color: "#5C5647", lineHeight: 1.67, margin: 0 }}>
                   {f.bio}
                 </p>
               </div>
@@ -371,12 +367,12 @@ export default function AboutContent() {
           theroyalswag.com · Amazon India · Amazon US
         </p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/product" style={{
+          <LeadGuardLink href="/product" style={{
             background: "#C49A2A", color: "#1A1A1A", padding: "15px 36px",
             borderRadius: 8, fontWeight: 800, fontSize: 17, textDecoration: "none",
           }}>
             Order Now — ₹349 →
-          </Link>
+          </LeadGuardLink>
           <Link href="/lung-test" style={{
             background: "transparent", color: "#fff", padding: "15px 36px",
             borderRadius: 8, fontWeight: 600, fontSize: 16, textDecoration: "none",

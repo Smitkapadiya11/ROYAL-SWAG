@@ -134,7 +134,7 @@ export default function RazorpayButton({
         name:        "Royal Swag",
         description: `Lung Detox Tea — ${packLabel}`,
         order_id:    orderData.orderId,
-        image:       "/images/royal-swag-logo.png", // copied from "ROYAL SWAG_logo.png"
+        image:       "/images/new_logo.png",
         theme:       { color: "#4A6422" },
         prefill:     { name: "", email: "", contact: "" },
         notes:       { pack: packLabel },

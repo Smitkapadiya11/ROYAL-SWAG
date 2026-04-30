@@ -2,6 +2,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { S } from "@/lib/config";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
+import { isProductPath } from "@/lib/is-product-path";
+import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
+import { ROYAL_SWAG_LOGO_HEIGHT, ROYAL_SWAG_LOGO_SRC, ROYAL_SWAG_LOGO_WIDTH } from "@/lib/brand-logo";
 
 export default function Footer() {
   const links = [
@@ -28,33 +32,39 @@ export default function Footer() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: "50%",
-              backgroundColor: "#F2E6CE",
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
+              background: "transparent",
             }}>
               <Image
-                src="/images/royal-swag-logo.png"
+                src={ROYAL_SWAG_LOGO_SRC}
                 alt="Royal Swag"
-                width={32}
-                height={32}
-                style={{ objectFit: "contain", display: "block" }}
+                width={ROYAL_SWAG_LOGO_WIDTH}
+                height={ROYAL_SWAG_LOGO_HEIGHT}
+                style={{
+                  objectFit: "contain",
+                  display: "block",
+                  background: "transparent",
+                  width: 52,
+                  height: "auto",
+                  aspectRatio: "1",
+                }}
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <span style={{
                 fontFamily: "var(--ff-head, Georgia, serif)",
                 fontSize: 15, fontWeight: 700,
-                color: "#F2E6CE", letterSpacing: "2px",
+                color: "#F2E6CE", letterSpacing: "0.06em",
               }}>ROYAL SWAG</span>
-              <span style={{ fontSize: 9, color: "rgba(242,230,206,0.45)", letterSpacing: "2.5px" }}>
+              <span style={{ fontSize: 9, color: "rgba(242,230,206,0.45)", letterSpacing: "0.08em" }}>
                 ESTD 2016
               </span>
             </div>
           </div>
-          <p style={{ fontSize: 14, lineHeight: 1.8, maxWidth: 260, marginBottom: 24 }}>
-            Ayurvedic lung detox tea. 7 herbs.
-            10 years of expertise. Trusted across 4 continents.
+          <p style={{ fontSize: 14, lineHeight: 1.67, maxWidth: 260, marginBottom: 24 }}>
+            Lung detox tea — seven herbs, Surat-made, ten years of batches people actually reorder.
+            Ships across India and abroad.
           </p>
           {/* Cert pills */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
@@ -62,7 +72,7 @@ export default function Footer() {
               <span key={c} style={{
                 border: "1px solid rgba(242,230,206,0.18)",
                 borderRadius: 4, padding: "3px 10px",
-                fontSize: 11, fontWeight: 500, letterSpacing: 1,
+                fontSize: 11, fontWeight: 500,
               }}>{c}</span>
             ))}
           </div>
@@ -74,7 +84,7 @@ export default function Footer() {
               { l: "Facebook",  h: S.social.fb },
             ].map(s => (
               <a key={s.l} href={s.h} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 12, letterSpacing: 0.5, transition: "color 0.2s" }}
+                style={{ fontSize: 12, transition: "color 0.2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "var(--gold)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "rgba(242,230,206,0.55)")}
               >{s.l}</a>
@@ -88,15 +98,27 @@ export default function Footer() {
             fontFamily: "var(--ff-head)", fontSize: 14,
             color: "var(--cream)", marginBottom: 20, fontWeight: 600,
           }}>Navigate</p>
-          {links.map(l => (
-            <Link key={l.h} href={l.h} style={{
+          {links.map(l => {
+            const navLinkStyle = {
               display: "block", fontSize: 13,
               marginBottom: 11, transition: "color 0.2s",
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = "var(--cream)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "rgba(242,230,206,0.55)")}
-            >{l.l}</Link>
-          ))}
+            } as const;
+            const hover = {
+              onMouseEnter: (e: { currentTarget: HTMLElement }) =>
+                (e.currentTarget.style.color = "var(--cream)"),
+              onMouseLeave: (e: { currentTarget: HTMLElement }) =>
+                (e.currentTarget.style.color = "rgba(242,230,206,0.55)"),
+            };
+            return isProductPath(l.h) ? (
+              <LeadGuardLink key={l.h} href={l.h} style={navLinkStyle} {...hover}>
+                {l.l}
+              </LeadGuardLink>
+            ) : (
+              <Link key={l.h} href={l.h} style={navLinkStyle} {...hover}>
+                {l.l}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Contact column */}
@@ -105,16 +127,16 @@ export default function Footer() {
             fontFamily: "var(--ff-head)", fontSize: 14,
             color: "var(--cream)", marginBottom: 20, fontWeight: 600,
           }}>Contact</p>
-          <a href={S.wa.url} style={{ display: "block", fontSize: 13, marginBottom: 10 }}>
+          <LeadGuardExternalLink href={S.wa.url} style={{ display: "block", fontSize: 13, marginBottom: 10 }}>
             {S.phone}
-          </a>
+          </LeadGuardExternalLink>
           <a href={`mailto:${S.email}`} style={{ display: "block", fontSize: 13, marginBottom: 16 }}>
             {S.email}
           </a>
           <p style={{ fontSize: 12, lineHeight: 1.75 }}>
             {S.address.l1}<br />{S.address.l2}
           </p>
-          <a href={S.wa.url} target="_blank" rel="noopener noreferrer"
+          <LeadGuardExternalLink href={S.wa.url}
             style={{
               display: "inline-block", marginTop: 20,
               background: "rgba(196,154,42,0.12)",
@@ -123,7 +145,7 @@ export default function Footer() {
               color: "var(--gold)", fontSize: 13, fontWeight: 500,
             }}>
             Order on WhatsApp
-          </a>
+          </LeadGuardExternalLink>
         </div>
       </div>
 
@@ -150,7 +172,7 @@ export default function Footer() {
       </div>
 
       {/* WhatsApp float button */}
-      <a href={S.wa.url} target="_blank" rel="noopener noreferrer"
+      <LeadGuardExternalLink href={S.wa.url}
         aria-label="Order on WhatsApp"
         style={{
           position: "fixed", bottom: 24, right: 24, zIndex: 999,
@@ -162,7 +184,7 @@ export default function Footer() {
         <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
         </svg>
-      </a>
+      </LeadGuardExternalLink>
 
       <style>{`
         @media (max-width: 768px) {

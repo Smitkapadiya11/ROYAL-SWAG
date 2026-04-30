@@ -1,9 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { S } from "@/lib/config";
 import RazorpayButton from "@/components/RazorpayButton";
 import CheckoutModal from "@/components/CheckoutModal";
+import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
+import { useLeadCapture } from "@/hooks/useLeadCapture";
 
 const PACKS = [
   { id: "20", bags: "20 Bags", days: "30-Day Supply", price: 349, mrp: 499, tag: "" },
@@ -21,6 +23,7 @@ const PRODUCT_IMAGES = [
 ];
 
 export default function ProductPage() {
+  const { openLeadModal } = useLeadCapture();
   const [pack, setPack] = useState(PACKS[0]);
   const [time, setTime] = useState("--:--:--");
   const [activeImage, setActiveImage] = useState(0);
@@ -34,6 +37,7 @@ export default function ProductPage() {
   const [couponMsgType, setCouponMsgType] = useState<"success" | "error" | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingPayment, setPendingPayment] = useState(false);
+  const couponIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   useEffect(() => {
     const KEY = "rs_offer_end";
@@ -64,15 +68,28 @@ export default function ProductPage() {
     }
     const tick = () => {
       const diff = Math.max(0, end - Date.now());
-      if (diff === 0) { setCouponDead(true); setCouponDisplay("00:00:00"); return; }
+      if (diff === 0) {
+        setCouponDead(true);
+        setCouponDisplay("00:00:00");
+        setAppliedCoupon(null);
+        setCouponMsgType("error");
+        setCouponMsg("Coupon window expired. It resets every 2 hours.");
+        const id = couponIntervalRef.current;
+        if (id !== undefined) clearInterval(id);
+        return;
+      }
       const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
       const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
       const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
       setCouponDisplay(`${h}:${m}:${s}`);
     };
     tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
+    couponIntervalRef.current = setInterval(tick, 1000);
+    return () => {
+      const id = couponIntervalRef.current;
+      if (id !== undefined) clearInterval(id);
+      couponIntervalRef.current = undefined;
+    };
   }, []);
 
   const isCouponApplied = appliedCoupon === "LUNG25";
@@ -92,7 +109,7 @@ export default function ProductPage() {
     if (normalized === "lung25") {
       setAppliedCoupon("LUNG25");
       setCouponMsgType("success");
-      setCouponMsg("Coupon applied successfully. 25% off unlocked.");
+      setCouponMsg("Coupon applied — 25% off this order.");
       return;
     }
 
@@ -106,15 +123,6 @@ export default function ProductPage() {
       setCouponMsg(null);
     }
   };
-
-  useEffect(() => {
-    if (couponDead && appliedCoupon) {
-      setAppliedCoupon(null);
-      setCouponMsgType("error");
-      setCouponMsg("Coupon window expired. It resets every 2 hours.");
-    }
-  }, [couponDead, appliedCoupon]);
-
 
   return (
     <>
@@ -184,7 +192,7 @@ export default function ProductPage() {
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
                 {S.certs.map(c => (
                   <span key={c} style={{
-                    fontSize: 10, fontWeight: 600, letterSpacing: 1.5,
+                    fontSize: 10, fontWeight: 600,
                     border: "1px solid #4A6422",
                     color: "#4A6422", borderRadius: 4, padding: "3px 9px",
                   }}>{c}</span>
@@ -195,9 +203,9 @@ export default function ProductPage() {
               <h1 style={{ fontSize: "clamp(26px, 3vw, 36px)", marginBottom: 4 }}>
                 Royal Swag Lung Detox Tea
               </h1>
-              <p style={{ fontSize: 14, color: "#5C5647", marginBottom: 20 }}>
-                7 Ayurvedic herbs. No fillers. No extracts. Rooted in the Charaka Samhita.
-                Brewed for India&apos;s lungs.
+              <p style={{ fontSize: 14, color: "#5C5647", marginBottom: 20, lineHeight: 1.67 }}>
+                Seven whole herbs — Tulsi, Vasaka, Mulethi, Pippali, and three more — nothing powdered from a lab shelf.
+                Inspired by Charaka Samhita notes, blended for how Indians actually breathe today.
               </p>
 
               {/* Countdown */}
@@ -211,13 +219,14 @@ export default function ProductPage() {
                 </span>
                 <span style={{
                   fontFamily: "var(--ff-head)", fontSize: 20, fontWeight: 600,
-                  color: "#C49A2A", letterSpacing: 2,
+                  color: "#C49A2A", fontVariantNumeric: "tabular-nums",
                 }}>{time}</span>
               </div>
 
               {/* Pack selector */}
               <p style={{
-                fontSize: 11, fontWeight: 600, letterSpacing: 2,
+                fontSize: 11, fontWeight: 600,
+                letterSpacing: "0.08em",
                 color: "#5C5647", marginBottom: 12,
               }}>SELECT PACK</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
@@ -256,7 +265,7 @@ export default function ProductPage() {
                       }}>₹{p.mrp}</span>
                       {p.tag && (
                         <div style={{
-                          fontSize: 9, fontWeight: 600, letterSpacing: 1,
+                          fontSize: 9, fontWeight: 600,
                           background: "#C49A2A", color: "#2D3D15",
                           borderRadius: 3, padding: "2px 6px", marginTop: 3,
                         }}>{p.tag.toUpperCase()}</div>
@@ -291,7 +300,8 @@ export default function ProductPage() {
                     }}>
                       <div>
                         <p style={{
-                          fontSize: 10, fontWeight: 700, letterSpacing: 2,
+                          fontSize: 10, fontWeight: 700,
+                          letterSpacing: "0.08em",
                           color: "#C49A2A", marginBottom: 3,
                         }}>⚡ SPECIAL OFFER — 25% OFF</p>
                         <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A14" }}>
@@ -303,7 +313,7 @@ export default function ProductPage() {
                         padding: "8px 16px",
                         fontFamily: "var(--ff-head)",
                         fontSize: 22, fontWeight: 700,
-                        color: "#C49A2A", letterSpacing: "2px",
+                        color: "#C49A2A",
                         fontVariantNumeric: "tabular-nums",
                       }}>
                         {couponDisplay}
@@ -334,7 +344,7 @@ export default function ProductPage() {
                           fontWeight: 600,
                           color: "#2D3D15",
                           textTransform: "uppercase",
-                          letterSpacing: "1px",
+                          letterSpacing: "0.04em",
                           outline: "none",
                         }}
                       />
@@ -402,7 +412,7 @@ export default function ProductPage() {
               </div>
               <div>
                 <button
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => openLeadModal(() => setModalOpen(true))}
                   style={{
                     width: "100%",
                     padding: "16px",
@@ -426,12 +436,10 @@ export default function ProductPage() {
                   Order Now — ₹{payableAmount} →
                 </button>
 
-                <a
+                <LeadGuardExternalLink
                   href={`https://wa.me/917096553300?text=${encodeURIComponent(
                     `Hi, I want to order Royal Swag Lung Detox Tea — ${pack.bags}. Please confirm.`
                   )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -449,7 +457,7 @@ export default function ProductPage() {
                   }}
                 >
                   Order via WhatsApp instead
-                </a>
+                </LeadGuardExternalLink>
               </div>
 
               <CheckoutModal

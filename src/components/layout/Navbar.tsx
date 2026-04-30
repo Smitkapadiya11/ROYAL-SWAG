@@ -96,29 +96,28 @@ export default function Navbar() {
       {/* ── Navbar bar ── */}
       <header
         ref={navRef}
-        className={`navbar fixed top-0 left-0 right-0 z-50 h-[60px] overflow-hidden border-b border-white/10 min-[769px]:h-[70px] transition-[background-color,border-color,backdrop-filter] duration-300 ease-out ${
+        className={`navbar fixed top-0 left-0 right-0 z-50 min-h-[72px] overflow-hidden border-b border-white/10 py-2 min-[769px]:min-h-[84px] transition-[background-color,border-color,backdrop-filter] duration-300 ease-out ${
           scrolled ? "navbar-rs-scrolled" : ""
         }`}
         style={scrolled ? undefined : { backgroundColor: "#0D3B1F" }}
         role="banner"
       >
-        <div className="container-rs mx-auto flex h-full max-h-full items-center justify-between overflow-hidden px-4">
+        <div className="container-rs mx-auto flex h-full w-full max-h-full items-center justify-between gap-3 overflow-hidden px-4">
+          <div className="flex min-w-0 flex-1 justify-start" aria-hidden>
+            <span className="inline-block w-[42px] shrink-0 min-[769px]:w-0" />
+          </div>
           <Link
             href="/"
-            className="flex h-full max-h-full shrink-0 items-center overflow-hidden"
-            aria-label="Royal Swag — Home"
+            className="flex shrink-0 items-center justify-center overflow-hidden"
+            aria-label="Home"
           >
             <Image
               src={ROYAL_SWAG_LOGO_SRC}
-              alt="Royal Swag Logo"
+              alt=""
               width={ROYAL_SWAG_LOGO_WIDTH}
               height={ROYAL_SWAG_LOGO_HEIGHT}
-              className="block h-auto max-h-full w-[56px] min-[769px]:w-[72px]"
-              style={{
-                display: "block",
-                objectFit: "contain",
-                objectPosition: "left center",
-              }}
+              className="navbar-main-logo block bg-transparent object-contain"
+              style={{ background: "transparent" }}
               priority
             />
           </Link>
@@ -128,7 +127,7 @@ export default function Navbar() {
             onClick={openDrawer}
             aria-label="Open navigation menu"
             aria-expanded={drawerOpen}
-            className="flex shrink-0 flex-col gap-[5px] rounded-lg p-2 transition-colors hover:bg-white/10"
+            className="flex min-w-0 flex-1 shrink-0 flex-col items-end gap-[5px] rounded-lg p-2 transition-colors hover:bg-white/10"
           >
             <span className="block h-[2px] w-6 rounded bg-white/90" />
             <span className="block h-[2px] w-5 rounded bg-white/90" />
@@ -157,15 +156,11 @@ export default function Navbar() {
         <div className="flex h-[60px] shrink-0 items-center justify-between overflow-hidden border-b border-[var(--brand-sage)] px-6 min-[769px]:h-[70px]">
           <Image
             src={ROYAL_SWAG_LOGO_SRC}
-            alt="Royal Swag Logo"
+            alt=""
             width={ROYAL_SWAG_LOGO_WIDTH}
             height={ROYAL_SWAG_LOGO_HEIGHT}
-            className="block h-auto max-h-full w-[56px] min-[769px]:w-[72px]"
-            style={{
-              display: "block",
-              objectFit: "contain",
-              objectPosition: "left center",
-            }}
+            className="navbar-main-logo block bg-transparent object-contain"
+            style={{ background: "transparent" }}
           />
           <button
             onClick={closeDrawer}

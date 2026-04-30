@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { S } from "@/lib/config";
 
 export default function ReviewsPage() {
@@ -44,13 +45,13 @@ export default function ReviewsPage() {
                     color: "#F2E6CE", fontSize: 14, fontWeight: 600, flexShrink: 0,
                   }}>{r.initials}</div>
                   <span style={{
-                    fontSize: 9, fontWeight: 700, letterSpacing: 2,
+                    fontSize: 9, fontWeight: 700,
                     background: "#F2E6CE", color: "#4A6422",
                     border: "1px solid #4A6422",
                     padding: "3px 10px", borderRadius: 4,
                   }}>WAS: {r.risk.toUpperCase()}</span>
                 </div>
-                <div style={{ color: "#C49A2A", fontSize: 15, marginBottom: 16, letterSpacing: 3 }}>
+                <div style={{ color: "#C49A2A", fontSize: 15, marginBottom: 16 }}>
                   ★★★★★
                 </div>
                 <p style={{ fontSize: 13, marginBottom: 8, lineHeight: 1.7 }}>
@@ -82,9 +83,9 @@ export default function ReviewsPage() {
             {S.price.now} · Free Delivery · 30-Day Guarantee · COD Available
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/product" className="b b-gold">
+            <LeadGuardLink href="/product" className="b b-gold">
               Order Now — {S.price.now} →
-            </Link>
+            </LeadGuardLink>
             <Link href="/lung-test" className="b b-ghost-w">
               Take Free Lung Test
             </Link>

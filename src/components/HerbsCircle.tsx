@@ -23,10 +23,10 @@ export default function HerbsCircle() {
           <div className="rl-c" />
           <p style={{
             maxWidth: 420, margin: "0 auto",
-            fontSize: 15, color: "#5C5647", lineHeight: 1.75,
+            fontSize: 15, color: "#5C5647", lineHeight: 1.67,
           }}>
-            No extracts. No fillers. Every herb chosen for exactly one reason —
-            because your lungs deserve the real thing.
+            No extracts. No fillers.
+            You get whole Tulsi, Vasaka, Mulethi, Pippali, and the full seven. Names you'd recognise from Ayurveda, not a lab slip.
           </p>
         </div>
 
@@ -118,7 +118,7 @@ function HerbCard({
         flex: 1,
       }}>
         <span style={{
-          fontSize: 9, letterSpacing: 2.5, fontWeight: 700,
+          fontSize: 9, letterSpacing: "0.08em", fontWeight: 700,
           color: "#C49A2A", textTransform: "uppercase" as const,
           display: "block", marginBottom: 6,
         }}>{h.role}</span>
@@ -127,7 +127,7 @@ function HerbCard({
         }}>{h.name}</h3>
         <p style={{
           fontSize: 11, fontStyle: "italic",
-          color: "#999", marginBottom: 10, lineHeight: 1.4,
+          color: "#999", marginBottom: 10, lineHeight: 1.62,
         }}>{h.bot}</p>
         <p style={{
           fontSize: 13, lineHeight: 1.7, color: "#5C5647",

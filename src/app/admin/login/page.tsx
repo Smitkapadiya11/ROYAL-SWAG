@@ -59,24 +59,27 @@ export default function AdminLogin() {
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div
             style={{
-              width: 52,
-              height: 52,
-              borderRadius: "50%",
-              background: "#F2E6CE",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               margin: "0 auto 14px",
-              position: "relative",
-              overflow: "hidden",
+              background: "transparent",
             }}
           >
             <Image
-              src="/images/royal-swag-logo.png"
-              alt="Royal Swag"
-              fill
-              sizes="36px"
-              style={{ objectFit: "contain", padding: 8 }}
+              src="/images/new_logo.png"
+              alt=""
+              width={2048}
+              height={2048}
+              sizes="180px"
+              style={{
+                objectFit: "contain",
+                background: "transparent",
+                width: 140,
+                height: "auto",
+                aspectRatio: "1",
+              }}
+              priority
             />
           </div>
           <h1
@@ -88,7 +91,7 @@ export default function AdminLogin() {
               marginBottom: 4,
             }}
           >
-            Royal Swag Admin
+            Admin
           </h1>
           <p style={{ fontSize: 12, color: "rgba(242,230,206,0.45)", letterSpacing: 2 }}>
             DASHBOARD

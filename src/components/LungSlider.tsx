@@ -2,8 +2,8 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 
-const HEALTHY  = "/images/lungs-after.png";   // real healthy lung photo
-const POLLUTED = "/images/lungs-before.png";  // real polluted lung photo
+const HEALTHY  = "/images/lungs-after.jpg";
+const POLLUTED = "/images/lungs-before.jpg";
 
 export default function LungSlider() {
   const ref = useRef<HTMLDivElement>(null);
@@ -60,8 +60,8 @@ export default function LungSlider() {
             <em style={{ fontStyle: "italic", color: "#4A6422" }}>Polluted Lungs</em>
           </h2>
           <div className="rl-c" />
-          <p style={{ maxWidth: 460, margin: "0 auto", fontSize: 15, color: "#5C5647" }}>
-            Drag the slider to compare. Real lung tissue. Real difference.
+          <p style={{ maxWidth: 460, margin: "0 auto", fontSize: 15, color: "#5C5647", lineHeight: 1.67 }}>
+            Drag the slider. Same scan style hospitals use — polluted side versus cleaner tissue side by side.
           </p>
         </div>
 
@@ -101,7 +101,7 @@ export default function LungSlider() {
             position: "absolute", top: 20, right: 20, zIndex: 4,
             background: "rgba(160,32,32,0.92)",
             color: "#fff", padding: "7px 14px", borderRadius: 20,
-            fontSize: 11, fontWeight: 700, letterSpacing: 2,
+            fontSize: 11, fontWeight: 700,
             display: "flex", alignItems: "center", gap: 6,
           }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff", display: "inline-block" }} />
@@ -134,7 +134,7 @@ export default function LungSlider() {
               position: "absolute", top: 20, left: 20, zIndex: 4,
               background: "rgba(74,100,34,0.92)",
               color: "#fff", padding: "7px 14px", borderRadius: 20,
-              fontSize: 11, fontWeight: 700, letterSpacing: 2,
+              fontSize: 11, fontWeight: 700,
               display: "flex", alignItems: "center", gap: 6,
             }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff", display: "inline-block" }} />
@@ -196,7 +196,7 @@ export default function LungSlider() {
                 fontSize: 24, fontWeight: 600,
                 color: "#4A6422", marginBottom: 4,
               }}>{s.v}</div>
-              <div style={{ fontSize: 12, color: "#5C5647", lineHeight: 1.5 }}>{s.l}</div>
+              <div style={{ fontSize: 12, color: "#5C5647", lineHeight: 1.62 }}>{s.l}</div>
             </div>
           ))}
         </div>

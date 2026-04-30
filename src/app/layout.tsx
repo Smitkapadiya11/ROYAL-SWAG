@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import LeadCaptureProvider from "@/components/LeadCaptureProvider";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -38,11 +39,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
-      <body>
-        <Nav />
-        <main style={{ paddingTop: 76 }}>{children}</main>
-        <Footer />
+    <html lang="en" className={`${playfair.variable} ${inter.variable} overflow-x-hidden`}>
+      <body className="overflow-x-hidden">
+        <LeadCaptureProvider>
+          <Nav />
+          <main className="rs-main-nav-pad">{children}</main>
+          <Footer />
+        </LeadCaptureProvider>
       </body>
     </html>
   );

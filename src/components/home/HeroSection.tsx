@@ -205,11 +205,12 @@ export default function HeroSection() {
           <h1 className="m-0 mb-4">
             <Image
               src={ROYAL_SWAG_LOGO_SRC}
-              alt="Royal Swag Logo"
+              alt=""
               width={ROYAL_SWAG_LOGO_WIDTH}
               height={ROYAL_SWAG_LOGO_HEIGHT}
               className="mx-auto h-14 w-auto sm:h-16 md:h-[4.5rem]"
               priority
+              style={{ background: "transparent", mixBlendMode: "multiply" }}
             />
           </h1>
         </div>

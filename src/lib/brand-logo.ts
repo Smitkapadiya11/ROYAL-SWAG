@@ -1,8 +1,6 @@
-/** Logo asset: `public/images/royal swag logo.png` */
-const LOGO_FILENAME = "royal swag logo.png";
+/** Logo asset: `public/images/new_logo.png` */
+export const ROYAL_SWAG_LOGO_SRC = "/images/new_logo.png";
 
-export const ROYAL_SWAG_LOGO_SRC =
-  "/images/" + encodeURIComponent(LOGO_FILENAME);
-
-export const ROYAL_SWAG_LOGO_WIDTH = 288;
-export const ROYAL_SWAG_LOGO_HEIGHT = 445;
+/** Intrinsic dimensions of `new_logo.png` (square). */
+export const ROYAL_SWAG_LOGO_WIDTH = 2048;
+export const ROYAL_SWAG_LOGO_HEIGHT = 2048;

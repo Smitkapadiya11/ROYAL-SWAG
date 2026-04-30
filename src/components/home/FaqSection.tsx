@@ -11,42 +11,42 @@ const FAQS = [
   {
     id: "what-is-lung-detox-tea",
     q: "What is Lung Detox Tea?",
-    a: "A herbal tea designed to support respiratory health and help the body cope with daily exposure to pollution.",
+    a: "A daily herbal tea with seven whole herbs — Tulsi, Vasaka, Mulethi, Pippali, and more — steeped like normal chai without milk. People drink it when pollution, smoke, or a stubborn cough won’t leave them alone.",
   },
   {
     id: "best-time-drink",
     q: "When is the best time to drink it?",
-    a: "Morning or evening, depending on your routine.",
+    a: "Morning on an empty stomach works for most buyers. A second cup before bed is fine if that fits your routine.",
   },
   {
     id: "suitable-smokers",
     q: "Is it suitable for smokers?",
-    a: "Yes, it is often used by individuals looking to support their respiratory health.",
+    a: "Yes. Many current and former smokers keep a box handy while they cut back or after they quit — pair it with your doctor’s advice, not instead of it.",
   },
   {
     id: "suitable-non-smokers",
     q: "Is it suitable for non-smokers?",
-    a: "Absolutely, it is beneficial for anyone exposed to pollution or looking to support respiratory wellness.",
+    a: "Yes. Traffic dust, Diwali smoke, and office AC bother plenty of people who never touched a cigarette. If your chest feels tight or your throat stays scratchy, this is for you too.",
   },
   {
     id: "what-benefits",
     q: "What benefits can I expect?",
-    a: "Supports lung function, helps soothe throat and airways, promotes easier breathing.",
+    a: "Buyers tell us breathing feels lighter, coughs soften, and sleep gets easier within the first couple of weeks. Bodies differ — give it at least one full box before you judge.",
   },
   {
     id: "side-effects",
     q: "Are there any side effects?",
-    a: "The tea is made from natural herbs and is generally well tolerated when consumed as directed.",
+    a: "It’s food-grade herbs, not a prescription. Start with one cup. If you’re pregnant, on blood thinners, or managing serious lung disease, ask your doctor first.",
   },
   {
     id: "who-should-start",
     q: "Who should start using this tea today?",
-    a: "Anyone living in urban environments, exposed to pollution, or looking to build a daily respiratory care habit.",
+    a: "Anyone over 18 who commutes through Indian cities, lives near construction dust, or wants a simple daily lung habit without pills.",
   },
   {
     id: "delivery-time",
     q: "How long will delivery take?",
-    a: "Delivery usually takes 3–7 business days depending on your location.",
+    a: "Most PIN codes see the parcel in three to seven working days. Remote areas can take a day or two longer.",
   },
 ];
 
@@ -85,7 +85,7 @@ export default function FaqSection() {
               </AccordionTrigger>
               <AccordionContent
                 id={`faq-panel-${id}`}
-                className="text-sm text-[var(--brand-dark)]/60 leading-relaxed pb-5"
+                className="text-sm text-[var(--brand-dark)]/70 leading-[1.65] pb-5"
               >
                 {a}
               </AccordionContent>

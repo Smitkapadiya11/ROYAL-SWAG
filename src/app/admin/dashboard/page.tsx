@@ -295,49 +295,37 @@ export default function AdminDashboard() {
         style={{
           background: "#1A2818",
           borderBottom: "1px solid rgba(74,100,34,0.3)",
-          padding: "0 24px",
-          height: 60,
-          display: "flex",
+          padding: "10px 24px",
+          minHeight: 72,
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: 12,
           position: "sticky",
           top: 0,
           zIndex: 100,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
+        <span aria-hidden style={{ minWidth: 0 }} />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Image
+            src="/images/new_logo.png"
+            alt=""
+            width={2048}
+            height={2048}
+            sizes="(max-width: 768px) 140px, 180px"
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: "50%",
-              background: "#F2E6CE",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              overflow: "hidden",
+              objectFit: "contain",
+              background: "transparent",
+              width: "clamp(140px, 28vw, 180px)",
+              height: "auto",
+              aspectRatio: "1",
             }}
-          >
-            <Image src="/images/royal-swag-logo.png" alt="" fill sizes="26px" style={{ objectFit: "contain", padding: 5 }} />
-          </div>
-          <div>
-            <p
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: "#F2E6CE",
-                fontFamily: "Georgia, serif",
-                letterSpacing: 1,
-              }}
-            >
-              ROYAL SWAG
-            </p>
-            <p style={{ fontSize: 9, color: "rgba(242,230,206,0.4)", letterSpacing: 2 }}>ADMIN DASHBOARD</p>
-          </div>
+            priority
+          />
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div
               style={{

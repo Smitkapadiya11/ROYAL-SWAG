@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SITE_ORIGIN } from "@/lib/config";
 
-const OG_IMAGE_PATH = "/images/product/product-1.jpg";
+const OG_IMAGE_PATH = "/images/product-1.jpg";
 
 export function ogImageAbsolute(): string {
   return `${SITE_ORIGIN}${OG_IMAGE_PATH}`;

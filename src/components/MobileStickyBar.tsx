@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
+import { useLeadCapture } from "@/hooks/useLeadCapture";
 
 const DEFAULT_HEADLINE = "Royal Swag Lung Detox Tea";
 const DEFAULT_SUB = "Free delivery · Ships tomorrow";
@@ -12,6 +13,7 @@ export default function MobileStickyBar(props: {
   subline?: string;
 }) {
   const { onBuyNow, href = "/product", headline = DEFAULT_HEADLINE, subline = DEFAULT_SUB } = props;
+  const { openLeadModal } = useLeadCapture();
 
   return (
     <div
@@ -53,7 +55,7 @@ export default function MobileStickyBar(props: {
         <button
           type="button"
           id="mobile-sticky-buy-btn"
-          onClick={onBuyNow}
+          onClick={() => openLeadModal(onBuyNow)}
           style={{
             background: "var(--rs-olive)",
             color: "#fff",
@@ -70,7 +72,7 @@ export default function MobileStickyBar(props: {
           Buy Now
         </button>
       ) : (
-        <Link
+        <LeadGuardLink
           id="mobile-sticky-buy-btn"
           href={href}
           style={{
@@ -86,7 +88,7 @@ export default function MobileStickyBar(props: {
           }}
         >
           Buy Now
-        </Link>
+        </LeadGuardLink>
       )}
     </div>
   );

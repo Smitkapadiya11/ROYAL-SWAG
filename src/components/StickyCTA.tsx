@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { S } from "@/lib/config";
 
 export default function StickyCTA() {
@@ -26,10 +26,10 @@ export default function StickyCTA() {
             {S.price.now} · Free delivery
           </div>
         </div>
-        <Link href="/product" className="btn btn-gold"
+        <LeadGuardLink href="/product" className="btn btn-gold"
           style={{ flexShrink: 0, padding: "10px 20px", fontSize: 13 }}>
           Buy Now
-        </Link>
+        </LeadGuardLink>
       </div>
       <style>{`
         @media (max-width: 768px) {

@@ -39,9 +39,9 @@ export const S = {
     { id: "pushkarmool", name: "Pushkarmool", bot: "Inula racemosa",        role: "The Deep Purifier",  benefit: "Deep lung purification, reduces pulmonary inflammation.", img: "/images/pushkarmool.jpg" },
   ],
   team: [
-    { id: "hitesh",  initials: "HS", name: "Hitesh Sabhadiya", role: "Founder & CEO",     img: "/images/hitesh.jpeg",             bio: "Founded Eximburg in 2015. Grew Royal Swag from Surat to 4 continents. Now featured on Amazon Prime & Netflix." },
-    { id: "manoj",   initials: "MK", name: "Manoj Koshiya",    role: "Co-Founder",        img: "/images/manoj.jpeg",              bio: "Leads R&D and manufacturing. Every batch meets ISO, GMP, FSSAI & AYUSH before it ships." },
-    { id: "jaideep", initials: "JS", name: "Jaideep Singh",    role: "Business Director", img: "/images/jaideep%20singh.jpeg",    bio: "12 years e-commerce experience. Leads Amazon strategy, D2C operations and performance analytics." },
+    { id: "hitesh",  initials: "HS", name: "Hitesh Sabhadiya", role: "Founder & CEO",     img: "/images/hitesh.jpeg",             bio: "Started Eximburg in 2015. Built Royal Swag from Surat into something people trust on four continents. You may have seen us on Amazon Prime or Netflix." },
+    { id: "manoj",   initials: "MK", name: "Manoj Koshiya",    role: "Co-Founder",        img: "/images/manoj.jpeg",              bio: "Runs R&D and the factory floor. He won't release a batch until it clears ISO, GMP, FSSAI, and AYUSH checks." },
+    { id: "jaideep", initials: "JS", name: "Jaideep Singh",    role: "Business Director", img: "/images/jaideep%20singh.jpeg",    bio: "Twelve years in e-commerce. Handles Amazon, our own site, and the numbers behind what ships each week." },
   ],
   reviews: [
     { initials: "RK", name: "Ramesh K., 44, Ahmedabad", risk: "Moderate Risk", before: "Coughed every morning for 20 minutes before work.", after: "By week 3 it dropped to barely 5 minutes — felt in control again." },

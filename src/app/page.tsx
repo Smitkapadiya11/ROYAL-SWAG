@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { S } from "@/lib/config";
 import LungSlider from "@/components/LungSlider";
 import HerbsCircle from "@/components/HerbsCircle";
@@ -34,7 +35,7 @@ export default function Home() {
     {
       n: "03",
       title: "Breathe",
-      desc: "Feel change by Day 7. Full lung detox in 30 days.",
+      desc: "Most buyers notice breathing feels easier around week two. Stick with one box — that’s the real test.",
       icon: (
         <svg viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
           <path d="M24 9v30" stroke="#4A6422" strokeWidth="2.2" />
@@ -66,10 +67,10 @@ export default function Home() {
                 </em>
               </h1>
               <div className="rl" />
-              <p style={{ fontSize: 17, maxWidth: 400, marginBottom: 28, color: "#5C5647", lineHeight: 1.75 }}>
-                7 Ayurvedic herbs, a cup a day — because every morning in India,
-                your lungs absorb what they were never designed to handle.
-                Time to actually do something about it.
+              <p style={{ fontSize: 17, maxWidth: 420, marginBottom: 28, color: "#5C5647", lineHeight: 1.67 }}>
+                Seven Ayurvedic herbs. One cup a day.
+                Pollution, smoke, dust — most of us breathe it whether we choose to or not.
+                This tea is for people who want to help their lungs catch up.
               </p>
 
               {/* Price badge */}
@@ -86,7 +87,7 @@ export default function Home() {
                   {S.price.was}
                 </span>
                 <span style={{
-                  fontSize: 10, fontWeight: 700, letterSpacing: 1,
+                  fontSize: 10, fontWeight: 700,
                   background: "#C49A2A", color: "#2D3D15",
                   borderRadius: 4, padding: "2px 8px",
                 }}>SAVE ₹150</span>
@@ -94,7 +95,7 @@ export default function Home() {
 
               {/* CTAs */}
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 40 }}>
-                <Link href="/product" className="b b-olive">Order Now →</Link>
+                <LeadGuardLink href="/product" className="b b-olive">Order Now →</LeadGuardLink>
                 <Link href="/lung-test" className="b b-ghost">Free Lung Test</Link>
               </div>
 
@@ -161,7 +162,7 @@ export default function Home() {
           ].map(t => (
             <span key={t} style={{
               color: "rgba(242,230,206,0.55)", fontSize: 11,
-              fontWeight: 500, letterSpacing: "1.5px",
+              fontWeight: 500,
             }}>{t}</span>
           ))}
         </div>
@@ -242,12 +243,12 @@ export default function Home() {
                     color: "#F2E6CE", fontSize: 13, fontWeight: 600, flexShrink: 0,
                   }}>{r.initials}</div>
                   <span style={{
-                    fontSize: 9, fontWeight: 700, letterSpacing: 1.5,
+                    fontSize: 9, fontWeight: 700,
                     background: "#F2E6CE", color: "#4A6422",
                     border: "1px solid #4A6422", padding: "3px 8px", borderRadius: 4,
                   }}>WAS: {r.risk.toUpperCase()}</span>
                 </div>
-                <div style={{ color: "#C49A2A", fontSize: 14, marginBottom: 12, letterSpacing: 3 }}>★★★★★</div>
+                <div style={{ color: "#C49A2A", fontSize: 14, marginBottom: 12 }}>★★★★★</div>
                 <p style={{ fontSize: 13, marginBottom: 8, lineHeight: 1.7, color: "#5C5647" }}>
                   <strong style={{ color: "#2D3D15", fontWeight: 500 }}>Before: </strong>{r.before}
                 </p>
@@ -288,7 +289,7 @@ export default function Home() {
             Ships within 24 hours · 30-day money-back guarantee
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/product" className="b b-gold">Order Now — {S.price.now} →</Link>
+            <LeadGuardLink href="/product" className="b b-gold">Order Now — {S.price.now} →</LeadGuardLink>
             <Link href="/lung-test" className="b b-ghost-w">Free Lung Test</Link>
           </div>
         </div>
@@ -309,9 +310,9 @@ export default function Home() {
           }}>Royal Swag Lung Detox Tea</div>
           <div style={{ color: "#C49A2A", fontSize: 12 }}>{S.price.now} · Free delivery</div>
         </div>
-        <Link href="/product" className="b b-gold" style={{ flexShrink: 0, padding: "10px 20px" }}>
+        <LeadGuardLink href="/product" className="b b-gold" style={{ flexShrink: 0, padding: "10px 20px" }}>
           Buy Now
-        </Link>
+        </LeadGuardLink>
       </div>
 
       <style>{`

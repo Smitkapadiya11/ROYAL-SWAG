@@ -2,9 +2,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
+import { isProductPath } from "@/lib/is-product-path";
 import { SITE } from "@/lib/config";
 
-const LOGO_SRC = "/images/ROYAL%20SWAG_logo.png";
+const LOGO_SRC = "/images/new_logo.png";
 
 const NAV_LINKS = [
   { label: "Product",     href: "/product" },
@@ -33,40 +35,48 @@ export default function Header() {
     }}>
       <div className="container" style={{
         display: "flex", alignItems: "center",
-        justifyContent: "space-between", height: 68,
+        justifyContent: "space-between", minHeight: 72, padding: "10px 0",
       }}>
         {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <Link href="/" aria-label="Home" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Image
             src={LOGO_SRC}
-            alt="Royal Swag Logo"
-            width={36}
-            height={36}
-            style={{ objectFit: "contain", filter: "brightness(0) invert(1)", opacity: 0.92 }}
+            alt=""
+            width={2048}
+            height={2048}
+            className="rs-header-logo"
+            style={{
+              background: "transparent",
+              objectFit: "contain",
+              display: "block",
+            }}
           />
-          <span style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: 16, fontWeight: 600,
-            color: "var(--rs-cream)", letterSpacing: 1.5,
-          }}>
-            ROYAL SWAG
-          </span>
         </Link>
 
         {/* Desktop nav */}
         <nav style={{ display: "flex", gap: 32, alignItems: "center" }} className="rs-desktop-nav">
-          {NAV_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              style={{ color: "rgba(242,230,206,0.8)", fontSize: 14, fontWeight: 400, letterSpacing: 0.3 }}
-            >
-              {l.label}
-            </Link>
-          ))}
-          <Link href="/product" className="btn-gold" style={{ fontSize: 13, padding: "9px 22px" }}>
+          {NAV_LINKS.map((l) =>
+            isProductPath(l.href) ? (
+              <LeadGuardLink
+                key={l.href}
+                href={l.href}
+                style={{ color: "rgba(242,230,206,0.8)", fontSize: 14, fontWeight: 400, letterSpacing: 0.3 }}
+              >
+                {l.label}
+              </LeadGuardLink>
+            ) : (
+              <Link
+                key={l.href}
+                href={l.href}
+                style={{ color: "rgba(242,230,206,0.8)", fontSize: 14, fontWeight: 400, letterSpacing: 0.3 }}
+              >
+                {l.label}
+              </Link>
+            )
+          )}
+          <LeadGuardLink href="/product" className="btn-gold" style={{ fontSize: 13, padding: "9px 22px" }}>
             Buy Now — {SITE.price.display}
-          </Link>
+          </LeadGuardLink>
         </nav>
 
         {/* Mobile hamburger */}
@@ -96,31 +106,56 @@ export default function Header() {
           display: "flex", flexDirection: "column", gap: 4,
           borderTop: "1px solid rgba(255,255,255,0.08)",
         }}>
-          {NAV_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              style={{
-                color: "var(--rs-cream)", fontSize: 16, padding: "12px 0",
-                borderBottom: "1px solid rgba(255,255,255,0.06)", display: "block",
-              }}
-            >
-              {l.label}
-            </Link>
-          ))}
-          <Link
+          {NAV_LINKS.map((l) =>
+            isProductPath(l.href) ? (
+              <LeadGuardLink
+                key={l.href}
+                href={l.href}
+                onProceed={() => setOpen(false)}
+                style={{
+                  color: "var(--rs-cream)", fontSize: 16, padding: "12px 0",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)", display: "block",
+                }}
+              >
+                {l.label}
+              </LeadGuardLink>
+            ) : (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                style={{
+                  color: "var(--rs-cream)", fontSize: 16, padding: "12px 0",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)", display: "block",
+                }}
+              >
+                {l.label}
+              </Link>
+            )
+          )}
+          <LeadGuardLink
             href="/product"
             className="btn-gold"
-            onClick={() => setOpen(false)}
+            onProceed={() => setOpen(false)}
             style={{ marginTop: 16, textAlign: "center", padding: "14px", display: "block" }}
           >
             Buy Now — {SITE.price.display}
-          </Link>
+          </LeadGuardLink>
         </div>
       )}
 
       <style>{`
+        .rs-header-logo {
+          width: 140px !important;
+          height: auto !important;
+          aspect-ratio: 1 / 1;
+        }
+        @media (min-width: 769px) {
+          .rs-header-logo {
+            width: 180px !important;
+            min-width: 180px !important;
+          }
+        }
         @media (max-width: 768px) {
           .rs-desktop-nav { display: none !important; }
           .rs-mobile-menu-btn { display: flex !important; }

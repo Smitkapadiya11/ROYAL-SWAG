@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { useEffect, useId, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -494,12 +495,12 @@ export default function LungTestResultClient() {
             will be to reverse.
           </div>
 
-          <Link
+          <LeadGuardLink
             href="/product"
             className="rs-cta-primary mt-5 flex w-full items-center justify-center rounded-xl bg-[#15803d] px-4 py-4 text-center text-base font-bold text-white min-[769px]:min-h-[52px] sm:text-lg"
           >
             Start My 30-Day Detox — ₹349 →
-          </Link>
+          </LeadGuardLink>
 
           <p className="mt-3 text-center text-sm font-semibold text-amber-200/90">
             ⚡ 2,847 people with similar scores ordered this week

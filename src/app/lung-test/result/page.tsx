@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { LeadGuardLink } from "@/components/LeadGuardLink";
 import Image from "next/image";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { LUNG_TEST_QUESTION_COUNT } from "@/lib/lung-test-constants";
@@ -147,26 +148,25 @@ function RiskMeter({ scorePercentage }: { scorePercentage: number }) {
 
 // Image paths — update to exact filenames if/when specific risk-level photos are added
 const LUNG_PHOTOS: Record<"mild" | "moderate" | "high", string> = {
-  mild:     "/images/lungs-after.png",     // healthy lungs — best match for mild risk
-  moderate: "/images/lungs-before.png",    // polluted lungs — best match for moderate/high
-  high:     "/images/lungs-before.png",
+  mild:     "/images/lungs-after.jpg",
+  moderate: "/images/lungs-before.jpg",
+  high:     "/images/lungs-before.jpg",
 };
 
 function Result() {
   const params = useSearchParams();
   const router = useRouter();
-  const scoreStr = params?.get("score");
+  const scoreStr = params?.get("score") ?? null;
   const name = decodeURIComponent(params?.get("name") ?? "there");
   const [photoError, setPhotoError] = useState(false);
 
-  if (!scoreStr) {
-    router.replace("/lung-test");
-    return null;
-  }
-
-  const score = parseInt(scoreStr ?? "0");
+  const scoreParsed = scoreStr !== null ? Number.parseInt(scoreStr, 10) : Number.NaN;
+  const scoreValid = scoreStr !== null && !Number.isNaN(scoreParsed);
   const maxScore = LUNG_TEST_QUESTION_COUNT;
-  const clampedScore = Math.min(Math.max(score, 0), maxScore);
+  const clampedScore = useMemo(() => {
+    if (!scoreValid) return 0;
+    return Math.min(Math.max(scoreParsed, 0), maxScore);
+  }, [scoreParsed, scoreValid, maxScore]);
   const scorePercentage = useMemo(
     () => Math.round((clampedScore / maxScore) * 100),
     [clampedScore, maxScore]
@@ -174,6 +174,14 @@ function Result() {
   const level: RiskKey =
     scorePercentage <= 34 ? "mild" : scorePercentage <= 67 ? "moderate" : "high";
   const R = RISK[level];
+
+  useEffect(() => {
+    if (!scoreValid) router.replace("/lung-test");
+  }, [scoreValid, router]);
+
+  if (!scoreValid) {
+    return null;
+  }
 
   return (
     <>
@@ -341,23 +349,23 @@ function Result() {
             background: "#4A6422", borderRadius: 16,
             padding: "40px 32px", textAlign: "center", color: "#F2E6CE",
           }}>
-            <p style={{ fontSize: 12, opacity: 0.7, letterSpacing: 2, marginBottom: 8 }}>
+            <p style={{ fontSize: 12, opacity: 0.7, marginBottom: 8, lineHeight: 1.65 }}>
               BASED ON YOUR PROFILE, WE RECOMMEND
             </p>
             <h3 style={{
               fontFamily: "var(--ff-head)", fontSize: 26,
               color: "#F2E6CE", marginBottom: 4,
             }}>Royal Swag Lung Detox Tea</h3>
-            <p style={{ fontSize: 14, opacity: 0.7, marginBottom: 24 }}>
+            <p style={{ fontSize: 14, opacity: 0.7, marginBottom: 24, lineHeight: 1.65 }}>
               7 Ayurvedic herbs · 20 bags · 30-day supply
             </p>
-            <Link href="/product" style={{
+            <LeadGuardLink href="/product" style={{
               display: "inline-block",
               background: "#C49A2A", color: "#2D3D15",
               padding: "16px 36px", borderRadius: 8,
               fontWeight: 700, fontSize: 16, textDecoration: "none",
               marginBottom: 16,
-            }}>Start My Lung Detox — ₹349 →</Link>
+            }}>Start My Lung Detox — ₹349 →</LeadGuardLink>
             <p style={{ fontSize: 12, opacity: 0.6 }}>
               Free delivery · 30-day money back · Ships within 24 hours
             </p>

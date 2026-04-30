@@ -282,7 +282,7 @@ export default function LungTestPage() {
           </div>
         )}
 
-        {/* ── QUIZ ── */}
+        {/* ── QUIZ — single column card: image → text → buttons (no overlap) ── */}
         {step === "quiz" && (
           <div style={{ animation: "fadeIn .4s ease" }}>
             <p style={{
@@ -297,83 +297,136 @@ export default function LungTestPage() {
               QUESTION {String(qIdx + 1).padStart(2, "0")} / {String(MAX_SCORE).padStart(2, "0")}
             </p>
 
-            <div className="mb-7 overflow-hidden rounded-2xl bg-white shadow-md">
-              <div className="grid grid-cols-1 md:grid-cols-2">
-                <div className="relative w-full aspect-square overflow-hidden rounded-xl">
+            <div
+              className="lung-quiz-grid"
+              style={{
+                display: "grid",
+                gap: 16,
+                alignItems: "stretch",
+                marginBottom: 28,
+              }}
+            >
+              <div
+                style={{
+                  gridColumn: "1 / -1",
+                  display: "flex",
+                  flexDirection: "column",
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  background: "#fff",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                  position: "relative",
+                }}
+              >
+                {/* IMAGE — fixed height; relative only for Next/Image fill */}
+                <div
+                  style={{
+                    width: "100%",
+                    height: 200,
+                    position: "relative",
+                    flexShrink: 0,
+                    background: "#e8e4dc",
+                  }}
+                >
                   <Image
                     src={QUESTION_IMAGES[qIdx]}
-                    alt=""
+                    alt={QUESTIONS[qIdx].q}
                     fill
-                    sizes="(max-width: 767px) 100vw, min(480px, 50vw)"
-                    className="object-cover object-center"
-                    style={{ objectFit: "cover", objectPosition: "center" }}
+                    sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 480px"
                     priority={qIdx === 0}
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: "center",
+                      pointerEvents: "none",
+                    }}
                   />
                 </div>
-                <div className="flex min-h-0 flex-col justify-between gap-6 p-6 md:p-8">
-                  <div>
-                    <p style={{
-                      fontSize: 10,
+
+                {/* QUESTION TEXT — static flow below image */}
+                <div
+                  style={{
+                    padding: "16px 16px 8px",
+                    position: "static",
+                  }}
+                >
+                  <p style={{
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: "2.5px",
+                    color: "#4A6422",
+                    marginBottom: 8,
+                    textTransform: "uppercase",
+                  }}>
+                    {QUESTIONS[qIdx].topic}
+                  </p>
+                  <p style={{
+                    fontSize: 15,
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                    color: "#1a1a1a",
+                    marginBottom: 8,
+                    fontFamily: "var(--ff-head, Georgia, serif)",
+                  }}>
+                    {QUESTIONS[qIdx].q}
+                  </p>
+                  <p style={{
+                    fontSize: 13,
+                    color: "#5C5647",
+                    fontStyle: "italic",
+                    marginBottom: 0,
+                    lineHeight: 1.67,
+                  }}>
+                    {QUESTIONS[qIdx].hint}
+                  </p>
+                </div>
+
+                {/* YES / NO — always below text, never absolute */}
+                <div style={{
+                  display: "flex",
+                  gap: 12,
+                  padding: "8px 16px 16px",
+                  position: "static",
+                  zIndex: 1,
+                  pointerEvents: "auto",
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => choose(true)}
+                    style={{
+                      flex: 1,
+                      padding: "14px 10px",
+                      borderRadius: 8,
+                      border: "2px solid #16a34a",
+                      background: ans[qIdx] === true ? "#16a34a" : "#fff",
+                      color: ans[qIdx] === true ? "#fff" : "#16a34a",
                       fontWeight: 600,
-                      letterSpacing: "2.5px",
-                      color: "#4A6422",
-                      marginBottom: 8,
-                      textTransform: "uppercase",
-                    }}>
-                      {QUESTIONS[qIdx].topic}
-                    </p>
-                    <h2 style={{
-                      fontFamily: "var(--ff-head, Georgia, serif)",
-                      fontSize: "clamp(20px, 3vw, 28px)",
+                      cursor: "pointer",
+                      fontSize: 14,
+                      pointerEvents: "auto",
+                      fontFamily: "var(--ff-body, sans-serif)",
+                    }}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => choose(false)}
+                    style={{
+                      flex: 1,
+                      padding: "14px 10px",
+                      borderRadius: 8,
+                      border: "2px solid #dc2626",
+                      background: ans[qIdx] === false ? "#dc2626" : "#fff",
+                      color: ans[qIdx] === false ? "#fff" : "#dc2626",
                       fontWeight: 600,
-                      color: "#1A1A14",
-                      marginBottom: 8,
-                      lineHeight: 1.3,
-                    }}>{QUESTIONS[qIdx].q}</h2>
-                    <p style={{
-                      fontSize: 13,
-                      color: "#5C5647",
-                      fontStyle: "italic",
-                      marginBottom: 0,
-                      lineHeight: 1.67,
-                    }}>{QUESTIONS[qIdx].hint}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => choose(true)}
-                      style={{
-                        padding: "18px", background: "#4A6422",
-                        color: "#F2E6CE", border: "none",
-                        borderRadius: 8, fontSize: 17, fontWeight: 600,
-                        cursor: "pointer", transition: "all 0.2s",
-                        fontFamily: "var(--ff-body, sans-serif)",
-                        letterSpacing: "0.3px",
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#2D3D15")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "#4A6422")}
-                    >Yes</button>
-                    <button
-                      type="button"
-                      onClick={() => choose(false)}
-                      style={{
-                        padding: "18px", background: "transparent",
-                        color: "#4A6422", border: "1.5px solid #4A6422",
-                        borderRadius: 8, fontSize: 17, fontWeight: 600,
-                        cursor: "pointer", transition: "all 0.2s",
-                        fontFamily: "var(--ff-body, sans-serif)",
-                        letterSpacing: "0.3px",
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = "#4A6422";
-                        e.currentTarget.style.color = "#F2E6CE";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "#4A6422";
-                      }}
-                    >No</button>
-                  </div>
+                      cursor: "pointer",
+                      fontSize: 14,
+                      pointerEvents: "auto",
+                      fontFamily: "var(--ff-body, sans-serif)",
+                    }}
+                  >
+                    No
+                  </button>
                 </div>
               </div>
             </div>
@@ -383,11 +436,20 @@ export default function LungTestPage() {
                 type="button"
                 onClick={() => setQIdx(qIdx - 1)}
                 style={{
-                  marginTop: 8, background: "none", border: "none",
-                  color: "#5C5647", fontSize: 13, cursor: "pointer", padding: 0,
+                  marginTop: 8,
+                  background: "none",
+                  border: "none",
+                  color: "#5C5647",
+                  fontSize: 13,
+                  cursor: "pointer",
+                  padding: 0,
+                  position: "static",
+                  pointerEvents: "auto",
                   fontFamily: "var(--ff-body, sans-serif)",
                 }}
-              >← Previous question</button>
+              >
+                ← Previous question
+              </button>
             )}
           </div>
         )}
@@ -397,6 +459,14 @@ export default function LungTestPage() {
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        .lung-quiz-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        @media (min-width: 640px) {
+          .lung-quiz-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
         }
       `}</style>
     </section>

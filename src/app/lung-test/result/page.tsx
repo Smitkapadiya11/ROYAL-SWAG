@@ -148,9 +148,9 @@ function RiskMeter({ scorePercentage }: { scorePercentage: number }) {
 
 // Image paths — update to exact filenames if/when specific risk-level photos are added
 const LUNG_PHOTOS: Record<"mild" | "moderate" | "high", string> = {
-  mild:     "/images/lungs-after.jpg",
-  moderate: "/images/lungs-before.jpg",
-  high:     "/images/lungs-before.jpg",
+  mild:     "/images/lung-after.jpg",
+  moderate: "/images/lung-before.jpg",
+  high:     "/images/lung-before.jpg",
 };
 
 function Result() {

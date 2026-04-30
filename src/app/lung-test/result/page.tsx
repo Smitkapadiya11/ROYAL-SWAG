@@ -2,7 +2,8 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { LUNG_TEST_QUESTION_COUNT } from "@/lib/lung-test-constants";
 
 const RISK = {
   mild: {
@@ -51,6 +52,99 @@ const RISK = {
 
 type RiskKey = keyof typeof RISK;
 
+function RiskMeter({ scorePercentage }: { scorePercentage: number }) {
+  const [animatedPct, setAnimatedPct] = useState(0);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setAnimatedPct(scorePercentage), 80);
+    return () => window.clearTimeout(t);
+  }, [scorePercentage]);
+
+  const zone: "mild" | "moderate" | "high" =
+    scorePercentage <= 34 ? "mild" : scorePercentage <= 67 ? "moderate" : "high";
+
+  return (
+    <div style={{ marginBottom: 26 }}>
+      <div style={{ marginBottom: 10 }}>
+        <h2 style={{ fontFamily: "var(--ff-head)", fontSize: 32, color: "#1A1A14" }}>
+          Risk Meter
+        </h2>
+      </div>
+      <div
+        style={{
+          position: "relative",
+          height: 18,
+          borderRadius: 999,
+          border: "1px solid rgba(212,200,168,0.6)",
+          background:
+            "linear-gradient(90deg, rgba(74,100,34,0.9) 0%, rgba(196,154,42,0.92) 36%, rgba(224,126,41,0.96) 66%, rgba(160,32,32,0.97) 100%)",
+          overflow: "visible",
+          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06), 0 8px 24px rgba(26,26,20,0.12)",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: `clamp(0px, calc(${animatedPct}% - 9px), calc(100% - 18px))`,
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: 18,
+            height: 18,
+            borderRadius: "50%",
+            background: "#fff",
+            border: "2px solid #1A1A14",
+            boxShadow: "0 0 0 3px rgba(255,255,255,0.25), 0 0 16px rgba(255,255,255,0.45)",
+            transition: "left 1.5s cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        />
+      </div>
+      <div
+        style={{
+          marginTop: 14,
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 8,
+          alignItems: "center",
+        }}
+      >
+        <p
+          style={{
+            textAlign: "left",
+            fontSize: 12,
+            letterSpacing: 1.2,
+            color: zone === "mild" ? "#4A6422" : "rgba(74,100,34,0.6)",
+            fontWeight: zone === "mild" ? 700 : 500,
+          }}
+        >
+          MILD
+        </p>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: 12,
+            letterSpacing: 1.2,
+            color: zone === "moderate" ? "#B85C00" : "rgba(184,92,0,0.62)",
+            fontWeight: zone === "moderate" ? 700 : 500,
+          }}
+        >
+          MODERATE
+        </p>
+        <p
+          style={{
+            textAlign: "right",
+            fontSize: 12,
+            letterSpacing: 1.2,
+            color: zone === "high" ? "#A02020" : "rgba(160,32,32,0.62)",
+            fontWeight: zone === "high" ? 700 : 500,
+          }}
+        >
+          HIGH RISK
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // Image paths — update to exact filenames if/when specific risk-level photos are added
 const LUNG_PHOTOS: Record<"mild" | "moderate" | "high", string> = {
   mild:     "/images/lungs-after.png",     // healthy lungs — best match for mild risk
@@ -71,7 +165,14 @@ function Result() {
   }
 
   const score = parseInt(scoreStr ?? "0");
-  const level: RiskKey = score <= 1 ? "mild" : score <= 3 ? "moderate" : "high";
+  const maxScore = LUNG_TEST_QUESTION_COUNT;
+  const clampedScore = Math.min(Math.max(score, 0), maxScore);
+  const scorePercentage = useMemo(
+    () => Math.round((clampedScore / maxScore) * 100),
+    [clampedScore, maxScore]
+  );
+  const level: RiskKey =
+    scorePercentage <= 34 ? "mild" : scorePercentage <= 67 ? "moderate" : "high";
   const R = RISK[level];
 
   return (
@@ -95,7 +196,7 @@ function Result() {
             <em style={{ color: "#C49A2A" }}>here is what we found.</em>
           </h1>
           <p style={{ opacity: 0.65, fontSize: 14 }}>
-            Based on 5 clinical questions · Score: {score}/5
+            Based on {maxScore} clinical questions
           </p>
         </div>
       </section>
@@ -175,38 +276,7 @@ function Result() {
               </div>
             )}
 
-            {/* Risk meter */}
-            <div style={{ marginBottom: 28 }}>
-              <div style={{
-                display: "flex", justifyContent: "space-between",
-                alignItems: "baseline", marginBottom: 12,
-              }}>
-                <h2 style={{
-                  fontFamily: "var(--ff-head)",
-                  fontSize: 32, fontWeight: 700,
-                  color: R.color, lineHeight: 1,
-                }}>{R.label}</h2>
-                <span style={{ fontSize: 13, color: "#5C5647", fontWeight: 500 }}>
-                  Score: {score}/5
-                </span>
-              </div>
-              <div style={{
-                height: 8, background: "#F2E6CE",
-                borderRadius: 4, overflow: "hidden", marginBottom: 8,
-              }}>
-                <div style={{
-                  height: "100%", background: R.color,
-                  width: `${R.pct}%`, borderRadius: 4,
-                  transition: "width 0.6s ease",
-                }} />
-              </div>
-              <div style={{
-                display: "flex", justifyContent: "space-between",
-                fontSize: 11, color: "#5C5647", opacity: 0.6,
-              }}>
-                <span>Mild</span><span>Moderate</span><span>High</span>
-              </div>
-            </div>
+            <RiskMeter scorePercentage={scorePercentage} />
 
             <h3 style={{
               fontFamily: "var(--ff-head)",

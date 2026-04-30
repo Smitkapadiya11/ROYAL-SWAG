@@ -1,0 +1,1 @@
+export const LUNG_TEST_QUESTION_COUNT = 8;

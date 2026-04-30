@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { LUNG_TEST_QUESTION_COUNT } from "@/lib/lung-test-constants";
 
 type SketchKind = "city" | "smoke" | "cough" | "breath" | "work" | "sleep" | "exercise" | "diet";
 
@@ -59,6 +60,8 @@ const QUESTIONS: {
     sketch: "diet",
   },
 ];
+
+const MAX_SCORE = LUNG_TEST_QUESTION_COUNT;
 
 function SketchVisual({ type }: { type: typeof QUESTIONS[number]["sketch"] }) {
   const STROKE = "#2D3D15";
@@ -147,7 +150,7 @@ export default function LungTestPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [qIdx, setQIdx]   = useState(0);
-  const [ans, setAns]     = useState<(boolean | null)[]>(Array(QUESTIONS.length).fill(null));
+  const [ans, setAns]     = useState<(boolean | null)[]>(Array(MAX_SCORE).fill(null));
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validPhone = phone.replace(/\D/g, "").length >= 10;
@@ -163,7 +166,7 @@ export default function LungTestPage() {
     next[qIdx] = val;
     setAns(next);
     setTimeout(() => {
-      if (qIdx < QUESTIONS.length - 1) {
+      if (qIdx < MAX_SCORE - 1) {
         setQIdx(qIdx + 1);
       } else {
         const score = next.filter(Boolean).length;
@@ -175,7 +178,7 @@ export default function LungTestPage() {
     }, 220);
   };
 
-  const totalSteps = 4 + QUESTIONS.length;
+  const totalSteps = 4 + MAX_SCORE;
   const currentStep =
     step === "name"  ? 1 :
     step === "email" ? 2 :
@@ -343,7 +346,7 @@ export default function LungTestPage() {
               marginBottom: 14,
               fontVariantNumeric: "tabular-nums",
             }}>
-              QUESTION {String(qIdx + 1).padStart(2, "0")} / {String(QUESTIONS.length).padStart(2, "0")}
+              QUESTION {String(qIdx + 1).padStart(2, "0")} / {String(MAX_SCORE).padStart(2, "0")}
             </p>
             <p style={{
               fontSize: 10,

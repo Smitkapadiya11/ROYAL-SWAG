@@ -1,21 +1,8 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LUNG_TEST_QUESTION_COUNT } from "@/lib/lung-test-constants";
 import { trackLungTestLead } from "@/lib/trackLead";
-
-/** Real photography for each quiz question (order matches QUESTIONS). */
-const QUESTION_IMAGES: readonly string[] = [
-  "/images/Q1.jpeg",
-  "/images/Q2.jpeg",
-  "/images/Q3.jpeg",
-  "/images/Q4.jpeg",
-  "/images/Q5.jpeg",
-  "/images/Q6.jpeg",
-  "/images/Q7.jpeg",
-  "/images/Q8.jpeg",
-];
 
 const QUESTIONS: {
   q: string;
@@ -282,7 +269,7 @@ export default function LungTestPage() {
           </div>
         )}
 
-        {/* ── QUIZ — single column card: image → text → buttons (no overlap) ── */}
+        {/* ── QUIZ — branded strip + text + buttons (no stock photos) ── */}
         {step === "quiz" && (
           <div style={{ animation: "fadeIn .4s ease" }}>
             <p style={{
@@ -318,31 +305,37 @@ export default function LungTestPage() {
                   position: "relative",
                 }}
               >
-                {/* IMAGE — fixed height; relative only for Next/Image fill */}
+                {/* Decorative header — replaces per-question stock imagery */}
                 <div
+                  aria-hidden
                   style={{
-                    width: "100%",
-                    height: 200,
-                    position: "relative",
                     flexShrink: 0,
-                    background: "#e8e4dc",
+                    width: "100%",
+                    minHeight: 76,
+                    padding: "18px 20px",
+                    boxSizing: "border-box",
+                    background:
+                      "linear-gradient(135deg, #2D3D15 0%, #4A6422 42%, rgba(196,154,42,0.18) 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 12,
+                    borderBottom: "1px solid rgba(242,230,206,0.15)",
                   }}
                 >
-                  <Image
-                    src={QUESTION_IMAGES[qIdx]}
-                    alt={QUESTIONS[qIdx].q}
-                    fill
-                    sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 480px"
-                    priority={qIdx === 0}
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: "center",
-                      pointerEvents: "none",
-                    }}
-                  />
+                  <span style={{ fontSize: 28, lineHeight: 1 }}>🫁</span>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.28em",
+                    color: "#F2E6CE",
+                    textTransform: "uppercase",
+                  }}>
+                    Lung health check
+                  </span>
                 </div>
 
-                {/* QUESTION TEXT — static flow below image */}
+                {/* QUESTION TEXT */}
                 <div
                   style={{
                     padding: "16px 16px 8px",

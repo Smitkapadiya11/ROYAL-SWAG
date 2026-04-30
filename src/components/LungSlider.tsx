@@ -2,10 +2,10 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 
-/** Left side ( clipped overlay ): before detox — illustrative lung imagery */
-const BEFORE_SRC = "/images/lung-before.jpg";
-/** Right side (base layer): after detox — illustrative lung imagery */
-const AFTER_SRC = "/images/lung-after.jpg";
+/** Left (clipped): before — assets in public/images */
+const BEFORE_SRC = "/images/lungs-before.png";
+/** Right (base): after */
+const AFTER_SRC = "/images/lungs-after.png";
 
 export default function LungSlider() {
   const ref = useRef<HTMLDivElement>(null);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto                        from "crypto";
+import { db }                        from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -10,6 +11,9 @@ export interface VerifyPayload {
   razorpay_signature:  string;
   amount?:    number;
   packLabel?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
 }
 
 export interface VerifyResponse {
@@ -38,6 +42,9 @@ export async function POST(req: NextRequest) {
       razorpay_signature,
       amount,
       packLabel,
+      customerName,
+      customerEmail,
+      customerPhone,
     } = body;
 
     // ── 2. Validate required fields ──────────────────────
@@ -86,15 +93,40 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── 5. Log verified payment ──────────────────────────
-    // Replace this block with your ORM/DB call when ready:
-    // await prisma.order.upsert({ where: { razorpayOrderId: razorpay_order_id }, ... })
-    console.log("[/api/razorpay/verify] Payment verified.", {
-      orderId:   razorpay_order_id,
-      paymentId: razorpay_payment_id,
-      amount,
-      packLabel,
-      timestamp: new Date().toISOString(),
+    const emailFallback = `${razorpay_order_id}@unknown.com`;
+    const customer = await db.customer.upsert({
+      where: { email: customerEmail || emailFallback },
+      create: {
+        name: customerName || "Unknown",
+        email: customerEmail || emailFallback,
+        phone: customerPhone || "",
+      },
+      update: {
+        ...(customerName ? { name: customerName } : {}),
+        ...(customerPhone !== undefined ? { phone: customerPhone || "" } : {}),
+      },
+    });
+
+    await db.order.upsert({
+      where: { razorpayOrderId: razorpay_order_id },
+      create: {
+        razorpayOrderId: razorpay_order_id,
+        razorpayPaymentId: razorpay_payment_id,
+        razorpaySignature: razorpay_signature,
+        status: "PAID",
+        amount: Math.round((amount || 0) * 100),
+        amountINR: amount || 0,
+        packLabel: packLabel || "",
+        paidAt: new Date(),
+        customerId: customer.id,
+      },
+      update: {
+        razorpayPaymentId: razorpay_payment_id,
+        razorpaySignature: razorpay_signature,
+        status: "PAID",
+        paidAt: new Date(),
+        customerId: customer.id,
+      },
     });
 
     // ── 6. Return success ────────────────────────────────

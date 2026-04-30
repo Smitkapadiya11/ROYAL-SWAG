@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id                String         @id @default(cuid())
+  razorpayOrderId   String         @unique
+  razorpayPaymentId String?        @unique
+  razorpaySignature String?
+  status            OrderStatus    @default(PENDING)
+  amount            Int
+  amountINR         Float
+  packLabel         String
+  currency          String         @default("INR")
+  receipt           String?
+  paidAt            DateTime?
+  failedAt          DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  customer          Customer?      @relation(fields: [customerId], references: [id])
+  customerId        String?
+  lungTestResult    LungTestResult?
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Customer {
+  id        String           @id @default(cuid())
+  name      String
+  email     String           @unique
+  phone     String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  orders    Order[]
+  lungTests LungTestResult[]
+}
+
+model LungTestResult {
+  id               String    @id @default(cuid())
+  sessionId        String    @unique @default(cuid())
+  name             String
+  email            String
+  phone            String
+  score            Int
+  riskLevel        RiskLevel
+  q1_pollution     Boolean   @default(false)
+  q2_smoking       Boolean   @default(false)
+  q3_cough         Boolean   @default(false)
+  q4_breathless    Boolean   @default(false)
+  q5_occupational  Boolean   @default(false)
+  q6_sleep         Boolean   @default(false)
+  q7_exercise      Boolean   @default(false)
+  q8_diet          Boolean   @default(false)
+  submittedAt      DateTime  @default(now())
+  convertedToOrder Boolean   @default(false)
+  customer         Customer? @relation(fields: [customerId], references: [id])
+  customerId       String?
+  order            Order?    @relation(fields: [orderId], references: [id])
+  orderId          String?   @unique
+}
+
+enum RiskLevel {
+  MILD
+  MODERATE
+  HIGH
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}

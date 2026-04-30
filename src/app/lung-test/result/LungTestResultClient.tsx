@@ -48,7 +48,7 @@ function normalizeAnswers(raw: LungTestStored["answers"]): AnswersShape | null {
     q8: false,
   };
   if (Array.isArray(raw)) {
-    if (raw.length < 5) return null;
+    if (raw.length < 8) return null;
     for (let i = 0; i < Math.min(8, raw.length); i++) {
       const k = `q${i + 1}` as keyof AnswersShape;
       base[k] = !!raw[i];

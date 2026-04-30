@@ -170,6 +170,18 @@ export default function LungTestPage() {
         setQIdx(qIdx + 1);
       } else {
         const score = next.filter(Boolean).length;
+        fetch("/api/lung-test/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            answers: next.map((a) => a === true),
+            score,
+            riskLevel: score <= 2 ? "MILD" : score <= 5 ? "MODERATE" : "HIGH",
+          }),
+        }).catch(console.error);
         if (typeof window !== "undefined") {
           sessionStorage.setItem("rs_user", JSON.stringify({ name, email, phone }));
         }

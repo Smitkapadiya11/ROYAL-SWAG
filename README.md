@@ -39,14 +39,16 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 Only you can create the database and paste secrets into Vercel—the app cannot do that automatically. Do this once:
 
-1. **Create a PostgreSQL database** (e.g. [Neon](https://neon.tech), Supabase Postgres, Vercel Postgres). Copy the connection string.
-2. **Set `DATABASE_URL`** in `.env.local` (local) and in **Vercel → Project → Settings → Environment Variables** (Production).
+1. **Create a PostgreSQL database** (e.g. [Supabase](https://supabase.com)) and copy the **URI** (Project Settings → Database). Do not use a placeholder like `localhost:5432`.
+2. **Set `DATABASE_URL`** in **`.env.local`** and in **Vercel → Environment Variables** (Production) to that URI.
 3. **Apply the schema** (creates `AdminSession`, orders, lung tests, etc.):
 
    ```bash
-   npx prisma generate
-   npx prisma db push
+   npm run db:generate
+   npm run db:push
    ```
+
+   (`db:push` loads `.env.local` via `dotenv-cli`; Prisma CLI does not read `.env.local` by itself.)
 
 4. **Admin credentials** — choose a username and password, then hash the password:
 

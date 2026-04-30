@@ -237,7 +237,14 @@ export default function LungTestReportPage() {
           <ShareButton tier={tier} />
         </div>
 
-        <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
+        <CheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          onConfirm={() => {
+            setIsCheckoutOpen(false);
+            router.push("/product");
+          }}
+        />
 
         {/* Retake */}
         <div className="text-center mt-8">

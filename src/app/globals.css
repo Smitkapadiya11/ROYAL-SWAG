@@ -177,3 +177,33 @@ button { cursor: pointer; }
 
   [data-grid] { grid-template-columns: 1fr !important; }
 }
+
+/* ── BRANDED NUMBER STYLE ──────────────────────────────── */
+.brand-number {
+  font-family: var(--ff-head, Georgia, serif);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--gold, #C49A2A);
+}
+
+.brand-number-lg {
+  font-family: var(--ff-head, Georgia, serif);
+  font-size: clamp(48px, 6vw, 72px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #F2E6CE;
+}
+
+.brand-number-sm {
+  font-family: var(--ff-body, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+  line-height: 1;
+  color: var(--gold, #C49A2A);
+}

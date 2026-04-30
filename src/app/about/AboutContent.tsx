@@ -281,7 +281,7 @@ export default function AboutContent() {
                 borderTop: "3px solid var(--rs-olive)",
               }}>
                 <div style={{ fontSize: 11, color: "var(--rs-olive)", fontWeight: 700, marginBottom: 6, letterSpacing: 2 }}>
-                  HERB {String(i + 1).padStart(2, "0")}
+                  HERB <span className="brand-number-sm">{String(i + 1).padStart(2, "0")}</span>
                 </div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: "var(--rs-deep)", marginBottom: 2 }}>{h.name}</div>
                 <div style={{ fontSize: 12, fontStyle: "italic", color: "var(--rs-text)", marginBottom: 12 }}>{h.botanical}</div>

@@ -1,38 +1,42 @@
-/**
- * MadeFor — "Three people who need this tea."
- * Each card has a background image filtered for tone, with black text + white glow overlay.
- */
+import Link from "next/link";
+
 export default function MadeFor() {
-  const cards = [
+  const CARDS = [
     {
-      label: "Ex-Smokers",
-      stat: "10 years",
-      statSub: "Tar stays after quitting",
+      id: "smoker",
+      label: "If you smoke — or used to",
+      title: "Your lungs remember every cigarette.\nEven the ones you stopped.",
       body:
-        "Nicotine clears in 72 hours. The tar and particle deposits from smoking take up to a decade without targeted herbs. Quitting is the hard part — clearing what is left behind is what Royal Swag is for.",
-      bg: "/images/product-7.jpg",
-      filter: "grayscale(88%) brightness(0.45)",
-      overlay: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.72) 100%)",
+        "Tar deposits don't leave on their own. They sit in lung tissue for up to 10 years after the last cigarette. You did the hard part. This is the follow-through.",
+      cta: "See what tar does to lungs →",
+      href: "/#herbs",
+      gradient: "linear-gradient(160deg, #1A1A14 0%, #2C2C2C 50%, #1A1A14 100%)",
+      accentColor: "#C49A2A",
+      iconChar: "◈",
     },
     {
-      label: "City Dwellers",
-      stat: "9.78×",
-      statSub: "India PM2.5 vs WHO limit",
+      id: "city",
+      label: "If you live in a city",
+      title: "India's air is 9.78×\nthe WHO safe limit.",
       body:
-        "Delhi recorded zero clean-air days in 2025. Mumbai, Surat, Bengaluru aren't far behind. Every commute, every open window — your lungs absorb what they were never built to handle.",
-      bg: "/images/product-8.jpg",
-      filter: "grayscale(88%) brightness(0.45)",
-      overlay: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.74) 100%)",
+        "Delhi recorded zero clean-air days in 2025. You breathe it on your commute, at work, in traffic. Your lungs are filtering it all — right now.",
+      cta: "Start your daily detox →",
+      href: "/product",
+      gradient: "linear-gradient(160deg, #111820 0%, #1C2830 50%, #111820 100%)",
+      accentColor: "#C49A2A",
+      iconChar: "◉",
     },
     {
-      label: "Wellness Buyers",
-      stat: "Zero",
-      statSub: "Fillers or extracts",
+      id: "wellness",
+      label: "If you take health seriously",
+      title: "You read labels.\nGood. We'll show you everything.",
       body:
-        "You read labels. Good. Every ingredient here comes with its Sanskrit name, its botanical name, and the precise reason it is in this formula. No hidden blends. No proprietary noise.",
-      bg: "/images/product-9.jpg",
-      filter: "brightness(0.72) saturate(1.2)",
-      overlay: "linear-gradient(180deg, rgba(12,30,0,0.06) 0%, rgba(12,30,0,0.68) 100%)",
+        "Every herb has a Sanskrit name, a botanical name, and a clinical reason for being in this formula. No proprietary blends. Full transparency, because you earned it.",
+      cta: "Read the full formula →",
+      href: "/#herbs",
+      gradient: "linear-gradient(160deg, #141A12 0%, #1E2A18 50%, #141A12 100%)",
+      accentColor: "#8BC34A",
+      iconChar: "◇",
     },
   ];
 
@@ -91,80 +95,92 @@ export default function MadeFor() {
             borderRadius: 18,
             overflow: "visible",
           }} id="madefor-grid">
-            {cards.map((c) => (
+            {CARDS.map((c) => (
               <div
-                key={c.label}
+                key={c.id}
                 style={{
                   position: "relative",
-                  minHeight: 420,
-                  borderRadius: 18,
-                  isolation: "isolate",
-                  overflow: "hidden",
+                  minHeight: 520,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "flex-end",
+                  overflow: "hidden",
+                  background: c.gradient,
                 }}
               >
-                {/* Background image */}
                 <div style={{
-                  position: "absolute", inset: 0,
-                  backgroundImage: `url(${c.bg})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  filter: c.filter,
-                  zIndex: 0,
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 1,
+                  background: "rgba(255,255,255,0.06)",
                 }} />
 
-                {/* Dark overlay */}
                 <div style={{
-                  position: "absolute", inset: 0,
-                  background: c.overlay,
-                  zIndex: 1,
-                }} />
-
-                {/* Content */}
-                <div style={{
-                  position: "relative", zIndex: 2,
-                  padding: "24px",
-                  background:
-                    "linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.65) 32%, rgba(0,0,0,0.86) 100%)",
+                  position: "absolute",
+                  top: 32,
+                  right: 28,
+                  fontSize: 80,
+                  fontWeight: 300,
+                  color: c.accentColor,
+                  opacity: 0.07,
+                  lineHeight: 1,
+                  userSelect: "none",
+                  fontFamily: "var(--ff-head, Georgia, serif)",
                 }}>
-                  <div style={{
-                    border: "1px solid rgba(255,255,255,0.16)",
-                    borderRadius: 14,
-                    background: "rgba(0,0,0,0.24)",
-                    backdropFilter: "blur(1px)",
-                    padding: "18px 18px 16px",
-                  }}>
-                  {/* Big stat */}
-                  <div style={{
-                    fontFamily: "var(--ff-head)",
-                    fontSize: 52, fontWeight: 700,
-                    color: "#fff",
-                    lineHeight: 1, marginBottom: 4,
-                    textShadow: "0 2px 12px rgba(255,255,255,0.18)",
-                  }}>{c.stat}</div>
-                  <p style={{
-                    fontSize: 10, fontWeight: 700, letterSpacing: 2,
-                    color: "rgba(255,255,255,0.7)",
-                    marginBottom: 20,
-                    textShadow: "0 1px 6px rgba(0,0,0,0.5)",
-                  }}>{c.statSub.toUpperCase()}</p>
+                  {c.iconChar}
+                </div>
 
-                  {/* Label */}
-                  <h3 style={{
-                    fontSize: 22, fontWeight: 700,
-                    color: "#fff",
+                <div style={{
+                  position: "relative",
+                  zIndex: 2,
+                  padding: "0 32px 40px",
+                }}>
+                  <p style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: "3.5px",
+                    color: c.accentColor,
                     marginBottom: 14,
-                    textShadow: "0 1px 8px rgba(0,0,0,0.6), 0 0 24px rgba(255,255,255,0.1)",
-                  }}>{c.label}</h3>
-
+                    textTransform: "uppercase",
+                  }}>
+                    {c.label}
+                  </p>
+                  <h3 style={{
+                    fontFamily: "var(--ff-head, Georgia, serif)",
+                    fontSize: "clamp(20px, 2vw, 26px)",
+                    fontWeight: 600,
+                    color: "#F2E6CE",
+                    marginBottom: 16,
+                    lineHeight: 1.25,
+                    whiteSpace: "pre-line",
+                    textShadow: "0 2px 12px rgba(0,0,0,0.4)",
+                  }}>
+                    {c.title}
+                  </h3>
                   <p style={{
-                    fontSize: 14, lineHeight: 1.8,
-                    color: "rgba(255,255,255,0.88)",
-                    textShadow: "0 1px 6px rgba(0,0,0,0.7)",
-                  }}>{c.body}</p>
-                  </div>
+                    fontSize: 14,
+                    lineHeight: 1.8,
+                    color: "rgba(242,230,206,0.72)",
+                    marginBottom: 24,
+                  }}>
+                    {c.body}
+                  </p>
+                  <Link
+                    href={c.href}
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      letterSpacing: "0.3px",
+                      color: c.accentColor,
+                      textDecoration: "none",
+                      borderBottom: `1px solid ${c.accentColor}45`,
+                      paddingBottom: 2,
+                    }}
+                  >
+                    {c.cta}
+                  </Link>
                 </div>
               </div>
             ))}

@@ -203,10 +203,7 @@ export default function Home() {
                 }}>
                   {s.icon}
                 </div>
-                <div style={{
-                  fontFamily: "var(--ff-head)", fontSize: 52, fontWeight: 700,
-                  color: "#D4C8A8", lineHeight: 1, marginBottom: 20,
-                }}>{s.n}</div>
+                <div className="brand-number-lg" style={{ color: "#D4C8A8", marginBottom: 20 }}>{s.n}</div>
                 <h3 style={{ fontSize: 20, marginBottom: 12 }}>{s.title}</h3>
                 <p style={{ fontSize: 14, lineHeight: 1.75, color: "#5C5647", maxWidth: 200, margin: "0 auto" }}>
                   {s.desc}

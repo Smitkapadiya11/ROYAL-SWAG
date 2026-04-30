@@ -1,6 +1,6 @@
 "use client";
 
-import { useState }  from "react";
+import { useEffect, useState }  from "react";
 import Script        from "next/script";
 import { useRouter } from "next/navigation";
 
@@ -54,6 +54,7 @@ export interface RazorpayButtonProps {
   label?:     string;
   fullWidth?: boolean;
   disabled?:  boolean;
+  autoTrigger?: boolean;
   onSuccess?: (paymentId: string, orderId: string) => void;
   style?:     React.CSSProperties;
 }
@@ -73,6 +74,7 @@ export default function RazorpayButton({
   label     = "Order Now",
   fullWidth = false,
   disabled  = false,
+  autoTrigger = false,
   onSuccess,
   style,
 }: RazorpayButtonProps) {
@@ -82,6 +84,16 @@ export default function RazorpayButton({
   const [scriptLoaded, setScriptLoaded]     = useState(false);
 
   const isLoading = ["creating", "processing", "verifying"].includes(state);
+
+  useEffect(() => {
+    if (autoTrigger && scriptLoaded && state === "idle") {
+      const t = setTimeout(() => {
+        void handlePayment();
+      }, 300);
+      return () => clearTimeout(t);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoTrigger, scriptLoaded, state]);
 
   const handlePayment = async () => {
     if (!scriptLoaded || !window.Razorpay) {

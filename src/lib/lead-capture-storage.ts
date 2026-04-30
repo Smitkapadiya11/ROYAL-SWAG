@@ -12,11 +12,10 @@ export type RsLead = {
 
 const TTL_MS = 24 * 60 * 60 * 1000;
 
-export function parseStoredLead(): RsLead | null {
-  if (typeof window === "undefined") return null;
+/** Parse a stored JSON string — used with stable `localStorage` snapshots (see LeadCaptureProvider). */
+export function parseLeadFromRaw(raw: string): RsLead | null {
+  if (!raw) return null;
   try {
-    const raw = localStorage.getItem(RS_LEAD_KEY);
-    if (!raw) return null;
     const data = JSON.parse(raw) as Partial<RsLead>;
     if (
       typeof data.name !== "string" ||
@@ -29,6 +28,25 @@ export function parseStoredLead(): RsLead | null {
     return data as RsLead;
   } catch {
     return null;
+  }
+}
+
+export function parseStoredLead(): RsLead | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return parseLeadFromRaw(localStorage.getItem(RS_LEAD_KEY) ?? "");
+  } catch {
+    return null;
+  }
+}
+
+/** Raw string for `useSyncExternalStore` — must be referentially stable when storage unchanged. */
+export function getStoredLeadRaw(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem(RS_LEAD_KEY) ?? "";
+  } catch {
+    return "";
   }
 }
 

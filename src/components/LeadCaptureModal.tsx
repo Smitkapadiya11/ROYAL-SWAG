@@ -70,17 +70,30 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
     if (!ok) return;
 
     const digits = phone.replace(/\D/g, "");
-    saveLead({
-      name: nt,
-      phone: digits,
-      email: email.trim().toLowerCase(),
-    });
-    await trackOrderLead({
-      name: nt,
-      mobile: digits,
-      email: email.trim().toLowerCase(),
-    });
-    onSuccess();
+    const emailNorm = email.trim().toLowerCase();
+    try {
+      saveLead({
+        name: nt,
+        phone: digits,
+        email: emailNorm,
+      });
+    } catch (e) {
+      console.error("[LeadCaptureModal] saveLead failed:", e);
+    }
+    try {
+      await trackOrderLead({
+        name: nt,
+        mobile: digits,
+        email: emailNorm,
+      });
+    } catch (e) {
+      console.error("[LeadCaptureModal] trackOrderLead failed:", e);
+    }
+    try {
+      onSuccess();
+    } catch (e) {
+      console.error("[LeadCaptureModal] onSuccess failed:", e);
+    }
     setName("");
     setPhone("");
     setEmail("");

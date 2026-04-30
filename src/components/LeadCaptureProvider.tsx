@@ -4,10 +4,11 @@ import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "re
 import { LeadCaptureContext } from "@/hooks/useLeadCapture";
 import LeadCaptureModal from "@/components/LeadCaptureModal";
 import {
+  getStoredLeadRaw,
   isLeadFresh,
+  parseLeadFromRaw,
   parseStoredLead,
   RS_LEAD_UPDATED_EVENT,
-  type RsLead,
 } from "@/lib/lead-capture-storage";
 
 function subscribeLead(onStoreChange: () => void) {
@@ -21,19 +22,21 @@ function subscribeLead(onStoreChange: () => void) {
   };
 }
 
-function leadSnapshot(): RsLead | null {
-  return parseStoredLead();
+/** Snapshot MUST be stable when storage is unchanged — never return a fresh object from JSON.parse here. */
+function leadRawSnapshot(): string {
+  return getStoredLeadRaw();
 }
 
-function leadServerSnapshot(): RsLead | null {
-  return null;
+function leadRawServerSnapshot(): string {
+  return "";
 }
 
 export default function LeadCaptureProvider({ children }: { children: React.ReactNode }) {
   const [showModal, setShowModal] = useState(false);
   const pendingRef = useRef<(() => void) | null>(null);
 
-  const leadData = useSyncExternalStore(subscribeLead, leadSnapshot, leadServerSnapshot);
+  const leadRaw = useSyncExternalStore(subscribeLead, leadRawSnapshot, leadRawServerSnapshot);
+  const leadData = useMemo(() => parseLeadFromRaw(leadRaw), [leadRaw]);
 
   const isLeadCaptured = useMemo(() => isLeadFresh(leadData), [leadData]);
 

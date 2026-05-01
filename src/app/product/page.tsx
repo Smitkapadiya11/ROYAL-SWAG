@@ -5,6 +5,7 @@ import { S } from "@/lib/config";
 import RazorpayButton from "@/components/RazorpayButton";
 import CheckoutModal from "@/components/CheckoutModal";
 import OrderConfirmationModal from "@/components/OrderConfirmationModal";
+import CODOrderModal from "@/components/CODOrderModal";
 import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
 import { useLeadCapture } from "@/hooks/useLeadCapture";
 import { parseStoredLead } from "@/lib/lead-capture-storage";
@@ -42,6 +43,7 @@ export default function ProductPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingPayment, setPendingPayment] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showCODModal, setShowCODModal] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState({
     name: "",
     mobile: "",
@@ -454,6 +456,25 @@ export default function ProductPage() {
                   Order Now — ₹{payableAmount} →
                 </button>
 
+                <button
+                  type="button"
+                  onClick={() => setShowCODModal(true)}
+                  style={{
+                    width: "100%",
+                    padding: "14px",
+                    background: "transparent",
+                    color: "#14532d",
+                    border: "2px solid #14532d",
+                    borderRadius: "10px",
+                    fontWeight: 700,
+                    fontSize: 15,
+                    cursor: "pointer",
+                    marginTop: 10,
+                  }}
+                >
+                  📦 Order with Cash on Delivery
+                </button>
+
                 <LeadGuardExternalLink
                   href={`https://wa.me/917096553300?text=${encodeURIComponent(
                     `Hi, I want to order Royal Swag Lung Detox Tea — ${pack.bags}. Please confirm.`
@@ -695,6 +716,16 @@ export default function ProductPage() {
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}
         orderDetails={confirmedOrder}
+      />
+
+      <CODOrderModal
+        isOpen={showCODModal}
+        onClose={() => setShowCODModal(false)}
+        selectedPackage={{
+          label: `${pack.bags} — ${pack.days}`,
+          amount: payableAmount,
+          bags: Number.parseInt(pack.id, 10) || 0,
+        }}
       />
 
       {/* ══ HOW TO USE ══════════════════════════════════════════════ */}

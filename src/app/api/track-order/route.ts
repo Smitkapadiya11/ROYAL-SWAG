@@ -27,6 +27,8 @@ export async function POST(req: NextRequest) {
       package: pkg,
       amount,
       payment_id,
+      payment_method,
+      status: statusFromBody,
     } = body
 
     if (!name || !mobile || !email) {
@@ -66,15 +68,27 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const paymentMethodNorm =
+      typeof payment_method === 'string' &&
+      payment_method.trim().toUpperCase() === 'COD'
+        ? 'COD'
+        : (typeof payment_method === 'string' && payment_method.trim()) ||
+          'online'
+
+    const statusNorm =
+      typeof statusFromBody === 'string' && statusFromBody.trim()
+        ? statusFromBody.trim()
+        : 'confirmed'
+
     let customerId: string | null = null
-    const { data: existing } = await supabase
+    const { data: existingCustomer } = await supabase
       .from('customers')
       .select('id')
       .eq('mobile', mobileClean)
       .maybeSingle()
 
-    if (existing?.id) {
-      customerId = existing.id
+    if (existingCustomer?.id) {
+      customerId = existingCustomer.id
     } else {
       const { data: created, error: custError } = await supabase
         .from('customers')
@@ -107,8 +121,9 @@ export async function POST(req: NextRequest) {
         state: state || '',
         package: pkg || '1 Pack',
         amount: Number.isFinite(amountNum) ? amountNum : 0,
-        status: 'confirmed',
+        status: statusNorm,
         payment_id: paymentId,
+        payment_method: paymentMethodNorm,
       })
       .select('id')
       .maybeSingle()

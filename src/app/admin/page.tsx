@@ -14,6 +14,7 @@ type Order = {
   package: string
   amount: number
   status: string
+  payment_method?: string
   created_at: string
 }
 
@@ -105,12 +106,14 @@ export default function AdminPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    {['#','Name','Mobile','Email','Address','City','Pincode','State','Package','Amount','Status','Date'].map(h => <th key={h} style={thStyle}>{h}</th>)}
+                    {['#','Name','Mobile','Email','Address','City','Pincode','State','Package','Amount','Payment','Status','Date'].map(h => <th key={h} style={thStyle}>{h}</th>)}
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.length === 0 && <tr><td colSpan={12} style={{ ...tdStyle, textAlign: 'center', color: '#9ca3af' }}>No orders yet</td></tr>}
-                  {orders.map((o, i) => (
+                  {orders.length === 0 && <tr><td colSpan={13} style={{ ...tdStyle, textAlign: 'center', color: '#9ca3af' }}>No orders yet</td></tr>}
+                  {orders.map((o, i) => {
+                    const isCod = (o.payment_method || '').toUpperCase() === 'COD'
+                    return (
                     <tr key={o.id} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
                       <td style={tdStyle}>{i + 1}</td>
                       <td style={tdStyle}>{o.name}</td>
@@ -123,11 +126,24 @@ export default function AdminPage() {
                       <td style={tdStyle}>{o.package}</td>
                       <td style={tdStyle}>₹{o.amount}</td>
                       <td style={tdStyle}>
-                        <span style={{ background: o.status === 'pending' ? '#fef3c7' : '#dcfce7', color: o.status === 'pending' ? '#92400e' : '#14532d', padding: '2px 8px', borderRadius: '99px', fontSize: '12px' }}>{o.status}</span>
+                        <span style={{
+                          background: isCod ? '#fef3c7' : '#dbeafe',
+                          color: isCod ? '#92400e' : '#1e40af',
+                          padding: '2px 8px',
+                          borderRadius: '99px',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                        }}>
+                          {isCod ? '💵 COD' : '💳 Online'}
+                        </span>
+                      </td>
+                      <td style={tdStyle}>
+                        <span style={{ background: o.status === 'pending' || o.status === 'cod_pending' ? '#fef3c7' : '#dcfce7', color: o.status === 'pending' || o.status === 'cod_pending' ? '#92400e' : '#14532d', padding: '2px 8px', borderRadius: '99px', fontSize: '12px' }}>{o.status}</span>
                       </td>
                       <td style={tdStyle}>{new Date(o.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             )}

@@ -165,10 +165,10 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
             paddingRight: 28,
           }}
         >
-          Quick details before you order
+          Almost there — just your details
         </h2>
         <p style={{ fontSize: 13, color: "#64748b", marginBottom: 22 }}>
-          We&apos;ll use this only to confirm your order and share tracking updates.
+          We&apos;ll send your order confirmation on WhatsApp.
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -272,7 +272,7 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
               cursor: "pointer",
             }}
           >
-            Proceed to Order →
+            Submit Details
           </button>
         </div>
       </div>

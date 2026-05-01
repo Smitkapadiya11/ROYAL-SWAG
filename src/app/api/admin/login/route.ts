@@ -7,11 +7,16 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, password } = await req.json();
+    const body = (await req.json()) as { username?: unknown; password?: unknown };
+    const username = typeof body.username === "string" ? body.username.trim() : "";
+    const password = typeof body.password === "string" ? body.password.trim() : "";
 
-    const validUser = username === process.env.ADMIN_USERNAME;
-    const passHash = crypto.createHash("sha256").update(password || "").digest("hex");
-    const validPass = passHash === process.env.ADMIN_PASSWORD_HASH;
+    const envUser = (process.env.ADMIN_USERNAME ?? "").trim();
+    const envHash = (process.env.ADMIN_PASSWORD_HASH ?? "").trim();
+
+    const validUser = username === envUser;
+    const passHash = crypto.createHash("sha256").update(password).digest("hex");
+    const validPass = passHash === envHash;
 
     if (!validUser || !validPass) {
       await new Promise((r) => setTimeout(r, 800));

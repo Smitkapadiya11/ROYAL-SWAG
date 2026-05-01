@@ -70,7 +70,7 @@ export default function LoginPage() {
             <p className="text-sm text-gray-500 mb-6">Enter your email to receive a one-time login code.</p>
             <input
               type="email"
-              placeholder="your@email.com"
+              placeholder="Eximburg@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm mb-4 outline-none focus:border-[#1a3a2a]"

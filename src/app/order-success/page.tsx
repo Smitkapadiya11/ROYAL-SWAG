@@ -118,8 +118,8 @@ function Success() {
 
         <p style={{ marginTop: 24, fontSize: 12, color: "#5C5647", opacity: 0.65 }}>
           Questions? Write to{" "}
-          <a href="mailto:info@eximburginternational.in" style={{ color: "#4A6422" }}>
-            info@eximburginternational.in
+          <a href="mailto:Eximburg@gmail.com" style={{ color: "#4A6422" }}>
+            Eximburg@gmail.com
           </a>
         </p>
       </div>

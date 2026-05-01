@@ -212,7 +212,7 @@ export default function LungTestPage() {
               onKeyDown={e => e.key === "Enter" && goNext()}
               onFocus={e => (e.currentTarget.style.borderColor = "#4A6422")}
               onBlur={e  => (e.currentTarget.style.borderColor = "#D4C8A8")}
-              placeholder="rahul@example.com"
+              placeholder="Eximburg@gmail.com"
               style={inputStyle}
             />
             <p style={{ fontSize: 12, color: "#5C5647", opacity: 0.7, marginBottom: 20 }}>

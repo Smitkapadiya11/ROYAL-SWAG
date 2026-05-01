@@ -9,7 +9,7 @@ export const S = {
   },
   phone:    "+91 70965 53300",
   phoneRaw: "917096553300",
-  email:   "info@eximburginternational.in",
+  email:   "Eximburg@gmail.com",
   fssai:   "TODO_FSSAI_NUMBER",
   wa: {
     num: "917096553300",

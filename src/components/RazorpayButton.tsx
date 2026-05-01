@@ -182,7 +182,7 @@ export default function RazorpayButton({
             const msg =
               verifyErr instanceof Error
                 ? verifyErr.message
-                : "Verification failed. If money was deducted, contact support@royalswag.in";
+                : "Verification failed. If money was deducted, contact Eximburg@gmail.com";
             setState("failed");
             setErrorMsg(msg);
           }

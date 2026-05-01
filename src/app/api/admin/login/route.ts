@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 /** Trims and strips wrapping quotes (common when pasting into Vercel / .env). */
 function envPlain(raw: string | undefined): string {
-  let s = (raw ?? "").trim();
+  let s = (raw ?? "").trim().replace(/^\uFEFF/, "");
   if (
     (s.startsWith('"') && s.endsWith('"')) ||
     (s.startsWith("'") && s.endsWith("'"))
@@ -26,13 +26,32 @@ export async function POST(req: NextRequest) {
     const envUser = envPlain(process.env.ADMIN_USERNAME);
     const envHash = envPlain(process.env.ADMIN_PASSWORD_HASH).toLowerCase();
     const envPasswordPlain = envPlain(process.env.ADMIN_PASSWORD);
+    const plainPasswords = envPasswordPlain
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
 
-    const validUser =
-      envUser.length > 0 && username.toLowerCase() === envUser.toLowerCase();
+    const authConfigured =
+      envUser.length > 0 && (envHash.length > 0 || plainPasswords.length > 0);
+
+    if (!authConfigured) {
+      console.error(
+        "[admin/login] Missing env: set ADMIN_USERNAME and ADMIN_PASSWORD_HASH or ADMIN_PASSWORD (e.g. on Vercel → Settings → Environment Variables)."
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Admin login is not configured on this server. In Vercel add ADMIN_USERNAME, ADMIN_PASSWORD (or ADMIN_PASSWORD_HASH), DATABASE_URL, then redeploy.",
+        },
+        { status: 503 }
+      );
+    }
+
+    const validUser = username.toLowerCase() === envUser.toLowerCase();
     const passHash = crypto.createHash("sha256").update(password).digest("hex").toLowerCase();
     const validPass =
       (envHash.length > 0 && passHash === envHash) ||
-      (envPasswordPlain.length > 0 && password === envPasswordPlain);
+      plainPasswords.some((p) => password === p);
 
     if (!validUser || !validPass) {
       await new Promise((r) => setTimeout(r, 800));

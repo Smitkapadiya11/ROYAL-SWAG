@@ -24,8 +24,8 @@ export default function AdminLogin() {
       if (r.ok) {
         router.push("/admin/dashboard");
       } else {
-        const d = await r.json();
-        setError(d.error || "Invalid credentials");
+        const d = (await r.json().catch(() => ({}))) as { error?: string };
+        setError(d.error || (r.status === 503 ? "Server configuration error" : "Invalid credentials"));
       }
     } catch {
       setError("Network error. Try again.");
@@ -95,6 +95,11 @@ export default function AdminLogin() {
           </h1>
           <p style={{ fontSize: 12, color: "rgba(242,230,206,0.45)", letterSpacing: 2 }}>
             DASHBOARD
+          </p>
+          <p style={{ fontSize: 11, color: "rgba(242,230,206,0.38)", marginTop: 12, lineHeight: 1.5 }}>
+            Use the <strong style={{ color: "rgba(242,230,206,0.55)" }}>dashboard password</strong> from{" "}
+            <code style={{ fontSize: 10 }}>ADMIN_PASSWORD</code> /{" "}
+            <code style={{ fontSize: 10 }}>ADMIN_PASSWORD_HASH</code> — not your Supabase database password.
           </p>
         </div>
 

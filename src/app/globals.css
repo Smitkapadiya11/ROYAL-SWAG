@@ -73,13 +73,13 @@ p, span, li, label, small {
 
 button { cursor: pointer; }
 
-/* Clears fixed Nav with large centered logo (min 140px / 180px wide). */
+/* Clears fixed Nav — tuned so mobile isn’t half empty space above the fold */
 .rs-main-nav-pad {
-  padding-top: 196px;
+  padding-top: 118px;
 }
 @media (min-width: 769px) {
   .rs-main-nav-pad {
-    padding-top: 236px;
+    padding-top: 228px;
   }
 }
 
@@ -99,7 +99,7 @@ button { cursor: pointer; }
 .w {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 48px;
+  padding: 0 clamp(16px, 4vw, 48px);
 }
 
 /* Keep old name as alias so non-rewritten pages still work */

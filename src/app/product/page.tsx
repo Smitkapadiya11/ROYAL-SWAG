@@ -127,7 +127,7 @@ export default function ProductPage() {
   return (
     <>
       {/* ── PRODUCT HERO ── */}
-      <section style={{ background: "transparent", padding: "clamp(40px,6vw,80px) 0" }}>
+      <section className="product-hero-section" style={{ background: "transparent", padding: "clamp(40px,6vw,80px) 0" }}>
         <div className="w">
           <div id="product-grid" style={{
             display: "grid",
@@ -136,41 +136,46 @@ export default function ProductPage() {
             alignItems: "flex-start",
           }}>
             {/* ── Image gallery panel ── */}
-            <div style={{
+            <div className="product-gallery-card" style={{
               position: "sticky", top: 88,
               background: "#fff",
-              borderRadius: 16, border: "1px solid #D4C8A8",
+              borderRadius: 16, border: "1px solid rgba(212,200,168,0.85)",
               padding: 24,
               display: "flex", flexDirection: "column", gap: 14,
+              boxShadow: "0 12px 40px rgba(45, 61, 21, 0.06)",
             }}>
-              {/* Main image */}
-              <div style={{
+              {/* Main image — desktop square; mobile capped height (premium proportion) */}
+              <div className="product-hero-stage" style={{
                 aspectRatio: "1", position: "relative",
-                background: "#F2E6CE", borderRadius: 12, overflow: "hidden",
+                background: "linear-gradient(180deg, #FAF6EE 0%, #F2E6CE 100%)",
+                borderRadius: 12, overflow: "hidden",
               }}>
                 <Image
                   src={PRODUCT_IMAGES[activeImage] ?? PRODUCT_IMAGES[0]}
                   alt="Royal Swag Lung Detox Tea"
                   fill
                   priority
-                  sizes="(max-width: 768px) 100vw, 480px"
-                  style={{ objectFit: "contain", padding: 16 }}
+                  sizes="(max-width: 768px) 85vw, 480px"
+                  style={{ objectFit: "contain", padding: "clamp(8px, 2vw, 16px)" }}
                 />
               </div>
               {/* Thumbnails */}
               {PRODUCT_IMAGES.length > 1 && (
-                <div style={{ display: "flex", gap: 8 }}>
+                <div className="product-thumb-row" style={{ display: "flex", gap: 8 }}>
                   {PRODUCT_IMAGES.map((src, i) => (
                     <button
                       key={src}
+                      type="button"
                       onClick={() => setActiveImage(i)}
+                      className="product-thumb-btn"
                       style={{
                         flex: 1, aspectRatio: "1",
                         position: "relative",
-                        background: "#F2E6CE",
+                        background: "#F5EFE4",
                         border: activeImage === i ? "2px solid #4A6422" : "1px solid #D4C8A8",
                         borderRadius: 8, padding: 6,
                         cursor: "pointer", overflow: "hidden",
+                        minWidth: 0,
                       }}
                     >
                       <Image
@@ -511,8 +516,43 @@ export default function ProductPage() {
 
         <style>{`
           @media (max-width: 768px) {
-            #product-grid { grid-template-columns: 1fr !important; }
-            #product-grid > div:first-child { position: static !important; }
+            .product-hero-section {
+              padding-top: 12px !important;
+              padding-bottom: 28px !important;
+            }
+            #product-grid {
+              grid-template-columns: 1fr !important;
+              gap: 20px !important;
+            }
+            #product-grid > div:first-child {
+              position: static !important;
+            }
+            .product-gallery-card {
+              padding: 12px !important;
+              gap: 10px !important;
+              border-radius: 14px !important;
+              box-shadow: 0 8px 28px rgba(45, 61, 21, 0.07) !important;
+            }
+            .product-hero-stage {
+              aspect-ratio: unset !important;
+              width: 100% !important;
+              max-width: 300px !important;
+              height: min(42svh, 280px) !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+            .product-thumb-row {
+              gap: 6px !important;
+              overflow-x: auto !important;
+              padding-bottom: 4px !important;
+              -webkit-overflow-scrolling: touch !important;
+            }
+            .product-thumb-btn {
+              flex: 0 0 52px !important;
+              width: 52px !important;
+              height: 52px !important;
+              aspect-ratio: 1 !important;
+            }
           }
         `}</style>
       </section>

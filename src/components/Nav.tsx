@@ -49,6 +49,7 @@ export default function Nav() {
     <>
       <header
         ref={headerRef}
+        className="site-nav-header"
         style={{
           position: "fixed",
           top: 0,
@@ -263,10 +264,14 @@ export default function Nav() {
 
       <style>{`
         @media (max-width: 768px) {
+          .site-nav-header {
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+          }
           .nav-d { display: none !important; }
           .nav-m { display: flex !important; }
           .nav-main-logo {
-            width: 140px !important;
+            width: 92px !important;
             height: auto !important;
             aspect-ratio: 1 / 1;
           }

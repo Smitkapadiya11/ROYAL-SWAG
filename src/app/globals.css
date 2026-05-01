@@ -15,8 +15,16 @@
   --white:  #FFFFFF;
   --border: rgba(212,200,168,0.6);
 
-  --ff-head: var(--font-playfair-display, Georgia, serif);
-  --ff-body: var(--font-inter, -apple-system, BlinkMacSystemFont, sans-serif);
+  /* Local stacks — avoids next/font build-time fetch from fonts.googleapis.com */
+  --font-inter: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-playfair-display: Georgia, "Times New Roman", "Palatino Linotype", "Book Antiqua", Palatino,
+    serif;
+  --font-playfair: var(--font-playfair-display);
+  --font-heading: var(--font-playfair-display);
+
+  --ff-head: var(--font-playfair-display);
+  --ff-body: var(--font-inter);
 
   --max:  1100px;
   --r:    12px;

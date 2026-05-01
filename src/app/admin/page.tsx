@@ -7,6 +7,10 @@ type Order = {
   name: string
   mobile: string
   email: string
+  address: string
+  city: string
+  pincode: string
+  state: string
   package: string
   amount: number
   status: string
@@ -101,17 +105,21 @@ export default function AdminPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    {['#','Name','Mobile','Email','Package','Amount','Status','Date'].map(h => <th key={h} style={thStyle}>{h}</th>)}
+                    {['#','Name','Mobile','Email','Address','City','Pincode','State','Package','Amount','Status','Date'].map(h => <th key={h} style={thStyle}>{h}</th>)}
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.length === 0 && <tr><td colSpan={8} style={{ ...tdStyle, textAlign: 'center', color: '#9ca3af' }}>No orders yet</td></tr>}
+                  {orders.length === 0 && <tr><td colSpan={12} style={{ ...tdStyle, textAlign: 'center', color: '#9ca3af' }}>No orders yet</td></tr>}
                   {orders.map((o, i) => (
                     <tr key={o.id} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
                       <td style={tdStyle}>{i + 1}</td>
                       <td style={tdStyle}>{o.name}</td>
                       <td style={tdStyle}>{o.mobile}</td>
                       <td style={tdStyle}>{o.email}</td>
+                      <td style={tdStyle}>{o.address ?? '—'}</td>
+                      <td style={tdStyle}>{o.city ?? '—'}</td>
+                      <td style={tdStyle}>{o.pincode ?? '—'}</td>
+                      <td style={tdStyle}>{o.state ?? '—'}</td>
                       <td style={tdStyle}>{o.package}</td>
                       <td style={tdStyle}>₹{o.amount}</td>
                       <td style={tdStyle}>

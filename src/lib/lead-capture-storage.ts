@@ -5,27 +5,46 @@ export const RS_LEAD_UPDATED_EVENT = "rs_lead_updated";
 
 export type RsLead = {
   name: string;
-  phone: string;
+  mobile: string;
   email: string;
+  address: string;
+  city: string;
+  pincode: string;
+  state: string;
   timestamp: number;
 };
 
 const TTL_MS = 24 * 60 * 60 * 1000;
 
-/** Parse a stored JSON string — used with stable `localStorage` snapshots (see LeadCaptureProvider). */
+/** Normalize parsed JSON (supports legacy `phone` instead of `mobile`). */
 export function parseLeadFromRaw(raw: string): RsLead | null {
   if (!raw) return null;
   try {
-    const data = JSON.parse(raw) as Partial<RsLead>;
+    const data = JSON.parse(raw) as Partial<RsLead> & { phone?: string };
+    const mobile =
+      typeof data.mobile === "string"
+        ? data.mobile
+        : typeof data.phone === "string"
+          ? data.phone
+          : "";
     if (
       typeof data.name !== "string" ||
-      typeof data.phone !== "string" ||
       typeof data.email !== "string" ||
-      typeof data.timestamp !== "number"
+      typeof data.timestamp !== "number" ||
+      !mobile
     ) {
       return null;
     }
-    return data as RsLead;
+    return {
+      name: data.name,
+      mobile,
+      email: data.email,
+      address: typeof data.address === "string" ? data.address : "",
+      city: typeof data.city === "string" ? data.city : "",
+      pincode: typeof data.pincode === "string" ? data.pincode : "",
+      state: typeof data.state === "string" ? data.state : "",
+      timestamp: data.timestamp,
+    };
   } catch {
     return null;
   }

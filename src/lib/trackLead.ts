@@ -1,4 +1,14 @@
-export async function trackOrderLead(data: { name: string; mobile: string; email: string }) {
+export type TrackOrderLeadPayload = {
+  name: string;
+  mobile: string;
+  email: string;
+  address?: string;
+  city?: string;
+  pincode?: string;
+  state?: string;
+};
+
+export async function trackOrderLead(data: TrackOrderLeadPayload) {
   try {
     await fetch("/api/track-order", {
       method: "POST",

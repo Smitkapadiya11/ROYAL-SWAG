@@ -1,55 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
-export const dynamic = "force-dynamic";
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false } }
+)
 
-async function validateAdmin(req: NextRequest): Promise<boolean> {
-  const token = req.cookies.get("rs_admin_token")?.value;
-  if (!token) return false;
-  const session = await db.adminSession.findUnique({ where: { token } }).catch(() => null);
-  return !!session && session.expiresAt > new Date();
-}
-
-export async function GET(req: NextRequest) {
-  if (!(await validateAdmin(req))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET() {
+  try {
+    const [ordersRes, lungRes] = await Promise.all([
+      supabaseAdmin.from('orders').select('*').order('created_at', { ascending: false }).limit(500),
+      supabaseAdmin.from('lung_test_results').select('*').order('created_at', { ascending: false }).limit(500),
+    ])
+    return NextResponse.json({
+      orders: ordersRes.data || [],
+      lungTests: lungRes.data || [],
+    })
+  } catch (error) {
+    console.error('Admin data error:', error)
+    return NextResponse.json({ orders: [], lungTests: [] })
   }
-
-  const [orders, lungTests, paid, pending, failed, revenue, totalTests, highRisk, converted] =
-    await Promise.all([
-      db.order.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 200,
-        include: { customer: true },
-      }),
-      db.lungTestResult.findMany({
-        orderBy: { submittedAt: "desc" },
-        take: 200,
-        include: { customer: true },
-      }),
-      db.order.count({ where: { status: "PAID" } }),
-      db.order.count({ where: { status: "PENDING" } }),
-      db.order.count({ where: { status: "FAILED" } }),
-      db.order.aggregate({
-        where: { status: "PAID" },
-        _sum: { amountINR: true },
-      }),
-      db.lungTestResult.count(),
-      db.lungTestResult.count({ where: { riskLevel: "HIGH" } }),
-      db.lungTestResult.count({ where: { convertedToOrder: true } }),
-    ]);
-
-  return NextResponse.json({
-    orders,
-    lungTests,
-    stats: {
-      paidOrders: paid,
-      pendingOrders: pending,
-      failedOrders: failed,
-      totalRevenue: revenue._sum.amountINR ?? 0,
-      totalLungTests: totalTests,
-      highRiskTests: highRisk,
-      testConversions: converted,
-    },
-  });
 }

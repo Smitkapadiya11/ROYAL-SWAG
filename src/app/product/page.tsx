@@ -9,7 +9,7 @@ import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
 import { useLeadCapture } from "@/hooks/useLeadCapture";
 import { parseStoredLead } from "@/lib/lead-capture-storage";
 import { RS_ORDER_CONFIRMATION_KEY } from "@/lib/order-confirmation-storage";
-import { trackOrderLead } from "@/lib/trackLead";
+import { trackOrderLead, type TrackOrderApiResponse } from "@/lib/trackLead";
 
 const PACKS = [
   { id: "20", bags: "20 Bags", days: "30-Day Supply", price: 349, mrp: 499, tag: "" },
@@ -503,6 +503,7 @@ export default function ProductPage() {
                       void (async () => {
                         setPendingPayment(false);
 
+                        // Razorpay order.amount is in paise; INR = paise / 100
                         const paidRupees =
                           typeof amountPaise === "number" &&
                           Number.isFinite(amountPaise) &&
@@ -513,30 +514,46 @@ export default function ProductPage() {
                         const lead = parseStoredLead();
                         let raw: Record<string, string> = {};
                         try {
-                          const s = localStorage.getItem("rs_lead");
-                          if (s) raw = JSON.parse(s) as Record<string, string>;
+                          raw = JSON.parse(
+                            localStorage.getItem("rs_lead") || "{}"
+                          ) as Record<string, string>;
                         } catch {
-                          /* ignore */
+                          raw = {};
                         }
 
                         const name =
-                          lead?.name ||
-                          (typeof raw.name === "string" ? raw.name : "") ||
-                          "Customer";
-                        const mobile =
+                          (lead?.name || raw.name || "").trim() || "Customer";
+                        const mobileRaw =
                           lead?.mobile ||
-                          (typeof raw.mobile === "string" ? raw.mobile : "") ||
-                          (typeof raw.phone === "string" ? raw.phone : "");
-                        const email =
+                          raw.mobile ||
+                          raw.phone ||
+                          "";
+                        const mobileClean = String(mobileRaw).replace(
+                          /\D/g,
+                          ""
+                        ).slice(-10);
+
+                        let email = (
                           lead?.email ||
-                          (typeof raw.email === "string" ? raw.email : "");
+                          raw.email ||
+                          ""
+                        ).trim().toLowerCase();
+                        if (!email && mobileClean.length === 10) {
+                          email = `${mobileClean}@pending.royalswag.in`;
+                        }
+
                         const pkgLabel = `${pack.bags} — ${pack.days}`;
 
-                        let dbOrderId = "";
-                        if (mobile && email && name && paymentId) {
-                          const orderResult = await trackOrderLead({
+                        let result: TrackOrderApiResponse | null = null;
+                        if (
+                          paymentId &&
+                          mobileClean.length === 10 &&
+                          email &&
+                          name
+                        ) {
+                          result = await trackOrderLead({
                             name,
-                            mobile,
+                            mobile: mobileClean,
                             email,
                             address:
                               lead?.address ||
@@ -553,23 +570,31 @@ export default function ProductPage() {
                                 : ""),
                             state:
                               lead?.state ||
-                              (typeof raw.state === "string" ? raw.state : ""),
-                            amount: paidRupees,
+                              (typeof raw.state === "string"
+                                ? raw.state
+                                : ""),
                             package: pkgLabel,
+                            amount: paidRupees,
                             payment_id: paymentId,
                           });
-                          dbOrderId =
-                            typeof orderResult?.orderId === "string"
-                              ? orderResult.orderId
-                              : "";
+                        } else if (paymentId) {
+                          console.warn(
+                            "[product] Skipped trackOrderLead — missing mobile/email after payment",
+                            { mobileClean, hasEmail: Boolean(email), name }
+                          );
                         }
 
                         const snapshot = {
                           name,
-                          mobile,
+                          mobile: mobileClean,
                           package: pkgLabel,
                           amount: paidRupees,
-                          orderId: dbOrderId || razorpayOrderId || "",
+                          orderId:
+                            (typeof result?.orderId === "string"
+                              ? result.orderId
+                              : "") ||
+                            razorpayOrderId ||
+                            "",
                           paymentId: paymentId ?? "",
                         };
 
@@ -582,7 +607,14 @@ export default function ProductPage() {
                           /* ignore */
                         }
 
-                        setConfirmedOrder(snapshot);
+                        setConfirmedOrder({
+                          name,
+                          mobile: mobileClean,
+                          package: pkgLabel,
+                          amount: paidRupees,
+                          orderId: snapshot.orderId,
+                          paymentId: paymentId ?? "",
+                        });
                         setShowConfirmation(true);
                       })();
                     }}

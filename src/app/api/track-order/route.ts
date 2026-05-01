@@ -50,17 +50,17 @@ export async function POST(req: NextRequest) {
         : null
 
     if (paymentId) {
-      const { data: existingPayment } = await supabase
+      const { data: existing } = await supabase
         .from('orders')
         .select('id')
         .eq('payment_id', paymentId)
         .maybeSingle()
 
-      if (existingPayment?.id) {
+      if (existing?.id) {
         console.log('Duplicate payment prevented:', paymentId)
         return NextResponse.json({
           success: true,
-          orderId: existingPayment.id,
+          orderId: existing.id,
           duplicate: true,
         })
       }

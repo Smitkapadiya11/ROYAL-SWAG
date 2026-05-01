@@ -55,7 +55,8 @@ export interface RazorpayButtonProps {
   fullWidth?: boolean;
   disabled?:  boolean;
   autoTrigger?: boolean;
-  onSuccess?: (paymentId: string, orderId: string) => void;
+  /** amountPaise: Razorpay order total in paise (from /api/razorpay/order). INR = amountPaise / 100 */
+  onSuccess?: (paymentId: string, orderId: string, amountPaise: number) => void;
   /** When false, skip navigating to /order-confirmed (e.g. parent shows a modal first). Default true. */
   successRedirect?: boolean;
   style?:     React.CSSProperties;
@@ -169,7 +170,11 @@ export default function RazorpayButton({
             }
 
             setState("success");
-            onSuccess?.(verifyData.paymentId, verifyData.orderId);
+            onSuccess?.(
+              verifyData.paymentId,
+              verifyData.orderId,
+              orderData.amount as number
+            );
 
             // Clear any stale cart state
             try {

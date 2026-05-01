@@ -16,7 +16,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     console.log('Body received:', JSON.stringify(body))
 
-    const { name, mobile, email, address, city, pincode, state, package: pkg, amount } = body
+    const {
+      name,
+      mobile,
+      email,
+      address,
+      city,
+      pincode,
+      state,
+      package: pkg,
+      amount,
+      payment_id,
+    } = body
 
     if (!name || !mobile || !email) {
       return NextResponse.json({ error: 'Name, mobile, email required' }, { status: 400 })
@@ -33,23 +44,26 @@ export async function POST(req: NextRequest) {
       auth: { persistSession: false }
     })
 
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
-    const { data: recentOrder } = await supabase
-      .from('orders')
-      .select('id')
-      .eq('mobile', mobileClean)
-      .gte('created_at', tenMinutesAgo)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    const paymentId =
+      typeof payment_id === 'string' && payment_id.trim() !== ''
+        ? payment_id.trim()
+        : null
 
-    if (recentOrder?.id) {
-      console.log('Duplicate order prevented for:', mobileClean)
-      return NextResponse.json({
-        success: true,
-        orderId: recentOrder.id,
-        duplicate: true,
-      })
+    if (paymentId) {
+      const { data: existingPayment } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('payment_id', paymentId)
+        .maybeSingle()
+
+      if (existingPayment?.id) {
+        console.log('Duplicate payment prevented:', paymentId)
+        return NextResponse.json({
+          success: true,
+          orderId: existingPayment.id,
+          duplicate: true,
+        })
+      }
     }
 
     let customerId: string | null = null
@@ -75,6 +89,11 @@ export async function POST(req: NextRequest) {
       customerId = created?.id ?? null
     }
 
+    const amountNum =
+      amount != null && amount !== ''
+        ? Number(amount)
+        : 0
+
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
@@ -87,8 +106,9 @@ export async function POST(req: NextRequest) {
         pincode: pincode || '',
         state: state || '',
         package: pkg || '1 Pack',
-        amount: amount != null && amount !== '' ? Number(amount) : 0,
+        amount: Number.isFinite(amountNum) ? amountNum : 0,
         status: 'confirmed',
+        payment_id: paymentId,
       })
       .select('id')
       .maybeSingle()

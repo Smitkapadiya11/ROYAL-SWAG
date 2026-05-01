@@ -499,9 +499,16 @@ export default function ProductPage() {
                     fullWidth
                     autoTrigger
                     successRedirect={false}
-                    onSuccess={(paymentId, razorpayOrderId) => {
+                    onSuccess={(paymentId, razorpayOrderId, amountPaise) => {
                       void (async () => {
                         setPendingPayment(false);
+
+                        const paidRupees =
+                          typeof amountPaise === "number" &&
+                          Number.isFinite(amountPaise) &&
+                          amountPaise > 0
+                            ? Math.round(amountPaise) / 100
+                            : payableAmount;
 
                         const lead = parseStoredLead();
                         let raw: Record<string, string> = {};
@@ -526,7 +533,7 @@ export default function ProductPage() {
                         const pkgLabel = `${pack.bags} — ${pack.days}`;
 
                         let dbOrderId = "";
-                        if (mobile && email && name) {
+                        if (mobile && email && name && paymentId) {
                           const orderResult = await trackOrderLead({
                             name,
                             mobile,
@@ -547,21 +554,22 @@ export default function ProductPage() {
                             state:
                               lead?.state ||
                               (typeof raw.state === "string" ? raw.state : ""),
-                            amount: payableAmount,
+                            amount: paidRupees,
                             package: pkgLabel,
+                            payment_id: paymentId,
                           });
-                          dbOrderId = orderResult?.orderId ?? "";
+                          dbOrderId =
+                            typeof orderResult?.orderId === "string"
+                              ? orderResult.orderId
+                              : "";
                         }
 
                         const snapshot = {
                           name,
                           mobile,
                           package: pkgLabel,
-                          amount: payableAmount,
-                          orderId:
-                            dbOrderId ||
-                            razorpayOrderId ||
-                            "",
+                          amount: paidRupees,
+                          orderId: dbOrderId || razorpayOrderId || "",
                           paymentId: paymentId ?? "",
                         };
 

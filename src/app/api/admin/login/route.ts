@@ -58,6 +58,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    const dbUrl = envPlain(process.env.DATABASE_URL);
+    if (!dbUrl) {
+      return NextResponse.json(
+        {
+          error:
+            "DATABASE_URL is missing on this server. Add it in Vercel → Environment Variables (same Supabase Postgres URI as local), then redeploy.",
+        },
+        { status: 503 }
+      );
+    }
+
     const token = crypto.randomBytes(48).toString("hex");
     const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
@@ -74,7 +85,13 @@ export async function POST(req: NextRequest) {
     });
     return res;
   } catch (e) {
-    console.error("[admin/login]", e);
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+    console.error("[admin/login] session DB error:", e);
+    return NextResponse.json(
+      {
+        error:
+          "Login failed: database did not save your session. On Vercel, set DATABASE_URL to your Supabase Postgres URI, add ?sslmode=require, URL-encode any special characters in the password, redeploy, then run prisma migrate deploy against that database (AdminSession table must exist).",
+      },
+      { status: 500 }
+    );
   }
 }

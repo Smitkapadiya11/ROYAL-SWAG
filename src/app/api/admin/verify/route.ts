@@ -1,16 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 
-export const dynamic = "force-dynamic";
+function verifyToken(token: string): boolean {
+  try {
+    const secret = (process.env.ADMIN_SECRET_KEY || '').trim().replace(/^["']|["']$/g, '')
+    const decoded = Buffer.from(token, 'base64').toString('utf8')
+    const parts = decoded.split(':')
+    if (parts.length !== 3) return false
+    const [username, timestamp, sig] = parts
+    const payload = `${username}:${timestamp}`
+    const expectedSig = crypto.createHmac('sha256', secret).update(payload).digest('hex')
+    return sig === expectedSig
+  } catch {
+    return false
+  }
+}
 
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get("rs_admin_token")?.value;
-  if (!token) {
-    return NextResponse.json({ ok: false }, { status: 401 });
+  const token = req.cookies.get('admin_token')?.value
+  if (!token || !verifyToken(token)) {
+    return NextResponse.json({ authenticated: false }, { status: 401 })
   }
-  const session = await db.adminSession.findUnique({ where: { token } }).catch(() => null);
-  if (!session || session.expiresAt < new Date()) {
-    return NextResponse.json({ ok: false }, { status: 401 });
-  }
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ authenticated: true })
 }

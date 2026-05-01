@@ -9,7 +9,7 @@ export function middleware(req: NextRequest) {
     !pathname.startsWith("/admin/login") &&
     !pathname.startsWith("/api/admin/login")
   ) {
-    const token = req.cookies.get("rs_admin_token")?.value;
+    const token = req.cookies.get("admin_token")?.value;
     if (!token) {
       const loginUrl = req.nextUrl.clone();
       loginUrl.pathname = "/admin/login";

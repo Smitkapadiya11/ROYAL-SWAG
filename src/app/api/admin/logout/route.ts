@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { NextResponse } from 'next/server'
 
-export const dynamic = "force-dynamic";
-
-export async function POST(req: NextRequest) {
-  const token = req.cookies.get("rs_admin_token")?.value;
-  if (token) {
-    await db.adminSession.deleteMany({ where: { token } }).catch(() => {});
-  }
-  const res = NextResponse.json({ ok: true });
-  res.cookies.delete("rs_admin_token");
-  return res;
+export async function POST() {
+  const res = NextResponse.json({ success: true })
+  res.cookies.set('admin_token', '', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 0,
+    path: '/',
+  })
+  return res
 }

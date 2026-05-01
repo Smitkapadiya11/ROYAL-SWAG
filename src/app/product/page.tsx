@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { S } from "@/lib/config";
 import RazorpayButton from "@/components/RazorpayButton";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -28,7 +27,6 @@ const PRODUCT_IMAGES = [
 ];
 
 export default function ProductPage() {
-  const router = useRouter();
   const { openLeadModal } = useLeadCapture();
   const [pack, setPack] = useState(PACKS[0]);
   const [time, setTime] = useState("--:--:--");
@@ -502,71 +500,83 @@ export default function ProductPage() {
                     autoTrigger
                     successRedirect={false}
                     onSuccess={(paymentId, razorpayOrderId) => {
-                      setPendingPayment(false);
+                      void (async () => {
+                        setPendingPayment(false);
 
-                      const lead = parseStoredLead();
-                      let raw: Record<string, string> = {};
-                      try {
-                        const s = localStorage.getItem("rs_lead");
-                        if (s) raw = JSON.parse(s) as Record<string, string>;
-                      } catch {
-                        /* ignore */
-                      }
+                        const lead = parseStoredLead();
+                        let raw: Record<string, string> = {};
+                        try {
+                          const s = localStorage.getItem("rs_lead");
+                          if (s) raw = JSON.parse(s) as Record<string, string>;
+                        } catch {
+                          /* ignore */
+                        }
 
-                      const name =
-                        lead?.name ||
-                        (typeof raw.name === "string" ? raw.name : "") ||
-                        "Customer";
-                      const mobile =
-                        lead?.mobile ||
-                        (typeof raw.mobile === "string" ? raw.mobile : "") ||
-                        (typeof raw.phone === "string" ? raw.phone : "");
-                      const email =
-                        lead?.email ||
-                        (typeof raw.email === "string" ? raw.email : "");
-                      const pkgLabel = `${pack.bags} — ${pack.days}`;
-                      const snapshot = {
-                        name,
-                        mobile,
-                        package: pkgLabel,
-                        amount: payableAmount,
-                        orderId: razorpayOrderId ?? "",
-                        paymentId: paymentId ?? "",
-                      };
+                        const name =
+                          lead?.name ||
+                          (typeof raw.name === "string" ? raw.name : "") ||
+                          "Customer";
+                        const mobile =
+                          lead?.mobile ||
+                          (typeof raw.mobile === "string" ? raw.mobile : "") ||
+                          (typeof raw.phone === "string" ? raw.phone : "");
+                        const email =
+                          lead?.email ||
+                          (typeof raw.email === "string" ? raw.email : "");
+                        const pkgLabel = `${pack.bags} — ${pack.days}`;
 
-                      try {
-                        sessionStorage.setItem(
-                          RS_ORDER_CONFIRMATION_KEY,
-                          JSON.stringify(snapshot)
-                        );
-                      } catch {
-                        /* ignore */
-                      }
+                        let dbOrderId = "";
+                        if (mobile && email && name) {
+                          const orderResult = await trackOrderLead({
+                            name,
+                            mobile,
+                            email,
+                            address:
+                              lead?.address ||
+                              (typeof raw.address === "string"
+                                ? raw.address
+                                : ""),
+                            city:
+                              lead?.city ||
+                              (typeof raw.city === "string" ? raw.city : ""),
+                            pincode:
+                              lead?.pincode ||
+                              (typeof raw.pincode === "string"
+                                ? raw.pincode
+                                : ""),
+                            state:
+                              lead?.state ||
+                              (typeof raw.state === "string" ? raw.state : ""),
+                            amount: payableAmount,
+                            package: pkgLabel,
+                          });
+                          dbOrderId = orderResult?.orderId ?? "";
+                        }
 
-                      if (mobile && email && name) {
-                        void trackOrderLead({
+                        const snapshot = {
                           name,
                           mobile,
-                          email,
-                          address:
-                            lead?.address ||
-                            (typeof raw.address === "string" ? raw.address : ""),
-                          city:
-                            lead?.city ||
-                            (typeof raw.city === "string" ? raw.city : ""),
-                          pincode:
-                            lead?.pincode ||
-                            (typeof raw.pincode === "string" ? raw.pincode : ""),
-                          state:
-                            lead?.state ||
-                            (typeof raw.state === "string" ? raw.state : ""),
-                          amount: payableAmount,
                           package: pkgLabel,
-                        });
-                      }
+                          amount: payableAmount,
+                          orderId:
+                            dbOrderId ||
+                            razorpayOrderId ||
+                            "",
+                          paymentId: paymentId ?? "",
+                        };
 
-                      setConfirmedOrder(snapshot);
-                      setShowConfirmation(true);
+                        try {
+                          sessionStorage.setItem(
+                            RS_ORDER_CONFIRMATION_KEY,
+                            JSON.stringify(snapshot)
+                          );
+                        } catch {
+                          /* ignore */
+                        }
+
+                        setConfirmedOrder(snapshot);
+                        setShowConfirmation(true);
+                      })();
                     }}
                   />
                 </div>
@@ -643,15 +653,7 @@ export default function ProductPage() {
 
       <OrderConfirmationModal
         isOpen={showConfirmation}
-        onClose={() => {
-          setShowConfirmation(false);
-          const { paymentId, orderId } = confirmedOrder;
-          if (paymentId && orderId) {
-            router.push(
-              `/order-confirmed?id=${encodeURIComponent(paymentId)}&order=${encodeURIComponent(orderId)}`
-            );
-          }
-        }}
+        onClose={() => setShowConfirmation(false)}
         orderDetails={confirmedOrder}
       />
 

@@ -10,19 +10,39 @@ export type TrackOrderLeadPayload = {
   package?: string;
 };
 
-export async function trackOrderLead(data: TrackOrderLeadPayload) {
+export type TrackOrderLeadResult = {
+  success: boolean;
+  orderId?: string;
+  duplicate?: boolean;
+};
+
+export async function trackOrderLead(
+  data: TrackOrderLeadPayload
+): Promise<TrackOrderLeadResult | null> {
   try {
     const res = await fetch("/api/track-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    const json = (await res.json()) as {
+      success?: boolean;
+      orderId?: string;
+      duplicate?: boolean;
+      error?: string;
+    };
     if (!res.ok) {
-      const errBody = await res.json().catch(() => ({}));
-      console.error("trackOrderLead failed:", res.status, errBody);
+      console.error("trackOrderLead failed:", res.status, json);
+      return null;
     }
+    return {
+      success: Boolean(json.success),
+      orderId: typeof json.orderId === "string" ? json.orderId : undefined,
+      duplicate: Boolean(json.duplicate),
+    };
   } catch (err) {
     console.error("trackOrderLead failed:", err);
+    return null;
   }
 }
 

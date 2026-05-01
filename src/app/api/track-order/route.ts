@@ -33,6 +33,25 @@ export async function POST(req: NextRequest) {
       auth: { persistSession: false }
     })
 
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+    const { data: recentOrder } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('mobile', mobileClean)
+      .gte('created_at', tenMinutesAgo)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (recentOrder?.id) {
+      console.log('Duplicate order prevented for:', mobileClean)
+      return NextResponse.json({
+        success: true,
+        orderId: recentOrder.id,
+        duplicate: true,
+      })
+    }
+
     let customerId: string | null = null
     const { data: existing } = await supabase
       .from('customers')
@@ -68,7 +87,7 @@ export async function POST(req: NextRequest) {
         pincode: pincode || '',
         state: state || '',
         package: pkg || '1 Pack',
-        amount: amount ? Number(amount) : 349,
+        amount: amount != null && amount !== '' ? Number(amount) : 0,
         status: 'confirmed',
       })
       .select('id')

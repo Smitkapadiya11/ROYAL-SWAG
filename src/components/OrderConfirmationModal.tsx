@@ -11,7 +11,7 @@ export interface OrderConfirmationOrderDetails {
   paymentId?: string;
 }
 
-interface OrderConfirmationModalProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
   orderDetails: OrderConfirmationOrderDetails;
@@ -21,13 +21,10 @@ export default function OrderConfirmationModal({
   isOpen,
   onClose,
   orderDetails,
-}: OrderConfirmationModalProps) {
+}: Props) {
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    if (isOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -35,65 +32,52 @@ export default function OrderConfirmationModal({
 
   if (!isOpen) return null;
 
-  const whatsappNumber =
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917096553300";
-  const message = encodeURIComponent(
-    `✅ Order Confirmed!\n\nHi ${orderDetails.name}, your Royal Swag Lung Detox Tea order is confirmed!\n\n📦 Package: ${orderDetails.package}\n💰 Amount Paid: ₹${orderDetails.amount}\n🆔 Order ID: ${orderDetails.orderId || "N/A"}\n\nWe will ship within 24 hours. Track your order on WhatsApp.`
+  const phone = (
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917096553300"
+  ).replace(/\D/g, "");
+  const msg = encodeURIComponent(
+    `Hi Royal Swag Team,\n\nMy order is confirmed! ✅\n\nName: ${orderDetails.name}\nPackage: ${orderDetails.package}\nAmount Paid: ₹${orderDetails.amount}\nOrder ID: ${orderDetails.orderId?.slice(0, 8).toUpperCase() || "N/A"}\n\nPlease share shipping details.`
   );
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+
+  const oid = orderDetails.orderId;
 
   return (
     <div
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.7)",
+        background: "rgba(0,0,0,0.75)",
         zIndex: 99999,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
       }}
-      onClick={onClose}
       role="presentation"
+      onClick={onClose}
     >
       <div
-        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="order-confirmed-title"
+        aria-labelledby="order-confirmation-heading"
+        onClick={(e) => e.stopPropagation()}
         style={{
           background: "#fff",
           borderRadius: "20px",
           padding: "32px 24px",
-          maxWidth: "420px",
+          maxWidth: "400px",
           width: "100%",
           textAlign: "center",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
         }}
       >
-        <div
-          style={{
-            width: "72px",
-            height: "72px",
-            borderRadius: "50%",
-            background: "#dcfce7",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "0 auto 20px",
-            fontSize: "36px",
-          }}
-        >
-          ✅
-        </div>
+        <div style={{ fontSize: "56px", marginBottom: "16px" }}>🎉</div>
 
         <h2
-          id="order-confirmed-title"
+          id="order-confirmation-heading"
           style={{
             color: "#14532d",
-            fontSize: "22px",
-            fontWeight: "700",
+            fontSize: "24px",
+            fontWeight: "800",
             marginBottom: "8px",
           }}
         >
@@ -106,7 +90,7 @@ export default function OrderConfirmationModal({
             marginBottom: "24px",
           }}
         >
-          Thank you {orderDetails.name}! Your order has been placed successfully.
+          Thank you {orderDetails.name}! Payment received successfully.
         </p>
 
         <div
@@ -114,7 +98,7 @@ export default function OrderConfirmationModal({
             background: "#f0fdf4",
             borderRadius: "12px",
             padding: "16px",
-            marginBottom: "24px",
+            marginBottom: "20px",
             textAlign: "left",
           }}
         >
@@ -122,7 +106,8 @@ export default function OrderConfirmationModal({
             style={{
               display: "flex",
               justifyContent: "space-between",
-              marginBottom: "8px",
+              padding: "6px 0",
+              borderBottom: "1px solid #dcfce7",
             }}
           >
             <span style={{ color: "#6b7280", fontSize: "13px" }}>Package</span>
@@ -140,7 +125,8 @@ export default function OrderConfirmationModal({
             style={{
               display: "flex",
               justifyContent: "space-between",
-              marginBottom: "8px",
+              padding: "6px 0",
+              borderBottom: "1px solid #dcfce7",
             }}
           >
             <span style={{ color: "#6b7280", fontSize: "13px" }}>
@@ -149,15 +135,21 @@ export default function OrderConfirmationModal({
             <span
               style={{
                 color: "#14532d",
-                fontWeight: "600",
-                fontSize: "13px",
+                fontWeight: "700",
+                fontSize: "15px",
               }}
             >
               ₹{orderDetails.amount}
             </span>
           </div>
-          {orderDetails.orderId ? (
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+          {oid ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "6px 0",
+              }}
+            >
               <span style={{ color: "#6b7280", fontSize: "13px" }}>
                 Order ID
               </span>
@@ -168,7 +160,7 @@ export default function OrderConfirmationModal({
                   fontSize: "13px",
                 }}
               >
-                {orderDetails.orderId.slice(0, 8).toUpperCase()}
+                #{oid.slice(0, 8).toUpperCase()}
               </span>
             </div>
           ) : null}
@@ -181,16 +173,15 @@ export default function OrderConfirmationModal({
             marginBottom: "20px",
           }}
         >
-          📦 Ships within 24 hours · Free delivery · Track on WhatsApp
+          📦 Ships in 24 hrs · Free delivery across India
         </p>
 
         <a
-          href={whatsappUrl}
+          href={`https://wa.me/${phone}?text=${msg}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{
             display: "block",
-            width: "100%",
             padding: "14px",
             background: "#25d366",
             color: "#fff",
@@ -198,11 +189,10 @@ export default function OrderConfirmationModal({
             fontWeight: "700",
             fontSize: "15px",
             textDecoration: "none",
-            marginBottom: "12px",
-            boxSizing: "border-box",
+            marginBottom: "10px",
           }}
         >
-          📲 Get Order Updates on WhatsApp
+          📲 Track Order on WhatsApp
         </a>
 
         <button
@@ -212,7 +202,7 @@ export default function OrderConfirmationModal({
             width: "100%",
             padding: "12px",
             background: "transparent",
-            color: "#6b7280",
+            color: "#9ca3af",
             border: "1px solid #e5e7eb",
             borderRadius: "10px",
             fontSize: "14px",

@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import { RS_LEAD_KEY, RS_LEAD_UPDATED_EVENT } from "@/lib/lead-capture-storage";
-import { trackOrderLead } from "@/lib/trackLead";
 
 export type LeadCaptureModalProps = {
   isOpen: boolean;
@@ -155,20 +154,6 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
       }
     } catch (e) {
       console.error("[LeadCaptureModal] rs_lead save failed:", e);
-    }
-
-    try {
-      await trackOrderLead({
-        name: nt,
-        mobile: digits,
-        email: emailNorm,
-        address: addr,
-        city: ct,
-        pincode: pc,
-        state,
-      });
-    } catch (e) {
-      console.error("[LeadCaptureModal] trackOrderLead failed:", e);
     }
 
     try {

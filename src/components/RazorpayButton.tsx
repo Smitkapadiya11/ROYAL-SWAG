@@ -56,6 +56,8 @@ export interface RazorpayButtonProps {
   disabled?:  boolean;
   autoTrigger?: boolean;
   onSuccess?: (paymentId: string, orderId: string) => void;
+  /** When false, skip navigating to /order-confirmed (e.g. parent shows a modal first). Default true. */
+  successRedirect?: boolean;
   style?:     React.CSSProperties;
 }
 
@@ -76,6 +78,7 @@ export default function RazorpayButton({
   disabled  = false,
   autoTrigger = false,
   onSuccess,
+  successRedirect = true,
   style,
 }: RazorpayButtonProps) {
   const router                              = useRouter();
@@ -174,9 +177,11 @@ export default function RazorpayButton({
               localStorage.removeItem("rs_cart");
             } catch { /* ignore */ }
 
-            router.push(
-              `/order-confirmed?id=${verifyData.paymentId}&order=${verifyData.orderId}`
-            );
+            if (successRedirect) {
+              router.push(
+                `/order-confirmed?id=${verifyData.paymentId}&order=${verifyData.orderId}`
+              );
+            }
 
           } catch (verifyErr: unknown) {
             const msg =

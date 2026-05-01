@@ -4,6 +4,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import LeadCaptureProvider from "@/components/LeadCaptureProvider";
+import { SITE_ORIGIN } from "@/lib/config";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
   title: "Royal Swag Lung Detox Tea | 7 Ayurvedic Herbs — Free Delivery India",
   description:
     "Cleanse your lungs with 7 Ayurvedic herbs. FSSAI certified. ₹349. Free delivery. COD available pan India.",
-  metadataBase: new URL("https://royalswag.in"),
+  metadataBase: new URL(SITE_ORIGIN),
   openGraph: {
     title: "Royal Swag Lung Detox Tea",
     description: "7 Ayurvedic herbs for clean healthy lungs. ₹349.",

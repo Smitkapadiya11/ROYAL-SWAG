@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LUNG_TEST_QUESTION_COUNT } from "@/lib/lung-test-constants";
-import { trackLungTestLead } from "@/lib/trackLead";
-
 const QUESTIONS: {
   q: string;
   hint: string;
@@ -83,11 +81,6 @@ export default function LungTestPage() {
       } else {
         void (async () => {
           const score = next.filter(Boolean).length;
-          await trackLungTestLead({
-            name: name.trim(),
-            mobile: phone,
-            email: email.trim(),
-          });
           fetch("/api/lung-test/submit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

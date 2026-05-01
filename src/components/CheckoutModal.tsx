@@ -12,11 +12,15 @@ export interface SelectedPack {
   tag: string;
 }
 
-interface CheckoutModalProps {
+export interface CheckoutModalProps {
   isOpen: boolean;
   pack?: SelectedPack;
   onConfirm?: () => void;
   onClose: () => void;
+  /** When applied with discountedAmount below pack.price, show coupon pricing + button total */
+  couponCode?: string | null;
+  /** Final payable amount after coupon (e.g. same as Razorpay amount) */
+  discountedAmount?: number;
 }
 
 const FALLBACK_PACK: SelectedPack = {
@@ -33,6 +37,8 @@ export default function CheckoutModal({
   pack = FALLBACK_PACK,
   onConfirm,
   onClose,
+  couponCode = null,
+  discountedAmount,
 }: CheckoutModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +66,17 @@ export default function CheckoutModal({
 
   const savings = pack.mrp - pack.price;
   const savingsPct = Math.round((savings / pack.mrp) * 100);
+
+  const originalAmount = pack.price;
+  const finalPayAmount =
+    couponCode &&
+    typeof discountedAmount === "number" &&
+    discountedAmount < originalAmount &&
+    discountedAmount >= 0
+      ? discountedAmount
+      : originalAmount;
+  const couponApplied = Boolean(couponCode) && finalPayAmount < originalAmount;
+  const couponSaved = couponApplied ? originalAmount - finalPayAmount : 0;
 
   return (
     <div
@@ -207,6 +224,33 @@ export default function CheckoutModal({
                   </span>
                 )}
               </div>
+
+              {couponApplied && (
+                <div style={{ marginTop: 12 }}>
+                  <span
+                    style={{
+                      textDecoration: "line-through",
+                      color: "#9ca3af",
+                      fontSize: 14,
+                    }}
+                  >
+                    ₹{originalAmount}
+                  </span>
+                  <span
+                    style={{
+                      color: "#16a34a",
+                      fontWeight: 700,
+                      fontSize: 20,
+                      marginLeft: 8,
+                    }}
+                  >
+                    ₹{finalPayAmount}
+                  </span>
+                  <div style={{ color: "#16a34a", fontSize: 13, marginTop: 4 }}>
+                    {couponCode} saved ₹{couponSaved}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -279,7 +323,7 @@ export default function CheckoutModal({
             onMouseEnter={(e) => (e.currentTarget.style.background = "#2D3D15")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "#4A6422")}
           >
-            Continue to Payment — ₹{pack.price}
+            Continue to Payment — ₹{finalPayAmount}
           </button>
 
           <button

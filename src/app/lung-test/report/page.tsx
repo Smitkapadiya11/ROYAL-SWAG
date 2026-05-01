@@ -13,6 +13,7 @@ import {
 import CheckoutModal from "@/components/CheckoutModal";
 import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { useLeadCapture } from "@/hooks/useLeadCapture";
+import { SITE_ORIGIN } from "@/lib/config";
 
 // ━━━ SVG Circular Gauge ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ScoreGauge({ score, maxScore, color }: { score: number; maxScore: number; color: string }) {
@@ -56,7 +57,7 @@ function ShareButton({ tier }: { tier: LungHealthTier }) {
   const canShare = typeof navigator !== "undefined" && !!navigator.share;
 
   const handleShare = async () => {
-    const text = `I just took the Royal Swag Lung Health Test! My result: ${result.label} ${result.emoji}\n\nFind out about your lungs at https://www.royalswag.in/lung-test`;
+    const text = `I just took the Royal Swag Lung Health Test! My result: ${result.label} ${result.emoji}\n\nFind out about your lungs at ${SITE_ORIGIN}/lung-test`;
     if (canShare) {
       try {
         await navigator.share({ title: "My Royal Swag Lung Health Result", text });

@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState, type CSSProperties } from "react";
-import { saveLead } from "@/lib/lead-capture-storage";
+import { useCallback, useState } from "react";
+import { RS_LEAD_KEY, RS_LEAD_UPDATED_EVENT } from "@/lib/lead-capture-storage";
 import { trackOrderLead } from "@/lib/trackLead";
 
 export type LeadCaptureModalProps = {
@@ -12,7 +12,6 @@ export type LeadCaptureModalProps = {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const IN_MOBILE_RE = /^[6-9]\d{9}$/;
-const PINCODE_RE = /^\d{6}$/;
 
 const INDIAN_STATES = [
   "Andhra Pradesh",
@@ -20,8 +19,8 @@ const INDIAN_STATES = [
   "Bihar",
   "Chhattisgarh",
   "Delhi",
-  "Gujarat",
   "Goa",
+  "Gujarat",
   "Haryana",
   "Himachal Pradesh",
   "Jharkhand",
@@ -45,6 +44,9 @@ const INDIAN_STATES = [
   "West Bengal",
 ] as const;
 
+type FieldKey = "name" | "phone" | "address" | "city" | "pincode" | "state" | "email";
+type FieldErrors = Partial<Record<FieldKey, string>>;
+
 function validatePhone(v: string): string | null {
   const digits = v.replace(/\D/g, "");
   if (digits.length !== 10) return "Enter a valid 10-digit mobile number.";
@@ -67,22 +69,10 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
   const [pincode, setPincode] = useState("");
   const [state, setState] = useState("");
   const [email, setEmail] = useState("");
-  const [nameErr, setNameErr] = useState("");
-  const [phoneErr, setPhoneErr] = useState("");
-  const [addressErr, setAddressErr] = useState("");
-  const [cityErr, setCityErr] = useState("");
-  const [pincodeErr, setPincodeErr] = useState("");
-  const [stateErr, setStateErr] = useState("");
-  const [emailErr, setEmailErr] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   const resetErrors = useCallback(() => {
-    setNameErr("");
-    setPhoneErr("");
-    setAddressErr("");
-    setCityErr("");
-    setPincodeErr("");
-    setStateErr("");
-    setEmailErr("");
+    setErrors({});
   }, []);
 
   const handleBackdropMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -92,74 +82,81 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
   const handleProceed = async () => {
     resetErrors();
 
-    let ok = true;
     const nt = name.trim();
     if (!nt) {
-      setNameErr("Full name is required.");
-      ok = false;
+      setErrors((prev) => ({ ...prev, name: "Full name is required." }));
+      return;
     }
 
     const pe = validatePhone(phone);
     if (pe) {
-      setPhoneErr(pe);
-      ok = false;
+      setErrors((prev) => ({ ...prev, phone: pe }));
+      return;
     }
 
     const addr = address.trim();
-    if (!addr) {
-      setAddressErr("Address is required.");
-      ok = false;
-    } else if (addr.length < 10) {
-      setAddressErr("Address must be at least 10 characters.");
-      ok = false;
+    if (!addr || addr.length < 10) {
+      setErrors((prev) => ({
+        ...prev,
+        address: "Enter full address (min 10 chars)",
+      }));
+      return;
     }
 
     const ct = city.trim();
     if (!ct) {
-      setCityErr("City is required.");
-      ok = false;
+      setErrors((prev) => ({ ...prev, city: "Enter your city" }));
+      return;
     }
 
     const pc = pincode.trim();
-    if (!pc) {
-      setPincodeErr("Pincode is required.");
-      ok = false;
-    } else if (!PINCODE_RE.test(pc)) {
-      setPincodeErr("Enter a valid 6-digit pincode.");
-      ok = false;
+    if (!/^\d{6}$/.test(pc)) {
+      setErrors((prev) => ({ ...prev, pincode: "Enter valid 6-digit pincode" }));
+      return;
     }
 
     if (!state) {
-      setStateErr("Please select your state.");
-      ok = false;
-    } else if (!INDIAN_STATES.includes(state as (typeof INDIAN_STATES)[number])) {
-      setStateErr("Please select a valid state from the list.");
-      ok = false;
+      setErrors((prev) => ({ ...prev, state: "Select your state" }));
+      return;
+    }
+    if (!INDIAN_STATES.includes(state as (typeof INDIAN_STATES)[number])) {
+      setErrors((prev) => ({
+        ...prev,
+        state: "Please select a valid state from the list.",
+      }));
+      return;
     }
 
     const ee = validateEmail(email);
     if (ee) {
-      setEmailErr(ee);
-      ok = false;
+      setErrors((prev) => ({ ...prev, email: ee }));
+      return;
     }
-
-    if (!ok) return;
 
     const digits = phone.replace(/\D/g, "");
     const emailNorm = email.trim().toLowerCase();
+
     try {
-      saveLead({
-        name: nt,
-        mobile: digits,
-        email: emailNorm,
-        address: addr,
-        city: ct,
-        pincode: pc,
-        state,
-      });
+      localStorage.setItem(
+        RS_LEAD_KEY,
+        JSON.stringify({
+          name: nt,
+          mobile: digits,
+          email: emailNorm,
+          address: addr,
+          city: ct,
+          pincode: pc,
+          state,
+          timestamp: Date.now(),
+        })
+      );
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event(RS_LEAD_UPDATED_EVENT));
+      }
     } catch (e) {
-      console.error("[LeadCaptureModal] saveLead failed:", e);
+      console.error("[LeadCaptureModal] rs_lead save failed:", e);
     }
+
     try {
       await trackOrderLead({
         name: nt,
@@ -173,11 +170,13 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
     } catch (e) {
       console.error("[LeadCaptureModal] trackOrderLead failed:", e);
     }
+
     try {
       onSuccess();
     } catch (e) {
       console.error("[LeadCaptureModal] onSuccess failed:", e);
     }
+
     setName("");
     setPhone("");
     setAddress("");
@@ -190,21 +189,12 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
 
   if (!isOpen) return null;
 
-  const inputStyle: CSSProperties = {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: 10,
-    border: "1px solid #e2e8f0",
-    fontSize: 16,
-    outline: "none",
-  };
-
-  const labelStyle: CSSProperties = {
-    display: "block",
-    fontSize: 12,
-    fontWeight: 600,
+  const labelBase = {
+    display: "block" as const,
+    fontSize: "13px",
+    fontWeight: "600" as const,
+    marginBottom: "6px",
     color: "#374151",
-    marginBottom: 6,
   };
 
   return (
@@ -278,8 +268,8 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div>
-            <label htmlFor="rs-lead-name" style={labelStyle}>
-              Full name <span style={{ color: "#b91c1c" }}>*</span>
+            <label htmlFor="rs-lead-name" style={labelBase}>
+              Full name <span style={{ color: "#dc2626" }}>*</span>
             </label>
             <input
               id="rs-lead-name"
@@ -287,14 +277,23 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              style={inputStyle}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                border: errors.name ? "1px solid #dc2626" : "1px solid #d1d5db",
+                fontSize: "15px",
+                boxSizing: "border-box",
+              }}
             />
-            {nameErr && <p style={{ color: "#b91c1c", fontSize: 12, marginTop: 6 }}>{nameErr}</p>}
+            {errors.name && (
+              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.name}</p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="rs-lead-phone" style={labelStyle}>
-              Phone number <span style={{ color: "#b91c1c" }}>*</span>
+            <label htmlFor="rs-lead-phone" style={labelBase}>
+              Phone number <span style={{ color: "#dc2626" }}>*</span>
             </label>
             <input
               id="rs-lead-phone"
@@ -304,73 +303,116 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
               placeholder="10-digit mobile"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              style={inputStyle}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                border: errors.phone ? "1px solid #dc2626" : "1px solid #d1d5db",
+                fontSize: "15px",
+                boxSizing: "border-box",
+              }}
             />
-            {phoneErr && <p style={{ color: "#b91c1c", fontSize: 12, marginTop: 6 }}>{phoneErr}</p>}
+            {errors.phone && (
+              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.phone}</p>
+            )}
           </div>
 
+          {/* Address */}
           <div>
-            <label htmlFor="rs-lead-address" style={labelStyle}>
-              Address line <span style={{ color: "#b91c1c" }}>*</span>
+            <label style={labelBase}>
+              Delivery Address <span style={{ color: "#dc2626" }}>*</span>
             </label>
             <input
-              id="rs-lead-address"
               type="text"
+              placeholder="House no, Street, Area"
               autoComplete="street-address"
-              placeholder="House no., street, area"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              style={inputStyle}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                border: errors.address ? "1px solid #dc2626" : "1px solid #d1d5db",
+                fontSize: "15px",
+                boxSizing: "border-box",
+              }}
             />
-            {addressErr && (
-              <p style={{ color: "#b91c1c", fontSize: 12, marginTop: 6 }}>{addressErr}</p>
+            {errors.address && (
+              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.address}</p>
             )}
           </div>
 
-          <div>
-            <label htmlFor="rs-lead-city" style={labelStyle}>
-              City <span style={{ color: "#b91c1c" }}>*</span>
-            </label>
-            <input
-              id="rs-lead-city"
-              type="text"
-              autoComplete="address-level2"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              style={inputStyle}
-            />
-            {cityErr && <p style={{ color: "#b91c1c", fontSize: 12, marginTop: 6 }}>{cityErr}</p>}
+          {/* City and Pincode side by side */}
+          <div style={{ display: "flex", gap: "12px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelBase}>
+                City <span style={{ color: "#dc2626" }}>*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Your city"
+                autoComplete="address-level2"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  border: errors.city ? "1px solid #dc2626" : "1px solid #d1d5db",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                }}
+              />
+              {errors.city && (
+                <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.city}</p>
+              )}
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelBase}>
+                Pincode <span style={{ color: "#dc2626" }}>*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="6-digit pincode"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  border: errors.pincode ? "1px solid #dc2626" : "1px solid #d1d5db",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                }}
+              />
+              {errors.pincode && (
+                <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>
+                  {errors.pincode}
+                </p>
+              )}
+            </div>
           </div>
 
+          {/* State dropdown */}
           <div>
-            <label htmlFor="rs-lead-pincode" style={labelStyle}>
-              Pincode <span style={{ color: "#b91c1c" }}>*</span>
-            </label>
-            <input
-              id="rs-lead-pincode"
-              type="text"
-              inputMode="numeric"
-              autoComplete="postal-code"
-              placeholder="6-digit pincode"
-              maxLength={6}
-              value={pincode}
-              onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              style={inputStyle}
-            />
-            {pincodeErr && (
-              <p style={{ color: "#b91c1c", fontSize: 12, marginTop: 6 }}>{pincodeErr}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="rs-lead-state" style={labelStyle}>
-              State <span style={{ color: "#b91c1c" }}>*</span>
+            <label htmlFor="rs-lead-state" style={labelBase}>
+              State <span style={{ color: "#dc2626" }}>*</span>
             </label>
             <select
               id="rs-lead-state"
               value={state}
               onChange={(e) => setState(e.target.value)}
-              style={{ ...inputStyle, cursor: "pointer", background: "#fff" }}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                border: errors.state ? "1px solid #dc2626" : "1px solid #d1d5db",
+                fontSize: "15px",
+                boxSizing: "border-box",
+                background: "#fff",
+              }}
             >
               <option value="">Select state</option>
               {INDIAN_STATES.map((s) => (
@@ -379,12 +421,14 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
                 </option>
               ))}
             </select>
-            {stateErr && <p style={{ color: "#b91c1c", fontSize: 12, marginTop: 6 }}>{stateErr}</p>}
+            {errors.state && (
+              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.state}</p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="rs-lead-email" style={labelStyle}>
-              Email <span style={{ color: "#b91c1c" }}>*</span>
+            <label htmlFor="rs-lead-email" style={labelBase}>
+              Email <span style={{ color: "#dc2626" }}>*</span>
             </label>
             <input
               id="rs-lead-email"
@@ -392,9 +436,18 @@ export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCap
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={inputStyle}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                border: errors.email ? "1px solid #dc2626" : "1px solid #d1d5db",
+                fontSize: "15px",
+                boxSizing: "border-box",
+              }}
             />
-            {emailErr && <p style={{ color: "#b91c1c", fontSize: 12, marginTop: 6 }}>{emailErr}</p>}
+            {errors.email && (
+              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.email}</p>
+            )}
           </div>
         </div>
 

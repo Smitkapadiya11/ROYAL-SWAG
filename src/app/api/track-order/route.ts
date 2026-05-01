@@ -5,7 +5,17 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   try {
+    console.log('track-order called')
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    console.log('URL:', supabaseUrl ? 'SET' : 'MISSING')
+    console.log('KEY:', supabaseKey ? 'SET' : 'MISSING')
+
     const body = await req.json()
+    console.log('Body received:', JSON.stringify(body))
+
     const { name, mobile, email, address, city, pincode, state, package: pkg, amount } = body
 
     if (!name || !mobile || !email) {
@@ -14,19 +24,15 @@ export async function POST(req: NextRequest) {
 
     const mobileClean = String(mobile).replace(/\D/g, '').slice(-10)
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
     if (!supabaseUrl || !supabaseKey) {
-      console.error('Supabase env missing')
-      return NextResponse.json({ success: true, warning: 'DB not configured' })
+      console.error('SUPABASE ENV MISSING')
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false }
     })
 
-    // Upsert customer
     let customerId: string | null = null
     const { data: existing } = await supabase
       .from('customers')
@@ -37,18 +43,19 @@ export async function POST(req: NextRequest) {
     if (existing?.id) {
       customerId = existing.id
     } else {
-      const { data: created, error: custErr } = await supabase
+      const { data: created, error: custError } = await supabase
         .from('customers')
-        .insert({ name: name.trim(), mobile: mobileClean, email: email.trim().toLowerCase() })
+        .insert({
+          name: name.trim(),
+          mobile: mobileClean,
+          email: email.trim().toLowerCase()
+        })
         .select('id')
         .maybeSingle()
-      if (custErr) {
-        console.error('Customer insert error:', custErr)
-      }
+      if (custError) console.error('Customer error:', custError)
       customerId = created?.id ?? null
     }
 
-    // Save order with full shipping details
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
@@ -68,15 +75,16 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (orderError) {
-      console.error('Order save error:', orderError)
+      console.error('Order insert error:', JSON.stringify(orderError))
+      return NextResponse.json({ error: orderError.message }, { status: 500 })
     }
 
-    // Send WhatsApp confirmation via wa.me link (log for now)
-    console.log(`ORDER CONFIRMED — Name: ${name}, Mobile: ${mobileClean}, Package: ${pkg}, Amount: ${amount}, Address: ${address}, ${city}, ${pincode}, ${state}`)
-
+    console.log('Order saved:', order?.id)
     return NextResponse.json({ success: true, orderId: order?.id })
-  } catch (error) {
-    console.error('track-order error:', error)
-    return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('FATAL track-order error:', msg)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

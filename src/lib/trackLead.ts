@@ -6,29 +6,47 @@ export type TrackOrderLeadPayload = {
   city?: string;
   pincode?: string;
   state?: string;
+  amount?: number;
+  package?: string;
 };
 
 export async function trackOrderLead(data: TrackOrderLeadPayload) {
   try {
-    await fetch("/api/track-order", {
+    const res = await fetch("/api/track-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      console.error("trackOrderLead failed:", res.status, errBody);
+    }
   } catch (err) {
-    // Silent fail — never block purchase flow
-    console.error("trackOrderLead failed silently:", err);
+    console.error("trackOrderLead failed:", err);
   }
 }
 
-export async function trackLungTestLead(data: { name: string; mobile: string; email: string }) {
+export type TrackLungTestLeadPayload = {
+  name: string;
+  mobile: string;
+  email: string;
+  risk_level?: string;
+  score?: number;
+  answers?: unknown;
+};
+
+export async function trackLungTestLead(data: TrackLungTestLeadPayload) {
   try {
-    await fetch("/api/track-lungtest", {
+    const res = await fetch("/api/track-lungtest", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      console.error("trackLungTestLead failed:", res.status, errBody);
+    }
   } catch (err) {
-    console.error("trackLungTestLead failed silently:", err);
+    console.error("trackLungTestLead failed:", err);
   }
 }

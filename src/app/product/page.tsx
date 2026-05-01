@@ -6,6 +6,8 @@ import RazorpayButton from "@/components/RazorpayButton";
 import CheckoutModal from "@/components/CheckoutModal";
 import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
 import { useLeadCapture } from "@/hooks/useLeadCapture";
+import { parseStoredLead } from "@/lib/lead-capture-storage";
+import { trackOrderLead } from "@/lib/trackLead";
 
 const PACKS = [
   { id: "20", bags: "20 Bags", days: "30-Day Supply", price: 349, mrp: 499, tag: "" },
@@ -468,6 +470,8 @@ export default function ProductPage() {
               <CheckoutModal
                 isOpen={modalOpen}
                 pack={pack}
+                couponCode={appliedCoupon}
+                discountedAmount={payableAmount}
                 onClose={() => setModalOpen(false)}
                 onConfirm={() => {
                   setModalOpen(false);
@@ -483,7 +487,27 @@ export default function ProductPage() {
                     label="Pay Now"
                     fullWidth
                     autoTrigger
-                    onSuccess={() => setPendingPayment(false)}
+                    onSuccess={() => {
+                      setPendingPayment(false);
+                      const lead = parseStoredLead();
+                      if (
+                        lead?.mobile &&
+                        lead.email &&
+                        lead.name
+                      ) {
+                        void trackOrderLead({
+                          name: lead.name,
+                          mobile: lead.mobile,
+                          email: lead.email,
+                          address: lead.address,
+                          city: lead.city,
+                          pincode: lead.pincode,
+                          state: lead.state,
+                          amount: payableAmount,
+                          package: `${pack.bags} — ${pack.days}`,
+                        });
+                      }
+                    }}
                   />
                 </div>
               )}

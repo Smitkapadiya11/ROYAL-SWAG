@@ -74,4 +74,5 @@ export const SITE = {
 } as const;
 
 export const SITE_CONFIG = SITE;
-export const SITE_ORIGIN = "https://royalswag.in";
+/** Production site URL (lung detox landing). */
+export const SITE_ORIGIN = "https://lungdetox.royalswag.in";

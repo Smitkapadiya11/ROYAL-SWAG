@@ -3,11 +3,9 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { S } from "@/lib/config";
 import RazorpayButton from "@/components/RazorpayButton";
-import CheckoutModal from "@/components/CheckoutModal";
 import OrderConfirmationModal from "@/components/OrderConfirmationModal";
-import CODOrderModal from "@/components/CODOrderModal";
+import LeadCaptureModal, { type LeadData } from "@/components/LeadCaptureModal";
 import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
-import { useLeadCapture } from "@/hooks/useLeadCapture";
 import { parseStoredLead } from "@/lib/lead-capture-storage";
 import { RS_ORDER_CONFIRMATION_KEY } from "@/lib/order-confirmation-storage";
 import { trackOrderLead, type TrackOrderApiResponse } from "@/lib/trackLead";
@@ -28,7 +26,6 @@ const PRODUCT_IMAGES = [
 ];
 
 export default function ProductPage() {
-  const { openLeadModal } = useLeadCapture();
   const [pack, setPack] = useState(PACKS[0]);
   const [time, setTime] = useState("--:--:--");
   const [activeImage, setActiveImage] = useState(0);
@@ -40,11 +37,17 @@ export default function ProductPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
   const [couponMsgType, setCouponMsgType] = useState<"success" | "error" | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [orderMode, setOrderMode] = useState<"online" | "cod">("online");
   const [pendingPayment, setPendingPayment] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [showCODModal, setShowCODModal] = useState(false);
-  const [confirmedOrder, setConfirmedOrder] = useState({
+  const [paymentSessionKey, setPaymentSessionKey] = useState(0);
+  const [rzpPrefill, setRzpPrefill] = useState<{
+    name: string;
+    email: string;
+    contact: string;
+  } | null>(null);
+  const [showOrderConfirmed, setShowOrderConfirmed] = useState(false);
+  const [confirmedOrderDetails, setConfirmedOrderDetails] = useState({
     name: "",
     mobile: "",
     package: "",
@@ -110,6 +113,36 @@ export default function ProductPage() {
   const isCouponApplied = appliedCoupon === "LUNG25";
   const discountAmount = isCouponApplied ? Math.round(pack.price * 0.25) : 0;
   const payableAmount = pack.price - discountAmount;
+
+  const getCurrentPackLabel = () => `${pack.bags} — ${pack.days}`;
+
+  function handleDetailsSubmit(data: LeadData, meta?: { orderId?: string }) {
+    setShowDetailsModal(false);
+    const pkgLabel = getCurrentPackLabel();
+
+    if (orderMode === "cod") {
+      const mobileClean = data.mobile.replace(/\D/g, "").slice(-10);
+      setConfirmedOrderDetails({
+        name: data.name,
+        mobile: mobileClean,
+        package: pkgLabel,
+        amount: payableAmount,
+        orderId: meta?.orderId ?? "",
+        paymentId: "",
+      });
+      setShowOrderConfirmed(true);
+      return;
+    }
+
+    const mobileClean = data.mobile.replace(/\D/g, "").slice(-10);
+    setRzpPrefill({
+      name: data.name.trim(),
+      email: data.email.trim().toLowerCase(),
+      contact: mobileClean,
+    });
+    setPaymentSessionKey((k) => k + 1);
+    setPendingPayment(true);
+  }
 
   const applyCoupon = (rawCode: string) => {
     const normalized = rawCode.trim().toLowerCase();
@@ -432,7 +465,12 @@ export default function ProductPage() {
               </div>
               <div>
                 <button
-                  onClick={() => openLeadModal(() => setModalOpen(true))}
+                  type="button"
+                  onClick={() => {
+                    setPendingPayment(false);
+                    setOrderMode("online");
+                    setShowDetailsModal(true);
+                  }}
                   style={{
                     width: "100%",
                     padding: "16px",
@@ -458,21 +496,25 @@ export default function ProductPage() {
 
                 <button
                   type="button"
-                  onClick={() => setShowCODModal(true)}
+                  onClick={() => {
+                    setPendingPayment(false);
+                    setOrderMode("cod");
+                    setShowDetailsModal(true);
+                  }}
                   style={{
                     width: "100%",
                     padding: "14px",
-                    background: "transparent",
+                    background: "#fff",
                     color: "#14532d",
                     border: "2px solid #14532d",
                     borderRadius: "10px",
-                    fontWeight: 700,
+                    fontWeight: 600,
                     fontSize: 15,
                     cursor: "pointer",
                     marginTop: 10,
                   }}
                 >
-                  📦 Order with Cash on Delivery
+                  📦 Cash on Delivery
                 </button>
 
                 <LeadGuardExternalLink
@@ -499,27 +541,18 @@ export default function ProductPage() {
                 </LeadGuardExternalLink>
               </div>
 
-              <CheckoutModal
-                isOpen={modalOpen}
-                pack={pack}
-                couponCode={appliedCoupon}
-                discountedAmount={payableAmount}
-                onClose={() => setModalOpen(false)}
-                onConfirm={() => {
-                  setModalOpen(false);
-                  setPendingPayment(true);
-                }}
-              />
-
               {pendingPayment && (
                 <div style={{ display: "none" }}>
                   <RazorpayButton
+                    key={paymentSessionKey}
                     amount={payableAmount}
-                    packLabel={`${pack.bags} — ${pack.days}`}
+                    packLabel={getCurrentPackLabel()}
                     label="Pay Now"
                     fullWidth
                     autoTrigger
                     successRedirect={false}
+                    prefill={rzpPrefill ?? undefined}
+                    onModalDismiss={() => setPendingPayment(false)}
                     onSuccess={(paymentId, razorpayOrderId, amountPaise) => {
                       void (async () => {
                         setPendingPayment(false);
@@ -563,7 +596,7 @@ export default function ProductPage() {
                           email = `${mobileClean}@pending.royalswag.in`;
                         }
 
-                        const pkgLabel = `${pack.bags} — ${pack.days}`;
+                        const pkgLabel = getCurrentPackLabel();
 
                         let result: TrackOrderApiResponse | null = null;
                         if (
@@ -597,6 +630,8 @@ export default function ProductPage() {
                             package: pkgLabel,
                             amount: paidRupees,
                             payment_id: paymentId,
+                            payment_method: "online",
+                            status: "confirmed",
                           });
                         } else if (paymentId) {
                           console.warn(
@@ -628,7 +663,7 @@ export default function ProductPage() {
                           /* ignore */
                         }
 
-                        setConfirmedOrder({
+                        setConfirmedOrderDetails({
                           name,
                           mobile: mobileClean,
                           package: pkgLabel,
@@ -636,7 +671,7 @@ export default function ProductPage() {
                           orderId: snapshot.orderId,
                           paymentId: paymentId ?? "",
                         });
-                        setShowConfirmation(true);
+                        setShowOrderConfirmed(true);
                       })();
                     }}
                   />
@@ -712,20 +747,19 @@ export default function ProductPage() {
         `}</style>
       </section>
 
-      <OrderConfirmationModal
-        isOpen={showConfirmation}
-        onClose={() => setShowConfirmation(false)}
-        orderDetails={confirmedOrder}
+      <LeadCaptureModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        onSuccess={handleDetailsSubmit}
+        mode={orderMode}
+        packageLabel={getCurrentPackLabel()}
+        packageAmount={payableAmount}
       />
 
-      <CODOrderModal
-        isOpen={showCODModal}
-        onClose={() => setShowCODModal(false)}
-        selectedPackage={{
-          label: `${pack.bags} — ${pack.days}`,
-          amount: payableAmount,
-          bags: Number.parseInt(pack.id, 10) || 0,
-        }}
+      <OrderConfirmationModal
+        isOpen={showOrderConfirmed}
+        onClose={() => setShowOrderConfirmed(false)}
+        orderDetails={confirmedOrderDetails}
       />
 
       {/* ══ HOW TO USE ══════════════════════════════════════════════ */}

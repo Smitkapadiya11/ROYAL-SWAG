@@ -9,6 +9,8 @@ export type TrackOrderLeadPayload = {
   package?: string;
   amount?: number;
   payment_id?: string;
+  payment_method?: string;
+  status?: string;
 };
 
 /** Parsed JSON from POST /api/track-order */

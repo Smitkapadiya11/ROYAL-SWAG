@@ -55,10 +55,14 @@ export interface RazorpayButtonProps {
   fullWidth?: boolean;
   disabled?:  boolean;
   autoTrigger?: boolean;
+  /** Prefills Razorpay checkout name / email / phone */
+  prefill?: { name?: string; email?: string; contact?: string };
   /** amountPaise: Razorpay order total in paise (from /api/razorpay/order). INR = amountPaise / 100 */
   onSuccess?: (paymentId: string, orderId: string, amountPaise: number) => void;
   /** When false, skip navigating to /order-confirmed (e.g. parent shows a modal first). Default true. */
   successRedirect?: boolean;
+  /** Called when the user closes the Razorpay modal without completing payment */
+  onModalDismiss?: () => void;
   style?:     React.CSSProperties;
 }
 
@@ -78,8 +82,10 @@ export default function RazorpayButton({
   fullWidth = false,
   disabled  = false,
   autoTrigger = false,
+  prefill,
   onSuccess,
   successRedirect = true,
+  onModalDismiss,
   style,
 }: RazorpayButtonProps) {
   const router                              = useRouter();
@@ -140,7 +146,11 @@ export default function RazorpayButton({
         order_id:    orderData.orderId,
         image:       "/images/new_logo.png",
         theme:       { color: "#4A6422" },
-        prefill:     { name: "", email: "", contact: "" },
+        prefill:     {
+          name:    prefill?.name ?? "",
+          email:   prefill?.email ?? "",
+          contact: prefill?.contact ?? "",
+        },
         notes:       { pack: packLabel },
 
         // ── Step 4a: Success ──────────────────────────────
@@ -203,6 +213,7 @@ export default function RazorpayButton({
           ondismiss: () => {
             setState("dismissed");
             setErrorMsg("Payment cancelled. Your order was not placed.");
+            onModalDismiss?.();
           },
           escape: true,
         },

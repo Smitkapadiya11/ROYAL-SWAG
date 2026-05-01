@@ -1,18 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import type { CSSProperties } from "react";
 import { RS_LEAD_KEY, RS_LEAD_UPDATED_EVENT } from "@/lib/lead-capture-storage";
 
-export type LeadCaptureModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-};
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const IN_MOBILE_RE = /^[6-9]\d{9}$/;
-
-const INDIAN_STATES = [
+const STATES = [
   "Andhra Pradesh",
   "Assam",
   "Bihar",
@@ -41,419 +33,452 @@ const INDIAN_STATES = [
   "Uttar Pradesh",
   "Uttarakhand",
   "West Bengal",
-] as const;
+];
 
-type FieldKey = "name" | "phone" | "address" | "city" | "pincode" | "state" | "email";
-type FieldErrors = Partial<Record<FieldKey, string>>;
+const IN_MOBILE_RE = /^[6-9]\d{9}$/;
 
-function validatePhone(v: string): string | null {
-  const digits = v.replace(/\D/g, "");
-  if (digits.length !== 10) return "Enter a valid 10-digit mobile number.";
-  if (!IN_MOBILE_RE.test(digits)) return "Enter a valid Indian mobile number (starts with 6–9).";
-  return null;
+export interface LeadData {
+  name: string;
+  mobile: string;
+  email: string;
+  address: string;
+  city: string;
+  pincode: string;
+  state: string;
 }
 
-function validateEmail(v: string): string | null {
-  const t = v.trim();
-  if (!t) return "Email is required.";
-  if (!EMAIL_RE.test(t)) return "Enter a valid email address.";
-  return null;
+export interface LeadCaptureModalSuccessMeta {
+  orderId?: string;
 }
 
-export default function LeadCaptureModal({ isOpen, onClose, onSuccess }: LeadCaptureModalProps) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [pincode, setPincode] = useState("");
-  const [state, setState] = useState("");
-  const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState<FieldErrors>({});
+interface LeadCaptureModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: (data: LeadData, meta?: LeadCaptureModalSuccessMeta) => void;
+  mode: "online" | "cod";
+  packageLabel: string;
+  packageAmount: number;
+}
 
-  const resetErrors = useCallback(() => {
-    setErrors({});
-  }, []);
+export default function LeadCaptureModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  mode,
+  packageLabel,
+  packageAmount,
+}: LeadCaptureModalProps) {
+  const [form, setForm] = useState<LeadData>({
+    name: "",
+    mobile: "",
+    email: "",
+    address: "",
+    city: "",
+    pincode: "",
+    state: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
-  const handleBackdropMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose();
-  };
+  if (!isOpen) return null;
 
-  const handleProceed = async () => {
-    resetErrors();
+  function update(field: keyof LeadData, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: "" }));
+  }
 
-    const nt = name.trim();
-    if (!nt) {
-      setErrors((prev) => ({ ...prev, name: "Full name is required." }));
+  function validate() {
+    const e: Record<string, string> = {};
+    if (!form.name.trim()) e.name = "Full name required";
+    const mobileDigits = form.mobile.replace(/\D/g, "").slice(-10);
+    if (!IN_MOBILE_RE.test(mobileDigits)) {
+      e.mobile = "Valid Indian mobile required (10 digits, starts with 6–9)";
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      e.email = "Valid email required";
+    }
+    if (form.address.trim().length < 10) {
+      e.address = "Full address required (min 10 chars)";
+    }
+    if (!form.city.trim()) e.city = "City required";
+    if (!/^\d{6}$/.test(form.pincode)) e.pincode = "Valid 6-digit pincode required";
+    if (!form.state) e.state = "Select your state";
+    return e;
+  }
+
+  async function handleSubmit() {
+    const validation = validate();
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation);
       return;
     }
 
-    const pe = validatePhone(phone);
-    if (pe) {
-      setErrors((prev) => ({ ...prev, phone: pe }));
-      return;
-    }
+    const mobileDigits = form.mobile.replace(/\D/g, "").slice(-10);
+    const formNorm: LeadData = {
+      ...form,
+      name: form.name.trim(),
+      mobile: mobileDigits,
+      email: form.email.trim().toLowerCase(),
+      address: form.address.trim(),
+      city: form.city.trim(),
+      pincode: form.pincode.trim(),
+      state: form.state,
+    };
 
-    const addr = address.trim();
-    if (!addr || addr.length < 10) {
-      setErrors((prev) => ({
-        ...prev,
-        address: "Enter full address (min 10 chars)",
-      }));
-      return;
-    }
-
-    const ct = city.trim();
-    if (!ct) {
-      setErrors((prev) => ({ ...prev, city: "Enter your city" }));
-      return;
-    }
-
-    const pc = pincode.trim();
-    if (!/^\d{6}$/.test(pc)) {
-      setErrors((prev) => ({ ...prev, pincode: "Enter valid 6-digit pincode" }));
-      return;
-    }
-
-    if (!state) {
-      setErrors((prev) => ({ ...prev, state: "Select your state" }));
-      return;
-    }
-    if (!INDIAN_STATES.includes(state as (typeof INDIAN_STATES)[number])) {
-      setErrors((prev) => ({
-        ...prev,
-        state: "Please select a valid state from the list.",
-      }));
-      return;
-    }
-
-    const ee = validateEmail(email);
-    if (ee) {
-      setErrors((prev) => ({ ...prev, email: ee }));
-      return;
-    }
-
-    const digits = phone.replace(/\D/g, "");
-    const emailNorm = email.trim().toLowerCase();
+    setLoading(true);
 
     try {
       localStorage.setItem(
         RS_LEAD_KEY,
         JSON.stringify({
-          name: nt,
-          mobile: digits,
-          email: emailNorm,
-          address: addr,
-          city: ct,
-          pincode: pc,
-          state,
+          ...formNorm,
           timestamp: Date.now(),
         })
       );
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event(RS_LEAD_UPDATED_EVENT));
       }
-    } catch (e) {
-      console.error("[LeadCaptureModal] rs_lead save failed:", e);
-    }
 
-    try {
-      onSuccess();
-    } catch (e) {
-      console.error("[LeadCaptureModal] onSuccess failed:", e);
-    }
+      if (mode === "cod") {
+        try {
+          const res = await fetch("/api/track-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...formNorm,
+              package: packageLabel,
+              amount: packageAmount,
+              status: "cod_pending",
+              payment_method: "COD",
+            }),
+          });
+          const data = (await res.json()) as {
+            success?: boolean;
+            orderId?: string;
+          };
+          if (!data.success) {
+            alert("Something went wrong. Please try again.");
+            return;
+          }
+          onSuccess(formNorm, {
+            orderId: typeof data.orderId === "string" ? data.orderId : "",
+          });
+        } catch {
+          alert("Network error. Please try again.");
+        }
+        return;
+      }
 
-    setName("");
-    setPhone("");
-    setAddress("");
-    setCity("");
-    setPincode("");
-    setState("");
-    setEmail("");
-    resetErrors();
+      onSuccess(formNorm);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const inputStyle = (field: string): CSSProperties => ({
+    width: "100%",
+    padding: "11px 14px",
+    borderRadius: "8px",
+    border: `1.5px solid ${errors[field] ? "#dc2626" : "#d1d5db"}`,
+    fontSize: "14px",
+    boxSizing: "border-box",
+    outline: "none",
+    background: "#fff",
+    color: "#111",
+  });
+
+  const labelStyle: CSSProperties = {
+    display: "block",
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: "5px",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
   };
 
-  if (!isOpen) return null;
-
-  const labelBase = {
-    display: "block" as const,
-    fontSize: "13px",
-    fontWeight: "600" as const,
-    marginBottom: "6px",
-    color: "#374151",
+  const errorStyle: CSSProperties = {
+    color: "#dc2626",
+    fontSize: "11px",
+    marginTop: "3px",
   };
 
   return (
     <div
-      role="presentation"
-      onMouseDown={handleBackdropMouseDown}
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 10000,
-        background: "rgba(15, 23, 15, 0.72)",
+        background: "rgba(0,0,0,0.75)",
+        zIndex: 99999,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
       }}
+      onClick={onClose}
     >
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="rs-lead-modal-title"
-        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         style={{
-          position: "relative",
-          width: "100%",
-          maxWidth: 420,
           background: "#fff",
-          borderRadius: 16,
-          boxShadow: "0 24px 64px rgba(0,0,0,0.35)",
-          padding: "28px 24px 24px",
-          maxHeight: "min(92vh, 720px)",
+          borderRadius: "20px",
+          width: "100%",
+          maxWidth: "460px",
+          maxHeight: "92vh",
           overflowY: "auto",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
         }}
       >
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={onClose}
+        <div
           style={{
-            position: "absolute",
-            top: 12,
-            right: 14,
-            border: "none",
-            background: "transparent",
-            fontSize: 22,
-            lineHeight: 1,
-            cursor: "pointer",
-            color: "#64748b",
-            padding: 4,
+            background: "#14532d",
+            borderRadius: "20px 20px 0 0",
+            padding: "20px 24px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          ×
-        </button>
-
-        <h2
-          id="rs-lead-modal-title"
-          style={{
-            fontFamily: "var(--ff-head, Georgia, serif)",
-            fontSize: 20,
-            fontWeight: 700,
-            color: "#1a2e16",
-            marginBottom: 8,
-            paddingRight: 28,
-          }}
-        >
-          Almost there — just your details
-        </h2>
-        <p style={{ fontSize: 13, color: "#64748b", marginBottom: 22 }}>
-          We&apos;ll send your order confirmation on WhatsApp.
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div>
-            <label htmlFor="rs-lead-name" style={labelBase}>
-              Full name <span style={{ color: "#dc2626" }}>*</span>
-            </label>
-            <input
-              id="rs-lead-name"
-              type="text"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+            <p
               style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: errors.name ? "1px solid #dc2626" : "1px solid #d1d5db",
-                fontSize: "15px",
-                boxSizing: "border-box",
-              }}
-            />
-            {errors.name && (
-              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.name}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="rs-lead-phone" style={labelBase}>
-              Phone number <span style={{ color: "#dc2626" }}>*</span>
-            </label>
-            <input
-              id="rs-lead-phone"
-              type="tel"
-              inputMode="numeric"
-              autoComplete="tel"
-              placeholder="10-digit mobile"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: errors.phone ? "1px solid #dc2626" : "1px solid #d1d5db",
-                fontSize: "15px",
-                boxSizing: "border-box",
-              }}
-            />
-            {errors.phone && (
-              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.phone}</p>
-            )}
-          </div>
-
-          {/* Address */}
-          <div>
-            <label style={labelBase}>
-              Delivery Address <span style={{ color: "#dc2626" }}>*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="House no, Street, Area"
-              autoComplete="street-address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: errors.address ? "1px solid #dc2626" : "1px solid #d1d5db",
-                fontSize: "15px",
-                boxSizing: "border-box",
-              }}
-            />
-            {errors.address && (
-              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.address}</p>
-            )}
-          </div>
-
-          {/* City and Pincode side by side */}
-          <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ flex: 1 }}>
-              <label style={labelBase}>
-                City <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Your city"
-                autoComplete="address-level2"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: errors.city ? "1px solid #dc2626" : "1px solid #d1d5db",
-                  fontSize: "15px",
-                  boxSizing: "border-box",
-                }}
-              />
-              {errors.city && (
-                <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.city}</p>
-              )}
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={labelBase}>
-                Pincode <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="6-digit pincode"
-                inputMode="numeric"
-                autoComplete="postal-code"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: errors.pincode ? "1px solid #dc2626" : "1px solid #d1d5db",
-                  fontSize: "15px",
-                  boxSizing: "border-box",
-                }}
-              />
-              {errors.pincode && (
-                <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>
-                  {errors.pincode}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* State dropdown */}
-          <div>
-            <label htmlFor="rs-lead-state" style={labelBase}>
-              State <span style={{ color: "#dc2626" }}>*</span>
-            </label>
-            <select
-              id="rs-lead-state"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: errors.state ? "1px solid #dc2626" : "1px solid #d1d5db",
-                fontSize: "15px",
-                boxSizing: "border-box",
-                background: "#fff",
+                color: "#86efac",
+                fontSize: "11px",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                margin: 0,
               }}
             >
-              <option value="">Select state</option>
-              {INDIAN_STATES.map((s) => (
+              {mode === "cod" ? "Cash on Delivery" : "Secure Checkout"}
+            </p>
+            <h3
+              style={{
+                color: "#fff",
+                fontSize: "18px",
+                fontWeight: "700",
+                margin: "4px 0 0",
+              }}
+            >
+              Enter Delivery Details
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.15)",
+              border: "none",
+              color: "#fff",
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              cursor: "pointer",
+              fontSize: "18px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        <div
+          style={{
+            background: "#f0fdf4",
+            padding: "14px 24px",
+            borderBottom: "1px solid #dcfce7",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>
+              Selected Package
+            </p>
+            <p
+              style={{
+                margin: "2px 0 0",
+                fontSize: "15px",
+                fontWeight: "700",
+                color: "#14532d",
+              }}
+            >
+              {packageLabel}
+            </p>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "22px",
+                fontWeight: "800",
+                color: "#14532d",
+              }}
+            >
+              ₹{packageAmount}
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "11px",
+                color: "#16a34a",
+                fontWeight: "600",
+              }}
+            >
+              {mode === "cod" ? "PAY ON DELIVERY" : "PAY ONLINE"}
+            </p>
+          </div>
+        </div>
+
+        <div
+          style={{
+            padding: "20px 24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "14px",
+          }}
+        >
+          <div>
+            <label style={labelStyle}>Full Name *</label>
+            <input
+              type="text"
+              placeholder="Your full name"
+              autoComplete="name"
+              value={form.name}
+              onChange={(e) => update("name", e.target.value)}
+              style={inputStyle("name")}
+            />
+            {errors.name && <p style={errorStyle}>{errors.name}</p>}
+          </div>
+
+          <div>
+            <label style={labelStyle}>Mobile Number *</label>
+            <input
+              type="tel"
+              inputMode="numeric"
+              placeholder="10-digit mobile number"
+              autoComplete="tel"
+              value={form.mobile}
+              onChange={(e) =>
+                update("mobile", e.target.value.replace(/\D/g, "").slice(0, 10))
+              }
+              style={inputStyle("mobile")}
+            />
+            {errors.mobile && <p style={errorStyle}>{errors.mobile}</p>}
+          </div>
+
+          <div>
+            <label style={labelStyle}>Email Address *</label>
+            <input
+              type="email"
+              placeholder="your@email.com"
+              autoComplete="email"
+              value={form.email}
+              onChange={(e) => update("email", e.target.value)}
+              style={inputStyle("email")}
+            />
+            {errors.email && <p style={errorStyle}>{errors.email}</p>}
+          </div>
+
+          <div>
+            <label style={labelStyle}>Delivery Address *</label>
+            <input
+              type="text"
+              placeholder="House no, Street, Area, Landmark"
+              autoComplete="street-address"
+              value={form.address}
+              onChange={(e) => update("address", e.target.value)}
+              style={inputStyle("address")}
+            />
+            {errors.address && <p style={errorStyle}>{errors.address}</p>}
+          </div>
+
+          <div style={{ display: "flex", gap: "12px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>City *</label>
+              <input
+                type="text"
+                placeholder="City"
+                autoComplete="address-level2"
+                value={form.city}
+                onChange={(e) => update("city", e.target.value)}
+                style={inputStyle("city")}
+              />
+              {errors.city && <p style={errorStyle}>{errors.city}</p>}
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Pincode *</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="6-digit"
+                autoComplete="postal-code"
+                value={form.pincode}
+                onChange={(e) =>
+                  update("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                style={inputStyle("pincode")}
+              />
+              {errors.pincode && <p style={errorStyle}>{errors.pincode}</p>}
+            </div>
+          </div>
+
+          <div>
+            <label style={labelStyle}>State *</label>
+            <select
+              value={form.state}
+              onChange={(e) => update("state", e.target.value)}
+              style={{ ...inputStyle("state"), background: "#fff" }}
+            >
+              <option value="">Select your state</option>
+              {STATES.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
               ))}
             </select>
-            {errors.state && (
-              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.state}</p>
-            )}
+            {errors.state && <p style={errorStyle}>{errors.state}</p>}
           </div>
 
-          <div>
-            <label htmlFor="rs-lead-email" style={labelBase}>
-              Email <span style={{ color: "#dc2626" }}>*</span>
-            </label>
-            <input
-              id="rs-lead-email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: errors.email ? "1px solid #dc2626" : "1px solid #d1d5db",
-                fontSize: "15px",
-                boxSizing: "border-box",
-              }}
-            />
-            {errors.email && (
-              <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px" }}>{errors.email}</p>
-            )}
-          </div>
-        </div>
-
-        <div style={{ marginTop: 22 }}>
           <button
             type="button"
-            onClick={handleProceed}
+            onClick={() => void handleSubmit()}
+            disabled={loading}
             style={{
               width: "100%",
-              padding: "14px 18px",
-              borderRadius: 10,
+              padding: "15px",
+              background: loading ? "#9ca3af" : "#14532d",
+              color: "#fff",
               border: "none",
-              background: "#4A6422",
-              color: "#F2E6CE",
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: "pointer",
+              borderRadius: "10px",
+              fontWeight: "700",
+              fontSize: "16px",
+              cursor: loading ? "not-allowed" : "pointer",
+              marginTop: "4px",
             }}
           >
-            Submit Details
+            {loading
+              ? "Saving..."
+              : mode === "cod"
+                ? `Confirm COD Order — ₹${packageAmount}`
+                : `Continue to Payment — ₹${packageAmount}`}
           </button>
+
+          <p
+            style={{
+              textAlign: "center",
+              color: "#9ca3af",
+              fontSize: "12px",
+              margin: 0,
+            }}
+          >
+            {mode === "cod"
+              ? "🔒 Your details are safe · Pay cash when order arrives"
+              : "🔒 Secured by Razorpay · 100% safe payment"}
+          </p>
         </div>
       </div>
     </div>

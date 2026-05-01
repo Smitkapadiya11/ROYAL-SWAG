@@ -76,7 +76,16 @@ export default function LeadCaptureProvider({ children }: { children: React.Reac
   return (
     <LeadCaptureContext.Provider value={value}>
       {children}
-      <LeadCaptureModal isOpen={showModal} onClose={closeLeadModal} onSuccess={handleModalSuccess} />
+      <LeadCaptureModal
+        isOpen={showModal}
+        onClose={closeLeadModal}
+        mode="online"
+        packageLabel="Royal Swag Lung Detox Tea"
+        packageAmount={349}
+        onSuccess={() => {
+          handleModalSuccess();
+        }}
+      />
     </LeadCaptureContext.Provider>
   );
 }

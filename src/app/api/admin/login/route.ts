@@ -5,18 +5,34 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+/** Trims and strips wrapping quotes (common when pasting into Vercel / .env). */
+function envPlain(raw: string | undefined): string {
+  let s = (raw ?? "").trim();
+  if (
+    (s.startsWith('"') && s.endsWith('"')) ||
+    (s.startsWith("'") && s.endsWith("'"))
+  ) {
+    s = s.slice(1, -1).trim();
+  }
+  return s;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as { username?: unknown; password?: unknown };
     const username = typeof body.username === "string" ? body.username.trim() : "";
     const password = typeof body.password === "string" ? body.password.trim() : "";
 
-    const envUser = (process.env.ADMIN_USERNAME ?? "").trim();
-    const envHash = (process.env.ADMIN_PASSWORD_HASH ?? "").trim();
+    const envUser = envPlain(process.env.ADMIN_USERNAME);
+    const envHash = envPlain(process.env.ADMIN_PASSWORD_HASH).toLowerCase();
+    const envPasswordPlain = envPlain(process.env.ADMIN_PASSWORD);
 
-    const validUser = username === envUser;
-    const passHash = crypto.createHash("sha256").update(password).digest("hex");
-    const validPass = passHash === envHash;
+    const validUser =
+      envUser.length > 0 && username.toLowerCase() === envUser.toLowerCase();
+    const passHash = crypto.createHash("sha256").update(password).digest("hex").toLowerCase();
+    const validPass =
+      (envHash.length > 0 && passHash === envHash) ||
+      (envPasswordPlain.length > 0 && password === envPasswordPlain);
 
     if (!validUser || !validPass) {
       await new Promise((r) => setTimeout(r, 800));

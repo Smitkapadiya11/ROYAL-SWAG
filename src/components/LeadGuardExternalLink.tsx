@@ -1,6 +1,6 @@
 "use client";
 
-import { useLeadCapture } from "@/hooks/useLeadCapture";
+import { useRouter } from "next/navigation";
 
 type Props = {
   href: string;
@@ -22,7 +22,7 @@ export default function LeadGuardExternalLink({
   rel = "noopener noreferrer",
   "aria-label": ariaLabel,
 }: Props) {
-  const { openLeadModal } = useLeadCapture();
+  const router = useRouter();
 
   return (
     <a
@@ -34,7 +34,7 @@ export default function LeadGuardExternalLink({
       aria-label={ariaLabel}
       onClick={(e) => {
         e.preventDefault();
-        openLeadModal(() => window.open(href, target, "noopener,noreferrer"));
+        router.push("/product");
       }}
     >
       {children}

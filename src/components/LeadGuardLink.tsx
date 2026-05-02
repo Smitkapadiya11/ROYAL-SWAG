@@ -3,7 +3,6 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 import { useRouter } from "next/navigation";
-import { useLeadCapture } from "@/hooks/useLeadCapture";
 import { isProductPath } from "@/lib/is-product-path";
 
 type Props = Omit<ComponentProps<typeof Link>, "onClick" | "children" | "href"> & {
@@ -19,7 +18,6 @@ type Props = Omit<ComponentProps<typeof Link>, "onClick" | "children" | "href"> 
 /** Wraps navigation to `/product` behind lead capture when needed. */
 export function LeadGuardLink({ href, onClick, onProceed, children, ...rest }: Props) {
   const router = useRouter();
-  const { openLeadModal } = useLeadCapture();
 
   return (
     <Link
@@ -28,10 +26,8 @@ export function LeadGuardLink({ href, onClick, onProceed, children, ...rest }: P
       onClick={(e) => {
         if (isProductPath(href)) {
           e.preventDefault();
-          openLeadModal(() => {
-            onProceed?.();
-            router.push(href);
-          });
+          onProceed?.();
+          router.push("/product");
           return;
         }
         onClick?.(e);

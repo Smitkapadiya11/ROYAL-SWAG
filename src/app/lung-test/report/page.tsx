@@ -12,7 +12,6 @@ import {
 } from "@/lib/quiz-data";
 import CheckoutModal from "@/components/CheckoutModal";
 import { LeadGuardLink } from "@/components/LeadGuardLink";
-import { useLeadCapture } from "@/hooks/useLeadCapture";
 import { SITE_ORIGIN } from "@/lib/config";
 
 // ━━━ SVG Circular Gauge ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -83,7 +82,6 @@ function ShareButton({ tier }: { tier: LungHealthTier }) {
 export default function LungTestReportPage() {
   const { state, reset } = useQuiz();
   const router = useRouter();
-  const { openLeadModal } = useLeadCapture();
   const redirected = useRef(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -220,7 +218,7 @@ export default function LungTestReportPage() {
           </p>
           <button
             id="report-buy-now-btn"
-            onClick={() => openLeadModal(() => setIsCheckoutOpen(true))}
+            onClick={() => router.push("/product")}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-gold)] text-[var(--brand-green)] font-bold text-base shadow-lg hover:opacity-90 transition-all active:scale-95 w-full sm:w-auto"
           >
             🛒 Buy Now — from Rs 359

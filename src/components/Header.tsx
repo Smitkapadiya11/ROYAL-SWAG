@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { isProductPath } from "@/lib/is-product-path";
 import { SITE } from "@/lib/config";
+import { useRouter } from "next/navigation";
 
 const LOGO_SRC = "/images/new_logo.png";
 
@@ -17,6 +17,7 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -57,13 +58,23 @@ export default function Header() {
         <nav style={{ display: "flex", gap: 32, alignItems: "center" }} className="rs-desktop-nav">
           {NAV_LINKS.map((l) =>
             isProductPath(l.href) ? (
-              <LeadGuardLink
+              <button
                 key={l.href}
-                href={l.href}
-                style={{ color: "rgba(242,230,206,0.8)", fontSize: 14, fontWeight: 400, letterSpacing: 0.3 }}
+                type="button"
+                onClick={() => router.push("/product")}
+                style={{
+                  color: "rgba(242,230,206,0.8)",
+                  fontSize: 14,
+                  fontWeight: 400,
+                  letterSpacing: 0.3,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
               >
                 {l.label}
-              </LeadGuardLink>
+              </button>
             ) : (
               <Link
                 key={l.href}
@@ -74,9 +85,14 @@ export default function Header() {
               </Link>
             )
           )}
-          <LeadGuardLink href="/product" className="btn-gold" style={{ fontSize: 13, padding: "9px 22px" }}>
+          <button
+            type="button"
+            className="btn-gold"
+            style={{ fontSize: 13, padding: "9px 22px" }}
+            onClick={() => router.push("/product")}
+          >
             Buy Now — {SITE.price.display}
-          </LeadGuardLink>
+          </button>
         </nav>
 
         {/* Mobile hamburger */}
@@ -108,17 +124,28 @@ export default function Header() {
         }}>
           {NAV_LINKS.map((l) =>
             isProductPath(l.href) ? (
-              <LeadGuardLink
+              <button
                 key={l.href}
-                href={l.href}
-                onProceed={() => setOpen(false)}
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  router.push("/product");
+                }}
                 style={{
-                  color: "var(--rs-cream)", fontSize: 16, padding: "12px 0",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)", display: "block",
+                  color: "var(--rs-cream)",
+                  fontSize: 16,
+                  padding: "12px 0",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
                 }}
               >
                 {l.label}
-              </LeadGuardLink>
+              </button>
             ) : (
               <Link
                 key={l.href}
@@ -133,14 +160,17 @@ export default function Header() {
               </Link>
             )
           )}
-          <LeadGuardLink
-            href="/product"
+          <button
+            type="button"
             className="btn-gold"
-            onProceed={() => setOpen(false)}
-            style={{ marginTop: 16, textAlign: "center", padding: "14px", display: "block" }}
+            style={{ marginTop: 16, textAlign: "center", padding: "14px", display: "block", width: "100%" }}
+            onClick={() => {
+              setOpen(false);
+              router.push("/product");
+            }}
           >
             Buy Now — {SITE.price.display}
-          </LeadGuardLink>
+          </button>
         </div>
       )}
 

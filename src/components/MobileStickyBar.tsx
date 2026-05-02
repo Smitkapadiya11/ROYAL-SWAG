@@ -1,7 +1,6 @@
 "use client";
 
-import { LeadGuardLink } from "@/components/LeadGuardLink";
-import { useLeadCapture } from "@/hooks/useLeadCapture";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_HEADLINE = "Royal Swag Lung Detox Tea";
 const DEFAULT_SUB = "Free delivery · Ships tomorrow";
@@ -12,8 +11,8 @@ export default function MobileStickyBar(props: {
   headline?: string;
   subline?: string;
 }) {
-  const { onBuyNow, href = "/product", headline = DEFAULT_HEADLINE, subline = DEFAULT_SUB } = props;
-  const { openLeadModal } = useLeadCapture();
+  const router = useRouter();
+  const { headline = DEFAULT_HEADLINE, subline = DEFAULT_SUB } = props;
 
   return (
     <div
@@ -51,45 +50,25 @@ export default function MobileStickyBar(props: {
         </div>
         <div style={{ color: "#a8d5a2", fontSize: 11 }}>{subline}</div>
       </div>
-      {onBuyNow ? (
-        <button
-          type="button"
-          id="mobile-sticky-buy-btn"
-          onClick={() => openLeadModal(onBuyNow)}
-          style={{
-            background: "var(--rs-olive)",
-            color: "#fff",
-            padding: "10px 18px",
-            borderRadius: 8,
-            fontWeight: 700,
-            fontSize: 14,
-            border: "none",
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          Buy Now
-        </button>
-      ) : (
-        <LeadGuardLink
-          id="mobile-sticky-buy-btn"
-          href={href}
-          style={{
-            background: "var(--rs-olive)",
-            color: "#fff",
-            padding: "10px 18px",
-            borderRadius: 8,
-            fontWeight: 700,
-            fontSize: 14,
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          Buy Now
-        </LeadGuardLink>
-      )}
+      <button
+        type="button"
+        id="mobile-sticky-buy-btn"
+        onClick={() => router.push("/product")}
+        style={{
+          background: "var(--rs-olive)",
+          color: "#fff",
+          padding: "10px 18px",
+          borderRadius: 8,
+          fontWeight: 700,
+          fontSize: 14,
+          border: "none",
+          cursor: "pointer",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+        }}
+      >
+        Buy Now
+      </button>
     </div>
   );
 }

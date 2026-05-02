@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import LeadCaptureProvider from "@/components/LeadCaptureProvider";
 import { SITE_ORIGIN } from "@/lib/config";
 
 /** Fonts use stacks from globals.css (no next/font Google fetch — builds offline / behind strict firewalls). */
@@ -28,11 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="overflow-x-hidden">
       <body className="overflow-x-hidden">
-        <LeadCaptureProvider>
-          <Nav />
-          <main className="rs-main-nav-pad">{children}</main>
-          <Footer />
-        </LeadCaptureProvider>
+        <Nav />
+        <main className="rs-main-nav-pad">{children}</main>
+        <Footer />
       </body>
     </html>
   );

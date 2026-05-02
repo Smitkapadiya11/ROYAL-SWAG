@@ -1,12 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { LeadGuardLink } from "@/components/LeadGuardLink";
+import { useRouter } from "next/navigation";
 import { S } from "@/lib/config";
 import LungSlider from "@/components/LungSlider";
 import HerbsCircle from "@/components/HerbsCircle";
 import MadeFor from "@/components/MadeFor";
 
 export default function Home() {
+  const router = useRouter();
   const routineSteps = [
     {
       n: "01",
@@ -95,7 +98,9 @@ export default function Home() {
 
               {/* CTAs */}
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 40 }}>
-                <LeadGuardLink href="/product" className="b b-olive">Order Now →</LeadGuardLink>
+                <button type="button" className="b b-olive" onClick={() => router.push("/product")}>
+                  Order Now →
+                </button>
                 <Link href="/lung-test" className="b b-ghost">Free Lung Test</Link>
               </div>
 
@@ -289,7 +294,9 @@ export default function Home() {
             Ships within 24 hours · 30-day money-back guarantee
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <LeadGuardLink href="/product" className="b b-gold">Order Now — {S.price.now} →</LeadGuardLink>
+            <button type="button" className="b b-gold" onClick={() => router.push("/product")}>
+              Order Now — {S.price.now} →
+            </button>
             <Link href="/lung-test" className="b b-ghost-w">Free Lung Test</Link>
           </div>
         </div>
@@ -310,9 +317,14 @@ export default function Home() {
           }}>Royal Swag Lung Detox Tea</div>
           <div style={{ color: "#C49A2A", fontSize: 12 }}>{S.price.now} · Free delivery</div>
         </div>
-        <LeadGuardLink href="/product" className="b b-gold" style={{ flexShrink: 0, padding: "10px 20px" }}>
+        <button
+          type="button"
+          className="b b-gold"
+          style={{ flexShrink: 0, padding: "10px 20px" }}
+          onClick={() => router.push("/product")}
+        >
           Buy Now
-        </LeadGuardLink>
+        </button>
       </div>
 
       <style>{`

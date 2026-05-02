@@ -2,9 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { isProductPath } from "@/lib/is-product-path";
 import { S } from "@/lib/config";
+import { useRouter } from "next/navigation";
 import {
   ROYAL_SWAG_LOGO_HEIGHT,
   ROYAL_SWAG_LOGO_SRC,
@@ -20,6 +20,7 @@ const LINKS = [
 ];
 
 export default function Nav() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -98,15 +99,21 @@ export default function Nav() {
                   transition: "color 0.2s",
                 } as const;
                 const handlers = {
-                  onMouseEnter: (e: { currentTarget: HTMLAnchorElement }) =>
+                  onMouseEnter: (e: { currentTarget: HTMLElement }) =>
                     (e.currentTarget.style.color = "#F2E6CE"),
-                  onMouseLeave: (e: { currentTarget: HTMLAnchorElement }) =>
+                  onMouseLeave: (e: { currentTarget: HTMLElement }) =>
                     (e.currentTarget.style.color = "rgba(242,230,206,0.72)"),
                 };
                 return isProductPath(l.href) ? (
-                  <LeadGuardLink key={l.href} href={l.href} style={navStyle} {...handlers}>
+                  <button
+                    key={l.href}
+                    type="button"
+                    onClick={() => router.push("/product")}
+                    style={{ ...navStyle, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                    {...handlers}
+                  >
                     {l.label}
-                  </LeadGuardLink>
+                  </button>
                 ) : (
                   <Link key={l.href} href={l.href} style={navStyle} {...handlers}>
                     {l.label}
@@ -152,13 +159,14 @@ export default function Nav() {
               minWidth: 0,
             }}
           >
-            <LeadGuardLink
-              href="/product"
+            <button
+              type="button"
               className="b b-gold nav-d"
               style={{ fontSize: 13, padding: "9px 20px", flexShrink: 0 }}
+              onClick={() => router.push("/product")}
             >
               Buy Now — {S.price.now}
-            </LeadGuardLink>
+            </button>
 
             <button
               className="nav-m"
@@ -235,14 +243,23 @@ export default function Nav() {
               borderBottom: "1px solid rgba(255,255,255,0.05)",
             } as const;
             return isProductPath(l.href) ? (
-              <LeadGuardLink
+              <button
                 key={l.href}
-                href={l.href}
-                onProceed={() => setOpen(false)}
-                style={rowStyle}
+                type="button"
+                style={{
+                  ...rowStyle,
+                  width: "100%",
+                  textAlign: "left",
+                  background: "none",
+                  border: "none",
+                }}
+                onClick={() => {
+                  setOpen(false);
+                  router.push("/product");
+                }}
               >
                 {l.label}
-              </LeadGuardLink>
+              </button>
             ) : (
               <Link key={l.href} href={l.href} onClick={() => setOpen(false)} style={rowStyle}>
                 {l.label}
@@ -250,14 +267,17 @@ export default function Nav() {
             );
           })}
           <div style={{ padding: "20px 24px 0" }}>
-            <LeadGuardLink
-              href="/product"
-              onProceed={() => setOpen(false)}
+            <button
+              type="button"
               className="b b-gold"
               style={{ width: "100%", fontSize: 16, padding: 16 }}
+              onClick={() => {
+                setOpen(false);
+                router.push("/product");
+              }}
             >
               Buy Now — {S.price.now}
-            </LeadGuardLink>
+            </button>
           </div>
         </div>
       )}

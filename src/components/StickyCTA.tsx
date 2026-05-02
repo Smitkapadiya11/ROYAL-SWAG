@@ -1,8 +1,9 @@
 "use client";
-import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { S } from "@/lib/config";
+import { useRouter } from "next/navigation";
 
 export default function StickyCTA() {
+  const router = useRouter();
   return (
     <>
       <div className="sticky-cta" style={{
@@ -26,10 +27,14 @@ export default function StickyCTA() {
             {S.price.now} · Free delivery
           </div>
         </div>
-        <LeadGuardLink href="/product" className="btn btn-gold"
-          style={{ flexShrink: 0, padding: "10px 20px", fontSize: 13 }}>
+        <button
+          type="button"
+          className="btn btn-gold"
+          style={{ flexShrink: 0, padding: "10px 20px", fontSize: 13 }}
+          onClick={() => router.push("/product")}
+        >
           Buy Now
-        </LeadGuardLink>
+        </button>
       </div>
       <style>{`
         @media (max-width: 768px) {

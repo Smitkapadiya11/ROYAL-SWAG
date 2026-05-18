@@ -162,9 +162,7 @@ export default function ProductBuyBox() {
       </button>
 
       <LeadGuardExternalLink
-        href={`https://wa.me/${APP_SITE.whatsapp}?text=${encodeURIComponent(
-          `Hi, I want to order Royal Swag — ${pack.label}. Please confirm.`
-        )}`}
+        href={`https://wa.me/${APP_SITE.whatsapp}?text=${pack.whatsappText}`}
         style={{
           display: "flex",
           alignItems: "center",

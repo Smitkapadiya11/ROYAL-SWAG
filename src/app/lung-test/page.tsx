@@ -1,7 +1,12 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { gsap } from "gsap";
 import { LUNG_TEST_QUESTION_COUNT } from "@/lib/lung-test-constants";
+import { computeLungTestScore } from "@/lib/lung-test-scoring";
+
 const QUESTIONS: {
   q: string;
   hint: string;
@@ -50,25 +55,99 @@ const QUESTIONS: {
 ];
 
 const MAX_SCORE = LUNG_TEST_QUESTION_COUNT;
+const TOTAL_STEPS = 4 + MAX_SCORE;
+
+const pageBg: React.CSSProperties = {
+  minHeight: "100vh",
+  background: "linear-gradient(135deg, #0D2010 0%, #1A3A1A 60%, #2D3D15 100%)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  padding: "24px 20px 48px",
+};
+
+const cardStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  borderRadius: 24,
+  padding: "clamp(32px,5vw,56px)",
+  backdropFilter: "blur(20px)",
+  maxWidth: 560,
+  width: "100%",
+  margin: "0 auto",
+  boxSizing: "border-box",
+};
+
+const inputStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.08)",
+  border: "1.5px solid rgba(255,255,255,0.15)",
+  borderRadius: 14,
+  padding: "16px 20px",
+  color: "#FAF6EE",
+  fontSize: 15,
+  fontFamily: "var(--font-sans)",
+  width: "100%",
+  outline: "none",
+  marginBottom: 20,
+  boxSizing: "border-box",
+};
+
+const headingStyle: React.CSSProperties = {
+  fontFamily: "var(--font-serif)",
+  fontSize: "clamp(24px,3.5vw,38px)",
+  color: "#FAF6EE",
+  lineHeight: 1.25,
+  marginBottom: 32,
+};
 
 type Step = "name" | "email" | "phone" | "quiz";
 
+function answerBtn(selected: boolean, isYes: boolean): React.CSSProperties {
+  return {
+    width: "100%",
+    minHeight: 48,
+    padding: "16px 24px",
+    borderRadius: 16,
+    border: `1.5px solid ${selected ? "#2D6A2D" : "rgba(255,255,255,0.12)"}`,
+    background: selected ? "rgba(45,106,45,0.2)" : "rgba(255,255,255,0.06)",
+    color: selected ? "#7FB085" : "#FAF6EE",
+    fontSize: 15,
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "all 0.2s",
+    textAlign: "left",
+    fontFamily: "var(--font-sans)",
+  };
+}
+
 export default function LungTestPage() {
   const router = useRouter();
-  const [step, setStep]   = useState<Step>("name");
-  const [name, setName]   = useState("");
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [step, setStep] = useState<Step>("name");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [qIdx, setQIdx]   = useState(0);
-  const [ans, setAns]     = useState<(boolean | null)[]>(Array(MAX_SCORE).fill(null));
+  const [qIdx, setQIdx] = useState(0);
+  const [ans, setAns] = useState<(boolean | null)[]>(Array(MAX_SCORE).fill(null));
+  const [hoverYes, setHoverYes] = useState(false);
+  const [hoverNo, setHoverNo] = useState(false);
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validPhone = phone.replace(/\D/g, "").length >= 10;
 
+  const currentStep =
+    step === "name" ? 1 : step === "email" ? 2 : step === "phone" ? 3 : 4 + qIdx;
+  const progress = (currentStep / TOTAL_STEPS) * 100;
+
+  useEffect(() => {
+    if (!cardRef.current) return;
+    gsap.from(cardRef.current, { opacity: 0, y: 30, duration: 0.5, ease: "power3.out" });
+  }, [step, qIdx]);
+
   const goNext = () => {
-    if (step === "name"  && name.trim().length >= 2) setStep("email");
-    else if (step === "email" && validEmail)          setStep("phone");
-    else if (step === "phone" && validPhone)          setStep("quiz");
+    if (step === "name" && name.trim().length >= 2) setStep("email");
+    else if (step === "email" && validEmail) setStep("phone");
+    else if (step === "phone" && validPhone) setStep("quiz");
   };
 
   const choose = (val: boolean) => {
@@ -80,7 +159,9 @@ export default function LungTestPage() {
         setQIdx(qIdx + 1);
       } else {
         void (async () => {
-          const score = next.filter(Boolean).length;
+          const bools = next.map((a) => a === true);
+          const score = computeLungTestScore(bools);
+          const riskLevel = score <= 4 ? "MILD" : score <= 10 ? "MODERATE" : "HIGH";
           fetch("/api/lung-test/submit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -88,13 +169,34 @@ export default function LungTestPage() {
               name,
               email,
               phone,
-              answers: next.map((a) => a === true),
+              answers: bools,
               score,
-              riskLevel: score <= 2 ? "MILD" : score <= 5 ? "MODERATE" : "HIGH",
+              riskLevel,
             }),
           }).catch(console.error);
           if (typeof window !== "undefined") {
             sessionStorage.setItem("rs_user", JSON.stringify({ name, email, phone }));
+            localStorage.setItem(
+              "lungTestResult",
+              JSON.stringify({
+                name,
+                email,
+                phone,
+                score,
+                maxScore: 20,
+                answers: {
+                  q1: bools[0],
+                  q2: bools[1],
+                  q3: bools[2],
+                  q4: bools[3],
+                  q5: bools[4],
+                  q6: bools[5],
+                  q7: bools[6],
+                  q8: bools[7],
+                },
+                timestamp: Date.now(),
+              })
+            );
           }
           router.push(`/lung-test/result?score=${score}&name=${encodeURIComponent(name)}`);
         })();
@@ -102,358 +204,290 @@ export default function LungTestPage() {
     }, 220);
   };
 
-  const totalSteps = 4 + MAX_SCORE;
-  const currentStep =
-    step === "name"  ? 1 :
-    step === "email" ? 2 :
-    step === "phone" ? 3 :
-    4 + qIdx;
-  const progress = (currentStep / totalSteps) * 100;
-
-  const inputStyle: React.CSSProperties = {
-    width: "100%", padding: "16px 20px",
-    border: "1.5px solid #D4C8A8",
-    borderRadius: 8, background: "#fff",
-    fontSize: 17, color: "#1A1A14",
-    outline: "none", marginBottom: 20,
-    fontFamily: "inherit", boxSizing: "border-box",
-  };
-
   return (
-    <section style={{
-      minHeight: "100svh", background: "#F2E6CE",
-      display: "flex", alignItems: "center",
-      padding: "80px 24px 60px",
-    }}>
-      <div style={{
-        width: "100%",
-        maxWidth: step === "quiz" ? 960 : 540,
-        margin: "0 auto",
-      }}>
+    <section style={pageBg}>
+      <div style={{ textAlign: "center", padding: "8px 0 24px" }}>
+        <Image
+          src="/images/new_logo.png"
+          alt="Royal Swag"
+          width={80}
+          height={80}
+          style={{ objectFit: "contain", margin: "0 auto", width: 80, height: "auto" }}
+          priority
+        />
+      </div>
 
-        {/* Progress bar */}
-        <div style={{
-          height: 4, background: "rgba(212,200,168,0.6)",
-          borderRadius: 2, marginBottom: 36, overflow: "hidden",
-        }}>
-          <div style={{
-            height: "100%", background: "#4A6422",
-            width: `${progress}%`, transition: "width 0.4s ease", borderRadius: 2,
-          }} />
+      <div style={{ width: "100%", maxWidth: 560, margin: "0 auto" }}>
+        <div
+          style={{
+            height: 4,
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: 2,
+            marginBottom: 12,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              height: "100%",
+              width: `${progress}%`,
+              background: "linear-gradient(90deg, #C49A2A, #E8C84A)",
+              borderRadius: 2,
+              transition: "width 0.4s ease",
+            }}
+          />
         </div>
+        <p
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: 11,
+            letterSpacing: "0.15em",
+            color: "rgba(250,246,238,0.5)",
+            marginBottom: 24,
+            textTransform: "uppercase",
+          }}
+        >
+          STEP {currentStep} OF {TOTAL_STEPS}
+        </p>
 
-        <p style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: 3,
-          color: "#C49A2A", marginBottom: 14,
-        }}>STEP {currentStep} OF {totalSteps}</p>
-
-        {/* ── NAME ── */}
-        {step === "name" && (
-          <div style={{ animation: "fadeIn .4s ease" }}>
-            <h2 style={{
-              fontFamily: "var(--ff-head)",
-              fontSize: "clamp(28px,4vw,40px)",
-              color: "#1A1A14", marginBottom: 12,
-            }}>
-              First, what should we<br />
-              <em style={{ color: "#4A6422" }}>call you?</em>
-            </h2>
-            <p style={{ color: "#5C5647", marginBottom: 32, fontSize: 15 }}>
-              Your personalised lung report needs a name on top.
-            </p>
-            <input
-              autoFocus
-              value={name}
-              onChange={e => setName(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && goNext()}
-              onFocus={e => (e.currentTarget.style.borderColor = "#4A6422")}
-              onBlur={e  => (e.currentTarget.style.borderColor = "#D4C8A8")}
-              placeholder="e.g. Rahul Sharma"
-              style={inputStyle}
-            />
-            <button
-              onClick={goNext}
-              disabled={name.trim().length < 2}
-              className="b b-olive"
-              style={{
-                width: "100%", padding: 16, fontSize: 16,
-                opacity: name.trim().length >= 2 ? 1 : 0.4,
-              }}
-            >Continue →</button>
-          </div>
-        )}
-
-        {/* ── EMAIL ── */}
-        {step === "email" && (
-          <div style={{ animation: "fadeIn .4s ease" }}>
-            <h2 style={{
-              fontFamily: "var(--ff-head)",
-              fontSize: "clamp(28px,4vw,40px)",
-              color: "#1A1A14", marginBottom: 12,
-            }}>
-              Hi {name.split(" ")[0]},<br />
-              <em style={{ color: "#4A6422" }}>your email?</em>
-            </h2>
-            <p style={{ color: "#5C5647", marginBottom: 32, fontSize: 15 }}>
-              We&apos;ll send your detailed report and lung-care tips here.
-            </p>
-            <input
-              autoFocus
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && goNext()}
-              onFocus={e => (e.currentTarget.style.borderColor = "#4A6422")}
-              onBlur={e  => (e.currentTarget.style.borderColor = "#D4C8A8")}
-              placeholder="Eximburg@gmail.com"
-              style={inputStyle}
-            />
-            <p style={{ fontSize: 12, color: "#5C5647", opacity: 0.7, marginBottom: 20 }}>
-              No spam. Used only for your report.
-            </p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setStep("name")} className="b b-ghost"
-                style={{ padding: "16px 24px" }}>← Back</button>
-              <button
-                onClick={goNext}
-                disabled={!validEmail}
-                className="b b-olive"
-                style={{ flex: 1, padding: 16, fontSize: 16, opacity: validEmail ? 1 : 0.4 }}
-              >Continue →</button>
-            </div>
-          </div>
-        )}
-
-        {/* ── PHONE ── */}
-        {step === "phone" && (
-          <div style={{ animation: "fadeIn .4s ease" }}>
-            <h2 style={{
-              fontFamily: "var(--ff-head)",
-              fontSize: "clamp(28px,4vw,40px)",
-              color: "#1A1A14", marginBottom: 12,
-            }}>
-              Last bit —<br />
-              <em style={{ color: "#4A6422" }}>your phone.</em>
-            </h2>
-            <p style={{ color: "#5C5647", marginBottom: 32, fontSize: 15 }}>
-              For order updates and free Ayurvedic consultation, if needed.
-            </p>
-            <input
-              autoFocus
-              type="tel"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && goNext()}
-              onFocus={e => (e.currentTarget.style.borderColor = "#4A6422")}
-              onBlur={e  => (e.currentTarget.style.borderColor = "#D4C8A8")}
-              placeholder="+91 98765 43210"
-              style={inputStyle}
-            />
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setStep("email")} className="b b-ghost"
-                style={{ padding: "16px 24px" }}>← Back</button>
-              <button
-                onClick={goNext}
-                disabled={!validPhone}
-                className="b b-olive"
-                style={{ flex: 1, padding: 16, fontSize: 16, opacity: validPhone ? 1 : 0.4 }}
-              >Start the Test →</button>
-            </div>
-          </div>
-        )}
-
-        {/* ── QUIZ — branded strip + text + buttons (no stock photos) ── */}
-        {step === "quiz" && (
-          <div style={{ animation: "fadeIn .4s ease" }}>
-            <p style={{
-              fontFamily: "var(--ff-head, Georgia, serif)",
-              fontWeight: 700,
-              fontSize: 11,
-              letterSpacing: "3px",
-              color: "#C49A2A",
-              marginBottom: 14,
-              fontVariantNumeric: "tabular-nums",
-            }}>
-              QUESTION {String(qIdx + 1).padStart(2, "0")} / {String(MAX_SCORE).padStart(2, "0")}
-            </p>
-
-            <div
-              className="lung-quiz-grid"
-              style={{
-                display: "grid",
-                gap: 16,
-                alignItems: "stretch",
-                marginBottom: 28,
-              }}
-            >
-              <div
-                style={{
-                  gridColumn: "1 / -1",
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  background: "#fff",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-                  position: "relative",
-                }}
-              >
-                {/* Decorative header — replaces per-question stock imagery */}
-                <div
-                  aria-hidden
-                  style={{
-                    flexShrink: 0,
-                    width: "100%",
-                    minHeight: 76,
-                    padding: "18px 20px",
-                    boxSizing: "border-box",
-                    background:
-                      "linear-gradient(135deg, #2D3D15 0%, #4A6422 42%, rgba(196,154,42,0.18) 100%)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 12,
-                    borderBottom: "1px solid rgba(242,230,206,0.15)",
-                  }}
-                >
-                  <span style={{ fontSize: 28, lineHeight: 1 }}>🫁</span>
-                  <span style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: "0.28em",
-                    color: "#F2E6CE",
-                    textTransform: "uppercase",
-                  }}>
-                    Lung health check
-                  </span>
-                </div>
-
-                {/* QUESTION TEXT */}
-                <div
-                  style={{
-                    padding: "16px 16px 8px",
-                    position: "static",
-                  }}
-                >
-                  <p style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: "2.5px",
-                    color: "#4A6422",
-                    marginBottom: 8,
-                    textTransform: "uppercase",
-                  }}>
-                    {QUESTIONS[qIdx].topic}
-                  </p>
-                  <p style={{
-                    fontSize: 15,
-                    fontWeight: 500,
-                    lineHeight: 1.5,
-                    color: "#1a1a1a",
-                    marginBottom: 8,
-                    fontFamily: "var(--ff-head, Georgia, serif)",
-                  }}>
-                    {QUESTIONS[qIdx].q}
-                  </p>
-                  <p style={{
-                    fontSize: 13,
-                    color: "#5C5647",
-                    fontStyle: "italic",
-                    marginBottom: 0,
-                    lineHeight: 1.67,
-                  }}>
-                    {QUESTIONS[qIdx].hint}
-                  </p>
-                </div>
-
-                {/* YES / NO — always below text, never absolute */}
-                <div style={{
-                  display: "flex",
-                  gap: 12,
-                  padding: "8px 16px 16px",
-                  position: "static",
-                  zIndex: 1,
-                  pointerEvents: "auto",
-                }}>
-                  <button
-                    type="button"
-                    onClick={() => choose(true)}
-                    style={{
-                      flex: 1,
-                      padding: "14px 10px",
-                      borderRadius: 8,
-                      border: "2px solid #16a34a",
-                      background: ans[qIdx] === true ? "#16a34a" : "#fff",
-                      color: ans[qIdx] === true ? "#fff" : "#16a34a",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      fontSize: 14,
-                      pointerEvents: "auto",
-                      fontFamily: "var(--ff-body, sans-serif)",
-                    }}
-                  >
-                    Yes
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => choose(false)}
-                    style={{
-                      flex: 1,
-                      padding: "14px 10px",
-                      borderRadius: 8,
-                      border: "2px solid #dc2626",
-                      background: ans[qIdx] === false ? "#dc2626" : "#fff",
-                      color: ans[qIdx] === false ? "#fff" : "#dc2626",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      fontSize: 14,
-                      pointerEvents: "auto",
-                      fontFamily: "var(--ff-body, sans-serif)",
-                    }}
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {qIdx > 0 && (
+        <div ref={cardRef} style={cardStyle}>
+          {step === "name" && (
+            <>
+              <h2 style={headingStyle}>
+                First, what should we
+                <br />
+                <em style={{ color: "#E8C84A", fontStyle: "italic" }}>call you?</em>
+              </h2>
+              <p style={{ color: "rgba(250,246,238,0.65)", marginBottom: 24, fontSize: 15 }}>
+                Your personalised lung report needs a name on top.
+              </p>
+              <input
+                autoFocus
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && goNext()}
+                placeholder="e.g. Rahul Sharma"
+                style={inputStyle}
+              />
               <button
                 type="button"
-                onClick={() => setQIdx(qIdx - 1)}
+                onClick={goNext}
+                disabled={name.trim().length < 2}
+                className="btn-gold"
                 style={{
-                  marginTop: 8,
-                  background: "none",
+                  width: "100%",
+                  justifyContent: "center",
+                  padding: 18,
+                  fontSize: 16,
+                  marginTop: 24,
+                  borderRadius: 16,
                   border: "none",
-                  color: "#5C5647",
-                  fontSize: 13,
-                  cursor: "pointer",
-                  padding: 0,
-                  position: "static",
-                  pointerEvents: "auto",
-                  fontFamily: "var(--ff-body, sans-serif)",
+                  cursor: name.trim().length >= 2 ? "pointer" : "not-allowed",
+                  opacity: name.trim().length >= 2 ? 1 : 0.5,
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                ← Previous question
+                Continue →
               </button>
-            )}
-          </div>
-        )}
+            </>
+          )}
+
+          {step === "email" && (
+            <>
+              <h2 style={headingStyle}>
+                Hi {name.split(" ")[0]},
+                <br />
+                <em style={{ color: "#E8C84A", fontStyle: "italic" }}>your email?</em>
+              </h2>
+              <p style={{ color: "rgba(250,246,238,0.65)", marginBottom: 24, fontSize: 15 }}>
+                We&apos;ll send your detailed report and lung-care tips here.
+              </p>
+              <input
+                autoFocus
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && goNext()}
+                placeholder="Eximburg@gmail.com"
+                style={inputStyle}
+              />
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => setStep("name")}
+                  style={{
+                    padding: "16px 20px",
+                    borderRadius: 16,
+                    border: "1.5px solid rgba(255,255,255,0.2)",
+                    background: "transparent",
+                    color: "#FAF6EE",
+                    cursor: "pointer",
+                  }}
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  disabled={!validEmail}
+                  className="btn-gold"
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    padding: 18,
+                    fontSize: 16,
+                    borderRadius: 16,
+                    border: "none",
+                    opacity: validEmail ? 1 : 0.5,
+                    cursor: validEmail ? "pointer" : "not-allowed",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  Continue →
+                </button>
+              </div>
+            </>
+          )}
+
+          {step === "phone" && (
+            <>
+              <h2 style={headingStyle}>
+                Last bit —
+                <br />
+                <em style={{ color: "#E8C84A", fontStyle: "italic" }}>your phone.</em>
+              </h2>
+              <p style={{ color: "rgba(250,246,238,0.65)", marginBottom: 24, fontSize: 15 }}>
+                For order updates and free Ayurvedic consultation, if needed.
+              </p>
+              <input
+                autoFocus
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && goNext()}
+                placeholder="+91 98765 43210"
+                style={inputStyle}
+              />
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => setStep("email")}
+                  style={{
+                    padding: "16px 20px",
+                    borderRadius: 16,
+                    border: "1.5px solid rgba(255,255,255,0.2)",
+                    background: "transparent",
+                    color: "#FAF6EE",
+                    cursor: "pointer",
+                  }}
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  disabled={!validPhone}
+                  className="btn-gold"
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    padding: 18,
+                    fontSize: 16,
+                    borderRadius: 16,
+                    border: "none",
+                    opacity: validPhone ? 1 : 0.5,
+                    cursor: validPhone ? "pointer" : "not-allowed",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  Start the Test →
+                </button>
+              </div>
+            </>
+          )}
+
+          {step === "quiz" && (
+            <>
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  letterSpacing: "0.15em",
+                  color: "rgba(250,246,238,0.45)",
+                  marginBottom: 16,
+                  textTransform: "uppercase",
+                }}
+              >
+                {QUESTIONS[qIdx].topic}
+              </p>
+              <h2 style={{ ...headingStyle, marginBottom: 12 }}>{QUESTIONS[qIdx].q}</h2>
+              <p
+                style={{
+                  color: "rgba(250,246,238,0.55)",
+                  fontSize: 14,
+                  marginBottom: 28,
+                  lineHeight: 1.6,
+                }}
+              >
+                {QUESTIONS[qIdx].hint}
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => choose(true)}
+                  onMouseEnter={() => setHoverYes(true)}
+                  onMouseLeave={() => setHoverYes(false)}
+                  style={{
+                    ...answerBtn(ans[qIdx] === true, true),
+                    ...(hoverYes && ans[qIdx] !== true
+                      ? { borderColor: "#C49A2A", background: "rgba(196,154,42,0.12)" }
+                      : {}),
+                  }}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => choose(false)}
+                  onMouseEnter={() => setHoverNo(true)}
+                  onMouseLeave={() => setHoverNo(false)}
+                  style={{
+                    ...answerBtn(ans[qIdx] === false, false),
+                    ...(hoverNo && ans[qIdx] !== false
+                      ? { borderColor: "#C49A2A", background: "rgba(196,154,42,0.12)" }
+                      : {}),
+                  }}
+                >
+                  No
+                </button>
+              </div>
+              {qIdx > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setQIdx(qIdx - 1)}
+                  style={{
+                    marginTop: 20,
+                    background: "none",
+                    border: "none",
+                    color: "rgba(250,246,238,0.5)",
+                    fontSize: 13,
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  ← Previous question
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .lung-quiz-grid {
-          grid-template-columns: minmax(0, 1fr);
-        }
-        @media (min-width: 640px) {
-          .lung-quiz-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
+        input::placeholder { color: rgba(250,246,238,0.35); }
       `}</style>
     </section>
   );

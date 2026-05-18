@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { LeadGuardLink } from "@/components/LeadGuardLink";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { gsap } from "gsap";
+import AnimatedOrderButton from "@/components/AnimatedOrderButton";
+import CheckoutModal from "@/components/CheckoutModal";
+import { PACKS, SITE_CONFIG } from "@/lib/config";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   computeLungTestScore,
@@ -96,10 +99,13 @@ function getHerbCardsForAnswers(a: AnswersShape): HerbCard[] {
 }
 
 const RISK_HEADLINE: Record<LungTestRiskBand, string> = {
-  low: "Your lungs are doing okay, but daily protection still matters",
-  moderate: "Your lungs are under stress. Act before it gets worse.",
-  high: "Your lungs need urgent attention. Start detox today.",
+  low: "Your Lungs Are Doing Well",
+  moderate: "Your Lungs Need Attention",
+  high: "Your Lungs Are Under Stress",
 };
+
+const RESULT_GRADIENT =
+  "linear-gradient(135deg, #0D2010 0%, #1A3A1A 60%, #2D3D15 100%)";
 
 const WHAT_IT_MEANS: Record<LungTestRiskBand, string> = {
   low:
@@ -145,6 +151,78 @@ function polar(cx: number, cy: number, r: number, angleRad: number) {
     x: cx + r * Math.cos(angleRad),
     y: cy - r * Math.sin(angleRad),
   };
+}
+
+/** Circular score gauge with GSAP stroke animation. */
+function ScoreCircle({
+  score,
+  maxScore,
+  color,
+}: {
+  score: number;
+  maxScore: number;
+  color: string;
+}) {
+  const strokeRef = useRef<SVGCircleElement>(null);
+  const radius = 60;
+  const circumference = 2 * Math.PI * radius;
+  const pct = maxScore > 0 ? Math.min(score / maxScore, 1) : 0;
+
+  useEffect(() => {
+    if (!strokeRef.current) return;
+    gsap.fromTo(
+      strokeRef.current,
+      { strokeDashoffset: circumference },
+      {
+        strokeDashoffset: circumference * (1 - pct),
+        duration: 1.2,
+        ease: "power3.out",
+        delay: 0.2,
+      }
+    );
+  }, [score, maxScore, pct, circumference]);
+
+  return (
+    <div className="mx-auto" style={{ width: 160, height: 160 }}>
+      <svg width={160} height={160} viewBox="0 0 160 160" aria-hidden>
+        <circle
+          cx={80}
+          cy={80}
+          r={radius}
+          fill="none"
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth={10}
+        />
+        <circle
+          ref={strokeRef}
+          cx={80}
+          cy={80}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={10}
+          strokeLinecap="round"
+          transform="rotate(-90 80 80)"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference}
+        />
+        <text
+          x={80}
+          y={86}
+          textAnchor="middle"
+          fill={color}
+          fontSize={42}
+          fontWeight={700}
+          style={{ fontFamily: "var(--font-serif)" }}
+        >
+          {score}
+        </text>
+        <text x={80} y={108} textAnchor="middle" fill="rgba(250,246,238,0.5)" fontSize={12}>
+          out of {maxScore}
+        </text>
+      </svg>
+    </div>
+  );
 }
 
 /** Semicircle arc gauge: green (left) → amber → red (right). Needle: 0 = left, 90° = up/center, 180° = right. */
@@ -240,6 +318,8 @@ function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) 
 export default function LungTestResultClient() {
   const [stored, setStored] = useState<LungTestStored | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [checkout, setCheckout] = useState(false);
+  const starterPack = PACKS[0];
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -374,7 +454,10 @@ export default function LungTestResultClient() {
   const [tB1, tB2] = TESTIMONIALS_B[band];
 
   return (
-    <div className="px-4 pb-[60px] pt-6 min-[769px]:pt-8" style={{ backgroundColor: BG }}>
+    <div
+      className="px-4 pb-[60px] pt-6 min-[769px]:pt-8"
+      style={{ background: RESULT_GRADIENT, minHeight: "100vh" }}
+    >
       <div className="mx-auto max-w-lg">
         {/* PERSONALIZATION */}
         <h1
@@ -392,14 +475,16 @@ export default function LungTestResultClient() {
           >
             {bandLabel}
           </span>
-          <p className="mt-3 text-sm font-medium text-white/85">{RISK_HEADLINE[band]}</p>
+          <p
+            className="mt-3 text-xl sm:text-2xl"
+            style={{ fontFamily: "var(--font-serif)", color: "#FAF6EE" }}
+          >
+            {RISK_HEADLINE[band]}
+          </p>
         </div>
 
-        <div className="my-6">
-          <RiskArcGauge score={stored.score} maxScore={maxScore} />
-          <p className="text-center text-3xl font-bold tracking-tight sm:text-4xl" style={{ color: GOLD }}>
-            Your Score: {stored.score} / {maxScore}
-          </p>
+        <div className="my-8 flex justify-center">
+          <ScoreCircle score={stored.score} maxScore={maxScore} color={bandColor} />
         </div>
 
         {/* Scoring system */}
@@ -458,10 +543,33 @@ export default function LungTestResultClient() {
               {herbCards.map((c) => (
                 <li
                   key={c.id}
-                  className="rounded-xl border border-[#4ade80]/25 bg-black/25 px-4 py-4 shadow-sm"
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: 16,
+                    padding: 20,
+                  }}
                 >
-                  <p className="text-lg font-bold text-white">{c.herb}</p>
-                  <p className="mt-1 text-sm text-white/75">{c.line}</p>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-serif)",
+                      color: "#E8C84A",
+                      fontSize: 18,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {c.herb}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      color: "rgba(250,246,238,0.75)",
+                      fontSize: 14,
+                      marginTop: 8,
+                    }}
+                  >
+                    {c.line}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -469,10 +577,20 @@ export default function LungTestResultClient() {
         </section>
 
         {/* Urgency + loss aversion + CTA */}
-        <section className="rounded-2xl border border-white/10 bg-black/20 p-5 sm:p-6">
-          <h2 className="text-xl font-bold leading-snug text-white sm:text-2xl md:text-3xl">
-            Your lungs won&apos;t detox on their own.
+        <section
+          className="rounded-2xl p-5 sm:p-6"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}
+        >
+          <h2
+            className="text-xl font-bold leading-snug sm:text-2xl"
+            style={{ fontFamily: "var(--font-serif)", color: "#FAF6EE" }}
+          >
+            Based on your result, Royal Swag is recommended for you
           </h2>
+          <p className="mt-2 text-sm text-white/70">Your lungs won&apos;t detox on their own.</p>
           <p className="mt-3 text-sm leading-relaxed text-white/75 sm:text-base">
             {herbCards.length > 0 ? (
               <>
@@ -495,12 +613,26 @@ export default function LungTestResultClient() {
             will be to reverse.
           </div>
 
-          <LeadGuardLink
-            href="/product"
-            className="rs-cta-primary mt-5 flex w-full items-center justify-center rounded-xl bg-[#15803d] px-4 py-4 text-center text-base font-bold text-white min-[769px]:min-h-[52px] sm:text-lg"
+          <div className="mt-6 flex justify-center">
+            <AnimatedOrderButton
+              label="Buy Now"
+              price={starterPack.price}
+              onOrder={() => setCheckout(true)}
+            />
+          </div>
+
+          <a
+            href={`https://wa.me/${SITE_CONFIG.whatsappNumber}?text=${starterPack.whatsappText}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex w-full items-center justify-center rounded-xl border border-white/20 py-3 text-center text-sm font-semibold text-[#FAF6EE]"
           >
-            Start My 30-Day Detox — ₹349 →
-          </LeadGuardLink>
+            Order via WhatsApp
+          </a>
+
+          {checkout && (
+            <CheckoutModal packId={starterPack.id} onClose={() => setCheckout(false)} />
+          )}
 
           <p className="mt-3 text-center text-sm font-semibold text-amber-200/90">
             ⚡ 2,847 people with similar scores ordered this week

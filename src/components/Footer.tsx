@@ -6,6 +6,7 @@ import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { isProductPath } from "@/lib/is-product-path";
 import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
 import { ROYAL_SWAG_LOGO_HEIGHT, ROYAL_SWAG_LOGO_SRC, ROYAL_SWAG_LOGO_WIDTH } from "@/lib/brand-logo";
+import SocialButtons from "@/components/SocialButtons";
 
 export default function Footer() {
   const links = [
@@ -76,20 +77,7 @@ export default function Footer() {
               }}>{c}</span>
             ))}
           </div>
-          {/* Socials */}
-          <div style={{ display: "flex", gap: 20 }}>
-            {[
-              { l: "Instagram", h: S.social.ig },
-              { l: "YouTube",   h: S.social.yt },
-              { l: "Facebook",  h: S.social.fb },
-            ].map(s => (
-              <a key={s.l} href={s.h} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 12, transition: "color 0.2s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--gold)")}
-                onMouseLeave={e => (e.currentTarget.style.color = "rgba(242,230,206,0.55)")}
-              >{s.l}</a>
-            ))}
-          </div>
+          <SocialButtons />
         </div>
 
         {/* Navigate column */}

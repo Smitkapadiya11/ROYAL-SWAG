@@ -1,73 +1,132 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { SITE_ORIGIN } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function POST(request: NextRequest) {
+type OrderInsert = {
+  userId?: string | null;
+  fullName: string;
+  phone: string;
+  email?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  packId: string;
+  amount: number;
+};
+
+async function sendWhatsAppConfirmation(order: {
+  full_name: string;
+  order_number: string;
+  amount: number;
+  phone: string;
+}) {
+  const text =
+    "Hi " +
+    order.full_name +
+    ", your Royal Swag Lung Detox Tea order #" +
+    order.order_number +
+    " is confirmed! Amount: Rs " +
+    order.amount +
+    ". We will ship within 24 hours. Track: " +
+    SITE_ORIGIN +
+    "/profile — Team Royal Swag";
+  const phone = order.phone.replace(/\D/g, "").replace(/^91/, "").slice(-10);
+  const waUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(text)}`;
+  console.log("[whatsapp] confirmation link:", waUrl);
+  if (process.env.MSG91_AUTH_KEY && process.env.MSG91_TEMPLATE_ID) {
+    console.log("[whatsapp] MSG91 configured; dispatch via your template workflow.");
+  }
+}
+
+export async function POST(req: NextRequest) {
   try {
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret) {
-      console.error("[verify-payment] RAZORPAY_KEY_SECRET not configured.");
-      return NextResponse.json(
-        { error: "Payment gateway configuration error." },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Razorpay secret not configured" }, { status: 500 });
     }
 
-    const body = await request.json();
+    const body = await req.json();
     const {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-    } = body;
+      orderData,
+    } = body as {
+      razorpay_order_id?: string;
+      razorpay_payment_id?: string;
+      razorpay_signature?: string;
+      orderData?: OrderInsert;
+    };
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return NextResponse.json({ error: "Missing payment fields." }, { status: 400 });
+      return NextResponse.json({ error: "Missing payment fields" }, { status: 400 });
     }
 
-    // ── HMAC SHA256 — constant-time comparison to prevent timing attacks ──
-    const expectedSignature = crypto
+    if (!orderData?.fullName || !orderData.phone || !orderData.packId) {
+      return NextResponse.json({ error: "Missing order data" }, { status: 400 });
+    }
+
+    const expectedSig = crypto
       .createHmac("sha256", secret)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest("hex");
 
-    let isValid = false;
+    let valid = false;
     try {
-      const sigBuffer = Buffer.from(razorpay_signature, "hex");
-      const expBuffer = Buffer.from(expectedSignature, "hex");
-      isValid =
-        sigBuffer.length === expBuffer.length &&
-        crypto.timingSafeEqual(sigBuffer, expBuffer);
+      const sigBuf = Buffer.from(razorpay_signature, "hex");
+      const expBuf = Buffer.from(expectedSig, "hex");
+      valid = sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf);
     } catch {
-      isValid = false;
+      valid = false;
     }
 
-    if (!isValid) {
-      console.error("[verify-payment] Signature mismatch.", {
-        orderId: razorpay_order_id,
-        paymentId: razorpay_payment_id,
-      });
-      return NextResponse.json(
-        { error: "Payment verification failed. Signature invalid." },
-        { status: 400 }
-      );
+    if (!valid) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
-    console.log("[verify-payment] Verified.", {
-      orderId: razorpay_order_id,
-      paymentId: razorpay_payment_id,
-      timestamp: new Date().toISOString(),
-    });
+    const orderNumber =
+      "RS" +
+      new Date().toISOString().slice(2, 10).replace(/-/g, "") +
+      Math.floor(1000 + Math.random() * 9000);
 
-    return NextResponse.json({
-      success: true,
-      ok: true,
-      orderId: razorpay_order_id,
-      paymentId: razorpay_payment_id,
-    });
+    const { data, error } = await getSupabaseAdmin()
+      .from("orders")
+      .insert({
+        order_number: orderNumber,
+        user_id: orderData.userId || null,
+        full_name: orderData.fullName,
+        phone: orderData.phone,
+        email: orderData.email || null,
+        address_line1: orderData.addressLine1,
+        address_line2: orderData.addressLine2 || null,
+        city: orderData.city,
+        state: orderData.state,
+        pincode: orderData.pincode,
+        pack_type: orderData.packId,
+        quantity: 1,
+        amount: orderData.amount,
+        payment_id: razorpay_payment_id,
+        payment_method: "razorpay",
+        status: "paid",
+      })
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    await sendWhatsAppConfirmation(data);
+
+    return NextResponse.json({ success: true, order: data });
   } catch (err: unknown) {
-    console.error("[verify-payment] Error:", err);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Verification failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

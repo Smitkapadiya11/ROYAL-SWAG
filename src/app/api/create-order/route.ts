@@ -1,52 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
-type CreateOrderRequestBody = {
-  amount: number;
-  currency: string;
-};
+const keyId =
+  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
+const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-export async function POST(request: NextRequest) {
+const razorpay =
+  keyId && keySecret ? new Razorpay({ key_id: keyId, key_secret: keySecret }) : null;
+
+export async function POST(req: NextRequest) {
+  if (!razorpay) {
+    return NextResponse.json({ error: "Razorpay keys are not configured" }, { status: 500 });
+  }
+
   try {
-    const body = (await request.json().catch(() => ({}))) as Partial<CreateOrderRequestBody>;
-    const { amount, currency } = body;
+    const body = await req.json();
+    const { amount, packId, customerData } = body as {
+      amount?: number;
+      packId?: string;
+      customerData?: { phone?: string };
+    };
 
     if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
-    if (typeof currency !== "string" || currency.length < 3) {
-      return NextResponse.json({ error: "Invalid currency" }, { status: 400 });
-    }
 
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-    // Replace with live keys before launch
-    if (!keyId || !keySecret) {
-      return NextResponse.json(
-        { error: "Razorpay keys are not configured" },
-        { status: 500 }
-      );
-    }
-
-    const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-    const order = await razorpay.orders.create({
-      amount,
-      currency,
-      receipt: `rs_${Date.now()}`,
+    const rzpOrder = await razorpay.orders.create({
+      amount: amount * 100,
+      currency: "INR",
+      receipt: "rs_" + Date.now(),
+      notes: {
+        pack: packId ?? "",
+        customer: customerData?.phone ?? "",
+      },
     });
 
-    return NextResponse.json({
-      orderId: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      keyId,
-    });
-  } catch (err: any) {
-    console.error("create-order error:", err?.message ?? err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ orderId: rzpOrder.id, amount: rzpOrder.amount });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to create order";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

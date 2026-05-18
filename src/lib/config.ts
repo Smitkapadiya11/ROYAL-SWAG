@@ -9,8 +9,8 @@ export const S = {
   },
   phone:    "+91 70965 53300",
   phoneRaw: "917096553300",
-  email:   "Eximburg@gmail.com",
-  fssai:   "TODO_FSSAI_NUMBER",
+  email:   "info@eximburginternational.in",
+  fssai:   process.env.NEXT_PUBLIC_FSSAI_LICENSE ?? "10720024000047",
   wa: {
     num: "917096553300",
     msg: encodeURIComponent("Hi, I want to order Royal Swag Lung Detox Tea. Please share pack details."),
@@ -53,6 +53,22 @@ export const S = {
   ],
 } as const;
 
+/** Auth, checkout, and admin constants (PROMPT 2 shape) */
+export const APP_SITE = {
+  name: "Royal Swag",
+  phone: "+91 70965 53300",
+  whatsapp: "917096553300",
+  email: "info@eximburginternational.in",
+  address:
+    "Plot No. 150, 3rd Floor, Amrut Udhyognagar, Kholvad, Kamrej, Surat, Gujarat 394185",
+  fssai: process.env.NEXT_PUBLIC_FSSAI_LICENSE ?? "10720024000047",
+  adminEmail: "admin@eximburginternational.in",
+  razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+  instagram: "https://www.instagram.com/royalswag_official/",
+  youtube: "https://www.youtube.com/@royalswagofficial",
+  facebook: "https://www.facebook.com/royalswag.herbal.cigarette/",
+} as const;
+
 // ── Backward-compat aliases for pages/routes not being rewritten ──
 export const SITE = {
   name:    S.name,
@@ -73,6 +89,53 @@ export const SITE = {
   team:    S.team.map(m => ({ id: m.id, name: m.name, role: m.role, image: m.img, bio: m.bio })),
 } as const;
 
-export const SITE_CONFIG = SITE;
+export const SITE_CONFIG = {
+  ...SITE,
+  adminEmail: APP_SITE.adminEmail,
+  razorpayKeyId: APP_SITE.razorpayKeyId,
+  instagram: APP_SITE.instagram,
+  youtube: APP_SITE.youtube,
+  facebook: APP_SITE.facebook,
+  whatsappNumber: APP_SITE.whatsapp,
+};
 /** Production site URL (lung detox landing). */
 export const SITE_ORIGIN = "https://lungdetox.royalswag.in";
+
+export const PACKS = [
+  {
+    id: "starter",
+    label: "1 Pack",
+    subLabel: "Starter Pack",
+    days: 30,
+    bags: 30,
+    price: 699,
+    original: 999,
+    saving: 300,
+    tag: null,
+    image: "/images/product-1.jpg",
+  },
+  {
+    id: "progress",
+    label: "3 Pack Bundle",
+    subLabel: "Progress Pack",
+    days: 90,
+    bags: 90,
+    price: 1799,
+    original: 2997,
+    saving: 398,
+    tag: "MOST POPULAR",
+    image: "/images/product-2.jpg",
+  },
+  {
+    id: "result",
+    label: "5 Pack Bundle",
+    subLabel: "Result Pack",
+    days: 150,
+    bags: 150,
+    price: 2799,
+    original: 4995,
+    saving: 996,
+    tag: "RECOMMENDED",
+    image: "/images/product-3.jpg",
+  },
+] as const;

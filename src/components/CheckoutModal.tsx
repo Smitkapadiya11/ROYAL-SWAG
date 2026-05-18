@@ -1,368 +1,351 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { supabase } from "@/lib/supabase/client";
+import { PACKS, APP_SITE } from "@/lib/config";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { ROYAL_SWAG_LOGO_SRC } from "@/lib/brand-logo";
 
-export interface SelectedPack {
-  id: string;
-  bags: string;
-  days: string;
-  price: number;
-  mrp: number;
-  tag: string;
-}
+const schema = z.object({
+  full_name: z.string().min(2),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Valid 10-digit mobile"),
+  email: z.string().email().optional().or(z.literal("")),
+  line1: z.string().min(5),
+  line2: z.string().optional(),
+  city: z.string().min(2),
+  state: z.string().min(2),
+  pincode: z.string().length(6, "6-digit pincode"),
+});
 
-export interface CheckoutModalProps {
-  isOpen: boolean;
-  pack?: SelectedPack;
-  onConfirm?: () => void;
+type CheckoutForm = z.infer<typeof schema>;
+
+interface Props {
+  packId: string;
   onClose: () => void;
-  /** When applied with discountedAmount below pack.price, show coupon pricing + button total */
-  couponCode?: string | null;
-  /** Final payable amount after coupon (e.g. same as Razorpay amount) */
-  discountedAmount?: number;
 }
 
-const FALLBACK_PACK: SelectedPack = {
-  id: "20",
-  bags: "20 Bags",
-  days: "30-Day Supply",
-  price: 349,
-  mrp: 499,
-  tag: "",
-};
+interface RazorpayHandlerResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
 
-export default function CheckoutModal({
-  isOpen,
-  pack = FALLBACK_PACK,
-  onConfirm,
-  onClose,
-  couponCode = null,
-  discountedAmount,
-}: CheckoutModalProps) {
-  const overlayRef = useRef<HTMLDivElement>(null);
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  image?: string;
+  order_id: string;
+  handler: (response: RazorpayHandlerResponse) => void | Promise<void>;
+  prefill?: { name?: string; contact?: string; email?: string };
+  theme?: { color: string };
+}
+
+export default function CheckoutModal({ packId, onClose }: Props) {
+  const pack = PACKS.find((p) => p.id === packId);
+  const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckoutForm>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [isOpen, onClose]);
+    if (!ref.current) return;
+    gsap.from(ref.current, { opacity: 0, scale: 0.95, duration: 0.3, ease: "power2.out" });
 
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.head.appendChild(script);
     return () => {
-      document.body.style.overflow = "";
+      script.remove();
     };
-  }, [isOpen]);
+  }, []);
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current) onClose();
+  if (!pack) {
+    return null;
+  }
+
+  const close = () => {
+    if (!ref.current) {
+      onClose();
+      return;
+    }
+    gsap.to(ref.current, {
+      opacity: 0,
+      scale: 0.95,
+      duration: 0.2,
+      onComplete: onClose,
+    });
   };
 
-  if (!isOpen) return null;
+  const onSubmit = async (formData: CheckoutForm) => {
+    setLoading(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  const savings = pack.mrp - pack.price;
-  const savingsPct = Math.round((savings / pack.mrp) * 100);
+      const res = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: pack.price,
+          packId: pack.id,
+          customerData: formData,
+        }),
+      });
 
-  const originalAmount = pack.price;
-  const finalPayAmount =
-    couponCode &&
-    typeof discountedAmount === "number" &&
-    discountedAmount < originalAmount &&
-    discountedAmount >= 0
-      ? discountedAmount
-      : originalAmount;
-  const couponApplied = Boolean(couponCode) && finalPayAmount < originalAmount;
-  const couponSaved = couponApplied ? originalAmount - finalPayAmount : 0;
+      const payload = (await res.json()) as { orderId?: string; error?: string };
+      if (!res.ok || !payload.orderId) {
+        throw new Error(payload.error ?? "Could not create payment order");
+      }
+
+      const key = APP_SITE.razorpayKeyId;
+      if (!key) {
+        throw new Error("Razorpay key is not configured");
+      }
+
+      const RazorpayCtor = (window as Window & { Razorpay?: new (o: RazorpayOptions) => { open: () => void } })
+        .Razorpay;
+      if (!RazorpayCtor) {
+        throw new Error("Razorpay checkout failed to load. Please refresh and try again.");
+      }
+
+      const options: RazorpayOptions = {
+        key,
+        amount: pack.price * 100,
+        currency: "INR",
+        name: "Royal Swag",
+        description: pack.label + " — Lung Detox Tea",
+        image: ROYAL_SWAG_LOGO_SRC,
+        order_id: payload.orderId,
+        handler: async (response) => {
+          const verify = await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...response,
+              orderData: {
+                userId: user?.id || null,
+                fullName: formData.full_name,
+                phone: formData.phone,
+                email: formData.email || user?.email || "",
+                addressLine1: formData.line1,
+                addressLine2: formData.line2,
+                city: formData.city,
+                state: formData.state,
+                pincode: formData.pincode,
+                packId: pack.id,
+                amount: pack.price,
+              },
+            }),
+          });
+          const result = (await verify.json()) as {
+            success?: boolean;
+            order?: { order_number: string };
+            error?: string;
+          };
+          if (result.success && result.order?.order_number) {
+            toast.success("Order placed! Confirmation sent to WhatsApp.");
+            router.push("/order-success?order=" + result.order.order_number);
+          } else {
+            toast.error(result.error ?? "Payment verification failed");
+          }
+        },
+        prefill: {
+          name: formData.full_name,
+          contact: "91" + formData.phone,
+          email: formData.email || undefined,
+        },
+        theme: { color: "#2D6A2D" },
+      };
+
+      new RazorpayCtor(options).open();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Checkout failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inp: React.CSSProperties = {
+    width: "100%",
+    padding: "12px 14px",
+    borderRadius: 10,
+    border: "1.5px solid #E0E8E0",
+    background: "#FAFCFA",
+    fontSize: 14,
+    fontFamily: "var(--font-sans)",
+    color: "#1C1C1C",
+    outline: "none",
+  };
 
   return (
     <div
-      ref={overlayRef}
-      onClick={handleOverlayClick}
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 1000,
-        background: "rgba(26,26,20,0.72)",
-        backdropFilter: "blur(4px)",
-        WebkitBackdropFilter: "blur(4px)",
+        zIndex: 10000,
+        background: "rgba(0,0,0,0.7)",
+        backdropFilter: "blur(8px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "24px 16px",
-        animation: "modal-fade-in 0.18s ease",
+        padding: 20,
+        overflowY: "auto",
       }}
+      onClick={(e) => e.target === e.currentTarget && close()}
     >
       <div
+        ref={ref}
         style={{
-          background: "#F2E6CE",
-          borderRadius: 20,
+          background: "#FFFFFF",
+          borderRadius: 24,
           width: "100%",
-          maxWidth: 480,
-          boxShadow: "0 24px 64px rgba(0,0,0,0.35)",
-          overflow: "hidden",
-          animation: "modal-slide-up 0.22s ease",
+          maxWidth: 520,
+          padding: "clamp(24px,4vw,40px)",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.3)",
+          maxHeight: "90vh",
+          overflowY: "auto",
         }}
       >
         <div
           style={{
-            background: "#2D3D15",
-            padding: "18px 24px",
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 24,
           }}
         >
-          <div>
-            <p
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "3px",
-                color: "rgba(196,154,42,0.8)",
-                marginBottom: 2,
-              }}
-            >
-              CONFIRM YOUR ORDER
-            </p>
-            <p style={{ fontSize: 14, color: "#F2E6CE", fontWeight: 500 }}>
-              Royal Swag Lung Detox Tea
-            </p>
-          </div>
+          <h2 style={{ fontFamily: "var(--font-playfair-display)", fontSize: 24, color: "#1A3A1A" }}>
+            Complete Your Order
+          </h2>
           <button
-            onClick={onClose}
-            aria-label="Close"
-            style={{
-              background: "rgba(255,255,255,0.1)",
-              border: "none",
-              borderRadius: "50%",
-              width: 32,
-              height: 32,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#F2E6CE",
-              fontSize: 18,
-              cursor: "pointer",
-              flexShrink: 0,
-            }}
+            type="button"
+            onClick={close}
+            style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "#999" }}
           >
             ×
           </button>
         </div>
 
-        <div style={{ padding: "24px 24px 0" }}>
-          <div
-            style={{
-              display: "flex",
-              gap: 16,
-              alignItems: "center",
-              background: "#fff",
-              borderRadius: 12,
-              padding: "16px",
-              marginBottom: 20,
-              border: "1px solid #D4C8A8",
-            }}
-          >
-            <div
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: 8,
-                background: "#F2E6CE",
-                flexShrink: 0,
-                overflow: "hidden",
-                position: "relative",
-              }}
-            >
-              <Image
-                src="/images/product-2.jpg"
-                alt="Royal Swag Lung Detox Tea"
-                fill
-                sizes="72px"
-                style={{ objectFit: "contain", padding: 4 }}
-              />
+        <div
+          style={{
+            background: "linear-gradient(135deg,#1A3A1A,#2D6A2D)",
+            borderRadius: 14,
+            padding: "16px 20px",
+            marginBottom: 24,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 16,
+          }}
+        >
+          <div>
+            <div style={{ color: "rgba(250,246,238,0.7)", fontSize: 12 }}>Ordering</div>
+            <div style={{ color: "#FAF6EE", fontWeight: 700, fontSize: 16 }}>{pack.label}</div>
+            <div style={{ color: "rgba(250,246,238,0.6)", fontSize: 12 }}>
+              {pack.bags} tea bags · {pack.days}-day supply
             </div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ color: "#E8C84A", fontSize: 24, fontWeight: 800 }}>Rs {pack.price}</div>
+            <div style={{ color: "rgba(250,246,238,0.5)", fontSize: 11, textDecoration: "line-through" }}>
+              Rs {pack.original}
+            </div>
+          </div>
+        </div>
 
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A14", marginBottom: 2 }}>
-                {pack.bags} — {pack.days}
-              </p>
-              <p style={{ fontSize: 12, color: "#5C5647", marginBottom: 8 }}>
-                Lung Detox Tea · 7 Ayurvedic Herbs
-              </p>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                <span
-                  style={{
-                    fontFamily: "var(--ff-head, Georgia, serif)",
-                    fontSize: 22,
-                    fontWeight: 700,
-                    color: "#4A6422",
-                  }}
-                >
-                  ₹{pack.price}
-                </span>
-                <span style={{ fontSize: 13, color: "#aaa", textDecoration: "line-through" }}>
-                  ₹{pack.mrp}
-                </span>
-                {savings > 0 && (
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      background: "#C49A2A",
-                      color: "#2D3D15",
-                      borderRadius: 4,
-                      padding: "2px 7px",
-                      letterSpacing: "0.5px",
-                    }}
-                  >
-                    SAVE {savingsPct}%
-                  </span>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div className="checkout-form-row-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "#444", display: "block", marginBottom: 4 }}>
+                  Full Name *
+                </label>
+                <input {...register("full_name")} placeholder="Your name" style={inp} />
+                {errors.full_name && (
+                  <span style={{ color: "#C0392B", fontSize: 11 }}>{errors.full_name.message}</span>
                 )}
               </div>
-
-              {couponApplied && (
-                <div style={{ marginTop: 12 }}>
-                  <span
-                    style={{
-                      textDecoration: "line-through",
-                      color: "#9ca3af",
-                      fontSize: 14,
-                    }}
-                  >
-                    ₹{originalAmount}
-                  </span>
-                  <span
-                    style={{
-                      color: "#16a34a",
-                      fontWeight: 700,
-                      fontSize: 20,
-                      marginLeft: 8,
-                    }}
-                  >
-                    ₹{finalPayAmount}
-                  </span>
-                  <div style={{ color: "#16a34a", fontSize: 13, marginTop: 4 }}>
-                    {couponCode} saved ₹{couponSaved}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 8,
-              marginBottom: 20,
-            }}
-          >
-            {[
-              { icon: "🚚", text: "Free Delivery" },
-              { icon: "↩", text: "30-Day Guarantee" },
-              { icon: "📦", text: "Ships in 24hrs" },
-            ].map((p) => (
-              <div
-                key={p.text}
-                style={{
-                  background: "#fff",
-                  border: "1px solid #D4C8A8",
-                  borderRadius: 8,
-                  padding: "10px 6px",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ fontSize: 18, marginBottom: 3 }}>{p.icon}</div>
-                <p style={{ fontSize: 10, fontWeight: 600, color: "#1A1A14" }}>{p.text}</p>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "#444", display: "block", marginBottom: 4 }}>
+                  Mobile *
+                </label>
+                <input {...register("phone")} placeholder="10-digit mobile" style={inp} type="tel" />
+                {errors.phone && (
+                  <span style={{ color: "#C0392B", fontSize: 11 }}>{errors.phone.message}</span>
+                )}
               </div>
-            ))}
-          </div>
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#444", display: "block", marginBottom: 4 }}>
+                Email (optional)
+              </label>
+              <input {...register("email")} placeholder={APP_SITE.email} style={inp} type="email" />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#444", display: "block", marginBottom: 4 }}>
+                Address Line 1 *
+              </label>
+              <input {...register("line1")} placeholder="House/Flat no, Street" style={inp} />
+              {errors.line1 && <span style={{ color: "#C0392B", fontSize: 11 }}>{errors.line1.message}</span>}
+            </div>
+            <input {...register("line2")} placeholder="Area, Landmark (optional)" style={inp} />
+            <div className="checkout-form-row-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+              <div>
+                <input {...register("city")} placeholder="City *" style={inp} />
+                {errors.city && <span style={{ color: "#C0392B", fontSize: 11 }}>{errors.city.message}</span>}
+              </div>
+              <div>
+                <input {...register("state")} placeholder="State *" style={inp} />
+                {errors.state && <span style={{ color: "#C0392B", fontSize: 11 }}>{errors.state.message}</span>}
+              </div>
+              <div>
+                <input {...register("pincode")} placeholder="Pincode *" style={inp} maxLength={6} />
+                {errors.pincode && (
+                  <span style={{ color: "#C0392B", fontSize: 11 }}>{errors.pincode.message}</span>
+                )}
+              </div>
+            </div>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              background: "rgba(196,154,42,0.08)",
-              border: "1px dashed rgba(196,154,42,0.45)",
-              borderRadius: 8,
-              padding: "10px 14px",
-              marginBottom: 20,
-            }}
-          >
-            <span style={{ fontSize: 16 }}>🎟</span>
-            <p style={{ fontSize: 13, color: "#5C5647" }}>
-              Have a coupon? <strong style={{ color: "#4A6422" }}>Apply LUNG25</strong> at checkout
-              for 25% off.
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-gold"
+              style={{
+                width: "100%",
+                justifyContent: "center",
+                padding: "18px",
+                fontSize: 16,
+                opacity: loading ? 0.7 : 1,
+                marginTop: 8,
+                border: "none",
+                borderRadius: 12,
+                cursor: loading ? "wait" : "pointer",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              {loading ? "Processing..." : "Pay Rs " + pack.price + " Securely"}
+            </button>
+            <p style={{ textAlign: "center", fontSize: 12, color: "#999" }}>
+              Secure payment via Razorpay · UPI · Cards · Net Banking · COD
             </p>
           </div>
-        </div>
-
-        <div style={{ padding: "0 24px 24px" }}>
-          <button
-            onClick={() => onConfirm?.()}
-            style={{
-              width: "100%",
-              padding: "16px",
-              background: "#4A6422",
-              color: "#F2E6CE",
-              border: "none",
-              borderRadius: 10,
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: "pointer",
-              marginBottom: 10,
-              transition: "background 0.18s",
-              letterSpacing: "0.2px",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#2D3D15")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#4A6422")}
-          >
-            Continue to Payment — ₹{finalPayAmount}
-          </button>
-
-          <button
-            onClick={onClose}
-            style={{
-              width: "100%",
-              padding: "12px",
-              background: "transparent",
-              color: "#5C5647",
-              border: "1px solid #D4C8A8",
-              borderRadius: 10,
-              fontSize: 14,
-              cursor: "pointer",
-              transition: "all 0.18s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "#4A6422";
-              e.currentTarget.style.color = "#4A6422";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "#D4C8A8";
-              e.currentTarget.style.color = "#5C5647";
-            }}
-          >
-            ← Go back and change pack
-          </button>
-        </div>
+        </form>
       </div>
-
-      <style>{`
-        @keyframes modal-fade-in {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        @keyframes modal-slide-up {
-          from { opacity: 0; transform: translateY(20px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-      `}</style>
     </div>
   );
 }

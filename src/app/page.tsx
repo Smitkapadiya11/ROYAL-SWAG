@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { S } from "@/lib/config";
 import LungSlider from "@/components/LungSlider";
 import HerbsCircle from "@/components/HerbsCircle";
+import HerbFlipCard from "@/components/HerbFlipCard";
 import MadeFor from "@/components/MadeFor";
 
 export default function Home() {
@@ -178,6 +179,66 @@ export default function Home() {
 
       {/* ═══ 4. HERBS ══════════════════════════════════════════════ */}
       <HerbsCircle />
+
+      <section id="herbs" style={{ background: "transparent", padding: "80px 0" }}>
+        <div className="w">
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <span className="ey">Ayurvedic Formula</span>
+            <h2>Our Herbs</h2>
+            <div className="rl-c" />
+            <p style={{ fontSize: 14, color: "#5C5647", maxWidth: 480, margin: "12px auto 0" }}>
+              Four key botanicals — hover each card to learn how they support your lungs.
+            </p>
+          </div>
+          <div
+            id="herb-flip-grid"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 24,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {[
+              {
+                herb: "Vasaka",
+                benefit: "Opens Airways",
+                icon: "🌿",
+                detail:
+                  "Adhatoda vasica loosens bronchial mucus and opens airways, used in Ayurveda for 3000 years",
+                color: "#2D6A2D",
+              },
+              {
+                herb: "Tulsi",
+                benefit: "Natural Air Filter",
+                icon: "🍃",
+                detail:
+                  "Holy basil purifies respiratory tract, reduces inflammation and strengthens lung immunity daily",
+                color: "#1A3A1A",
+              },
+              {
+                herb: "Mulethi",
+                benefit: "Soothes Throat",
+                icon: "🌾",
+                detail:
+                  "Glycyrrhiza glabra coats the throat, reduces irritation and acts as a natural expectorant",
+                color: "#4A7C59",
+              },
+              {
+                herb: "Pippali",
+                benefit: "Clears Pollution",
+                icon: "🌱",
+                detail:
+                  "Long pepper removes environmental toxins lodged in lung tissues, restoring natural breathing",
+                color: "#C49A2A",
+              },
+            ].map((h) => (
+              <HerbFlipCard key={h.herb} {...h} />
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ═══ 5. HOW IT WORKS ═══════════════════════════════════════ */}
       <section style={{

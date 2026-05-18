@@ -25,6 +25,8 @@
 
   --ff-head: var(--font-playfair-display);
   --ff-body: var(--font-inter);
+  --font-serif: var(--font-playfair-display);
+  --font-sans: var(--font-inter);
 
   --max:  1100px;
   --r:    12px;
@@ -180,6 +182,15 @@ button { cursor: pointer; }
 .btn-olive:hover  { background: var(--deep); }
 .btn-gold         { background: var(--gold); color: var(--deep); font-weight: 600; }
 .btn-gold:hover   { opacity: 0.88; }
+
+body.auth-page header,
+body.auth-page footer,
+body.auth-page nav {
+  display: none !important;
+}
+body.auth-page .rs-main-nav-pad {
+  padding-top: 0 !important;
+}
 .btn-ghost        { background: transparent; color: var(--olive); border: 1.5px solid var(--olive); }
 .btn-ghost:hover  { background: var(--olive); color: var(--cream); }
 .btn-ghost-light  { background: transparent; color: rgba(242,230,206,0.8); border: 1px solid rgba(242,230,206,0.3); }
@@ -236,4 +247,27 @@ button { cursor: pointer; }
   letter-spacing: 0.05em;
   line-height: 1;
   color: var(--gold, #C49A2A);
+}
+
+/* ── Mobile audit (375px) ─────────────────────────────── */
+body.auth-page {
+  overflow-x: hidden;
+}
+
+@media (max-width: 480px) {
+  .checkout-form-row-2,
+  .checkout-form-row-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .profile-tabs::-webkit-scrollbar {
+    display: none;
+  }
 }

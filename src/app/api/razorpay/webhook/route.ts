@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto                        from "crypto";
+import crypto from "crypto";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -54,23 +55,29 @@ export async function POST(req: NextRequest) {
     switch (event.event) {
       case "payment.captured": {
         const payment = event.payload.payment?.entity;
-        // TODO: Update DB → mark order as PAID
-        // await prisma.order.update({
-        //   where: { razorpayOrderId: payment?.order_id as string },
-        //   data:  { status: "PAID", paidAt: new Date() },
-        // });
-        console.log("[webhook] payment.captured:", payment?.id);
+        const paymentId = typeof payment?.id === "string" ? payment.id : null;
+        if (paymentId) {
+          const { error } = await getSupabaseAdmin()
+            .from("orders")
+            .update({ status: "paid", updated_at: new Date().toISOString() })
+            .eq("payment_id", paymentId);
+          if (error) console.error("[webhook] payment.captured update:", error.message);
+        }
+        console.log("[webhook] payment.captured:", paymentId);
         break;
       }
 
       case "payment.failed": {
         const payment = event.payload.payment?.entity;
-        // TODO: Update DB → mark order as FAILED
-        // await prisma.order.update({
-        //   where: { razorpayOrderId: payment?.order_id as string },
-        //   data:  { status: "FAILED" },
-        // });
-        console.log("[webhook] payment.failed:", payment?.id);
+        const paymentId = typeof payment?.id === "string" ? payment.id : null;
+        if (paymentId) {
+          const { error } = await getSupabaseAdmin()
+            .from("orders")
+            .update({ status: "cancelled", updated_at: new Date().toISOString() })
+            .eq("payment_id", paymentId);
+          if (error) console.error("[webhook] payment.failed update:", error.message);
+        }
+        console.log("[webhook] payment.failed:", paymentId);
         break;
       }
 

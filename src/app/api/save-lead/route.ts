@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !serviceRoleKey) {
-      // TODO: Configure SUPABASE_SERVICE_ROLE_KEY on Vercel before launch.
+      console.warn("[save-lead] Supabase service role not configured; lead accepted but not stored.");
       return NextResponse.json({ ok: true, stored: false }, { status: 200 });
     }
 

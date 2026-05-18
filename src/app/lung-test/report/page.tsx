@@ -10,7 +10,6 @@ import {
   MAX_SCORE,
   type LungHealthTier,
 } from "@/lib/quiz-data";
-import CheckoutModal from "@/components/CheckoutModal";
 import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { SITE_ORIGIN } from "@/lib/config";
 
@@ -83,7 +82,6 @@ export default function LungTestReportPage() {
   const { state, reset } = useQuiz();
   const router = useRouter();
   const redirected = useRef(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const pageRef = useRef<HTMLDivElement>(null);
 
   // Guard
@@ -237,15 +235,6 @@ export default function LungTestReportPage() {
           </LeadGuardLink>
           <ShareButton tier={tier} />
         </div>
-
-        <CheckoutModal
-          isOpen={isCheckoutOpen}
-          onClose={() => setIsCheckoutOpen(false)}
-          onConfirm={() => {
-            setIsCheckoutOpen(false);
-            router.push("/product");
-          }}
-        />
 
         {/* Retake */}
         <div className="text-center mt-8">

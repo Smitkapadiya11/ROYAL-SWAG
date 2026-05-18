@@ -1,117 +1,74 @@
 "use client";
+
+import { Suspense, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+import { gsap } from "gsap";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
-import OrderConfirmationModal from "@/components/OrderConfirmationModal";
-import { parseStoredLead } from "@/lib/lead-capture-storage";
-import {
-  RS_ORDER_CONFIRMATION_KEY,
-  type StoredOrderConfirmation,
-} from "@/lib/order-confirmation-storage";
+import { APP_SITE } from "@/lib/config";
 
-function readStoredConfirmation(): Partial<StoredOrderConfirmation> | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(RS_ORDER_CONFIRMATION_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as Partial<StoredOrderConfirmation>;
-  } catch {
-    return null;
-  }
-}
-
-function Success() {
-  const p = useSearchParams();
-  const orderIdUrl = p?.get("orderId") ?? p?.get("order") ?? "";
-  const paymentIdUrl = p?.get("paymentId") ?? p?.get("id") ?? "";
-
-  const [showModal, setShowModal] = useState(false);
-  const [modalDetails, setModalDetails] = useState({
-    name: "",
-    mobile: "",
-    package: "",
-    amount: 0,
-    orderId: "",
-    paymentId: "",
-  });
+function OrderSuccessContent() {
+  const params = useSearchParams();
+  const order = params?.get("order");
+  const ref = useRef<HTMLDivElement>(null);
+  const checkRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const stored = readStoredConfirmation();
-    const lead = parseStoredLead();
+    document.body.classList.add("auth-page");
+    return () => document.body.classList.remove("auth-page");
+  }, []);
 
-    const name =
-      (typeof stored?.name === "string" && stored.name) ||
-      lead?.name ||
-      "Customer";
-    const mobile =
-      (typeof stored?.mobile === "string" && stored.mobile) ||
-      lead?.mobile ||
-      "";
+  useEffect(() => {
+    if (!ref.current || !checkRef.current) return;
+    const tl = gsap.timeline();
+    tl.from(ref.current, { opacity: 0, y: 40, duration: 0.8, ease: "power3.out" }).from(
+      checkRef.current,
+      { scale: 0, duration: 0.5, ease: "back.out(1.7)" },
+      "-=0.3"
+    );
+  }, []);
 
-    const pkg =
-      typeof stored?.package === "string" && stored.package
-        ? stored.package
-        : "Royal Swag Lung Detox Tea";
-
-    const amount =
-      typeof stored?.amount === "number" && Number.isFinite(stored.amount)
-        ? stored.amount
-        : 349;
-
-    const orderId =
-      (typeof stored?.orderId === "string" && stored.orderId) || orderIdUrl;
-    const paymentId =
-      (typeof stored?.paymentId === "string" && stored.paymentId) ||
-      paymentIdUrl;
-
-    if (orderId || paymentId || stored) {
-      setModalDetails({
-        name,
-        mobile,
-        package: pkg,
-        amount,
-        orderId,
-        paymentId,
-      });
-      setShowModal(true);
-    }
-  }, [orderIdUrl, paymentIdUrl]);
-
-  const paymentId = paymentIdUrl || modalDetails.paymentId;
-  const orderId = orderIdUrl || modalDetails.orderId;
+  const whatsappHref = order
+    ? `https://wa.me/${APP_SITE.whatsapp}?text=${encodeURIComponent(`Hi, my order is #${order}`)}`
+    : `https://wa.me/${APP_SITE.whatsapp}`;
 
   return (
-    <section
+    <div
       style={{
-        minHeight: "100svh",
-        background: "#F2E6CE",
+        minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "80px 24px",
-        textAlign: "center",
+        background: "linear-gradient(135deg,#0D2010,#1A3A1A)",
+        padding: 20,
+        marginTop: -72,
       }}
     >
-      <OrderConfirmationModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        orderDetails={modalDetails}
-      />
-
-      <div style={{ maxWidth: 520, width: "100%" }}>
+      <div
+        ref={ref}
+        style={{
+          background: "white",
+          borderRadius: 24,
+          padding: "clamp(40px,6vw,64px)",
+          maxWidth: 480,
+          width: "100%",
+          textAlign: "center",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.3)",
+        }}
+      >
         <div
+          ref={checkRef}
           style={{
             width: 80,
             height: 80,
             borderRadius: "50%",
-            background: "#4A6422",
-            color: "#F2E6CE",
+            background: "linear-gradient(135deg,#2D6A2D,#4A7C59)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontSize: 36,
-            margin: "0 auto 28px",
-            boxShadow: "0 4px 24px rgba(74,100,34,0.25)",
+            margin: "0 auto 24px",
+            boxShadow: "0 8px 32px rgba(45,106,45,0.4)",
+            color: "#fff",
           }}
         >
           ✓
@@ -119,231 +76,87 @@ function Success() {
 
         <h1
           style={{
-            fontFamily: "var(--ff-head)",
-            fontSize: "clamp(28px,4vw,40px)",
-            color: "#2D3D15",
+            fontFamily: "var(--font-playfair-display)",
+            fontSize: "clamp(28px,4vw,36px)",
+            color: "#1A3A1A",
             marginBottom: 12,
-            lineHeight: 1.2,
           }}
         >
-          Your order is confirmed.
+          Order Confirmed!
         </h1>
-
-        <p
-          style={{
-            fontSize: 16,
-            color: "#5C5647",
-            lineHeight: 1.75,
-            maxWidth: 400,
-            margin: "0 auto 8px",
-          }}
-        >
-          Your lungs are about to thank you. We ship within 24 hours on weekdays.
+        <p style={{ color: "#6B6B6B", fontSize: 15, marginBottom: 8 }}>
+          Thank you for choosing Royal Swag Lung Detox Tea
         </p>
-
-        <p
-          style={{
-            fontSize: 14,
-            color: "#5C5647",
-            lineHeight: 1.6,
-            marginBottom: 32,
-          }}
-        >
-          A confirmation will be sent to your registered contact.
-        </p>
-
-        {(paymentId || orderId) && (
+        {order && (
           <div
             style={{
-              background: "#fff",
-              borderRadius: 10,
-              border: "1px solid #D4C8A8",
-              padding: "20px 24px",
-              marginBottom: 32,
-              textAlign: "left",
+              background: "#E8F5E9",
+              borderRadius: 12,
+              padding: "12px 20px",
+              marginBottom: 20,
+              fontWeight: 700,
+              color: "#1A3A1A",
+              fontSize: 16,
             }}
           >
-            <p
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "2px",
-                color: "#C49A2A",
-                marginBottom: 12,
-              }}
-            >
-              ORDER DETAILS
-            </p>
-            {orderId ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 13,
-                  marginBottom: 8,
-                  gap: 12,
-                }}
-              >
-                <span style={{ color: "#5C5647" }}>Order ID</span>
-                <span
-                  style={{
-                    color: "#1A1A14",
-                    fontFamily: "monospace",
-                    fontSize: 12,
-                    wordBreak: "break-all",
-                  }}
-                >
-                  {orderId}
-                </span>
-              </div>
-            ) : null}
-            {paymentId ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 13,
-                  gap: 12,
-                }}
-              >
-                <span style={{ color: "#5C5647" }}>Payment ID</span>
-                <span
-                  style={{
-                    color: "#1A1A14",
-                    fontFamily: "monospace",
-                    fontSize: 12,
-                    wordBreak: "break-all",
-                  }}
-                >
-                  {paymentId}
-                </span>
-              </div>
-            ) : null}
+            Order #{order}
           </div>
         )}
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 12,
-            marginBottom: 36,
-          }}
-        >
-          {[
-            { icon: "📦", label: "Ships in 24hrs", sub: "Weekdays" },
-            { icon: "🚚", label: "Free Delivery", sub: "Pan India" },
-            { icon: "↩", label: "30-Day Guarantee", sub: "Full refund" },
-          ].map((d) => (
-            <div
-              key={d.label}
-              style={{
-                background: "#fff",
-                border: "1px solid #D4C8A8",
-                borderRadius: 8,
-                padding: "14px 8px",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: 22, marginBottom: 6 }}>{d.icon}</div>
-              <p
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "#1A1A14",
-                  marginBottom: 2,
-                }}
-              >
-                {d.label}
-              </p>
-              <p style={{ fontSize: 11, color: "#5C5647" }}>{d.sub}</p>
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              background: "#4A6422",
-              color: "#F2E6CE",
-              padding: "13px 28px",
-              borderRadius: 6,
-              fontWeight: 500,
-              fontSize: 14,
-              textDecoration: "none",
-            }}
-          >
-            Back to Home
-          </Link>
-          <Link
-            href="/reviews"
-            style={{
-              background: "transparent",
-              color: "#4A6422",
-              padding: "13px 28px",
-              borderRadius: 6,
-              fontWeight: 500,
-              fontSize: 14,
-              border: "1.5px solid #4A6422",
-              textDecoration: "none",
-            }}
-          >
-            Read Customer Results
-          </Link>
-        </div>
-
-        <p
-          style={{
-            marginTop: 24,
-            fontSize: 12,
-            color: "#5C5647",
-            opacity: 0.65,
-          }}
-        >
-          Questions? Write to{" "}
-          <a href="mailto:Eximburg@gmail.com" style={{ color: "#4A6422" }}>
-            Eximburg@gmail.com
-          </a>
+        <p style={{ color: "#6B6B6B", fontSize: 13, marginBottom: 28 }}>
+          A confirmation has been sent to your WhatsApp. Your order will ship within 24 hours.
         </p>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link
+            href="/profile"
+            className="btn-gold"
+            style={{ textDecoration: "none", padding: "12px 24px", fontSize: 14 }}
+          >
+            View My Orders
+          </Link>
+          <Link
+            href={whatsappHref}
+            style={{
+              textDecoration: "none",
+              padding: "12px 24px",
+              fontSize: 14,
+              fontWeight: 600,
+              background: "#25D366",
+              color: "white",
+              borderRadius: 50,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WhatsApp Support
+          </Link>
+        </div>
       </div>
-    </section>
+    </div>
   );
 }
 
-export default function SuccessPage() {
+export default function OrderSuccess() {
   return (
     <Suspense
       fallback={
         <div
           style={{
-            minHeight: "100svh",
+            minHeight: "100vh",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            background: "linear-gradient(135deg,#0D2010,#1A3A1A)",
+            color: "#FAF6EE",
           }}
         >
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: "50%",
-              border: "3px solid #4A6422",
-              borderTopColor: "transparent",
-              animation: "spin 0.7s linear infinite",
-            }}
-          />
+          Loading…
         </div>
       }
     >
-      <Success />
+      <OrderSuccessContent />
     </Suspense>
   );
 }

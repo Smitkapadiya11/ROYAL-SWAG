@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { Toaster } from "react-hot-toast";
+import StyledComponentsRegistry from "@/lib/registry";
 import { SITE_ORIGIN } from "@/lib/config";
 
 /** Fonts use stacks from globals.css (no next/font Google fetch — builds offline / behind strict firewalls). */
@@ -27,9 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="overflow-x-hidden">
       <body className="overflow-x-hidden">
-        <Nav />
-        <main className="rs-main-nav-pad">{children}</main>
-        <Footer />
+        <StyledComponentsRegistry>
+          <Nav />
+          <main className="rs-main-nav-pad">{children}</main>
+          <Footer />
+          <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

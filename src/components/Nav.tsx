@@ -5,6 +5,7 @@ import Image from "next/image";
 import { isProductPath } from "@/lib/is-product-path";
 import { S } from "@/lib/config";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
 import {
   ROYAL_SWAG_LOGO_HEIGHT,
   ROYAL_SWAG_LOGO_SRC,
@@ -23,6 +24,7 @@ export default function Nav() {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const [headerH, setHeaderH] = useState(168);
 
@@ -30,6 +32,12 @@ export default function Nav() {
     const fn = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email === "admin@eximburginternational.in") setIsAdmin(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -57,7 +65,7 @@ export default function Nav() {
           left: 0,
           right: 0,
           zIndex: 200,
-          background: scrolled ? "#2D3D15" : "#4A6422",
+          background: scrolled ? "var(--rs-green-dark)" : "var(--rs-green-dark)",
           transition: "background 0.3s",
           borderBottom: "1px solid rgba(255,255,255,0.07)",
           display: "flex",
@@ -94,15 +102,15 @@ export default function Nav() {
             >
               {LINKS.map((l) => {
                 const navStyle = {
-                  color: "rgba(242,230,206,0.72)",
+                  color: "rgba(255,255,255,0.75)",
                   fontSize: 13,
                   transition: "color 0.2s",
                 } as const;
                 const handlers = {
                   onMouseEnter: (e: { currentTarget: HTMLElement }) =>
-                    (e.currentTarget.style.color = "#F2E6CE"),
+                    (e.currentTarget.style.color = "var(--rs-gold)"),
                   onMouseLeave: (e: { currentTarget: HTMLElement }) =>
-                    (e.currentTarget.style.color = "rgba(242,230,206,0.72)"),
+                    (e.currentTarget.style.color = "rgba(255,255,255,0.75)"),
                 };
                 return isProductPath(l.href) ? (
                   <button
@@ -120,6 +128,58 @@ export default function Nav() {
                   </Link>
                 );
               })}
+              <Link
+                href="/auth"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  color: "rgba(255,255,255,0.75)",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  padding: "8px 16px",
+                  borderRadius: 50,
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "var(--rs-gold)";
+                  e.currentTarget.style.color = "var(--rs-gold)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.75)";
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                Login
+              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    color: "#C49A2A",
+                    fontFamily: "var(--font-sans)",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    textDecoration: "none",
+                    padding: "8px 16px",
+                    borderRadius: 50,
+                    background: "rgba(184,134,11,0.15)",
+                    border: "1px solid rgba(184,134,11,0.3)",
+                  }}
+                >
+                  ⚙ Admin
+                </Link>
+              )}
             </nav>
           </div>
 
@@ -187,7 +247,7 @@ export default function Nav() {
                   display: "block",
                   width: 22,
                   height: 2,
-                  background: "#F2E6CE",
+                  background: "var(--rs-white)",
                   borderRadius: 2,
                   transition: "all 0.2s",
                   transform: open ? "rotate(45deg) translate(5px,5px)" : "none",
@@ -198,7 +258,7 @@ export default function Nav() {
                   display: "block",
                   width: 22,
                   height: 2,
-                  background: "#F2E6CE",
+                  background: "var(--rs-white)",
                   borderRadius: 2,
                   transition: "all 0.2s",
                   opacity: open ? 0 : 1,
@@ -209,7 +269,7 @@ export default function Nav() {
                   display: "block",
                   width: 22,
                   height: 2,
-                  background: "#F2E6CE",
+                  background: "var(--rs-white)",
                   borderRadius: 2,
                   transition: "all 0.2s",
                   transform: open ? "rotate(-45deg) translate(5px,-5px)" : "none",
@@ -229,7 +289,7 @@ export default function Nav() {
             right: 0,
             bottom: 0,
             zIndex: 199,
-            background: "#2D3D15",
+            background: "var(--rs-green-dark)",
             overflowY: "auto",
             padding: "8px 0 40px",
           }}
@@ -237,7 +297,7 @@ export default function Nav() {
           {LINKS.map((l) => {
             const rowStyle = {
               display: "block",
-              color: "rgba(242,230,206,0.85)",
+              color: "rgba(255,255,255,0.85)",
               fontSize: 17,
               padding: "16px 24px",
               borderBottom: "1px solid rgba(255,255,255,0.05)",

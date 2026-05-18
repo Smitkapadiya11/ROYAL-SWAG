@@ -97,9 +97,9 @@ export default function Navbar() {
       <header
         ref={navRef}
         className={`navbar fixed top-0 left-0 right-0 z-50 min-h-[72px] overflow-hidden border-b border-white/10 py-2 min-[769px]:min-h-[84px] transition-[background-color,border-color,backdrop-filter] duration-300 ease-out ${
-          scrolled ? "navbar-rs-scrolled" : ""
+          scrolled ? "navbar-scrolled" : ""
         }`}
-        style={scrolled ? undefined : { backgroundColor: "#0D3B1F" }}
+        style={scrolled ? undefined : { backgroundColor: "var(--rs-green-dark)" }}
         role="banner"
       >
         <div className="container-rs mx-auto flex h-full w-full max-h-full items-center justify-between gap-3 overflow-hidden px-4">

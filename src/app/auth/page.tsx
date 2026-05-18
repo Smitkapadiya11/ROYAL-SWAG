@@ -91,13 +91,15 @@ export default function AuthPage() {
       return;
     }
     toast.success("Welcome back!");
-    router.push("/profile");
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next") || "/profile";
+    router.push(next);
     router.refresh();
   };
 
   const onSignup = async (data: SignupForm) => {
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: { data: { full_name: data.full_name, phone: data.phone } },
@@ -107,10 +109,13 @@ export default function AuthPage() {
       setLoading(false);
       return;
     }
-    await supabase
-      .from("profiles")
-      .update({ phone: data.phone, full_name: data.full_name })
-      .eq("email", data.email);
+    if (signUpData.user) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ phone: data.phone, full_name: data.full_name })
+        .eq("id", signUpData.user.id);
+      if (profileError) console.error("[auth signup] profile update:", profileError.message);
+    }
     setLoading(false);
     toast.success("Account created! Check email to verify.");
     switchTab("login");

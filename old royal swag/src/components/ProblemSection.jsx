@@ -1,129 +1,208 @@
-'use client';
+"use client";
 import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import { trackEvent } from '../lib/events';
 
-// Animated Counter component
-const AnimatedCounter = ({ endValue, suffix = '', duration = 2000, start = false }) => {
+const SectionWrapper = styled.section`
+  position: relative;
+  padding: 80px 20px;
+  background: #0d1a0f;
+  color: #F4EDD6;
+  text-align: center;
+  background-image: url('/images/asset3-stats-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 26, 15, 0.82);
+  z-index: 1;
+`;
+
+const Content = styled.div`
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const Headline = styled.h2`
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #F4EDD6;
+  
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+`;
+
+const Subheadline = styled.p`
+  font-size: 18px;
+  opacity: 0.75;
+  margin-bottom: 60px;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-bottom: 60px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+`;
+
+const StatCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const StatNumber = styled.div`
+  font-size: 72px;
+  font-weight: 700;
+  color: #9A6F1A;
+  margin-bottom: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  
+  @media (max-width: 768px) {
+    font-size: 56px;
+  }
+`;
+
+const StatText = styled.p`
+  font-size: 16px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+`;
+
+const StatSource = styled.span`
+  font-size: 12px;
+  opacity: 0.5;
+`;
+
+const ClosingLine = styled.p`
+  font-size: 20px;
+  font-weight: 600;
+  color: #F4EDD6;
+`;
+
+function useAnimatedCounter(end, duration, startCondition) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!start) return;
+    if (!startCondition) return;
     
     let startTime = null;
-    const animate = (currentTime) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
       
-      // easeOutExpo
-      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const easeOut = percentage === 1 ? 1 : 1 - Math.pow(2, -10 * percentage);
       
-      // If the number is a float
-      if (endValue % 1 !== 0) {
-        setCount(Number((easeProgress * endValue).toFixed(2)));
-      } else {
-        setCount(Math.floor(easeProgress * endValue));
-      }
-
-      if (progress < 1) {
+      setCount(end * easeOut);
+      
+      if (percentage < 1) {
         requestAnimationFrame(animate);
       }
     };
     
     requestAnimationFrame(animate);
-  }, [endValue, duration, start]);
+  }, [end, duration, startCondition]);
 
-  return <span>{count}{suffix}</span>;
+  return count;
+}
+
+const AnimatedStat = ({ endVal, suffix, text, source, isFloat = false }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const count = useAnimatedCounter(endVal, 2000, isVisible);
+  const displayVal = isFloat ? count.toFixed(2) : Math.floor(count);
+
+  return (
+    <StatCard ref={ref}>
+      <StatNumber>
+        {displayVal}{suffix}
+      </StatNumber>
+      <StatText>{text}</StatText>
+      <StatSource>{source}</StatSource>
+    </StatCard>
+  );
 };
 
 export default function ProblemSection() {
   const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [hasTracked, setHasTracked] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
+      ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
-          if (!hasTracked) {
-            trackEvent('section_view', { section: 'problem' });
-            setHasTracked(true);
-          }
+          trackEvent('section_view', { section: 'problem' });
+          observer.disconnect();
         }
       },
       { threshold: 0.2 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
-    };
-  }, [hasTracked]);
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section 
-      ref={sectionRef}
-      className="relative w-full py-24 bg-cover bg-center"
-      style={{ backgroundImage: 'url("/assets/Aerial_view_of_Indian_city_202605230218.jpeg")' }}
-    >
-      <div className="absolute inset-0 bg-[#0D1A0F] opacity-80 z-0"></div>
-      
-      <div className="relative z-10 max-w-[1200px] mx-auto px-4 text-[#F4EDD6] text-center">
-        <h2 className="text-[32px] md:text-[42px] font-serif font-bold mb-4">
-          The air you're breathing right now.
-        </h2>
-        <p className="text-lg md:text-xl opacity-75 mb-16">
-          This isn't fear-mongering. These are the numbers.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-          
-          <div className="flex flex-col items-center">
-            <div className="text-[52px] md:text-[72px] font-bold text-[#9A6F1A] leading-none mb-4">
-              <AnimatedCounter endValue={9.78} suffix="×" start={isVisible} />
-            </div>
-            <p className="text-sm md:text-base mb-2 max-w-[250px]">
-              India's PM2.5 vs WHO safe limit
-            </p>
-            <p className="text-xs opacity-50 uppercase tracking-widest">
-              Source: IQAir 2024
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <div className="text-[52px] md:text-[72px] font-bold text-[#9A6F1A] leading-none mb-4">
-              <AnimatedCounter endValue={10} suffix=" YEARS" start={isVisible} />
-            </div>
-            <p className="text-sm md:text-base mb-2 max-w-[250px]">
-              Tar stays in lung tissue after quitting smoking
-            </p>
-            <p className="text-xs opacity-50 uppercase tracking-widest">
-              Source: American Lung Association
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <div className="text-[52px] md:text-[72px] font-bold text-[#9A6F1A] leading-none mb-4">
-              <AnimatedCounter endValue={0} suffix=" DAYS" start={isVisible} />
-            </div>
-            <p className="text-sm md:text-base mb-2 max-w-[250px]">
-              Clean-air days Delhi had in 2025
-            </p>
-            <p className="text-xs opacity-50 uppercase tracking-widest">
-              Source: CPCB India
-            </p>
-          </div>
-
-        </div>
-
-        <p className="text-xl md:text-2xl font-medium text-[#F4EDD6]">
-          Your lungs are dealing with this today. Not someday.
-        </p>
-      </div>
-    </section>
+    <SectionWrapper ref={sectionRef}>
+      <Overlay />
+      <Content>
+        <Headline>The air you're breathing right now.</Headline>
+        <Subheadline>This isn't fear-mongering. These are the numbers.</Subheadline>
+        
+        <Grid>
+          <AnimatedStat 
+            endVal={9.78} 
+            isFloat={true} 
+            suffix="×" 
+            text="India's PM2.5 vs WHO safe limit" 
+            source="Source: IQAir 2024" 
+          />
+          <AnimatedStat 
+            endVal={10} 
+            suffix=" YEARS" 
+            text="Tar stays in lung tissue after quitting smoking" 
+            source="Source: American Lung Association" 
+          />
+          <AnimatedStat 
+            endVal={0} 
+            suffix=" DAYS" 
+            text="Clean-air days Delhi had in 2025" 
+            source="Source: CPCB India" 
+          />
+        </Grid>
+        
+        <ClosingLine>Your lungs are dealing with this today. Not someday.</ClosingLine>
+      </Content>
+    </SectionWrapper>
   );
 }

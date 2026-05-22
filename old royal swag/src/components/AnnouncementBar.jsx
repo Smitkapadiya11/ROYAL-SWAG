@@ -1,5 +1,6 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
 const messages = [
   "🚚 FREE delivery across India · COD available",
@@ -8,30 +9,54 @@ const messages = [
   "🛡️ 30-day money-back guarantee. No questions."
 ];
 
+const Bar = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  background: #5C946E;
+  color: white;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    white-space: nowrap;
+    font-size: 12px;
+  }
+`;
+
+const Message = styled.div`
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${(props) => (props.$isVisible ? 1 : 0)};
+  position: absolute;
+`;
+
 export default function AnnouncementBar() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % messages.length);
+      setIsVisible(false);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % messages.length);
+        setIsVisible(true);
+      }, 500);
     }, 4000);
+
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="sticky top-0 z-[9999] w-full bg-[#5C946E] text-white h-[36px] flex items-center justify-center overflow-hidden">
-      <div className="relative w-full h-full flex items-center justify-center max-w-[1200px] px-4">
-        {messages.map((msg, idx) => (
-          <p
-            key={idx}
-            className={`absolute text-sm font-medium transition-opacity duration-500 text-center whitespace-nowrap ${
-              idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            {msg}
-          </p>
-        ))}
-      </div>
-    </div>
+    <Bar>
+      {messages.map((msg, index) => (
+        <Message key={index} $isVisible={isVisible && currentIndex === index}>
+          {msg}
+        </Message>
+      ))}
+    </Bar>
   );
 }

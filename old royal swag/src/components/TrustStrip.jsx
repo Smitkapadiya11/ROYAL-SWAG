@@ -1,50 +1,111 @@
-'use client';
+"use client";
 import React from 'react';
+import styled from 'styled-components';
 import Image from 'next/image';
 
-const items = [
-  { icon: '🌿', text: '100% Ayurvedic' },
-  { icon: '🏭', text: 'Made in India · Surat' },
-  { icon: '🧪', text: 'Lab-Tested Batches' },
-  { icon: '📦', text: 'Free Delivery Pan India' },
-  { icon: '💵', text: 'COD Available' },
-  { icon: '↩️', text: '30-Day Money Back' }
-];
+const StripContainer = styled.section`
+  background: #F4EDD6;
+  border-top: 1px solid rgba(73, 87, 56, 0.2);
+  border-bottom: 1px solid rgba(73, 87, 56, 0.2);
+  padding: 16px 0;
+  width: 100%;
+`;
+
+const ScrollWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  
+  @media (max-width: 992px) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    justify-content: flex-start;
+    gap: 32px;
+    padding: 0 16px;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
+  }
+`;
+
+const Item = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const IconCircle = styled.div`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #5C946E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+`;
+
+const ItemText = styled.span`
+  color: #495738;
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const Separator = styled.div`
+  width: 1px;
+  height: 20px;
+  background: rgba(73, 87, 56, 0.2);
+  
+  @media (max-width: 992px) {
+    display: none;
+  }
+`;
+
+const BadgesContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+`;
 
 export default function TrustStrip() {
+  const trustItems = [
+    { icon: '🌿', text: '100% Ayurvedic' },
+    { icon: '🏭', text: 'Made in India · Surat' },
+    { icon: '🧪', text: 'Lab-Tested Batches' },
+    { icon: '📦', text: 'Free Delivery Pan India' },
+    { icon: '💵', text: 'COD Available' },
+    { icon: '↩️', text: '30-Day Money Back' },
+  ];
+
   return (
-    <section className="bg-[#F4EDD6] border-y border-[#49573820] py-4 w-full overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-4 flex flex-col items-center space-y-4">
-        
-        {/* Horizontal Scroll Text Items */}
-        <div className="w-full overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <div className="flex items-center space-x-6 md:space-x-0 md:justify-between min-w-max md:min-w-0 w-full pb-2 md:pb-0 px-2 md:px-0">
-            {items.map((item, index) => (
-              <div key={index} className="flex items-center space-x-2 whitespace-nowrap">
-                <div className="w-6 h-6 rounded-full bg-[#5C946E] flex items-center justify-center text-xs">
-                  {item.icon}
-                </div>
-                <span className="text-[#495738] text-sm font-medium">{item.text}</span>
-                {index < items.length - 1 && (
-                  <span className="hidden md:block text-[#49573840] mx-4">|</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Certification Badges */}
-        <div className="flex justify-center w-full max-w-[400px]">
-          <Image
-            src="/assets/Set_of_4_certification_badge_202605230220.jpeg"
-            alt="Certification Badges"
-            width={400}
-            height={80}
-            className="object-contain opacity-80"
-          />
-        </div>
-
-      </div>
-    </section>
+    <StripContainer>
+      <ScrollWrapper>
+        {trustItems.map((item, index) => (
+          <React.Fragment key={index}>
+            <Item>
+              <IconCircle>{item.icon}</IconCircle>
+              <ItemText>{item.text}</ItemText>
+            </Item>
+            {index < trustItems.length - 1 && <Separator />}
+          </React.Fragment>
+        ))}
+      </ScrollWrapper>
+      <BadgesContainer>
+        <Image 
+          src="/images/asset12-badges.png" 
+          alt="Certifications" 
+          width={300} 
+          height={40} 
+          style={{ objectFit: 'contain' }}
+        />
+      </BadgesContainer>
+    </StripContainer>
   );
 }

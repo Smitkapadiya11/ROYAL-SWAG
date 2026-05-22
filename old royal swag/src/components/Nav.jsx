@@ -1,125 +1,208 @@
-'use client';
-import React, { useState, useEffect } from 'react';
+"use client";
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import Link from 'next/link';
 import Image from 'next/image';
 import RoyalButton from './ui/Button';
 
+// Using the exact styled wrapper layout inspired by Tooltip from reference.md
+const StyledTooltipWrapper = styled.div`
+  .tooltip-wrapper {
+    --clr-btn: transparent;
+    --clr-dropdown: #2A3020;
+    --clr-nav-hover: #9A6F1A;
+    --clr-dropdown-hov: #9A6F1A;
+    --clr-dropdown-link-hov: #9A6F1A;
+    --clr-light: #F4EDD6;
+  }
+  .nav-link {
+    position: relative;
+  }
+  .tooltip-wrapper > .tooltip-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+  }
+  .tooltip-container,
+  .tooltip-menu-with-icon {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-link > .tooltip-tab {
+    color: var(--clr-light);
+    background: var(--clr-btn);
+    padding: 0.8rem 1rem;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+    justify-content: space-between;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.3s ease-in-out;
+    border-radius: 8px;
+  }
+  .nav-link > .tooltip-tab:hover {
+    background-color: var(--clr-nav-hover);
+    transform: scale(1.05);
+  }
+  .tooltip-links {
+    text-decoration: none;
+  }
+`;
+
+const NavContainer = styled.nav`
+  position: sticky;
+  top: 36px;
+  z-index: 9998;
+  background: rgba(73, 87, 56, 0.95);
+  backdrop-filter: blur(10px);
+  color: #F4EDD6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 40px;
+  
+  @media (max-width: 768px) {
+    padding: 10px 20px;
+  }
+`;
+
+const DesktopMenu = styled.div`
+  display: flex;
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const RightSide = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileMenuBtn = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  color: #F4EDD6;
+  font-size: 24px;
+  cursor: pointer;
+  
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const FullScreenOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #495738;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  transition: opacity 0.3s ease;
+  opacity: ${props => props.$isOpen ? 1 : 0};
+  pointer-events: ${props => props.$isOpen ? 'auto' : 'none'};
+`;
+
+const CloseBtn = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #F4EDD6;
+  font-size: 32px;
+  cursor: pointer;
+`;
+
+const MobileLink = styled(Link)`
+  color: #F4EDD6;
+  font-size: 24px;
+  text-decoration: none;
+  font-weight: bold;
+`;
+
 export default function Nav() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Lung Test', href: '/lung-test' },
-    { label: 'Reviews', href: '/#reviews' },
-    { label: 'About', href: '/#about' }
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const links = [
+    { name: 'Home', href: '/' },
+    { name: 'Lung Test', href: '/lung-test' },
+    { name: 'Reviews', href: '/reviews' },
+    { name: 'About', href: '/about' },
   ];
 
   return (
-    <nav
-      className={`sticky top-[36px] z-[9998] w-full transition-all duration-300 ${
-        isScrolled
-          ? 'bg-[#495738]/90 backdrop-blur-md shadow-lg py-2'
-          : 'bg-[#495738] py-4'
-      }`}
-    >
-      <div className="max-w-[1200px] mx-auto px-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/images/new_logo.png"
-            alt="Royal Swag Logo"
-            width={120}
-            height={40}
-            className="object-contain"
-          />
+    <>
+      <NavContainer>
+        <Link href="/">
+          <div style={{ position: 'relative', width: '120px', height: '40px' }}>
+            <Image 
+              src="/images/new_logo.png" 
+              alt="Royal Swag" 
+              fill 
+              style={{ objectFit: 'contain' }} 
+            />
+          </div>
         </Link>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center space-x-8">
-          <div className="flex space-x-6 text-[#F4EDD6] font-medium">
-            {navLinks.map((link) => (
-              <Link key={link.label} href={link.href} className="hover:text-[#9A6F1A] transition-colors" title={link.label}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <Link
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center hover:scale-110 transition-transform"
-              title="Chat on WhatsApp"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 16 16">
-                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-              </svg>
-            </Link>
-            <Link href="/product">
-              <RoyalButton className="text-sm px-4 py-2">Buy Now</RoyalButton>
-            </Link>
-          </div>
-        </div>
-
-        {/* Mobile Hamburger */}
-        <div className="md:hidden flex items-center space-x-4">
-          <Link href="/product">
-            <RoyalButton className="text-xs px-3 py-1.5">Buy</RoyalButton>
-          </Link>
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-[#F4EDD6] focus:outline-none z-50 relative"
-          >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
+        
+        <DesktopMenu>
+          <StyledTooltipWrapper>
+            <div className="tooltip-wrapper">
+              <ul className="tooltip-container">
+                {links.map((link, i) => (
+                  <li key={i} className="nav-link">
+                    <Link href={link.href} style={{ textDecoration: 'none' }}>
+                      <div className="tooltip-tab">
+                        {link.name}
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </StyledTooltipWrapper>
+        </DesktopMenu>
+        
+        <RightSide>
+          <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" style={{ color: '#F4EDD6' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
-          </button>
-        </div>
-      </div>
+          </a>
+          <RoyalButton>Buy Now</RoyalButton>
+        </RightSide>
+        
+        <MobileMenuBtn onClick={() => setIsOpen(true)}>
+          ☰
+        </MobileMenuBtn>
+      </NavContainer>
 
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed inset-0 bg-[#495738] z-40 flex flex-col items-center justify-center space-y-8 transition-transform duration-500 ease-in-out ${
-          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        {navLinks.map((link) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            className="text-2xl font-medium text-[#F4EDD6] hover:text-[#9A6F1A]"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {link.label}
-          </Link>
+      <FullScreenOverlay $isOpen={isOpen}>
+        <CloseBtn onClick={() => setIsOpen(false)}>×</CloseBtn>
+        {links.map((link, i) => (
+          <MobileLink key={i} href={link.href} onClick={() => setIsOpen(false)}>
+            {link.name}
+          </MobileLink>
         ))}
-        <Link
-          href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center space-x-3 text-[#F4EDD6]"
-        >
-          <span className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 16 16">
-              <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-            </svg>
-          </span>
-          <span>WhatsApp Us</span>
-        </Link>
-      </div>
-    </nav>
+        <RoyalButton style={{ marginTop: '20px' }}>Buy Now</RoyalButton>
+      </FullScreenOverlay>
+    </>
   );
 }

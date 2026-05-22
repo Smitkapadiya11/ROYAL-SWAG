@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+:root {
+  --olive: #495738;
+  --cream: #F4EDD6;
+  --gold: #9A6F1A;
+  --sage: #5C946E;
+  --dark: #2A3020;
+  --text-on-olive: #F4EDD6;
+  --bg-site: #F4EDD6;
+}
+
+body {
+  background: #F4EDD6;
+  font-family: 'Inter', sans-serif;
+}

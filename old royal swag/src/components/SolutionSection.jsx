@@ -117,7 +117,7 @@ export default function SolutionSection() {
 
   return (
     <SectionWrapper id="solution">
-      <Headline>A 3,000-year-old answer. Brewed for today's air.</Headline>
+      <Headline>An ancient science, refined for modern living.</Headline>
       
       <ContentGrid ref={ref}>
         <VisualColumn $isVisible={isVisible}>
@@ -131,7 +131,7 @@ export default function SolutionSection() {
           </ImageWrapper>
           <ImageWrapper>
             <Image 
-              src="/images/asset1-hero-product.jpg" 
+              src="/images/hero/asset1-hero-product.jpeg" 
               alt="Royal Swag Detox Tea" 
               fill 
               style={{ objectFit: 'cover' }} 
@@ -140,9 +140,9 @@ export default function SolutionSection() {
         </VisualColumn>
         
         <TextColumn>
-          <p>Ayurveda mapped the human respiratory system centuries before the industrial revolution. They understood how particulate matter sticks to the mucous lining.</p>
-          <p>We took these ancient formulations—Vasaka for opening airways, Mulethi for soothing irritation, Tulsi for immune defense—and concentrated them.</p>
-          <p>The result is a daily ritual designed specifically for the unique assault our lungs face today from city pollution and smoking.</p>
+          <p>Ayurveda understood the complexities of the human respiratory system long before the industrial age, recognizing how environmental toxins accumulate within the body.</p>
+          <p>We’ve carefully sourced and blended time-tested botanicals—Vasaka to help clear airways, Mulethi to soothe irritation, and Tulsi to boost natural immunity.</p>
+          <p>The result is a revitalizing daily ritual, crafted specifically to help your lungs recover from the ongoing stress of city pollution, smog, and smoking.</p>
         </TextColumn>
       </ContentGrid>
       

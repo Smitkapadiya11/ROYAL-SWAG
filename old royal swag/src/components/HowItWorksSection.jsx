@@ -168,19 +168,19 @@ export default function HowItWorksSection() {
           <StepNumber>01</StepNumber>
           <StepIcon>🍵</StepIcon>
           <StepTitle>BREW</StepTitle>
-          <StepCopy>Boil one tea bag in fresh water for 3-4 minutes to release the active phytonutrients.</StepCopy>
+          <StepCopy>Steep one tea bag in hot water for 3-4 minutes to gently release the active herbal phytonutrients.</StepCopy>
         </StepCard>
         <StepCard>
           <StepNumber>02</StepNumber>
           <StepIcon>💧</StepIcon>
           <StepTitle>DRINK</StepTitle>
-          <StepCopy>Sip it warm. The soothing liquid coats your throat, providing instant irritation relief.</StepCopy>
+          <StepCopy>Sip slowly. The warm infusion coats your throat, providing immediate soothing relief from irritation.</StepCopy>
         </StepCard>
         <StepCard>
           <StepNumber>03</StepNumber>
           <StepIcon>🫁</StepIcon>
           <StepTitle>BREATHE</StepTitle>
-          <StepCopy>The herbs enter your bloodstream and airways, breaking down tar and accumulated mucus.</StepCopy>
+          <StepCopy>The potent botanicals go to work, helping your body clear environmental build-up and congestion.</StepCopy>
         </StepCard>
       </StepsContainer>
       
@@ -188,19 +188,19 @@ export default function HowItWorksSection() {
         <TimelineTrack>
           <TimelineCard>
             <WeekLabel>Week 1</WeekLabel>
-            <WeekDesc>Throat irritation subsides. Smoker's cough starts to feel less dry and scratchy.</WeekDesc>
+            <WeekDesc>Initial soothing. Minor throat irritation subsides and persistent coughs begin to ease.</WeekDesc>
           </TimelineCard>
           <TimelineCard>
             <WeekLabel>Week 2</WeekLabel>
-            <WeekDesc>Mucus breakdown begins. You may experience productive coughing as tar is expelled.</WeekDesc>
+            <WeekDesc>Active cleansing. The herbal formulation works to break down trapped impurities.</WeekDesc>
           </TimelineCard>
           <TimelineCard>
             <WeekLabel>Week 3</WeekLabel>
-            <WeekDesc>Airways open up. Noticeable improvement in breathing depth and lung stamina.</WeekDesc>
+            <WeekDesc>Noticeable clarity. Experience deeper, more unrestricted breathing and improved stamina.</WeekDesc>
           </TimelineCard>
           <TimelineCard>
             <WeekLabel>Week 4+</WeekLabel>
-            <WeekDesc>Long-term protection. Reduced inflammation and restored natural respiratory defense.</WeekDesc>
+            <WeekDesc>Ongoing defense. Sustained support for your respiratory system and long-term wellness.</WeekDesc>
           </TimelineCard>
         </TimelineTrack>
       </TimelineWrapper>

@@ -99,7 +99,7 @@ export default function TrustStrip() {
       </ScrollWrapper>
       <BadgesContainer>
         <Image 
-          src="/images/asset12-badges.png" 
+          src="/images/badges/asset12.jpeg" 
           alt="Certifications" 
           width={300} 
           height={40} 

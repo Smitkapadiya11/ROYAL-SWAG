@@ -189,8 +189,8 @@ const videosData = [
     spec: 'Pulmonologist',
     age: 42,
     caption: 'I see 30 patients a day with pollution-related asthma. This is the only natural remedy I recommend alongside inhalers.',
-    videoSrc: '/videos/asset13.mp4',
-    poster: '/images/poster1.jpg'
+    videoSrc: '/images/doctors/asset13.mp4',
+    poster: ''
   },
   {
     id: 2,
@@ -198,8 +198,8 @@ const videosData = [
     spec: 'Ayurvedic Practitioner',
     age: 55,
     caption: 'The combination of Pushkarmool and Vasaka is legendary. It\'s exactly what modern city lungs need to clear out toxins.',
-    videoSrc: '/videos/asset14.mp4',
-    poster: '/images/poster2.jpg'
+    videoSrc: '/images/doctors/asset14.mp4',
+    poster: ''
   },
   {
     id: 3,
@@ -207,8 +207,8 @@ const videosData = [
     spec: 'General Physician',
     age: 38,
     caption: 'Smokers constantly ask me for a magic pill. There isn\'t one, but this detox tea is the closest thing to lung repair I\'ve seen.',
-    videoSrc: '/videos/asset15.mp4',
-    poster: '/images/poster3.jpg'
+    videoSrc: '/images/doctors/asset15.mp4',
+    poster: ''
   }
 ];
 

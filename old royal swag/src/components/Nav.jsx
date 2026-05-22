@@ -187,7 +187,7 @@ export default function Nav() {
         <Link href="/">
           <div style={{ position: 'relative', width: '120px', height: '40px' }}>
             <Image 
-              src="/images/new_logo.png" 
+              src="/images/logo/new_logo.png" 
               alt="Royal Swag" 
               fill 
               style={{ objectFit: 'contain' }} 

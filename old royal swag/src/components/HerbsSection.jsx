@@ -166,7 +166,7 @@ const herbsData = [
     role: 'The Airway Opener',
     benefit: 'Dilates bronchioles for easier breathing.',
     description: 'Traditionally used to clear respiratory blockages and act as a powerful bronchodilator. Helps soothe the throat and calm wheezing.',
-    image: '/images/asset4-vasaka.jpg'
+    image: '/images/herbs/vasaka.jpg'
   },
   {
     name: 'Tulsi',
@@ -174,7 +174,7 @@ const herbsData = [
     role: 'The Immune Shield',
     benefit: 'Protects lungs from oxidative stress.',
     description: 'A powerful adaptogen with anti-inflammatory properties that helps defend respiratory tissue against environmental pollutants and free radicals.',
-    image: '/images/asset5-tulsi.jpg'
+    image: '/images/herbs/tulsi.jpg'
   },
   {
     name: 'Mulethi',
@@ -182,7 +182,7 @@ const herbsData = [
     role: 'The Soother',
     benefit: 'Calms irritated mucous membranes.',
     description: 'Acts as a demulcent to coat and soothe the respiratory tract, providing relief from dry coughs and scratchy throats caused by smoke.',
-    image: '/images/asset6-mulethi.jpg'
+    image: '/images/herbs/mulethi.jpg'
   },
   {
     name: 'Kantakari',
@@ -190,7 +190,7 @@ const herbsData = [
     role: 'The Cleanser',
     benefit: 'Expels accumulated mucus.',
     description: 'A well-known expectorant that helps break down and expel sticky mucus and tar accumulated from smoking and air pollution.',
-    image: '/images/asset7-kantakari.jpg'
+    image: '/images/herbs/kantakari.jpg'
   },
   {
     name: 'Pushkarmool',
@@ -198,7 +198,7 @@ const herbsData = [
     role: 'The Lung Tonic',
     benefit: 'Strengthens respiratory capacity.',
     description: 'An ancient remedy for asthma and breathlessness. It helps rejuvenate lung tissue and improves overall respiratory stamina.',
-    image: '/images/asset8-pushkarmool.jpg'
+    image: '/images/herbs/pushkarmool.jpg'
   },
   {
     name: 'Pippali',
@@ -206,7 +206,7 @@ const herbsData = [
     role: 'The Bio-Enhancer',
     benefit: 'Boosts absorption of other herbs.',
     description: 'Not only does it help in clearing mucus, but its primary role is to enhance the bioavailability and effectiveness of the other 6 herbs.',
-    image: '/images/asset9-pippali.jpg'
+    image: '/images/herbs/pippali.jpg'
   },
   {
     name: 'Haridra',
@@ -214,7 +214,7 @@ const herbsData = [
     role: 'The Anti-Inflammatory',
     benefit: 'Reduces lung inflammation.',
     description: 'Contains active curcumin that directly targets and reduces chronic inflammation in the airways caused by long-term exposure to toxins.',
-    image: '/images/asset10-haridra.jpg'
+    image: '/images/herbs/haridra.jpg'
   }
 ];
 

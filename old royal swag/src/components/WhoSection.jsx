@@ -81,29 +81,29 @@ export default function WhoSection() {
   const cards = [
     {
       icon: '🚬',
-      title: 'The Smoker / Ex-Smoker',
-      desc: 'Years of smoking deposit tar in your alveoli. Your lungs need a daily flush to regain lost stamina and reduce coughing.'
+      title: 'Smokers & Ex-Smokers',
+      desc: 'Years of smoking can leave lasting residues in your respiratory tract. This daily detox helps clear build-up, soothe irritation, and restore your natural breathing capacity.'
     },
     {
       icon: '🏙️',
-      title: 'The City Dweller',
-      desc: 'Breathing in Mumbai or Delhi is like smoking 10 cigarettes a day. PM2.5 gets trapped deep in your respiratory system.'
+      title: 'Urban Dwellers',
+      desc: 'Living in high-pollution cities exposes your lungs to harmful PM2.5 daily. Our blend actively works to trap and flush out environmental toxins before they settle.'
     },
     {
-      icon: '🔍',
-      title: 'The Label-Reader',
-      desc: 'You care about what goes into your body. No synthetic syrups. Just 7 clinically studied Ayurvedic herbs.'
+      icon: '🌿',
+      title: 'Health-Conscious Individuals',
+      desc: 'No artificial flavors, no synthetic syrups. Just a 100% natural, clinically studied Ayurvedic formulation for those who care about clean ingredients.'
     },
     {
-      icon: '🎂',
+      icon: '🏃',
       title: 'Anyone Above 30',
-      desc: 'Lung capacity drops 1% every year after 30. Combat this natural decline and maintain respiratory fitness.'
+      desc: 'Natural lung capacity begins to decline by 1% every year after age 30. Combat this aging process and maintain optimal respiratory fitness.'
     }
   ];
 
   return (
     <SectionWrapper id="who-its-for">
-      <Headline>Made for three very specific people.</Headline>
+      <Headline>Crafted for those who need it most.</Headline>
       <Grid>
         {cards.map((card, index) => (
           <Card key={index}>

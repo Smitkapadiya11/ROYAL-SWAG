@@ -206,11 +206,10 @@ export default function HeroSection() {
       <ContentSide>
         <PreHeadline>TAR OUT · LUNG DETOX TEA</PreHeadline>
         <Headline>
-          Your lungs work hard.<br />
-          Give them a break.
+          Breathe Freely Again.
         </Headline>
         <Subheadline>
-          Seven Ayurvedic herbs. One cup a day. Built for people who breathe polluted air, smoke, or used to.
+          A deeply purifying Ayurvedic blend of seven potent herbs to detoxify your lungs, clear respiratory pathways, and combat the effects of daily pollution.
         </Subheadline>
         
         <PriceBlock>
@@ -243,11 +242,12 @@ export default function HeroSection() {
         <FloatingImageContainer>
           <LiveBadge>147 people ordered today</LiveBadge>
           <Image 
-            src="/images/asset1-hero-product.jpg" 
+            src="/images/hero/asset1-hero-product.jpeg" 
             alt="Royal Swag Lung Detox Tea" 
             fill 
             style={{ objectFit: 'contain' }}
             priority
+            onError={(e) => { e.target.style.display='none' }}
           />
         </FloatingImageContainer>
       </ImageSide>

@@ -83,132 +83,128 @@ export default function Nav() {
             gap: 16,
           }}
         >
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              minWidth: 0,
-            }}
-          >
-            <nav
-              className="nav-d"
+          {/* Logo - Left side */}
+          <div style={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
+            <Link
+              href="/"
+              aria-label="Home"
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 28,
+                textDecoration: "none",
               }}
             >
-              {LINKS.map((l) => {
-                const navStyle = {
-                  color: "rgba(255,255,255,0.75)",
-                  fontSize: 13,
-                  transition: "color 0.2s",
-                } as const;
-                const handlers = {
-                  onMouseEnter: (e: { currentTarget: HTMLElement }) =>
-                    (e.currentTarget.style.color = "var(--rs-gold)"),
-                  onMouseLeave: (e: { currentTarget: HTMLElement }) =>
-                    (e.currentTarget.style.color = "rgba(255,255,255,0.75)"),
-                };
-                return isProductPath(l.href) ? (
-                  <button
-                    key={l.href}
-                    type="button"
-                    onClick={() => router.push("/product")}
-                    style={{ ...navStyle, background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                    {...handlers}
-                  >
-                    {l.label}
-                  </button>
-                ) : (
-                  <Link key={l.href} href={l.href} style={navStyle} {...handlers}>
-                    {l.label}
-                  </Link>
-                );
-              })}
-              <Link
-                href="/auth"
+              <Image
+                src={ROYAL_SWAG_LOGO_SRC}
+                alt=""
+                width={ROYAL_SWAG_LOGO_WIDTH}
+                height={ROYAL_SWAG_LOGO_HEIGHT}
+                priority
+                className="nav-main-logo"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
-                  color: "rgba(255,255,255,0.75)",
-                  fontFamily: "var(--font-sans)",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  padding: "8px 16px",
-                  borderRadius: 50,
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  transition: "all 0.2s",
+                  background: "transparent",
+                  objectFit: "contain",
+                  display: "block",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--rs-gold)";
-                  e.currentTarget.style.color = "var(--rs-gold)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.75)";
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                Login
-              </Link>
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    color: "#C49A2A",
-                    fontFamily: "var(--font-sans)",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    textDecoration: "none",
-                    padding: "8px 16px",
-                    borderRadius: 50,
-                    background: "rgba(184,134,11,0.15)",
-                    border: "1px solid rgba(184,134,11,0.3)",
-                  }}
-                >
-                  ⚙ Admin
-                </Link>
-              )}
-            </nav>
+              />
+            </Link>
           </div>
 
-          <Link
-            href="/"
-            aria-label="Home"
+          {/* Links - Center */}
+          <div
+            className="nav-d"
             style={{
-              flexShrink: 0,
+              flex: 2,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              textDecoration: "none",
+              gap: 28,
             }}
           >
-            <Image
-              src={ROYAL_SWAG_LOGO_SRC}
-              alt=""
-              width={ROYAL_SWAG_LOGO_WIDTH}
-              height={ROYAL_SWAG_LOGO_HEIGHT}
-              priority
-              className="nav-main-logo"
+            {LINKS.map((l) => {
+              const navStyle = {
+                color: "rgba(255,255,255,0.75)",
+                fontSize: 14,
+                fontWeight: 500,
+                transition: "color 0.2s",
+              } as const;
+              const handlers = {
+                onMouseEnter: (e: { currentTarget: HTMLElement }) =>
+                  (e.currentTarget.style.color = "var(--rs-gold)"),
+                onMouseLeave: (e: { currentTarget: HTMLElement }) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.75)"),
+              };
+              return isProductPath(l.href) ? (
+                <button
+                  key={l.href}
+                  type="button"
+                  onClick={() => router.push("/product")}
+                  style={{ ...navStyle, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                  {...handlers}
+                >
+                  {l.label}
+                </button>
+              ) : (
+                <Link key={l.href} href={l.href} style={navStyle} {...handlers}>
+                  {l.label}
+                </Link>
+              );
+            })}
+            <Link
+              href="/auth"
               style={{
-                background: "transparent",
-                objectFit: "contain",
-                display: "block",
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                color: "rgba(255,255,255,0.75)",
+                fontFamily: "var(--font-sans)",
+                fontSize: 13,
+                fontWeight: 500,
+                textDecoration: "none",
+                padding: "8px 16px",
+                borderRadius: 50,
+                border: "1px solid rgba(255,255,255,0.2)",
+                transition: "all 0.2s",
               }}
-            />
-          </Link>
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--rs-gold)";
+                e.currentTarget.style.color = "var(--rs-gold)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
+                e.currentTarget.style.color = "rgba(255,255,255,0.75)";
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              Login
+            </Link>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  color: "#C49A2A",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  padding: "8px 16px",
+                  borderRadius: 50,
+                  background: "rgba(184,134,11,0.15)",
+                  border: "1px solid rgba(184,134,11,0.3)",
+                }}
+              >
+                ⚙ Admin
+              </Link>
+            )}
+          </div>
 
+          {/* CTA & Mobile Toggle - Right side */}
           <div
             style={{
               flex: 1,
@@ -216,7 +212,6 @@ export default function Nav() {
               alignItems: "center",
               justifyContent: "flex-end",
               gap: 12,
-              minWidth: 0,
             }}
           >
             <button
@@ -351,15 +346,15 @@ export default function Nav() {
           .nav-d { display: none !important; }
           .nav-m { display: flex !important; }
           .nav-main-logo {
-            width: 92px !important;
+            width: 50px !important;
             height: auto !important;
             aspect-ratio: 1 / 1;
           }
         }
         @media (min-width: 769px) {
           .nav-main-logo {
-            width: 180px !important;
-            min-width: 180px !important;
+            width: 60px !important;
+            min-width: 60px !important;
             height: auto !important;
             aspect-ratio: 1 / 1;
           }

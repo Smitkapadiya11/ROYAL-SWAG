@@ -9,7 +9,7 @@ const SectionWrapper = styled.section`
   background: #0d1a0f;
   color: #F4EDD6;
   text-align: center;
-  background-image: url('/images/asset3-stats-bg.jpg');
+  background-image: url('/images/bg/asset3.jpeg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -176,8 +176,8 @@ export default function ProblemSection() {
     <SectionWrapper ref={sectionRef}>
       <Overlay />
       <Content>
-        <Headline>The air you're breathing right now.</Headline>
-        <Subheadline>This isn't fear-mongering. These are the numbers.</Subheadline>
+        <Headline>The Reality of Our Environment</Headline>
+        <Subheadline>Understanding the true impact of urban living on respiratory health.</Subheadline>
         
         <Grid>
           <AnimatedStat 
@@ -201,7 +201,7 @@ export default function ProblemSection() {
           />
         </Grid>
         
-        <ClosingLine>Your lungs are dealing with this today. Not someday.</ClosingLine>
+        <ClosingLine>Protecting your lungs is no longer optional—it's a daily necessity.</ClosingLine>
       </Content>
     </SectionWrapper>
   );

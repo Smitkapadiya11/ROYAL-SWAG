@@ -339,7 +339,7 @@ const PACKS = [
 ];
 
 // Dynamically gather all 13 images from /images/product/
-const IMAGES = Array.from({ length: 13 }, (_, i) => `/images/product/${i + 1}.jpg`);
+const IMAGES = Array.from({ length: 13 }, (_, i) => `/images/product/product-${i + 1}.jpg`);
 
 export default function ProductPage() {
   const [activeImage, setActiveImage] = useState(IMAGES[0]);
@@ -465,7 +465,7 @@ export default function ProductPage() {
           </RatingRow>
           
           <Badges>
-            <Image src="/images/asset12-badges.png" alt="Trust Badges" width={200} height={40} />
+            <Image src="/images/badges/asset12.jpeg" alt="Trust Badges" width={200} height={40} />
           </Badges>
 
           <PriceBlock>

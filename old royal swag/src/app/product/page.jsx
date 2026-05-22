@@ -290,8 +290,6 @@ export default function ProductPage() {
   return (
     <PageContainer>
       <ProductJsonLd />
-      <AnnouncementBar />
-      <Nav />
       
       <MainContent>
         <Gallery>

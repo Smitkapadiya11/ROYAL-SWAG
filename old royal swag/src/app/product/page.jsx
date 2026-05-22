@@ -6,6 +6,7 @@ import { initRazorpay } from '@/lib/razorpayClient';
 import StickyCTA from '@/components/StickyCTA';
 import Nav from '@/components/Nav';
 import AnnouncementBar from '@/components/AnnouncementBar';
+import ProductJsonLd from '@/components/seo/ProductJsonLd';
 
 const PageContainer = styled.div`
   background: #F4EDD6;
@@ -317,6 +318,7 @@ export default function ProductPage() {
 
   return (
     <PageContainer>
+      <ProductJsonLd />
       <AnnouncementBar />
       <Nav />
       

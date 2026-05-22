@@ -187,104 +187,247 @@ const BundleCard = styled.div`
   align-items: center;
   position: relative;
   transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #9A6F1A;
+  }
+`;
+
+const RecommendedBadge = styled.div`
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: #9A6F1A;
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+`;
+
+const BundleInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const RadioCircle = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid ${(props) => (props.$selected ? '#9A6F1A' : '#ccc')};
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(${(props) => (props.$selected ? 1 : 0)});
+    width: 10px;
+    height: 10px;
+    background: #9A6F1A;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+`;
+
+const BundleName = styled.div`
+  font-weight: 600;
+  color: #2A3020;
+`;
+
+const BundleDesc = styled.div`
+  font-size: 13px;
   color: #495738;
   opacity: 0.8;
 `;
 
 const BundlePrice = styled.div`
-  font-size: 18px;
+  text-align: right;
+`;
+
+const BPrice = styled.div`
   font-weight: bold;
+  font-size: 18px;
   color: #2A3020;
 `;
 
-const BestValueBadge = styled.div`
-  position: absolute;
-  top: -10px;
-  right: 16px;
-  background: #9A6F1A;
-  color: #F4EDD6;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 2px 8px;
-  border-radius: 12px;
+const BPerPack = styled.div`
+  font-size: 12px;
+  color: #5C946E;
+  font-weight: 600;
 `;
 
-const BuyButton = styled.button`
+const CheckoutBtn = styled.button`
   width: 100%;
-  height: 56px;
   background: #495738;
   color: #F4EDD6;
-  font-size: 18px;
-  font-weight: bold;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 24px;
   cursor: pointer;
-  margin-bottom: 16px;
-  transition: background 0.3s ease;
-  
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+
   &:hover {
-    background: #3A462D;
+    transform: scale(1.02);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: skewX(-20deg);
+    transition: left 0.5s;
+  }
+
+  &:hover::after {
+    left: 100%;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
   }
 `;
 
-const DeliveryStrip = styled.div`
-  background: rgba(92, 148, 110, 0.15);
-  color: #495738;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 24px;
-`;
-
-const GuaranteeRow = styled.div`
+const PaymentIcons = styled.div`
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 8px;
+  margin-top: 16px;
+  opacity: 0.6;
 `;
 
-const bundles = [
-  { id: 'single', type: 'single', name: '1 Pack', price: 349, originalPrice: 499, desc: '20 bags / 30-day supply' },
-  { id: 'triple', type: 'triple', name: '3 Pack Bundle', price: 899, originalPrice: 1497, desc: '60 bags / Save ₹150', badge: 'BEST VALUE' },
-  { id: 'subscription', type: 'subscription', name: 'Monthly Subscription', price: 299, originalPrice: 499, desc: 'Cancel anytime', badge: 'AUTO-DELIVER' }
+const PACKS = [
+  {
+    id: 'pack_1',
+    name: '1 Pack (20 Bags)',
+    desc: 'Try it out',
+    price: 349,
+    original: 499,
+    perPack: 349,
+  },
+  {
+    id: 'pack_3',
+    name: '3 Packs (60 Bags)',
+    desc: 'Most Popular - 1 Month Supply',
+    price: 899,
+    original: 1497,
+    perPack: 299,
+    recommended: true,
+  },
+  {
+    id: 'pack_6',
+    name: '6 Packs (120 Bags)',
+    desc: 'Best Value - 2 Months Supply',
+    price: 1499,
+    original: 2994,
+    perPack: 249,
+  }
 ];
 
-const images = Array.from({ length: 4 }).map((_, i) => `/images/asset1-hero-product.jpg`);
+// Dynamically gather all 13 images from /images/product/
+const IMAGES = Array.from({ length: 13 }, (_, i) => \`/images/product/\${i + 1}.jpg\`);
 
 export default function ProductPage() {
-  const [selectedBundleId, setSelectedBundleId] = useState('triple');
-  const [mainImage, setMainImage] = useState(images[0]);
-  const [timeLeft, setTimeLeft] = useState({ hours: 47, minutes: 59, seconds: 59 });
-
-  const selectedBundle = bundles.find(b => b.id === selectedBundleId);
+  const [activeImage, setActiveImage] = useState(IMAGES[0]);
+  const [selectedPack, setSelectedPack] = useState(PACKS[1]);
+  const [timeLeft, setTimeLeft] = useState(48 * 60 * 60); // 48 hours in seconds
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    let endTime = localStorage.getItem('royalSwagOfferEnd');
-    if (!endTime || Date.now() > parseInt(endTime)) {
-      endTime = Date.now() + 48 * 60 * 60 * 1000;
-      localStorage.setItem('royalSwagOfferEnd', endTime);
-    }
+    // Timer logic with localStorage persistence
+    const savedTime = localStorage.getItem('rs_offer_timer');
+    const savedTimestamp = localStorage.getItem('rs_offer_timestamp');
     
-    const timer = setInterval(() => {
-      const now = Date.now();
-      const diff = parseInt(endTime) - now;
-      if (diff <= 0) {
-        localStorage.setItem('royalSwagOfferEnd', Date.now() + 48 * 60 * 60 * 1000);
+    if (savedTime && savedTimestamp) {
+      const elapsed = Math.floor((Date.now() - parseInt(savedTimestamp)) / 1000);
+      const remaining = Math.max(0, parseInt(savedTime) - elapsed);
+      if (remaining > 0) {
+        setTimeLeft(remaining);
       } else {
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        setTimeLeft({ hours, minutes, seconds });
+        setTimeLeft(48 * 60 * 60); // Reset if expired
       }
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        const next = prev > 0 ? prev - 1 : 48 * 60 * 60;
+        localStorage.setItem('rs_offer_timer', next.toString());
+        localStorage.setItem('rs_offer_timestamp', Date.now().toString());
+        return next;
+      });
     }, 1000);
-    
+
     return () => clearInterval(timer);
   }, []);
 
-  const handleBuyNow = () => {
-    initRazorpay(selectedBundle);
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return \`\${h.toString().padStart(2, '0')}:\${m.toString().padStart(2, '0')}:\${s.toString().padStart(2, '0')}\`;
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setIsProcessing(true);
+      // Track intent
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'InitiateCheckout', {
+          value: selectedPack.price,
+          currency: 'INR',
+          content_ids: [selectedPack.id],
+          content_name: selectedPack.name,
+        });
+      }
+
+      const res = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: selectedPack.price,
+          packId: selectedPack.id,
+        })
+      });
+      const order = await res.json();
+
+      const rzp = await initRazorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+        name: 'Royal Swag',
+        description: selectedPack.name,
+        theme: { color: '#495738' },
+        handler: function(response) {
+          // Success handler - redirect to thank you
+          window.location.href = \`/thank-you?order_id=\${response.razorpay_order_id}&payment_id=\${response.razorpay_payment_id}&amount=\${selectedPack.price}&pack=\${selectedPack.id}\`;
+        },
+        modal: {
+          ondismiss: function() {
+            setIsProcessing(false);
+          }
+        }
+      });
+      rzp.open();
+    } catch (err) {
+      console.error('Checkout error:', err);
+      alert('Failed to initialize payment. Please try again.');
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -292,77 +435,90 @@ export default function ProductPage() {
       <ProductJsonLd />
       
       <MainContent>
-        <Gallery>
+        <ImageGallery>
           <MainImageWrapper>
-            <Image src={mainImage} alt="Royal Swag Lung Detox" fill style={{ objectFit: 'contain' }} priority />
+            <Image 
+              src={activeImage} 
+              alt="Royal Swag Lung Detox Tea" 
+              fill 
+              sizes="(max-width: 992px) 100vw, 50vw"
+              priority
+            />
           </MainImageWrapper>
-          <ThumbnailsStrip>
-            {images.map((img, i) => (
-              <Thumb key={i} $active={mainImage === img} onClick={() => setMainImage(img)}>
-                <Image src={img} alt={`Thumbnail ${i}`} fill style={{ objectFit: 'cover' }} />
+          <ThumbnailStrip>
+            {IMAGES.map((img, i) => (
+              <Thumb 
+                key={i} 
+                $active={activeImage === img}
+                onClick={() => setActiveImage(img)}
+              >
+                <Image src={img} alt={\`Thumbnail \${i+1}\`} fill sizes="80px" />
               </Thumb>
             ))}
-          </ThumbnailsStrip>
-        </Gallery>
+          </ThumbnailStrip>
+        </ImageGallery>
 
-        <DetailsPanel>
-          <ProductTitle>Royal Swag TAR OUT Lung Detox Tea</ProductTitle>
+        <PurchasePanel>
+          <Title>Royal Swag TAR OUT Lung Detox Tea</Title>
           <RatingRow>
-            <Stars>★★★★★</Stars>
-            <span style={{color: '#9A6F1A', fontWeight: 'bold'}}>4.7</span>
-            <ReviewCount>(847 reviews)</ReviewCount>
+            ★★★★★ 4.7 <span style={{ color: '#495738', opacity: 0.7 }}>(847 reviews)</span>
           </RatingRow>
           
-          <BadgesRow>
-            <Image src="/images/asset12-badges.png" alt="FSSAI & AYUSH Badges" width={150} height={30} style={{ objectFit: 'contain' }} />
-          </BadgesRow>
-          
+          <Badges>
+            <Image src="/images/asset12-badges.png" alt="Trust Badges" width={200} height={40} />
+          </Badges>
+
           <PriceBlock>
-            <PriceDisplay>
-              <CurrentPrice>₹{selectedBundle.price}</CurrentPrice>
-              <OriginalPrice>₹{selectedBundle.originalPrice}</OriginalPrice>
-              <SaveBadge>SAVE ₹{selectedBundle.originalPrice - selectedBundle.price}</SaveBadge>
-            </PriceDisplay>
-            <Countdown>
-              ⏰ Offer ends in: {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
-            </Countdown>
-            <UrgencyText>Only 38 packs left at this price</UrgencyText>
-            <SocialProof>12 people ordered in last 24 hours</SocialProof>
+            <PriceRow>
+              <CurrentPrice>₹{selectedPack.price}</CurrentPrice>
+              <OldPrice>₹{selectedPack.original}</OldPrice>
+              <SaveBadge>SAVE ₹{selectedPack.original - selectedPack.price}</SaveBadge>
+            </PriceRow>
+            
+            <TimerBox>
+              ⏳ Offer ends in: {formatTime(timeLeft)}
+            </TimerBox>
+            
+            <StockText>Only 38 packs left at this price</StockText>
+            <SocialProof>🔥 12 people ordered in last 24 hours</SocialProof>
           </PriceBlock>
-          
-          <BundlesWrapper>
-            {bundles.map((bundle) => (
-              <BundleCard key={bundle.id} $selected={selectedBundleId === bundle.id}>
-                <RadioBtn 
-                  type="radio" 
-                  name="bundle" 
-                  checked={selectedBundleId === bundle.id} 
-                  onChange={() => setSelectedBundleId(bundle.id)} 
-                />
+
+          <BundleSection>
+            <BundleLabel>Select Quantity:</BundleLabel>
+            {PACKS.map(pack => (
+              <BundleCard 
+                key={pack.id} 
+                $selected={selectedPack.id === pack.id}
+                onClick={() => setSelectedPack(pack)}
+              >
+                {pack.recommended && <RecommendedBadge>RECOMMENDED</RecommendedBadge>}
                 <BundleInfo>
-                  <BundleTitle>{bundle.name}</BundleTitle>
-                  <BundleDesc>{bundle.desc}</BundleDesc>
+                  <RadioCircle $selected={selectedPack.id === pack.id} />
+                  <div>
+                    <BundleName>{pack.name}</BundleName>
+                    <BundleDesc>{pack.desc}</BundleDesc>
+                  </div>
                 </BundleInfo>
-                <BundlePrice>₹{bundle.price}</BundlePrice>
-                {bundle.badge && <BestValueBadge>{bundle.badge}</BestValueBadge>}
+                <BundlePrice>
+                  <BPrice>₹{pack.price}</BPrice>
+                  <BPerPack>₹{pack.perPack} / pack</BPerPack>
+                </BundlePrice>
               </BundleCard>
             ))}
-          </BundlesWrapper>
+          </BundleSection>
+
+          <CheckoutBtn onClick={handleCheckout} disabled={isProcessing}>
+            {isProcessing ? 'Processing...' : \`Buy Now — ₹\${selectedPack.price}\`}
+          </CheckoutBtn>
           
-          <BuyButton onClick={handleBuyNow}>Buy Now</BuyButton>
+          <PaymentIcons>
+            <span>🔒 100% Secure Checkout</span>
+            <span>|</span>
+            <span>UPI • Cards • NetBanking</span>
+          </PaymentIcons>
           
-          <DeliveryStrip>
-            🚚 Free delivery on all orders · Ships in 24 hours
-          </DeliveryStrip>
-          
-          <GuaranteeRow>
-            <span style={{fontSize: '12px', fontWeight: 'bold', color: '#495738'}}>↩️ 30-Day Guarantee</span>
-            <span style={{fontSize: '12px', textDecoration: 'underline', color: '#495738', cursor: 'pointer'}}>FSSAI Certified</span>
-          </GuaranteeRow>
-          
-        </DetailsPanel>
+        </PurchasePanel>
       </MainContent>
-      
       <StickyCTA />
     </PageContainer>
   );

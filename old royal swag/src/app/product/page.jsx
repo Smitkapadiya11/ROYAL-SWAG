@@ -339,7 +339,7 @@ const PACKS = [
 ];
 
 // Dynamically gather all 13 images from /images/product/
-const IMAGES = Array.from({ length: 13 }, (_, i) => \`/images/product/\${i + 1}.jpg\`);
+const IMAGES = Array.from({ length: 13 }, (_, i) => `/images/product/${i + 1}.jpg`);
 
 export default function ProductPage() {
   const [activeImage, setActiveImage] = useState(IMAGES[0]);
@@ -378,7 +378,7 @@ export default function ProductPage() {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    return \`\${h.toString().padStart(2, '0')}:\${m.toString().padStart(2, '0')}:\${s.toString().padStart(2, '0')}\`;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
   const handleCheckout = async () => {
@@ -414,7 +414,7 @@ export default function ProductPage() {
         theme: { color: '#495738' },
         handler: function(response) {
           // Success handler - redirect to thank you
-          window.location.href = \`/thank-you?order_id=\${response.razorpay_order_id}&payment_id=\${response.razorpay_payment_id}&amount=\${selectedPack.price}&pack=\${selectedPack.id}\`;
+          window.location.href = `/thank-you?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&amount=${selectedPack.price}&pack=${selectedPack.id}`;
         },
         modal: {
           ondismiss: function() {
@@ -452,7 +452,7 @@ export default function ProductPage() {
                 $active={activeImage === img}
                 onClick={() => setActiveImage(img)}
               >
-                <Image src={img} alt={\`Thumbnail \${i+1}\`} fill sizes="80px" />
+                <Image src={img} alt={`Thumbnail ${i+1}`} fill sizes="80px" />
               </Thumb>
             ))}
           </ThumbnailStrip>
@@ -508,7 +508,7 @@ export default function ProductPage() {
           </BundleSection>
 
           <CheckoutBtn onClick={handleCheckout} disabled={isProcessing}>
-            {isProcessing ? 'Processing...' : \`Buy Now — ₹\${selectedPack.price}\`}
+            {isProcessing ? 'Processing...' : `Buy Now — ₹${selectedPack.price}`}
           </CheckoutBtn>
           
           <PaymentIcons>

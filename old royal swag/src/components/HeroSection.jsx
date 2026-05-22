@@ -2,7 +2,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import Image from 'next/image';
-import RoyalButton from './ui/Button';
+import RoyalButton from './ui/RoyalButton';
 import { trackEvent } from '../lib/events';
 
 const float = keyframes`

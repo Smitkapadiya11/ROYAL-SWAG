@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
 import Image from 'next/image';
-import RoyalButton from './ui/Button';
+import RoyalButton from './ui/RoyalButton';
 
 // Using the exact styled wrapper layout inspired by Tooltip from reference.md
 const StyledTooltipWrapper = styled.div`

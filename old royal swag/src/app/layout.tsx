@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
@@ -41,6 +42,7 @@ export default function RootLayout({
     <html lang="en" className="overflow-x-hidden">
       <body className="overflow-x-hidden">
         <StyledComponentsRegistry>
+          <AnnouncementBar />
           <Nav />
           <main className="rs-main-nav-pad">{children}</main>
           <Footer />

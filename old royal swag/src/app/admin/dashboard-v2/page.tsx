@@ -138,10 +138,11 @@ const SessionRow = ({ session }: { session: Session }) => {
 };
 
 // ─── CSV Export ───────────────────────────────────────────────────────
-function exportCSV<T extends Record<string, unknown>>(rows: T[], filename: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function exportCSV(rows: any[], filename: string) {
   if (!rows.length) return;
   const headers = Object.keys(rows[0]);
-  const lines = [headers.join(','), ...rows.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','))];
+  const lines = [headers.join(','), ...rows.map((r: Record<string, unknown>) => headers.map(h => JSON.stringify(r[h] ?? '')).join(','))];
   const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);

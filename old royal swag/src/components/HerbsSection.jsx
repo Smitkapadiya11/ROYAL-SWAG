@@ -166,7 +166,7 @@ const herbsData = [
     role: 'The Airway Opener',
     benefit: 'Dilates bronchioles for easier breathing.',
     description: 'Traditionally used to clear respiratory blockages and act as a powerful bronchodilator. Helps soothe the throat and calm wheezing.',
-    image: '/images/herbs/vasaka.jpg'
+    image: '/images/herbs/vasaka.jpeg'
   },
   {
     name: 'Tulsi',
@@ -182,7 +182,7 @@ const herbsData = [
     role: 'The Soother',
     benefit: 'Calms irritated mucous membranes.',
     description: 'Acts as a demulcent to coat and soothe the respiratory tract, providing relief from dry coughs and scratchy throats caused by smoke.',
-    image: '/images/herbs/mulethi.jpg'
+    image: '/images/herbs/mulethi.jpeg'
   },
   {
     name: 'Kantakari',
@@ -206,7 +206,7 @@ const herbsData = [
     role: 'The Bio-Enhancer',
     benefit: 'Boosts absorption of other herbs.',
     description: 'Not only does it help in clearing mucus, but its primary role is to enhance the bioavailability and effectiveness of the other 6 herbs.',
-    image: '/images/herbs/pippali.jpg'
+    image: '/images/herbs/pippali.jpeg'
   },
   {
     name: 'Haridra',
@@ -214,7 +214,7 @@ const herbsData = [
     role: 'The Anti-Inflammatory',
     benefit: 'Reduces lung inflammation.',
     description: 'Contains active curcumin that directly targets and reduces chronic inflammation in the airways caused by long-term exposure to toxins.',
-    image: '/images/herbs/haridra.jpg'
+    image: '/images/herbs/Haridra_fresh_plant_on_cream_202605240058.jpeg'
   }
 ];
 

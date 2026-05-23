@@ -26,7 +26,7 @@ const PRODUCT_IMAGES = [
   "/images/product/product-13.jpg",
 ];
 
-const MAIN_FALLBACK = "/images/product/main.jpg";
+const MAIN_FALLBACK = "/images/product/product-1.jpg";
 
 type Bundle = (typeof BUNDLES)[number];
 
@@ -126,7 +126,7 @@ export default function ProductPage() {
                   className="h-full w-full rounded-lg object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                   src={activeImage || MAIN_FALLBACK}
                   alt="Lung Detox Tea"
-                  onError={(e) => handleImageFallback(e, "/images/placeholder.jpg")}
+                  onError={(e) => handleImageFallback(e, "/images/product/product-1.jpg")}
                 />
                 <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md">
                   <span className="text-sm text-ayurvedic-gold">★</span>
@@ -250,7 +250,7 @@ export default function ProductPage() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         className="h-24 w-24 shrink-0 rounded-lg object-contain"
-                        src="/images/product/pack.jpg"
+                        src="/images/product/product-1.jpg"
                         alt={b.label}
                         onError={hideBrokenImage}
                       />

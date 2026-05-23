@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import BrandLogo from "@/components/ui/BrandLogo";
+import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { S } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
@@ -28,9 +30,9 @@ const TIMELINE = [
 ] as const;
 
 const FOUNDER_IMAGE_BY_ID: Record<string, string> = {
-  hitesh: "/images/founders/hitesh.jpg",
-  manoj: "/images/founders/manoj.jpg",
-  jaideep: "/images/founders/jaideep.jpg",
+  hitesh: "/images/hitesh.jpeg",
+  manoj: "/images/manoj.jpeg",
+  jaideep: "/images/jaideep singh.jpeg",
 };
 
 const founders = S.team.map((m) => ({
@@ -62,17 +64,6 @@ const MOBILE_NAV = [
   { label: "About", href: "/about", icon: "ℹ", active: true },
 ] as const;
 
-function heroImageError(e: React.SyntheticEvent<HTMLImageElement>) {
-  const el = e.currentTarget;
-  el.style.background = "linear-gradient(135deg, #324023 0%, #9A6F1A 100%)";
-  el.style.display = "block";
-  el.removeAttribute("src");
-}
-
-function founderImageError(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
-
 export default function AboutPage() {
   useEffect(() => {
     document.body.classList.add("about-page");
@@ -97,12 +88,11 @@ export default function AboutPage() {
         </div>
 
         <div className="relative mt-4 aspect-[4/5] w-full overflow-hidden rounded-[32px] border border-glass-border shadow-lg md:mt-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="h-full w-full object-cover"
-            src="/images/about-hero.jpg"
+          <SafeImage
+            className="h-full w-full"
+            src="/images/hero/asset2.jpeg"
             alt="Lush tea fields"
-            onError={heroImageError}
+            label="Tea Fields"
           />
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent"
@@ -151,6 +141,25 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="px-5 py-16 md:px-16">
+        <div className="mx-auto max-w-3xl text-center md:text-left">
+          <h2 className="font-display text-[32px] font-semibold text-primary">
+            The Journey to Clarity
+          </h2>
+          <p className="mt-2 font-sans text-base text-on-surface-variant">
+            Drag to compare lung health before and after 30 days of Royal Swag.
+          </p>
+        </div>
+        <div className="mx-auto mt-8 max-w-3xl">
+          <BeforeAfterSlider
+            beforeSrc="/images/lungs-before.png"
+            afterSrc="/images/lungs-after.png"
+            beforeLabel="Before"
+            afterLabel="After 30 Days"
+          />
+        </div>
+      </section>
+
       {/* Founders */}
       <section className="px-4 py-20">
         <div className="relative overflow-hidden rounded-[40px] border border-glass-border bg-[#eff6e1] px-5 py-12 shadow-sm">
@@ -173,14 +182,13 @@ export default function AboutPage() {
                 className="glass-card flex items-center gap-5 rounded-3xl p-5 shadow-sm transition-colors hover:bg-white/50"
               >
                 <div className="relative flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-surface-container-highest shadow-inner">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <SafeImage
                     src={f.img}
                     alt={f.name}
-                    className="h-full w-full object-cover"
-                    onError={founderImageError}
+                    label={f.initials}
+                    className="h-full w-full rounded-full"
                   />
-                  <span className="font-display text-2xl font-semibold text-primary">
+                  <span className="pointer-events-none absolute font-display text-2xl font-semibold text-primary">
                     {f.initials}
                   </span>
                 </div>

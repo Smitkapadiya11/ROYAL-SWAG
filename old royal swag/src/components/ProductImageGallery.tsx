@@ -5,11 +5,11 @@ import Image from "next/image";
 import { gsap } from "gsap";
 
 const IMAGES = [
-  "/images/product-1.jpg",
-  "/images/product-2.jpg",
-  "/images/product-3.jpg",
-  "/images/product-4.jpg",
-  "/images/product-5.jpg",
+  "/images/product/product-1.jpg",
+  "/images/product/product-2.jpg",
+  "/images/product/product-3.jpg",
+  "/images/product/product-4.jpg",
+  "/images/product/product-5.jpg",
 ];
 
 export default function ProductImageGallery() {

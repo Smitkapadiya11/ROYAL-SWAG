@@ -85,7 +85,9 @@ export default function RootLayout({
           </Suspense>
           <AnnouncementBar />
           <Header />
-          <main>{children}</main>
+          <main>
+            <div className="animate-in fade-in duration-300">{children}</div>
+          </main>
           <Footer />
           <WhatsAppButton />
           <LeadPopup />

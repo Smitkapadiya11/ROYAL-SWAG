@@ -4,7 +4,7 @@ export default function ProductJsonLd() {
     "@type": "Product",
     name: "Royal Swag TAR OUT Lung Detox Tea",
     description: "7 Ayurvedic herbs formulated to cleanse lungs of tar, reduce coughing, and improve respiratory capacity. FSSAI certified.",
-    image: "https://lungdetox.royalswag.in/images/asset1-hero-product.jpg",
+    image: "https://lungdetox.royalswag.in/images/hero/asset1-hero-product.jpeg",
     brand: {
       "@type": "Brand",
       name: "Royal Swag"

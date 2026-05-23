@@ -48,7 +48,7 @@ export const S = {
       bot: "Adhatoda vasica",
       role: "The Airway Opener",
       benefit: "Breaks down mucus, opens bronchial passages.",
-      img: "/images/vasaka.jpg",
+      img: "/images/herbs/vasaka.jpeg",
     },
     {
       id: "mulethi",
@@ -56,7 +56,7 @@ export const S = {
       bot: "Glycyrrhiza glabra",
       role: "The Soother",
       benefit: "Soothes inflamed airways, eases chronic cough.",
-      img: "/images/mulethi.jpg",
+      img: "/images/herbs/mulethi.jpeg",
     },
     {
       id: "tulsi",
@@ -64,7 +64,7 @@ export const S = {
       bot: "Ocimum sanctum",
       role: "The Sacred Healer",
       benefit: "Anti-inflammatory, fights respiratory infections.",
-      img: "/images/tulsi.jpg",
+      img: "/images/herbs/tulsi.jpg",
     },
     {
       id: "pippali",
@@ -72,7 +72,7 @@ export const S = {
       bot: "Piper longum",
       role: "The Reviver",
       benefit: "Expands lung capacity, improves oxygen absorption.",
-      img: "/images/pippali.jpg",
+      img: "/images/herbs/pippali.jpeg",
     },
     {
       id: "kantakari",
@@ -80,7 +80,7 @@ export const S = {
       bot: "Solanum xanthocarpum",
       role: "The Cleanser",
       benefit: "Relieves bronchitis, clears blocked airways.",
-      img: "/images/kantakari.jpg",
+      img: "/images/herbs/kantakari.jpg",
     },
     {
       id: "bibhitaki",
@@ -96,7 +96,7 @@ export const S = {
       bot: "Inula racemosa",
       role: "The Deep Purifier",
       benefit: "Deep lung purification, reduces pulmonary inflammation.",
-      img: "/images/pushkarmool.jpg",
+      img: "/images/herbs/pushkarmool.jpg",
     },
   ],
   team: [
@@ -121,7 +121,7 @@ export const S = {
       initials: "JS",
       name: "Jaideep Singh",
       role: "Business Director",
-      img: "/images/jaideep%20singh.jpeg",
+      img: "/images/jaideep singh.jpeg",
       bio: "Twelve years in e-commerce. Handles Amazon, our own site, and the numbers behind what ships each week.",
     },
   ],
@@ -246,7 +246,7 @@ export const PACKS = [
     original: 499,
     saving: 150,
     tag: null,
-    image: "/images/product-1.jpg",
+    image: "/images/product/product-1.jpg",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Starter%20Pack%20%281%20pack%2C%20%E2%82%B9349%29.%20Please%20confirm.",
   },
@@ -260,7 +260,7 @@ export const PACKS = [
     original: 698,
     saving: 99,
     tag: "MOST POPULAR",
-    image: "/images/product-2.jpg",
+    image: "/images/product/product-2.jpg",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Progress%20Pack%20%282%20packs%2C%20%E2%82%B9599%29.%20Please%20confirm.",
   },
@@ -274,7 +274,7 @@ export const PACKS = [
     original: 1047,
     saving: 198,
     tag: "BEST VALUE",
-    image: "/images/product-3.jpg",
+    image: "/images/product/product-3.jpg",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Result%20Pack%20%283%20packs%2C%20%E2%82%B9849%29.%20Please%20confirm.",
   },

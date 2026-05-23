@@ -4,6 +4,7 @@ import { useEffect, useState }  from "react";
 import Script        from "next/script";
 import { useRouter } from "next/navigation";
 import { SUPPORT_EMAIL } from "@/lib/config";
+import { ROYAL_SWAG_LOGO_SRC } from "@/lib/brand-logo";
 
 interface RazorpayOptions {
   key:         string;
@@ -138,7 +139,7 @@ export default function RazorpayButton({
         name:        "Royal Swag",
         description: `Lung Detox Tea — ${packLabel}`,
         order_id:    orderData.orderId,
-        image:       "/images/royal-swag-logo.png",
+        image:       ROYAL_SWAG_LOGO_SRC,
         theme:       { color: "#4A6422" },
         prefill:     {
           name:    prefill?.name ?? "",

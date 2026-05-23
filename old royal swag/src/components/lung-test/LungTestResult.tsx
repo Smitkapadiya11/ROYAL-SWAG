@@ -97,10 +97,8 @@ export function LungTestResult({
   );
 
   useEffect(() => {
-    if (score <= 0) {
-      setAnimatedScore(0);
-      return;
-    }
+    if (score <= 0) return;
+
     let start = 0;
     const end = score;
     const duration = 1500;
@@ -112,6 +110,8 @@ export function LungTestResult({
     }, step);
     return () => clearInterval(timer);
   }, [score]);
+
+  const displayedScore = score <= 0 ? 0 : animatedScore;
 
   useEffect(() => {
     const t = setTimeout(() => setShowHerbs(true), 800);
@@ -166,16 +166,16 @@ export function LungTestResult({
                 strokeWidth="10"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 50}`}
-                strokeDashoffset={`${2 * Math.PI * 50 * (1 - animatedScore / maxScore)}`}
+                strokeDashoffset={`${2 * Math.PI * 50 * (1 - displayedScore / maxScore)}`}
                 style={{ transition: "stroke-dashoffset 1.5s ease-out" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span
-                className="font-display text-4xl font-bold"
+                className="font-number text-4xl font-bold"
                 style={{ color: config.color }}
               >
-                {animatedScore}
+                {displayedScore}
               </span>
               <span className="font-sans text-xs text-[#45483f]">
                 of {maxScore}
@@ -208,7 +208,7 @@ export function LungTestResult({
 
       <div className="glass-card flex items-center gap-4 rounded-2xl p-5">
         <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-[#324023]">
-          <span className="font-display text-xl font-bold text-white">
+          <span className="font-number text-xl font-bold text-white">
             {roundedBreath}
           </span>
           <span className="font-sans text-[9px] text-white/70">secs</span>
@@ -332,5 +332,3 @@ export function LungTestResult({
     </div>
   );
 }
-
-

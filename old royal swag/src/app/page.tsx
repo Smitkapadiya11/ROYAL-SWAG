@@ -3,7 +3,7 @@
 import Link from "next/link";
 import FaqJsonLd from "@/components/seo/FaqJsonLd";
 import { HerbsSection } from "@/components/home/HerbsSection";
-import { VideoTestimonialsSection } from "@/components/home/VideoTestimonialsSection";
+import { DoctorEndorsements } from "@/components/sections/DoctorEndorsements";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { CountUp } from "@/components/ui/CountUp";
 import { Reveal } from "@/components/ui/Reveal";
@@ -172,8 +172,8 @@ export default function Home() {
           <HerbsSection />
         </Reveal>
 
-        <Reveal direction="up">
-          <VideoTestimonialsSection />
+        <Reveal direction="up" delay={100}>
+          <DoctorEndorsements />
         </Reveal>
 
         <section className="bg-parchment px-5 py-section-gap md:mx-auto md:max-w-2xl md:px-0">

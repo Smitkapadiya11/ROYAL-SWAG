@@ -5,7 +5,7 @@ import Link from "next/link";
 import BrandLogo from "@/components/ui/BrandLogo";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
-import { S } from "@/lib/config";
+import { FounderPhoto } from "@/components/about/FounderPhoto";
 import { cn } from "@/lib/utils";
 
 const TIMELINE = [
@@ -29,18 +29,26 @@ const TIMELINE = [
   },
 ] as const;
 
-const FOUNDER_IMAGE_BY_ID: Record<string, string> = {
-  hitesh: "/images/hitesh.jpeg",
-  manoj: "/images/manoj.jpeg",
-  jaideep: "/images/jaideep singh.jpeg",
-};
-
-const founders = S.team.map((m) => ({
-  name: m.name,
-  initials: m.initials,
-  img: FOUNDER_IMAGE_BY_ID[m.id] ?? m.img,
-  role: m.role,
-}));
+const FOUNDERS = [
+  {
+    name: "Hitesh Sabhadiya",
+    role: "Co-Founder",
+    focus: "Product & Ayurvedic Research",
+    img: "/images/hitesh.jpeg",
+  },
+  {
+    name: "Manoj Koshiya",
+    role: "Co-Founder",
+    focus: "Operations & Growth",
+    img: "/images/manoj.jpeg",
+  },
+  {
+    name: "Jaideep Singh",
+    role: "Co-Founder",
+    focus: "Brand & Marketing",
+    img: "/images/jaideep singh.jpeg",
+  },
+] as const;
 
 const CERT_GRID = [
   { icon: "✓", label: "ISO Certified" },
@@ -175,30 +183,33 @@ export default function AboutPage() {
               The minds architecting Ayurvedic respiratory care.
             </p>
           </div>
-          <div className="relative z-10 flex flex-col gap-6 md:grid md:grid-cols-3 md:gap-6">
-            {founders.map((f) => (
+          <div className="relative z-10 flex flex-col gap-5 md:grid md:grid-cols-3 md:gap-6">
+            {FOUNDERS.map((f, i) => (
               <div
                 key={f.name}
-                className="glass-card flex items-center gap-5 rounded-3xl p-5 shadow-sm transition-colors hover:bg-white/50"
+                className="glass-card overflow-hidden rounded-2xl transition-all duration-400 hover:-translate-y-1 hover:shadow-xl"
+                style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className="relative flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-surface-container-highest shadow-inner">
-                  <SafeImage
-                    src={f.img}
-                    alt={f.name}
-                    label={f.initials}
-                    className="h-full w-full rounded-full"
+                <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-[#324023] to-[#9A6F1A]">
+                  <FounderPhoto src={f.img} alt={f.name} />
+                  <div
+                    className="absolute right-0 top-0 h-12 w-12"
+                    style={{
+                      background:
+                        "linear-gradient(225deg, rgba(154,111,26,0.4), transparent)",
+                    }}
                   />
-                  <span className="pointer-events-none absolute font-display text-2xl font-semibold text-primary">
-                    {f.initials}
-                  </span>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-display text-2xl font-semibold text-primary-container">
+                <div className="p-5">
+                  <h4 className="font-display text-xl font-bold text-[#324023]">
                     {f.name}
-                  </h3>
-                  <p className="mt-1 font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-ayurvedic-gold">
+                  </h4>
+                  <p className="mt-1 font-sans text-[11px] font-semibold uppercase tracking-[0.15em] text-[#9A6F1A]">
                     {f.role}
                   </p>
+                  <div className="mt-2 border-t border-[rgba(255,255,255,0.4)] pt-2">
+                    <p className="font-sans text-xs text-[#45483f]">{f.focus}</p>
+                  </div>
                 </div>
               </div>
             ))}

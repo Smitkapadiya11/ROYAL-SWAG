@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -154,9 +155,9 @@ export default function ProfileClient({ profile, orders, addresses }: Props) {
             {orders.length === 0 && (
               <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
                 No orders yet.{" "}
-                <a href="/product" style={{ color: "#2D6A2D", fontWeight: 600 }}>
+                <Link href="/product" style={{ color: "#2D6A2D", fontWeight: 600 }}>
                   Shop now →
-                </a>
+                </Link>
               </div>
             )}
             {orders.map((o) => (

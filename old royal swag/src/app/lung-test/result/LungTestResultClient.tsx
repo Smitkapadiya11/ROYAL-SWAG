@@ -51,8 +51,11 @@ export default function LungTestResultClient() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setStored(readStored());
-    setLoaded(true);
+    const id = window.setTimeout(() => {
+      setStored(readStored());
+      setLoaded(true);
+    }, 0);
+    return () => window.clearTimeout(id);
   }, []);
 
   useEffect(() => {
@@ -136,4 +139,3 @@ export default function LungTestResultClient() {
     </div>
   );
 }
-

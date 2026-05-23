@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { LeadGuardLink } from "@/components/LeadGuardLink";
-import { VideoTestimonialsSection } from "@/components/home/VideoTestimonialsSection";
+import { DoctorEndorsements } from "@/components/sections/DoctorEndorsements";
 import { S } from "@/lib/config";
 
 export default function ReviewsPage() {
   return (
     <>
-      <VideoTestimonialsSection />
-
       {/* Header */}
       <section
         style={{
@@ -32,6 +30,8 @@ export default function ReviewsPage() {
           </p>
         </div>
       </section>
+
+      <DoctorEndorsements />
 
       {/* Reviews grid */}
       <section style={{ background: "transparent", padding: "80px 0" }}>

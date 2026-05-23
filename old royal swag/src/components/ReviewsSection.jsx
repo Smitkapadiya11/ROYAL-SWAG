@@ -212,7 +212,7 @@ export default function ReviewsSection() {
         ))}
       </Grid>
       
-      <SeeAllLink href="#">See all 847 reviews →</SeeAllLink>
+      <SeeAllLink href="/reviews">See all 847 reviews →</SeeAllLink>
     </SectionWrapper>
   );
 }

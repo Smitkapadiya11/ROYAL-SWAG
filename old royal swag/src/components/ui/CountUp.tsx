@@ -16,17 +16,13 @@ export function CountUp({
   prefix = "",
   suffix = "",
   duration = 2000,
-  className = "",
+  className = "font-number",
 }: CountUpProps) {
   const { ref, visible } = useScrollReveal();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!visible) return;
-    if (end <= 0) {
-      setCount(0);
-      return;
-    }
+    if (!visible || end <= 0) return;
 
     let start = 0;
     const step = Math.max(duration / end, 16);
@@ -45,11 +41,13 @@ export function CountUp({
     return () => clearInterval(timer);
   }, [visible, end, duration]);
 
+  const display = end <= 0 ? 0 : count;
+
   return (
-    <div ref={ref} className={`inline ${className}`}>
+    <span ref={ref} className={`inline ${className}`}>
       {prefix}
-      {count.toLocaleString("en-IN")}
+      {display.toLocaleString("en-IN")}
       {suffix}
-    </div>
+    </span>
   );
 }

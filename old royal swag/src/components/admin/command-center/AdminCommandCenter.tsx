@@ -146,7 +146,7 @@ function RiskGauge({ score }: { score: number }) {
       </svg>
       <AnimatedNumber
         value={score}
-        className="text-xl font-bold text-primary"
+        className="font-number text-xl font-bold text-primary"
       />
       <span className="text-xs text-primary/60">avg pts today</span>
     </div>
@@ -214,7 +214,9 @@ export default function AdminCommandCenter() {
   const router = useRouter();
   const [nav, setNav] = useState<NavId>("overview");
   const feedRef = useRef<HTMLDivElement>(null);
-  const [liveFeed, setLiveFeed] = useState<CommandCenterData["liveFeed"]>([]);
+  const [feedOverride, setFeedOverride] = useState<
+    CommandCenterData["liveFeed"] | null
+  >(null);
 
   const { data, error, mutate, isLoading } = useSWR<CommandCenterData>(
     "/api/admin/command-center",
@@ -222,9 +224,7 @@ export default function AdminCommandCenter() {
     { refreshInterval: 30000 }
   );
 
-  useEffect(() => {
-    if (data?.liveFeed) setLiveFeed(data.liveFeed);
-  }, [data?.liveFeed]);
+  const liveFeed = feedOverride ?? data?.liveFeed ?? [];
 
   const refreshFeed = useCallback(async () => {
     try {
@@ -232,7 +232,7 @@ export default function AdminCommandCenter() {
       if (!r.ok) return;
       const json = (await r.json()) as { events: CommandCenterData["liveFeed"] };
       if (json.events?.length) {
-        setLiveFeed(json.events);
+        setFeedOverride(json.events);
         if (feedRef.current) feedRef.current.scrollTop = 0;
       }
     } catch {
@@ -247,9 +247,16 @@ export default function AdminCommandCenter() {
   }, [error, router]);
 
   useEffect(() => {
-    refreshFeed();
-    const poll = setInterval(refreshFeed, 4000);
-    return () => clearInterval(poll);
+    const initial = window.setTimeout(() => {
+      void refreshFeed();
+    }, 0);
+    const poll = window.setInterval(() => {
+      void refreshFeed();
+    }, 4000);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(poll);
+    };
   }, [refreshFeed]);
 
   useEffect(() => {
@@ -266,7 +273,12 @@ export default function AdminCommandCenter() {
         (payload) => {
           const row = payload.new as CommandCenterData["liveFeed"][0];
           if (!row?.id) return;
-          setLiveFeed((prev) => [row, ...prev.filter((e) => e.id !== row.id)].slice(0, 20));
+          setFeedOverride((prev) =>
+            [row, ...(prev ?? data?.liveFeed ?? []).filter((e) => e.id !== row.id)].slice(
+              0,
+              20
+            )
+          );
           mutate();
           if (feedRef.current) feedRef.current.scrollTop = 0;
         }
@@ -276,7 +288,7 @@ export default function AdminCommandCenter() {
     return () => {
       sb.removeChannel(channel);
     };
-  }, [mutate]);
+  }, [mutate, data?.liveFeed]);
 
   const metrics = data?.metrics;
   const showOverview = nav === "overview" || nav === "revenue" || nav === "live";
@@ -381,7 +393,7 @@ export default function AdminCommandCenter() {
                     </div>
                     <AnimatedNumber
                       value={metrics.liveVisitors}
-                      className="text-3xl font-bold text-primary"
+                      className="font-number text-3xl font-bold text-primary"
                     />
                     <p className="mt-1 text-xs text-primary/50">Last 5 minutes</p>
                   </GlassCard>
@@ -392,11 +404,11 @@ export default function AdminCommandCenter() {
                     </p>
                     <AnimatedNumber
                       value={metrics.todayOrders}
-                      className="mt-2 text-3xl font-bold text-primary"
+                      className="font-number mt-2 text-3xl font-bold text-primary"
                     />
                     <p className="mt-1 text-sm text-gold">
                       ₹
-                      <AnimatedNumber value={metrics.todayRevenue} />
+                      <AnimatedNumber value={metrics.todayRevenue} className="font-number" />
                     </p>
                   </GlassCard>
 
@@ -406,10 +418,10 @@ export default function AdminCommandCenter() {
                     </p>
                     <AnimatedNumber
                       value={metrics.lungLeadsToday}
-                      className="mt-2 text-3xl font-bold text-primary"
+                      className="font-number mt-2 text-3xl font-bold text-primary"
                     />
                     <p className="mt-1 text-sm text-primary/70">
-                      <AnimatedNumber value={metrics.lungConversionPct} />% conversion
+                      <AnimatedNumber value={metrics.lungConversionPct} className="font-number" />% conversion
                     </p>
                   </GlassCard>
 

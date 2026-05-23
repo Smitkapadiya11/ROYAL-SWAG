@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [],
+    formats: ["image/webp", "image/avif"],
+    minimumCacheTTL: 60,
     unoptimized: false,
   },
   compress: true,

@@ -62,13 +62,12 @@ export default function Footer() {
               FSSAI Lic. No. {fssaiLicense}
             </a>
             {CERT_LINKS.map((l) => (
-              <a
+              <span
                 key={l}
-                href="#"
-                className="text-white/80 transition-colors hover:text-ayurvedic-gold"
+                className="text-white/80"
               >
                 {l}
-              </a>
+              </span>
             ))}
           </div>
 

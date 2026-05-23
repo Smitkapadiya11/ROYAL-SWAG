@@ -71,7 +71,7 @@ export default function CountdownTimer({ className }: { className?: string }) {
         )}
       >
         <span className="opacity-90">Offer ends in: </span>
-        <span className="font-mono text-base font-bold tabular-nums">{display}</span>
+        <span className="font-number text-base font-bold tabular-nums">{display}</span>
       </p>
     </div>
   );

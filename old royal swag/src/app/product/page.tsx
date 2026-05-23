@@ -7,7 +7,13 @@ import ProductSocialProof from "@/components/ui/ProductSocialProof";
 import ProductCheckout from "@/components/product/ProductCheckout";
 import ProductJsonLd from "@/components/seo/ProductJsonLd";
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
-import { BUNDLES, DEFAULT_BUNDLE } from "@/lib/productData";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import {
+  BUNDLES,
+  DEFAULT_BUNDLE,
+  getSaving,
+  type Bundle,
+} from "@/lib/productPricing";
 import { EVENTS, trackEvent } from "@/lib/events";
 
 const PRODUCT_IMAGES = [
@@ -27,14 +33,6 @@ const PRODUCT_IMAGES = [
 ];
 
 const MAIN_FALLBACK = "/images/product/product-1.jpg";
-
-type Bundle = (typeof BUNDLES)[number];
-
-function bundleSavingPercent(bundle: Bundle): number {
-  return Math.round(
-    ((bundle.originalPrice - bundle.price) / bundle.originalPrice) * 100
-  );
-}
 
 function hideBrokenImage(e: React.SyntheticEvent<HTMLImageElement>) {
   e.currentTarget.style.display = "none";
@@ -84,8 +82,6 @@ export default function ProductPage() {
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [selectedBundle.id, selectedBundle.price]);
 
-  const savingPercent = bundleSavingPercent(selectedBundle);
-
   return (
     <div
       className="min-h-screen bg-parchment pb-32 font-sans text-on-surface md:pb-12"
@@ -130,7 +126,7 @@ export default function ProductPage() {
                 />
                 <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md">
                   <span className="text-sm text-ayurvedic-gold">★</span>
-                  <span className="font-sans text-xs font-bold text-primary">
+                  <span className="font-number text-xs font-bold text-primary">
                     4.9
                   </span>
                 </div>
@@ -151,6 +147,7 @@ export default function ProductPage() {
                     }`}
                     src={img}
                     alt=""
+                    loading="lazy"
                     onClick={() => {
                       setActiveIdx(i);
                       setActiveImage(img);
@@ -180,17 +177,11 @@ export default function ProductPage() {
                 Cleanse, soothe, and rejuvenate your respiratory system with
                 ancient botanical wisdom.
               </p>
-              <div className="mt-2 flex items-baseline gap-3">
-                <span className="font-display text-[32px] font-semibold text-primary">
-                  ₹{selectedBundle.price}
-                </span>
-                <span className="font-sans text-base text-on-surface-variant line-through">
-                  ₹{selectedBundle.originalPrice}
-                </span>
-                <span className="ml-auto rounded-full bg-ayurvedic-gold/10 px-2 py-1 font-sans text-xs font-bold text-ayurvedic-gold">
-                  Save {savingPercent}%
-                </span>
-              </div>
+              <PriceDisplay
+                price={selectedBundle.price}
+                mrp={selectedBundle.mrp}
+                size="lg"
+              />
               <div className="mt-2">
                 <CountdownTimer />
               </div>
@@ -219,68 +210,85 @@ export default function ProductPage() {
                 Choose Your Detox Pack
               </h2>
               <div className="flex flex-col gap-4">
-                {BUNDLES.map((b) => {
-                  const saving = bundleSavingPercent(b);
-                  const isBest = b.id === "progress";
-                  return (
-                    <div
-                      key={b.id}
-                      role="button"
-                      tabIndex={0}
-                      data-track-button={`bundle-${b.id}`}
-                      data-track-label={b.label}
-                      onClick={() => selectBundle(b)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          selectBundle(b);
-                        }
-                      }}
-                      className={`glass-card relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl p-4 transition-all ${
-                        selectedBundle.id === b.id
-                          ? "border-2 border-ayurvedic-gold bg-ayurvedic-gold/5"
-                          : "border border-[rgba(255,255,255,0.5)]"
-                      }`}
-                    >
-                      {isBest && (
-                        <div className="absolute right-0 top-0 rounded-bl-lg bg-ayurvedic-gold px-3 py-1 text-[10px] font-bold uppercase text-white">
-                          Best Value
-                        </div>
-                      )}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        className="h-24 w-24 shrink-0 rounded-lg object-contain"
-                        src="/images/product/product-1.jpg"
-                        alt={b.label}
-                        onError={hideBrokenImage}
-                      />
-                      <div className="flex-1">
-                        <h4 className="font-sans text-sm font-bold text-primary">
-                          {b.label}
-                        </h4>
-                        <p className="mt-0.5 font-sans text-xs text-on-surface-variant">
-                          {b.subtitle}
-                        </p>
-                        <div className="mt-1 flex items-center gap-2">
-                          <span className="font-display text-2xl font-semibold text-primary">
-                            ₹{b.price}
-                          </span>
-                          <span className="font-sans text-[10px] font-bold text-ayurvedic-gold">
-                            SAVE {saving}%
-                          </span>
-                        </div>
+                {BUNDLES.map((bundle) => (
+                  <div
+                    key={bundle.id}
+                    role="button"
+                    tabIndex={0}
+                    data-track-button={`bundle-${bundle.id}`}
+                    data-track-label={bundle.label}
+                    onClick={() => selectBundle(bundle)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        selectBundle(bundle);
+                      }
+                    }}
+                    className={`relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-300 ${
+                      selectedBundle.id === bundle.id
+                        ? "shadow-[0_8px_32px_rgba(154,111,26,0.2)] ring-2 ring-[#9A6F1A]"
+                        : "ring-1 ring-[rgba(255,255,255,0.5)] hover:ring-[#9A6F1A]/50"
+                    }`}
+                    style={{
+                      background:
+                        selectedBundle.id === bundle.id
+                          ? "rgba(154,111,26,0.05)"
+                          : "rgba(255,255,255,0.4)",
+                      backdropFilter: "blur(12px)",
+                    }}
+                  >
+                    {bundle.badge && (
+                      <div className="absolute left-0 right-0 top-0 z-10 flex justify-center">
+                        <span
+                          className={`px-4 py-1 font-sans text-[10px] font-bold tracking-wider ${
+                            bundle.badge === "BEST VALUE"
+                              ? "bg-[#9A6F1A] text-white"
+                              : "bg-[#324023] text-white"
+                          }`}
+                        >
+                          {bundle.badge}
+                        </span>
                       </div>
-                      <input
-                        type="radio"
-                        name="pack"
-                        readOnly
-                        checked={selectedBundle.id === b.id}
-                        className="h-5 w-5 shrink-0 accent-primary"
-                        aria-label={b.label}
-                      />
+                    )}
+                    <div className="flex items-center gap-3 p-4 pt-6">
+                      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[#324023] to-[#9A6F1A]">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={bundle.img}
+                          alt={bundle.label}
+                          className="h-full w-full object-contain p-1"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="mb-1 font-sans text-sm font-bold text-[#324023]">
+                          {bundle.label}
+                        </h4>
+                        <p className="mb-2 font-sans text-[11px] text-[#45483f]">
+                          {bundle.packs} · {bundle.description}
+                        </p>
+                        <PriceDisplay
+                          price={bundle.price}
+                          mrp={bundle.mrp}
+                          size="sm"
+                        />
+                      </div>
+                      <div
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
+                          selectedBundle.id === bundle.id
+                            ? "border-[#9A6F1A] bg-[#9A6F1A]"
+                            : "border-[#c5c8bc] bg-white"
+                        }`}
+                      >
+                        {selectedBundle.id === bundle.id && (
+                          <div className="h-2 w-2 rounded-full bg-white" />
+                        )}
+                      </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </section>
 
@@ -335,10 +343,12 @@ export default function ProductPage() {
       <div className="fixed bottom-0 left-0 z-[60] w-full border-t border-glass-border bg-glass-surface px-5 py-4 shadow-[0_-8px_30px_rgba(73,87,56,0.1)] backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-md items-center gap-4">
           <div className="flex flex-col">
-            <span className="font-sans text-xs text-on-surface-variant">
-              Total Price
+            <span className="font-sans text-[10px] text-on-surface-variant">
+              <span className="line-through">₹{selectedBundle.mrp}</span>
+              {" "}
+              → Save {getSaving(selectedBundle.price, selectedBundle.mrp)}%
             </span>
-            <span className="font-display text-2xl font-semibold leading-none text-primary">
+            <span className="font-number text-2xl font-bold leading-none text-primary">
               ₹{selectedBundle.price}
             </span>
           </div>

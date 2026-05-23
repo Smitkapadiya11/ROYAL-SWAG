@@ -56,7 +56,7 @@ export default function AdminOverviewMetrics() {
           </span>
         </div>
         <div className="mt-4">
-          <p className="font-display text-[36px] font-bold text-[#495738]">
+          <p className="font-number text-[36px] font-bold text-[#495738]">
             {leads.length}
           </p>
           <p className="mt-1 flex items-center gap-1 font-sans text-xs text-green-700">
@@ -73,7 +73,7 @@ export default function AdminOverviewMetrics() {
           </span>
         </div>
         <div className="mt-4">
-          <p className="font-display text-[36px] font-bold text-red-600">
+          <p className="font-number text-[36px] font-bold text-red-600">
             {highRiskCount}
           </p>
           <p className="mt-1 font-sans text-xs text-[#45483f]">Needs follow-up</p>
@@ -88,7 +88,7 @@ export default function AdminOverviewMetrics() {
           </span>
         </div>
         <div className="mt-4">
-          <p className="font-display text-[36px] font-bold text-[#495738]">
+          <p className="font-number text-[36px] font-bold text-[#495738]">
             {orders.length}
           </p>
           <p className="mt-1 font-sans text-xs text-[#45483f]">
@@ -107,7 +107,7 @@ export default function AdminOverviewMetrics() {
           </span>
         </div>
         <div className="mt-4">
-          <p className="font-display text-[36px] font-bold text-[#9A6F1A]">
+          <p className="font-number text-[36px] font-bold text-[#9A6F1A]">
             ₹{totalRevenue.toLocaleString("en-IN")}
           </p>
           <p className="mt-1 font-sans text-xs text-[#45483f]">

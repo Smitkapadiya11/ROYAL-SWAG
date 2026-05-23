@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
-import { DEFAULT_BUNDLE } from "@/lib/productData";
+import { DEFAULT_BUNDLE } from "@/lib/productPricing";
 import { URGENCY_CONFIG } from "@/lib/urgency-config";
 
 /** ViewContent once per /product visit */

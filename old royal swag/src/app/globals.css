@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @config "../../tailwind.config.js";
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 :root {
   --primary: #324023;
   --primary-container: #495738;
@@ -25,7 +30,7 @@ body {
   background-image: radial-gradient(rgba(73, 87, 56, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
   color: #171e11;
-  font-family: "Hanken Grotesk", sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -49,7 +54,7 @@ body {
   background: #324023;
   color: #ffffff;
   border-radius: 12px;
-  font-family: "Hanken Grotesk", sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.05em;

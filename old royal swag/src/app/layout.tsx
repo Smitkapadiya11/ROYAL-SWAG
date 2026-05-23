@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Hanken_Grotesk } from "next/font/google";
-import "./globals.css";
+import {
+  Playfair_Display,
+  DM_Sans,
+  DM_Serif_Display,
+} from "next/font/google";import "./globals.css";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/Footer";
@@ -14,20 +17,26 @@ import SiteTracker from "@/components/analytics/SiteTracker";
 import AnalyticsScripts from "@/components/analytics/AnalyticsScripts";
 import AnalyticsProvider from "@/components/analytics/AnalyticsProvider";
 
-const playfair = Playfair_Display({
+const dmSerif = DM_Serif_Display({
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400"],
   variable: "--font-display",
   display: "swap",
 });
 
-const hanken = Hanken_Grotesk({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans",
   display: "swap",
 });
 
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-number",
+  display: "swap",
+});
 export const metadata: Metadata = {
   title: "Royal Swag Lung Detox Tea | 7 Ayurvedic Herbs — Free Delivery India",
   description:
@@ -66,7 +75,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${hanken.variable} overflow-x-hidden`}
+      className={`${dmSerif.variable} ${dmSans.variable} ${playfair.variable} overflow-x-hidden`}
     >
       <head>
         <link
@@ -76,7 +85,7 @@ export default function RootLayout({
         <AnalyticsScripts />
       </head>
       <body
-        className={`${playfair.variable} ${hanken.variable} ${hanken.className} overflow-x-hidden font-sans text-on-surface antialiased`}
+        className={`${dmSerif.variable} ${dmSans.variable} ${playfair.variable} ${dmSans.className} overflow-x-hidden font-sans text-on-surface antialiased`}
       >
         <StyledComponentsRegistry>
           <Suspense fallback={null}>

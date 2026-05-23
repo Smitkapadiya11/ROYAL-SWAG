@@ -84,6 +84,11 @@ export default function AuthPage() {
     });
   };
 
+  const handleSignupSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void signupForm.handleSubmit(onSignup)(event);
+  };
+
   const onLogin = async (data: LoginForm) => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
@@ -267,7 +272,7 @@ export default function AuthPage() {
             </div>
           </form>
         ) : (
-          <form onSubmit={signupForm.handleSubmit(onSignup)}>
+          <form onSubmit={handleSignupSubmit}>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {signupFields.map((f) => (
                 <div key={f.name}>

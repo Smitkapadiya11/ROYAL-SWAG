@@ -8,7 +8,8 @@ export function middleware(request) {
     }
     
     const auth = request.cookies.get('rs_admin_auth');
-    if (!auth || auth.value !== process.env.ADMIN_SECRET) {
+    const secret = process.env.ADMIN_SECRET || process.env.ADMIN_PASSWORD;
+    if (!auth || auth.value !== secret) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }

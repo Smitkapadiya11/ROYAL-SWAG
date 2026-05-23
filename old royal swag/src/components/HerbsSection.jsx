@@ -83,7 +83,7 @@ const ImageContainer = styled.div`
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 16px;
-  background: #2A3020;
+  background: #495738;
 `;
 
 const RoleTag = styled.div`
@@ -139,7 +139,7 @@ const ExpandHint = styled.div`
 `;
 
 const WhyBlock = styled.div`
-  background: #2A3020;
+  background: #495738;
   color: #F4EDD6;
   padding: 40px;
   border-radius: 20px;

@@ -6,19 +6,19 @@ import { trackEvent } from '../lib/events';
 const SectionWrapper = styled.section`
   position: relative;
   padding: 80px 20px;
-  background: #0d1a0f;
+  background: #495738;
   color: #F4EDD6;
   text-align: center;
   background-image: url('/images/bg/asset3.jpeg');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  background-attachment: scroll;
 `;
 
 const Overlay = styled.div`
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(13, 26, 15, 0.82);
+  background: rgba(73, 87, 56, 0.88);
   z-index: 1;
 `;
 

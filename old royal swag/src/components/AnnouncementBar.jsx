@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const messages = [
@@ -14,7 +14,7 @@ const Bar = styled.div`
   top: 0;
   z-index: 9999;
   background: #5C946E;
-  color: white;
+  color: #F4EDD6;
   height: 36px;
   display: flex;
   align-items: center;
@@ -28,35 +28,39 @@ const Bar = styled.div`
   }
 `;
 
-const Message = styled.div`
-  transition: opacity 0.5s ease-in-out;
-  opacity: ${(props) => (props.$isVisible ? 1 : 0)};
-  position: absolute;
+const Message = styled.p`
+  margin: 0;
+  padding: 0 16px;
+  text-align: center;
+  transition: opacity 0.35s ease;
+  opacity: ${(props) => (props.$visible ? 1 : 0)};
 `;
 
 export default function AnnouncementBar() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const [visible, setVisible] = useState(true);
+  const swapRef = useRef(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsVisible(false);
-      setTimeout(() => {
+      setVisible(false);
+      swapRef.current = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % messages.length);
-        setIsVisible(true);
-      }, 500);
-    }, 4000);
+        setVisible(true);
+      }, 350);
+    }, 5000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (swapRef.current) clearTimeout(swapRef.current);
+    };
   }, []);
 
   return (
     <Bar>
-      {messages.map((msg, index) => (
-        <Message key={index} $isVisible={isVisible && currentIndex === index}>
-          {msg}
-        </Message>
-      ))}
+      <Message $visible={visible} aria-live="polite">
+        {messages[currentIndex]}
+      </Message>
     </Bar>
   );
 }

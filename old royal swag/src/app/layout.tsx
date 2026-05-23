@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AnnouncementBar from "@/components/AnnouncementBar";
-import Nav from "@/components/Nav";
+import Nav from "@/components/Nav.jsx";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import StyledComponentsRegistry from "@/lib/registry";

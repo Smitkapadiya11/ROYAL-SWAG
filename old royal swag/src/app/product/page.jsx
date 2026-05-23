@@ -21,9 +21,9 @@ const MainContent = styled.main`
   grid-template-columns: 1fr 1fr;
   gap: 60px;
   
-  @media (max-width: 992px) {
+  @media (max-width: 767px) {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 24px;
     padding: 20px;
   }
 `;
@@ -32,6 +32,12 @@ const ImageGallery = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  @media (max-width: 767px) {
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
+  }
 `;
 
 const MainImageWrapper = styled.div`
@@ -40,11 +46,20 @@ const MainImageWrapper = styled.div`
   border-radius: 20px;
   overflow: hidden;
   position: relative;
-  background: white;
+  background: #F4EDD6;
   border: 1px solid rgba(73, 87, 56, 0.1);
   img {
     object-fit: contain;
     transition: opacity 0.3s ease;
+  }
+
+  @media (max-width: 767px) {
+    width: 100%;
+    height: 300px;
+    aspect-ratio: unset;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
   }
 `;
 
@@ -60,6 +75,13 @@ const ThumbnailStrip = styled.div`
     background: #49573840;
     border-radius: 4px;
   }
+
+  @media (max-width: 767px) {
+    height: 72px;
+    gap: 8px;
+    padding: 8px 16px;
+    margin: 0 -20px;
+  }
 `;
 
 const Thumb = styled.div`
@@ -70,16 +92,26 @@ const Thumb = styled.div`
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  border: 2px solid ${(props) => (props.$active ? '#9A6F1A' : 'transparent')};
-  background: white;
+  border: 2px solid ${(props) => (props.$active ? '#495738' : 'transparent')};
+  background: #F4EDD6;
   img {
     object-fit: cover;
+  }
+
+  @media (max-width: 767px) {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
   }
 `;
 
 const PurchasePanel = styled.div`
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 767px) {
+    text-align: left;
+  }
 `;
 
 const Title = styled.h1`
@@ -87,6 +119,12 @@ const Title = styled.h1`
   color: #495738;
   margin-bottom: 8px;
   line-height: 1.2;
+
+  @media (max-width: 767px) {
+    font-size: 22px;
+    font-weight: 700;
+    text-align: left;
+  }
 `;
 
 const RatingRow = styled.div`
@@ -96,6 +134,11 @@ const RatingRow = styled.div`
   color: #9A6F1A;
   font-weight: 600;
   margin-bottom: 16px;
+
+  @media (max-width: 767px) {
+    font-size: 14px;
+    text-align: left;
+  }
 `;
 
 const Badges = styled.div`
@@ -122,7 +165,11 @@ const PriceRow = styled.div`
 const CurrentPrice = styled.div`
   font-size: 32px;
   font-weight: bold;
-  color: #2A3020;
+  color: #495738;
+
+  @media (max-width: 767px) {
+    font-size: 28px;
+  }
 `;
 
 const OldPrice = styled.div`
@@ -134,7 +181,7 @@ const OldPrice = styled.div`
 
 const SaveBadge = styled.div`
   background: #5C946E;
-  color: white;
+  color: #F4EDD6;
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 14px;
@@ -142,15 +189,16 @@ const SaveBadge = styled.div`
 `;
 
 const TimerBox = styled.div`
-  background: rgba(73, 87, 56, 0.15);
-  padding: 8px 16px;
+  background: #49573815;
+  padding: 10px 16px;
   border-radius: 8px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   color: #495738;
   font-weight: 600;
   margin-bottom: 12px;
+  width: 100%;
 `;
 
 const StockText = styled.div`
@@ -313,35 +361,48 @@ const PaymentIcons = styled.div`
 
 
 
-// Dynamically gather all 13 images from /images/product/
-const IMAGES = Array.from({ length: 13 }, (_, i) => `/images/product/product-${i + 1}.jpg`);
+// Product pack images only — tea box photos, not lifestyle/banner
+const PRODUCT_IMAGES = [
+  '/images/product/product-1.jpg',
+  '/images/product/product-2.jpg',
+  '/images/product/product-3.jpg',
+  '/images/product/product-4.jpg',
+  '/images/product/product-5.jpg',
+  '/images/product/product-6.jpg',
+  '/images/product/product-7.jpg',
+  '/images/product/product-8.jpg',
+  '/images/product/product-9.jpg',
+  '/images/product/product-10.jpg',
+  '/images/product/product-11.jpg',
+  '/images/product/product-12.jpg',
+  '/images/product/product-13.jpg',
+];
 
 export default function ProductPage() {
-  const [activeImage, setActiveImage] = useState(IMAGES[0]);
+  const [activeImage, setActiveImage] = useState(PRODUCT_IMAGES[0]);
   const [selectedBundle, setSelectedBundle] = useState(BUNDLES.find(b => b.default));
   const [timeLeft, setTimeLeft] = useState(48 * 60 * 60); // 48 hours in seconds
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    // Timer logic with localStorage persistence
     const savedTime = localStorage.getItem('rs_offer_timer');
     const savedTimestamp = localStorage.getItem('rs_offer_timestamp');
-    
-    if (savedTime && savedTimestamp) {
-      const elapsed = Math.floor((Date.now() - parseInt(savedTimestamp)) / 1000);
-      const remaining = Math.max(0, parseInt(savedTime) - elapsed);
-      if (remaining > 0) {
-        setTimeLeft(remaining);
-      } else {
-        setTimeLeft(48 * 60 * 60); // Reset if expired
-      }
+    const startTs = savedTimestamp ? parseInt(savedTimestamp, 10) : Date.now();
+
+    if (!savedTimestamp) {
+      localStorage.setItem('rs_offer_timestamp', startTs.toString());
+    }
+
+    if (savedTime) {
+      const elapsed = Math.floor((Date.now() - startTs) / 1000);
+      const remaining = Math.max(0, parseInt(savedTime, 10) - elapsed);
+      setTimeLeft(remaining > 0 ? remaining : 48 * 60 * 60);
     }
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         const next = prev > 0 ? prev - 1 : 48 * 60 * 60;
         localStorage.setItem('rs_offer_timer', next.toString());
-        localStorage.setItem('rs_offer_timestamp', Date.now().toString());
         return next;
       });
     }, 1000);
@@ -421,7 +482,7 @@ export default function ProductPage() {
             />
           </MainImageWrapper>
           <ThumbnailStrip>
-            {IMAGES.map((img, i) => (
+            {PRODUCT_IMAGES.map((img, i) => (
               <Thumb 
                 key={i} 
                 $active={activeImage === img}
@@ -464,11 +525,18 @@ export default function ProductPage() {
               <div key={bundle.id}
                 onClick={() => setSelectedBundle(bundle)}
                 style={{
-                  border: selectedBundle.id === bundle.id ? '2px solid #495738' : '1px solid #49573840',
-                  background: selectedBundle.id === bundle.id ? '#49573808' : 'white',
-                  borderRadius: 12, padding: '12px 16px', cursor: 'pointer',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  marginBottom: 8, position: 'relative', transition: 'all 0.2s'
+                  border: selectedBundle.id === bundle.id ? '2px solid #495738' : '1px solid #49573830',
+                  background: selectedBundle.id === bundle.id ? '#49573808' : '#F4EDD6',
+                  borderRadius: 10,
+                  padding: '14px 16px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 8,
+                  position: 'relative',
+                  transition: 'all 0.2s',
+                  width: '100%',
                 }}>
                 {bundle.badge && (
                   <span style={{position:'absolute',top:-10,left:12,background:bundle.badgeBg,color:'#F4EDD6',fontSize:10,padding:'2px 8px',borderRadius:20,fontWeight:600}}>

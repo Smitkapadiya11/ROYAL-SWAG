@@ -62,7 +62,7 @@ const Grid = styled.div`
 `;
 
 const ReviewCard = styled.div`
-  background: #2A3020;
+  background: #495738;
   border-radius: 16px;
   padding: 20px;
   display: flex;

@@ -50,7 +50,7 @@ const Grid = styled.div`
 `;
 
 const CardContainer = styled.div`
-  background: #2A3020;
+  background: #495738;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -78,7 +78,7 @@ const PlayIconOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #F4EDD6;
   font-size: 24px;
   z-index: 2;
   transition: transform 0.3s ease;
@@ -95,7 +95,7 @@ const InfoOverlay = styled.div`
   left: 0;
   width: 100%;
   padding: 40px 20px 20px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  background: linear-gradient(transparent, rgba(73, 87, 56, 0.85));
   color: #F4EDD6;
   z-index: 3;
   pointer-events: none;

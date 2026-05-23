@@ -8,24 +8,24 @@ const CTABar = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 60px;
-  background: #0D3B1F;
+  height: 64px;
+  background: #495738;
   z-index: 9998;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 -4px 10px rgba(73, 87, 56, 0.2);
   transform: translateY(${(props) => (props.$visible ? '0' : '100%')});
   transition: transform 0.3s ease;
-  
-  @media (min-width: 769px) {
+
+  @media (min-width: 768px) {
     display: none;
   }
 `;
 
 const ProductInfo = styled.div`
-  color: white;
+  color: #F4EDD6;
   font-size: 14px;
   font-weight: 500;
 `;

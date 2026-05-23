@@ -5,34 +5,35 @@
   --cream: #F4EDD6;
   --gold: #9A6F1A;
   --sage: #5C946E;
-  --dark: #2A3020;
+  --dark: #495738;
   --text-on-olive: #F4EDD6;
+  --text-on-cream: #495738;
   --bg-site: #F4EDD6;
+  --footer-dark: #495738;
 
-  /* NEW PALETTE — genuinely different from old site */
-  --rs-bg:         #F7F9F7;
-  --rs-bg-alt:     #FFFFFF;
-  --rs-surface:    #FFFFFF;
-  --rs-border:     #E4EDE4;
+  --rs-bg:         #F4EDD6;
+  --rs-bg-alt:     #F4EDD6;
+  --rs-surface:    #F4EDD6;
+  --rs-border:     rgba(73, 87, 56, 0.2);
 
-  --rs-ink:        #0A150A;
-  --rs-ink-2:      #2C3A2C;
-  --rs-muted:      #6B7A6B;
+  --rs-ink:        #495738;
+  --rs-ink-2:      #495738;
+  --rs-muted:      #495738;
 
-  --rs-green-dark: #0F2A0F;
-  --rs-green:      #1D5C1D;
-  --rs-green-mid:  #2E7D32;
-  --rs-green-lt:   #4CAF50;
-  --rs-sage:       #81A882;
-  --rs-mint:       #C8E6C9;
+  --rs-green-dark: #495738;
+  --rs-green:      #495738;
+  --rs-green-mid:  #5C946E;
+  --rs-green-lt:   #5C946E;
+  --rs-sage:       #5C946E;
+  --rs-mint:       #F4EDD6;
 
-  --rs-gold:       #B8860B;
-  --rs-gold-lt:    #D4A017;
-  --rs-gold-glow:  #F0C040;
-  --rs-copper:     #9B6914;
+  --rs-gold:       #9A6F1A;
+  --rs-gold-lt:    #9A6F1A;
+  --rs-gold-glow:  #9A6F1A;
+  --rs-copper:     #9A6F1A;
 
-  --rs-white:      #FFFFFF;
-  --rs-cream:      #FDFAF4;
+  --rs-white:      #F4EDD6;
+  --rs-cream:      #F4EDD6;
 
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -43,16 +44,12 @@
   --section-py: clamp(72px, 7vw, 120px);
   --max-w: 1200px;
 
-  /* Legacy aliases — existing components */
-  --olive: var(--rs-green);
-  --deep: var(--rs-green-dark);
-  --cream: var(--rs-cream);
-  --gold: var(--rs-gold);
-  --sand: var(--rs-border);
-  --muted: var(--rs-muted);
-  --dark: var(--rs-ink);
-  --white: var(--rs-white);
-  --border: var(--rs-border);
+  /* Legacy aliases */
+  --deep: #495738;
+  --sand: rgba(73, 87, 56, 0.2);
+  --muted: #495738;
+  --white: #F4EDD6;
+  --border: rgba(73, 87, 56, 0.2);
   --ff-head: var(--font-serif);
   --ff-body: var(--font-sans);
   --font-playfair-display: var(--font-serif);
@@ -62,15 +59,15 @@
   --max: var(--max-w);
   --px: clamp(20px, 5vw, 64px);
   --py: var(--section-py);
-  --rs-olive: var(--rs-green);
-  --rs-deep: var(--rs-green-dark);
-  --rs-sand: var(--rs-border);
-  --rs-text: var(--rs-muted);
-  --brand-green: var(--rs-green-dark);
-  --brand-gold: var(--rs-gold);
-  --brand-sage: var(--rs-mint);
-  --brand-ivory: var(--rs-bg);
-  --brand-dark: var(--rs-ink);
+  --rs-olive: #495738;
+  --rs-deep: #495738;
+  --rs-sand: rgba(73, 87, 56, 0.2);
+  --rs-text: #495738;
+  --brand-green: #495738;
+  --brand-gold: #9A6F1A;
+  --brand-sage: #5C946E;
+  --brand-ivory: #F4EDD6;
+  --brand-dark: #495738;
 }
 
 /* ── BASE ── */
@@ -80,8 +77,8 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', var(--font-sans);
-  background: var(--bg-site);
-  color: var(--rs-ink);
+  background: #F4EDD6;
+  color: #495738;
   font-size: 16px;
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
@@ -90,7 +87,7 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-serif);
-  color: var(--rs-ink);
+  color: #495738;
   line-height: 1.12;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -131,18 +128,13 @@ p, span, li, label, small { font-family: var(--font-sans); }
 /* ── NAVBAR ── */
 .navbar-scrolled,
 .navbar-rs-scrolled {
-  background: rgba(15, 42, 15, 0.97) !important;
+  background: #495738 !important;
   backdrop-filter: blur(24px) saturate(200%) !important;
-  border-bottom: 1px solid rgba(196, 154, 42, 0.2) !important;
+  border-bottom: 1px solid rgba(244, 237, 214, 0.15) !important;
 }
 
 .rs-main-nav-pad {
-  padding-top: 118px;
-}
-@media (min-width: 769px) {
-  .rs-main-nav-pad {
-    padding-top: 228px;
-  }
+  padding-top: 0;
 }
 
 .navbar-main-logo,
@@ -405,5 +397,21 @@ body.auth-page .rs-main-nav-pad {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.05em;
   line-height: 1;
-  color: var(--rs-gold);
+  color: #9A6F1A;
+}
+
+@media (max-width: 767px) {
+  body { overflow-x: hidden; }
+
+  h1 { font-size: clamp(28px, 8vw, 42px); line-height: 1.15; }
+  h2 { font-size: clamp(24px, 6vw, 32px); }
+  h3 { font-size: clamp(18px, 5vw, 24px); }
+
+  .no-scroll-x { overflow-x: hidden; }
+
+  .grid-mobile-1 { grid-template-columns: 1fr; }
+
+  .card { width: 100%; max-width: 100%; }
+
+  main.rs-main-nav-pad { padding-bottom: 80px; }
 }

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { initRazorpay } from '@/lib/razorpayClient';
 import StickyCTA from '@/components/StickyCTA';
 import ProductJsonLd from '@/components/seo/ProductJsonLd';
+import { BUNDLES } from '@/lib/productData';
 
 const PageContainer = styled.div`
   background: #F4EDD6;
@@ -310,40 +311,14 @@ const PaymentIcons = styled.div`
   opacity: 0.6;
 `;
 
-const PACKS = [
-  {
-    id: 'pack_1',
-    name: '1 Pack (20 Bags)',
-    desc: 'Try it out',
-    price: 349,
-    original: 499,
-    perPack: 349,
-  },
-  {
-    id: 'pack_3',
-    name: '3 Packs (60 Bags)',
-    desc: 'Most Popular - 1 Month Supply',
-    price: 899,
-    original: 1497,
-    perPack: 299,
-    recommended: true,
-  },
-  {
-    id: 'pack_6',
-    name: '6 Packs (120 Bags)',
-    desc: 'Best Value - 2 Months Supply',
-    price: 1499,
-    original: 2994,
-    perPack: 249,
-  }
-];
+
 
 // Dynamically gather all 13 images from /images/product/
 const IMAGES = Array.from({ length: 13 }, (_, i) => `/images/product/product-${i + 1}.jpg`);
 
 export default function ProductPage() {
   const [activeImage, setActiveImage] = useState(IMAGES[0]);
-  const [selectedPack, setSelectedPack] = useState(PACKS[1]);
+  const [selectedBundle, setSelectedBundle] = useState(BUNDLES.find(b => b.default));
   const [timeLeft, setTimeLeft] = useState(48 * 60 * 60); // 48 hours in seconds
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -387,10 +362,10 @@ export default function ProductPage() {
       // Track intent
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'InitiateCheckout', {
-          value: selectedPack.price,
+          value: selectedBundle.price,
           currency: 'INR',
-          content_ids: [selectedPack.id],
-          content_name: selectedPack.name,
+          content_ids: [selectedBundle.id],
+          content_name: selectedBundle.label,
         });
       }
 
@@ -398,8 +373,8 @@ export default function ProductPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: selectedPack.price,
-          packId: selectedPack.id,
+          amount: selectedBundle.price,
+          packId: selectedBundle.id,
         })
       });
       const order = await res.json();
@@ -410,11 +385,11 @@ export default function ProductPage() {
         currency: order.currency,
         order_id: order.id,
         name: 'Royal Swag',
-        description: selectedPack.name,
+        description: selectedBundle.label,
         theme: { color: '#495738' },
         handler: function(response) {
           // Success handler - redirect to thank you
-          window.location.href = `/thank-you?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&amount=${selectedPack.price}&pack=${selectedPack.id}`;
+          window.location.href = `/thank-you?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&amount=${selectedBundle.price}&pack=${selectedBundle.id}`;
         },
         modal: {
           ondismiss: function() {
@@ -470,9 +445,9 @@ export default function ProductPage() {
 
           <PriceBlock>
             <PriceRow>
-              <CurrentPrice>₹{selectedPack.price}</CurrentPrice>
-              <OldPrice>₹{selectedPack.original}</OldPrice>
-              <SaveBadge>SAVE ₹{selectedPack.original - selectedPack.price}</SaveBadge>
+              <CurrentPrice>₹{selectedBundle.price}</CurrentPrice>
+              <OldPrice>₹{selectedBundle.originalPrice}</OldPrice>
+              <SaveBadge>SAVE ₹{selectedBundle.originalPrice - selectedBundle.price}</SaveBadge>
             </PriceRow>
             
             <TimerBox>
@@ -485,31 +460,45 @@ export default function ProductPage() {
 
           <BundleSection>
             <BundleLabel>Select Quantity:</BundleLabel>
-            {PACKS.map(pack => (
-              <BundleCard 
-                key={pack.id} 
-                $selected={selectedPack.id === pack.id}
-                onClick={() => setSelectedPack(pack)}
-              >
-                {pack.recommended && <RecommendedBadge>RECOMMENDED</RecommendedBadge>}
-                <BundleInfo>
-                  <RadioCircle $selected={selectedPack.id === pack.id} />
-                  <div>
-                    <BundleName>{pack.name}</BundleName>
-                    <BundleDesc>{pack.desc}</BundleDesc>
-                  </div>
-                </BundleInfo>
-                <BundlePrice>
-                  <BPrice>₹{pack.price}</BPrice>
-                  <BPerPack>₹{pack.perPack} / pack</BPerPack>
-                </BundlePrice>
-              </BundleCard>
+            {BUNDLES.map(bundle => (
+              <div key={bundle.id}
+                onClick={() => setSelectedBundle(bundle)}
+                style={{
+                  border: selectedBundle.id === bundle.id ? '2px solid #495738' : '1px solid #49573840',
+                  background: selectedBundle.id === bundle.id ? '#49573808' : 'white',
+                  borderRadius: 12, padding: '12px 16px', cursor: 'pointer',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  marginBottom: 8, position: 'relative', transition: 'all 0.2s'
+                }}>
+                {bundle.badge && (
+                  <span style={{position:'absolute',top:-10,left:12,background:bundle.badgeBg,color:'#F4EDD6',fontSize:10,padding:'2px 8px',borderRadius:20,fontWeight:600}}>
+                    {bundle.badge}
+                  </span>
+                )}
+                <div>
+                  <div style={{fontWeight:600,fontSize:14,color:'#495738'}}>{bundle.label}</div>
+                  <div style={{fontSize:12,color:'#49573880'}}>{bundle.subtitle}</div>
+                </div>
+                <div style={{textAlign:'right'}}>
+                  <div style={{fontWeight:700,fontSize:18,color:'#495738'}}>₹{bundle.price}</div>
+                  <div style={{fontSize:11,color:'#9A6F1A'}}>₹{bundle.pricePerPack}/pack</div>
+                </div>
+              </div>
             ))}
           </BundleSection>
 
-          <CheckoutBtn onClick={handleCheckout} disabled={isProcessing}>
-            {isProcessing ? 'Processing...' : `Buy Now — ₹${selectedPack.price}`}
-          </CheckoutBtn>
+          <button 
+            onClick={handleCheckout} 
+            disabled={isProcessing}
+            style={{
+              width:'100%',height:56,background:'#495738',color:'#F4EDD6',
+              fontSize:18,fontWeight:700,borderRadius:12,border:'none',
+              cursor: isProcessing ? 'not-allowed' : 'pointer',
+              marginTop: 24, opacity: isProcessing ? 0.7 : 1
+            }}
+          >
+            {isProcessing ? 'Processing...' : `Buy Now — ₹${selectedBundle.price}`}
+          </button>
           
           <PaymentIcons>
             <span>🔒 100% Secure Checkout</span>

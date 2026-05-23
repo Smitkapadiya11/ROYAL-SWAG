@@ -1,0 +1,38 @@
+export const BUNDLES = [
+  {
+    id: 'single',
+    label: '1 Pack (20 Bags)',
+    subtitle: 'Try it out',
+    bags: 20,
+    supply: '30-day supply',
+    price: 349,
+    originalPrice: 499,
+    pricePerPack: 349,
+    badge: null,
+  },
+  {
+    id: 'triple',
+    label: '3 Packs (60 Bags)',
+    subtitle: 'Most Popular · 1 Month Supply',
+    bags: 60,
+    supply: '90-day supply',
+    price: 899,
+    originalPrice: 1497,
+    pricePerPack: 299,
+    badge: 'RECOMMENDED',
+    badgeBg: '#9A6F1A',
+    default: true,
+  },
+  {
+    id: 'sixpack',
+    label: '6 Packs (120 Bags)',
+    subtitle: 'Best Value · 2 Months Supply',
+    bags: 120,
+    supply: '180-day supply',
+    price: 1499,
+    originalPrice: 2994,
+    pricePerPack: 249,
+    badge: 'BEST VALUE',
+    badgeBg: '#495738',
+  }
+];

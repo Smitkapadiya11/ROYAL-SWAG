@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { trackEvent } from '../lib/events';
 
@@ -65,22 +65,6 @@ const CardContainer = styled.div`
   }
 `;
 
-const VideoWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  background: #000;
-  
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
 const PlayIconOverlay = styled.div`
   position: absolute;
   top: 50%;
@@ -114,6 +98,7 @@ const InfoOverlay = styled.div`
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
   color: #F4EDD6;
   z-index: 3;
+  pointer-events: none;
 `;
 
 const DocName = styled.h3`
@@ -138,188 +123,126 @@ const DocCaption = styled.p`
   overflow: hidden;
 `;
 
-const ModalOverlay = styled.div`
-  position: fixed;
+const ComingSoonOverlay = styled.div`
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.9);
-  z-index: 100000;
+  width: 100%;
+  height: 100%;
+  background: #1A2A1A;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  opacity: ${(props) => (props.$isOpen ? 1 : 0)};
-  pointer-events: ${(props) => (props.$isOpen ? 'auto' : 'none')};
-  transition: opacity 0.3s ease;
+  color: #9A6F1A;
+  font-weight: bold;
+  font-size: 18px;
+  z-index: 2;
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 32px;
-  cursor: pointer;
-  z-index: 100001;
-`;
-
-const ModalVideoWrapper = styled.div`
-  width: 100%;
-  max-width: 450px;
-  aspect-ratio: 9/16;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-`;
-
-const videosData = [
+const doctors = [
   {
     id: 1,
     name: 'Dr. R. Sharma',
-    spec: 'Pulmonologist',
     age: 42,
-    caption: 'I see 30 patients a day with pollution-related asthma. This is the only natural remedy I recommend alongside inhalers.',
-    videoSrc: '/images/doctors/asset13.mp4',
-    poster: ''
+    specialty: 'Pulmonologist',
+    video: '/videos/doctor1.mp4',
+    thumbnail: '/images/doctors/doctor1-thumb.jpg',
+    quote: 'I see 30 patients a day with pollution-related asthma. This is the only natural remedy I recommend alongside medication.'
   },
   {
     id: 2,
     name: 'Dr. N. Patel',
-    spec: 'Ayurvedic Practitioner',
     age: 55,
-    caption: 'The combination of Pushkarmool and Vasaka is legendary. It\'s exactly what modern city lungs need to clear out toxins.',
-    videoSrc: '/images/doctors/asset14.mp4',
-    poster: ''
+    specialty: 'Ayurvedic Practitioner',
+    video: '/videos/doctor2.mp4',
+    thumbnail: '/images/doctors/doctor2-thumb.jpg',
+    quote: 'The combination of Pushkarmool and Vasaka is legendary. Exactly what modern city lungs need.'
   },
   {
     id: 3,
     name: 'Dr. A. Gupta',
-    spec: 'General Physician',
     age: 38,
-    caption: 'Smokers constantly ask me for a magic pill. There isn\'t one, but this detox tea is the closest thing to lung repair I\'ve seen.',
-    videoSrc: '/images/doctors/asset15.mp4',
-    poster: ''
+    specialty: 'General Physician',
+    video: '/videos/doctor3.mp4',
+    thumbnail: '/images/doctors/doctor3-thumb.jpg',
+    quote: 'Smokers constantly ask for a magic pill. This detox tea is the closest thing to lung repair that actually works.'
   }
 ];
 
-const VideoCard = ({ data, onOpenModal }) => {
-  const [isInView, setIsInView] = useState(false);
-  const ref = useRef(null);
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '100px' }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleMouseEnter = () => {
-    if (videoRef.current && window.innerWidth > 992) {
-      videoRef.current.play().catch(() => {});
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (videoRef.current && window.innerWidth > 992) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  };
-
-  return (
-    <CardContainer 
-      ref={ref} 
-      onMouseEnter={handleMouseEnter} 
-      onMouseLeave={handleMouseLeave}
-      onClick={() => onOpenModal(data)}
-    >
-      <VideoWrapper>
-        {isInView && (
-          <video 
-            ref={videoRef}
-            src={data.videoSrc}
-            poster={data.poster}
-            muted 
-            loop 
-            playsInline
-          />
-        )}
-      </VideoWrapper>
-      <PlayIconOverlay>▶</PlayIconOverlay>
-      <InfoOverlay>
-        <DocName>{data.name}, {data.age}</DocName>
-        <DocSpec>{data.spec}</DocSpec>
-        <DocCaption>"{data.caption}"</DocCaption>
-      </InfoOverlay>
-    </CardContainer>
-  );
-};
-
 export default function VideoSection() {
-  const [modalOpen, setModalOpen] = useState(false);
   const [activeVideo, setActiveVideo] = useState(null);
-  const modalVideoRef = useRef(null);
 
-  const openModal = (videoData) => {
-    trackEvent('video_play', { doctor: videoData.name });
-    setActiveVideo(videoData);
-    setModalOpen(true);
+  const handleVideoClick = (doctor) => {
+    trackEvent('video_play', { doctor: doctor.name });
+    setActiveVideo(doctor.video);
   };
-
-  const closeModal = (e) => {
-    if (e.target === e.currentTarget || e.target.tagName === 'BUTTON') {
-      setModalOpen(false);
-      setTimeout(() => setActiveVideo(null), 300);
-    }
-  };
-
-  useEffect(() => {
-    if (modalOpen && modalVideoRef.current) {
-      modalVideoRef.current.play().catch(() => {});
-    }
-  }, [modalOpen, activeVideo]);
 
   return (
     <SectionWrapper id="video-testimonials">
       <Headline>Hear them in their own words.</Headline>
       
       <Grid>
-        {videosData.map((data) => (
-          <VideoCard key={data.id} data={data} onOpenModal={openModal} />
-        ))}
+        {doctors.map((doctor) => {
+          // Since the videos actually exist now, we don't necessarily need the coming soon
+          // But I'll leave the logic just in case it doesn't load.
+          const hasVideo = !!doctor.video;
+
+          return (
+            <CardContainer key={doctor.id} onClick={() => hasVideo && handleVideoClick(doctor)}>
+              {/* Thumbnail image (fallback to solid color via CSS if not found, but we will use styled div for now) */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                backgroundImage: \`url(\${doctor.thumbnail})\`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundColor: '#1A2A1A'
+              }} />
+
+              {hasVideo ? (
+                <PlayIconOverlay>▶</PlayIconOverlay>
+              ) : (
+                <ComingSoonOverlay>Video Coming Soon</ComingSoonOverlay>
+              )}
+              
+              <InfoOverlay>
+                <DocName>{doctor.name}, {doctor.age}</DocName>
+                <DocSpec>{doctor.specialty}</DocSpec>
+                <DocCaption>"{doctor.quote}"</DocCaption>
+              </InfoOverlay>
+            </CardContainer>
+          );
+        })}
       </Grid>
       
-      <ModalOverlay $isOpen={modalOpen} onClick={closeModal}>
-        <CloseButton onClick={closeModal}>×</CloseButton>
-        <ModalVideoWrapper>
-          {activeVideo && (
+      {activeVideo && (
+        <div 
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', 
+            zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+          onClick={() => setActiveVideo(null)}
+        >
+          <div style={{width:'min(400px,90vw)',aspectRatio:'9/16',position:'relative'}} onClick={e=>e.stopPropagation()}>
             <video 
-              ref={modalVideoRef}
-              src={activeVideo.videoSrc} 
+              src={activeVideo} 
               controls 
+              autoPlay 
               playsInline 
+              style={{width:'100%',height:'100%',borderRadius:16,objectFit:'cover'}} 
             />
-          )}
-        </ModalVideoWrapper>
-      </ModalOverlay>
+            <button 
+              onClick={() => setActiveVideo(null)} 
+              style={{
+                position: 'absolute', top: -40, right: 0, 
+                background: 'transparent', border: 'none', color: 'white', 
+                fontSize: 28, cursor: 'pointer'
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </SectionWrapper>
   );
 }

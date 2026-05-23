@@ -37,13 +37,13 @@ const StyledWrapper = styled.div`
     /* Overridden with Royal Swag tones */
     background: linear-gradient(50deg, #F4EDD6, #E0D4B4);
     background-size: 1px 25px;
-    border: 1px solid #49573830;
+    border: 1px solid #32402330;
     cursor: pointer;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    color: #495738;
+    color: #324023;
   }
 
   .card:hover {

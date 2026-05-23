@@ -21,7 +21,7 @@ export default function ProductJsonLd() {
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
-      price: "349",
+      price: "599",
       priceValidUntil: "2026-12-31",
       availability: "https://schema.org/InStock",
       url: "https://lungdetox.royalswag.in/product"

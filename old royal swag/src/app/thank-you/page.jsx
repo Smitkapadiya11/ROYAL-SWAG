@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { trackEvent } from '@/lib/events';
 import Link from 'next/link';
 
 const PageWrapper = styled.div`
@@ -59,14 +58,6 @@ const HomeLink = styled(Link)`
 `;
 
 export default function ThankYouPage() {
-  useEffect(() => {
-    trackEvent('page_view', { page: 'thank_you' });
-    
-    if (typeof window !== 'undefined' && window.fbq) {
-      window.fbq('track', 'Purchase', { currency: 'INR' });
-    }
-  }, []);
-
   return (
     <PageWrapper>
       <Card>

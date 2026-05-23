@@ -1,16 +1,24 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 :root {
-  --olive: #495738;
-  --cream: #F4EDD6;
+  --primary: #324023;
   --gold: #9A6F1A;
-  --sage: #5C946E;
-  --dark: #2A3020;
-  --text-on-olive: #F4EDD6;
-  --bg-site: #F4EDD6;
+  --parchment: #F4EDD6;
+  --surface: #f5fce7;
+  --glass: rgba(255, 255, 255, 0.4);
 }
 
 body {
-  background: #F4EDD6;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+  background-color: #F4EDD6;
+  background-image: radial-gradient(rgba(50, 64, 35, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: #324023;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+  font-weight: 600;
+  color: #324023;
 }

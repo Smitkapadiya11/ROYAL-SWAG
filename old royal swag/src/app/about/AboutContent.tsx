@@ -361,7 +361,7 @@ export default function AboutContent() {
           Your Lungs Have Waited Long Enough.
         </h2>
         <p style={{ opacity: 0.85, fontSize: 16, marginBottom: 6 }}>
-          ₹349 · 20 Tea Bags · Free Delivery · COD Available
+          {SITE_CONFIG.price.display} · Progress Pack · Free Delivery · COD Available
         </p>
         <p style={{ opacity: 0.65, fontSize: 13, marginBottom: 36 }}>
           theroyalswag.com · Amazon India · Amazon US
@@ -371,7 +371,7 @@ export default function AboutContent() {
             background: "#C49A2A", color: "#1A1A1A", padding: "15px 36px",
             borderRadius: 8, fontWeight: 800, fontSize: 17, textDecoration: "none",
           }}>
-            Order Now — ₹349 →
+            Order Now — {SITE_CONFIG.price.display} →
           </LeadGuardLink>
           <Link href="/lung-test" style={{
             background: "transparent", color: "#fff", padding: "15px 36px",

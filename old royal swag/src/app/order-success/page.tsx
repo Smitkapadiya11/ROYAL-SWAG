@@ -6,14 +6,50 @@ import { gsap } from "gsap";
 import Link from "next/link";
 import { APP_SITE } from "@/lib/config";
 
+function fireConfetti() {
+  import("canvas-confetti").then(({ default: confetti }) => {
+    const duration = 2800;
+    const end = Date.now() + duration;
+    const colors = ["#9A6F1A", "#324023", "#F4EDD6", "#5C946E"];
+
+    (function frame() {
+      confetti({
+        particleCount: 4,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.65 },
+        colors,
+      });
+      confetti({
+        particleCount: 4,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.65 },
+        colors,
+      });
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    })();
+  });
+}
+
 function OrderSuccessContent() {
   const params = useSearchParams();
-  const order = params?.get("order");
+  const orderId = params?.get("id") || params?.get("order");
   const ref = useRef<HTMLDivElement>(null);
   const checkRef = useRef<HTMLDivElement>(null);
 
+  const deliveryFrom = new Date();
+  deliveryFrom.setDate(deliveryFrom.getDate() + 3);
+  const deliveryTo = new Date();
+  deliveryTo.setDate(deliveryTo.getDate() + 7);
+  const fmt = (d: Date) =>
+    d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+
   useEffect(() => {
     document.body.classList.add("auth-page");
+    fireConfetti();
     return () => document.body.classList.remove("auth-page");
   }, []);
 
@@ -27,8 +63,8 @@ function OrderSuccessContent() {
     );
   }, []);
 
-  const whatsappHref = order
-    ? `https://wa.me/${APP_SITE.whatsapp}?text=${encodeURIComponent(`Hi, my order is #${order}`)}`
+  const whatsappHref = orderId
+    ? `https://wa.me/${APP_SITE.whatsapp}?text=${encodeURIComponent(`Hi, my order is #${orderId}`)}`
     : `https://wa.me/${APP_SITE.whatsapp}`;
 
   return (
@@ -49,7 +85,7 @@ function OrderSuccessContent() {
           background: "white",
           borderRadius: 24,
           padding: "clamp(40px,6vw,64px)",
-          maxWidth: 480,
+          maxWidth: 520,
           width: "100%",
           textAlign: "center",
           boxShadow: "0 32px 80px rgba(0,0,0,0.3)",
@@ -61,13 +97,13 @@ function OrderSuccessContent() {
             width: 80,
             height: 80,
             borderRadius: "50%",
-            background: "linear-gradient(135deg,#2D6A2D,#4A7C59)",
+            background: "linear-gradient(135deg,#324023,#5C946E)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontSize: 36,
             margin: "0 auto 24px",
-            boxShadow: "0 8px 32px rgba(45,106,45,0.4)",
+            boxShadow: "0 8px 32px rgba(50,64,35,0.35)",
             color: "#fff",
           }}
         >
@@ -76,9 +112,9 @@ function OrderSuccessContent() {
 
         <h1
           style={{
-            fontFamily: "var(--font-playfair-display)",
+            fontFamily: "var(--font-playfair)",
             fontSize: "clamp(28px,4vw,36px)",
-            color: "#1A3A1A",
+            color: "#324023",
             marginBottom: 12,
           }}
         >
@@ -87,31 +123,55 @@ function OrderSuccessContent() {
         <p style={{ color: "#6B6B6B", fontSize: 15, marginBottom: 8 }}>
           Thank you for choosing Royal Swag Lung Detox Tea
         </p>
-        {order && (
+        {orderId && (
           <div
             style={{
-              background: "#E8F5E9",
+              background: "#F4EDD6",
               borderRadius: 12,
               padding: "12px 20px",
               marginBottom: 20,
               fontWeight: 700,
-              color: "#1A3A1A",
+              color: "#324023",
               fontSize: 16,
             }}
           >
-            Order #{order}
+            Order #{orderId}
           </div>
         )}
+
+        <div
+          style={{
+            textAlign: "left",
+            background: "#fafafa",
+            borderRadius: 12,
+            padding: "16px 20px",
+            marginBottom: 20,
+            fontSize: 14,
+            color: "#444",
+          }}
+        >
+          <p style={{ margin: "0 0 8px", fontWeight: 600, color: "#324023" }}>Order summary</p>
+          <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
+            <li>Royal Swag Lung Detox Tea</li>
+            <li>Payment received via Razorpay</li>
+            <li>Ships within 24 hours</li>
+          </ul>
+          <p style={{ margin: "12px 0 0", fontSize: 13, color: "#6B6B6B" }}>
+            Estimated delivery: <strong>{fmt(deliveryFrom)}</strong> –{" "}
+            <strong>{fmt(deliveryTo)}</strong>
+          </p>
+        </div>
+
         <p style={{ color: "#6B6B6B", fontSize: 13, marginBottom: 28 }}>
-          A confirmation has been sent to your WhatsApp. Your order will ship within 24 hours.
+          Confirmation SMS and email have been sent when contact details were provided.
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <Link
-            href="/profile"
+            href="/"
             className="btn-gold"
             style={{ textDecoration: "none", padding: "12px 24px", fontSize: 14 }}
           >
-            View My Orders
+            Continue Shopping
           </Link>
           <Link
             href={whatsappHref}

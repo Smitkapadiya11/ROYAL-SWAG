@@ -1,0 +1,22 @@
+---
+description: Royal Swag brand design system (canonical repo — old royal swag)
+alwaysApply: true
+---
+
+# Royal Swag Design System
+
+Primary app: `E:\projects\Royal swag\old royal swag`. Read `DESIGN_SYSTEM.md` and `.cursor/rules/royal-swag-design-system.mdc` there.
+
+## Quick reference
+
+- **Colors:** `--primary` #324023, `--gold` #9A6F1A, `--parchment` #F4EDD6, glass tokens in `globals.css`
+- **Fonts:** Playfair Display (headlines), Hanken Grotesk (body)
+- **Utilities:** `.glass-card`, `.btn-primary`, `font-display`, `font-body`
+- **Logo:** `/public/images/royal-swag-logo.png` — `<BrandLogo variant="on-dark|on-light" header />`, min 40px in header
+
+## Do not change without client approval
+
+- Tagline: "Breathe Clean. Live Free."
+- Free Lung Test, 30-Day Guarantee badge
+- Herb names/copy: Tulsi, Vasaka, Mulethi, Pippali
+- Prices

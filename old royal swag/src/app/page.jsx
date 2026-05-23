@@ -9,12 +9,12 @@ import HowItWorksSection from '@/components/HowItWorksSection';
 import WhoSection from '@/components/WhoSection';
 import ReviewsSection from '@/components/ReviewsSection';
 import VideoSection from '@/components/VideoSection';
-import StickyCTA from '@/components/StickyCTA';
+import MobileStickyBar from '@/components/ui/MobileStickyBar';
 import FaqJsonLd from '@/components/seo/FaqJsonLd';
 
 export default function Home() {
   return (
-    <>
+    <div className="pb-[calc(60px+env(safe-area-inset-bottom,0px))] md:pb-0">
       <FaqJsonLd />
       <HeroSection />
       <TrustStrip />
@@ -26,7 +26,7 @@ export default function Home() {
       <WhoSection />
       <ReviewsSection />
       <VideoSection />
-      <StickyCTA />
-    </>
+      <MobileStickyBar />
+    </div>
   );
 }

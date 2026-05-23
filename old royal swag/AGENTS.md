@@ -1,3 +1,7 @@
+## Royal Swag design system
+
+Follow `.cursor/rules/royal-swag-design-system.mdc` and `DESIGN_SYSTEM.md` for colors, fonts, glass cards, buttons, and logo rules. Do not change protected copy or prices without client approval.
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 

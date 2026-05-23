@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { trackEvent } from '../lib/events';
 
 const SectionWrapper = styled.section`
-  background: #495738;
+  background: #324023;
   color: #F4EDD6;
   padding: 80px 5%;
   display: flex;
@@ -83,7 +83,7 @@ const ImageContainer = styled.div`
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 16px;
-  background: #495738;
+  background: #324023;
 `;
 
 const RoleTag = styled.div`
@@ -139,7 +139,7 @@ const ExpandHint = styled.div`
 `;
 
 const WhyBlock = styled.div`
-  background: #495738;
+  background: #324023;
   color: #F4EDD6;
   padding: 40px;
   border-radius: 20px;

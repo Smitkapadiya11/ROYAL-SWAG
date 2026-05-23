@@ -2,15 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
-import { initRazorpay } from '@/lib/razorpayClient';
-import StickyCTA from '@/components/StickyCTA';
+import MobileStickyBar from '@/components/ui/MobileStickyBar';
+import CountdownTimer from '@/components/ui/CountdownTimer';
+import ProductCheckout from '@/components/product/ProductCheckout';
 import ProductJsonLd from '@/components/seo/ProductJsonLd';
-import { BUNDLES } from '@/lib/productData';
+import { BUNDLES, DEFAULT_BUNDLE } from '@/lib/productData';
+import { EVENTS, trackEvent } from '@/lib/events';
+import ProductViewTracker from '@/components/analytics/ProductViewTracker';
 
 const PageContainer = styled.div`
   background: #F4EDD6;
   min-height: 100vh;
-  padding-bottom: 80px;
+  padding-bottom: 24px;
+
+  @media (max-width: 768px) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
 `;
 
 const MainContent = styled.main`
@@ -22,7 +29,8 @@ const MainContent = styled.main`
   gap: 60px;
   
   @media (max-width: 767px) {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 24px;
     padding: 20px;
   }
@@ -34,6 +42,7 @@ const ImageGallery = styled.div`
   gap: 16px;
 
   @media (max-width: 767px) {
+    order: 2;
     margin-left: -20px;
     margin-right: -20px;
     width: calc(100% + 40px);
@@ -110,6 +119,7 @@ const PurchasePanel = styled.div`
   flex-direction: column;
 
   @media (max-width: 767px) {
+    order: 1;
     text-align: left;
   }
 `;
@@ -186,32 +196,6 @@ const SaveBadge = styled.div`
   border-radius: 6px;
   font-size: 14px;
   font-weight: bold;
-`;
-
-const TimerBox = styled.div`
-  background: #49573815;
-  padding: 10px 16px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #495738;
-  font-weight: 600;
-  margin-bottom: 12px;
-  width: 100%;
-`;
-
-const StockText = styled.div`
-  color: #9A6F1A;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-`;
-
-const SocialProof = styled.div`
-  color: #5C946E;
-  font-size: 14px;
-  font-weight: 500;
 `;
 
 const BundleSection = styled.div`
@@ -380,94 +364,10 @@ const PRODUCT_IMAGES = [
 
 export default function ProductPage() {
   const [activeImage, setActiveImage] = useState(PRODUCT_IMAGES[0]);
-  const [selectedBundle, setSelectedBundle] = useState(BUNDLES.find(b => b.default));
-  const [timeLeft, setTimeLeft] = useState(48 * 60 * 60); // 48 hours in seconds
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  useEffect(() => {
-    const savedTime = localStorage.getItem('rs_offer_timer');
-    const savedTimestamp = localStorage.getItem('rs_offer_timestamp');
-    const startTs = savedTimestamp ? parseInt(savedTimestamp, 10) : Date.now();
-
-    if (!savedTimestamp) {
-      localStorage.setItem('rs_offer_timestamp', startTs.toString());
-    }
-
-    if (savedTime) {
-      const elapsed = Math.floor((Date.now() - startTs) / 1000);
-      const remaining = Math.max(0, parseInt(savedTime, 10) - elapsed);
-      setTimeLeft(remaining > 0 ? remaining : 48 * 60 * 60);
-    }
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        const next = prev > 0 ? prev - 1 : 48 * 60 * 60;
-        localStorage.setItem('rs_offer_timer', next.toString());
-        return next;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (seconds) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const handleCheckout = async () => {
-    try {
-      setIsProcessing(true);
-      // Track intent
-      if (typeof window !== 'undefined' && window.fbq) {
-        window.fbq('track', 'InitiateCheckout', {
-          value: selectedBundle.price,
-          currency: 'INR',
-          content_ids: [selectedBundle.id],
-          content_name: selectedBundle.label,
-        });
-      }
-
-      const res = await fetch('/api/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: selectedBundle.price,
-          packId: selectedBundle.id,
-        })
-      });
-      const order = await res.json();
-
-      const rzp = await initRazorpay({
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        order_id: order.id,
-        name: 'Royal Swag',
-        description: selectedBundle.label,
-        theme: { color: '#495738' },
-        handler: function(response) {
-          // Success handler - redirect to thank you
-          window.location.href = `/thank-you?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&amount=${selectedBundle.price}&pack=${selectedBundle.id}`;
-        },
-        modal: {
-          ondismiss: function() {
-            setIsProcessing(false);
-          }
-        }
-      });
-      rzp.open();
-    } catch (err) {
-      console.error('Checkout error:', err);
-      alert('Failed to initialize payment. Please try again.');
-      setIsProcessing(false);
-    }
-  };
-
+  const [selectedBundle, setSelectedBundle] = useState(DEFAULT_BUNDLE);
   return (
     <PageContainer>
+      <ProductViewTracker />
       <ProductJsonLd />
       
       <MainContent>
@@ -510,20 +410,35 @@ export default function ProductPage() {
               <OldPrice>₹{selectedBundle.originalPrice}</OldPrice>
               <SaveBadge>SAVE ₹{selectedBundle.originalPrice - selectedBundle.price}</SaveBadge>
             </PriceRow>
-            
-            <TimerBox>
-              ⏳ Offer ends in: {formatTime(timeLeft)}
-            </TimerBox>
-            
-            <StockText>Only 38 packs left at this price</StockText>
-            <SocialProof>🔥 12 people ordered in last 24 hours</SocialProof>
+
+            <div style={{ marginBottom: 12 }}>
+              <CountdownTimer />
+            </div>
           </PriceBlock>
 
           <BundleSection>
             <BundleLabel>Select Quantity:</BundleLabel>
             {BUNDLES.map(bundle => (
               <div key={bundle.id}
-                onClick={() => setSelectedBundle(bundle)}
+                role="button"
+                tabIndex={0}
+                data-track-button={`bundle-${bundle.id}`}
+                data-track-label={bundle.label}
+                onClick={() => {
+                  setSelectedBundle(bundle);
+                  trackEvent(EVENTS.BUNDLE_SELECT, {
+                    pack_name: bundle.label,
+                    packId: bundle.id,
+                    price: bundle.price,
+                    page: '/product',
+                  });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedBundle(bundle);
+                  }
+                }}
                 style={{
                   border: selectedBundle.id === bundle.id ? '2px solid #495738' : '1px solid #49573830',
                   background: selectedBundle.id === bundle.id ? '#49573808' : '#F4EDD6',
@@ -555,28 +470,18 @@ export default function ProductPage() {
             ))}
           </BundleSection>
 
-          <button 
-            onClick={handleCheckout} 
-            disabled={isProcessing}
-            style={{
-              width:'100%',height:56,background:'#495738',color:'#F4EDD6',
-              fontSize:18,fontWeight:700,borderRadius:12,border:'none',
-              cursor: isProcessing ? 'not-allowed' : 'pointer',
-              marginTop: 24, opacity: isProcessing ? 0.7 : 1
-            }}
-          >
-            {isProcessing ? 'Processing...' : `Buy Now — ₹${selectedBundle.price}`}
-          </button>
-          
-          <PaymentIcons>
-            <span>🔒 100% Secure Checkout</span>
-            <span>|</span>
-            <span>UPI • Cards • NetBanking</span>
-          </PaymentIcons>
+          <ProductCheckout
+            key={selectedBundle.id}
+            price={selectedBundle.price}
+            packId={selectedBundle.id}
+            packLabel={selectedBundle.label}
+            className="mt-6"
+            showSocialProof
+          />
           
         </PurchasePanel>
       </MainContent>
-      <StickyCTA />
+      <MobileStickyBar selectedPrice={selectedBundle.price} />
     </PageContainer>
   );
 }

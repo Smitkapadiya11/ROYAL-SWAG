@@ -1,160 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
-import AnimatedOrderButton from "@/components/AnimatedOrderButton";
-import CheckoutModal from "@/components/CheckoutModal";
-import { PACKS, SITE_CONFIG } from "@/lib/config";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
-  computeLungTestScore,
-  getLungTestRiskBand,
-  LUNG_TEST_MAX_SCORE,
-  type LungTestRiskBand,
-} from "@/lib/lung-test-scoring";
+  getBreathHoldInsight,
+  getHerbRecommendations,
+  getLungScore,
+  MAX_SYMPTOM_POINTS,
+  type SymptomAnswers,
+} from "@/lib/lungScore";
+import { LUNG_TEST_STORAGE_KEY } from "@/lib/lung-test-constants";
+import { EVENTS, trackEvent } from "@/lib/events";
 
-type AnswersShape = {
-  q1: boolean;
-  q2: boolean;
-  q3: boolean;
-  q4: boolean;
-  q5: boolean;
-  q6: boolean;
-  q7: boolean;
-  q8: boolean;
-};
-
-type LungTestStored = {
+type StoredResult = {
   name: string;
   email: string;
   phone: string;
+  city: boolean;
+  smoke: boolean;
+  cough: boolean;
+  breathless: boolean;
+  dust: boolean;
+  breathHoldSeconds?: number;
   score: number;
-  maxScore?: number;
-  answers: Partial<AnswersShape> | boolean[] | null;
+  level: string;
+  color?: string;
+  recommendation?: string;
   timestamp?: number;
 };
 
-const BG = "var(--rs-deep)";
-const GOLD = "var(--rs-gold)";
-const AMBER = "#f59e0b";
+const RESULT_BG =
+  "linear-gradient(160deg, #0d2010 0%, #1a3a1a 45%, #2d3d15 100%)";
 
-function normalizeAnswers(raw: LungTestStored["answers"]): AnswersShape | null {
-  if (!raw) return null;
-  const base = {
-    q1: false,
-    q2: false,
-    q3: false,
-    q4: false,
-    q5: false,
-    q6: false,
-    q7: false,
-    q8: false,
-  };
-  if (Array.isArray(raw)) {
-    if (raw.length < 8) return null;
-    for (let i = 0; i < Math.min(8, raw.length); i++) {
-      const k = `q${i + 1}` as keyof AnswersShape;
-      base[k] = !!raw[i];
-    }
-    return base as AnswersShape;
-  }
-  if (typeof raw === "object") {
-    return {
-      q1: !!raw.q1,
-      q2: !!raw.q2,
-      q3: !!raw.q3,
-      q4: !!raw.q4,
-      q5: !!raw.q5,
-      q6: !!raw.q6,
-      q7: !!raw.q7,
-      q8: !!raw.q8,
-    };
-  }
-  return null;
-}
-
-function answersToBools(a: AnswersShape): boolean[] {
-  return [a.q1, a.q2, a.q3, a.q4, a.q5, a.q6, a.q7, a.q8];
-}
-
-type HerbCard = { id: string; herb: string; line: string };
-
-/** Map YES answers to Royal Swag herbs (deduped). */
-function getHerbCardsForAnswers(a: AnswersShape): HerbCard[] {
-  const out: HerbCard[] = [];
-  const seen = new Set<string>();
-  const push = (id: string, herb: string, line: string) => {
-    if (seen.has(id)) return;
-    seen.add(id);
-    out.push({ id, herb, line });
-  };
-  if (a.q1 || a.q2 || a.q5 || a.q7) {
-    push("vasaka", "Vasaka", "Clears bronchial toxins");
-  }
-  if (a.q3) push("mulethi", "Mulethi", "Soothes airway lining");
-  if (a.q4 || a.q8) push("pippali", "Pippali", "Strengthens lung capacity");
-  if (a.q6) push("tulsi", "Tulsi", "Fights inflammation and boosts oxygen flow");
-  return out;
-}
-
-const RISK_HEADLINE: Record<LungTestRiskBand, string> = {
-  low: "Your Lungs Are Doing Well",
-  moderate: "Your Lungs Need Attention",
-  high: "Your Lungs Are Under Stress",
-};
-
-const RESULT_GRADIENT =
-  "linear-gradient(135deg, #0D2010 0%, #1A3A1A 60%, #2D3D15 100%)";
-
-const WHAT_IT_MEANS: Record<LungTestRiskBand, string> = {
-  low:
-    "Good news — your lungs are relatively clean. But living in India means daily exposure to PM2.5 particles that build up silently. Most people with a low score today develop symptoms within 2–3 years without preventive care.",
-  moderate:
-    "Your answers reveal your lungs are already under stress. This is the most common score among urban Indians aged 30–55. The good news: at this stage, herbal detox works fastest and most effectively.",
-  high:
-    "Your score indicates significant toxin buildup in your respiratory system. This does not mean permanent damage — but it does mean every day without action makes recovery slower and harder.",
-};
-
-const TESTIMONIALS: Record<LungTestRiskBand, [string, string]> = {
-  low: [
-    "I scored low but still started Royal Swag for prevention. Six months in, I feel less stuffy on smoggy days — glad I didn’t wait.",
-    "— Ananya K., Bengaluru ★★★★★",
-  ],
-  moderate: [
-    "I had the same score. After 30 days my morning cough is completely gone.",
-    "— Rajesh M., Pune ★★★★★",
-  ],
-  high: [
-    "My report was in the red zone. I committed to the 30-day detox — breathing up stairs got easier by week three.",
-    "— Vikram S., Delhi ★★★★★",
-  ],
-};
-
-const TESTIMONIALS_B: Record<LungTestRiskBand, [string, string]> = {
-  low: [
-    "Low score didn’t mean ‘do nothing’ for me. The tea is now my daily shield against Delhi air.",
-    "— Rohit P., Delhi ★★★★★",
-  ],
-  moderate: [
-    "Same moderate band as you — I was sceptical. The herbal blend actually calmed my chest tightness within two weeks.",
-    "— Meera L., Mumbai ★★★★★",
-  ],
-  high: [
-    "I ignored warnings for years. This score scared me into action — Royal Swag was the first thing that stuck.",
-    "— Suresh T., Chennai ★★★★★",
-  ],
-};
-
-function polar(cx: number, cy: number, r: number, angleRad: number) {
-  return {
-    x: cx + r * Math.cos(angleRad),
-    y: cy - r * Math.sin(angleRad),
-  };
-}
-
-/** Circular score gauge with GSAP stroke animation. */
-function ScoreCircle({
+function ScoreGauge({
   score,
   maxScore,
   color,
@@ -164,278 +44,168 @@ function ScoreCircle({
   color: string;
 }) {
   const strokeRef = useRef<SVGCircleElement>(null);
-  const radius = 60;
+  const labelRef = useRef<HTMLDivElement>(null);
+  const radius = 72;
   const circumference = 2 * Math.PI * radius;
   const pct = maxScore > 0 ? Math.min(score / maxScore, 1) : 0;
 
   useEffect(() => {
-    if (!strokeRef.current) return;
+    if (!strokeRef.current || !labelRef.current) return;
     gsap.fromTo(
       strokeRef.current,
       { strokeDashoffset: circumference },
       {
         strokeDashoffset: circumference * (1 - pct),
-        duration: 1.2,
+        duration: 1.4,
         ease: "power3.out",
-        delay: 0.2,
+        delay: 0.15,
       }
     );
+    gsap.from(labelRef.current, {
+      opacity: 0,
+      scale: 0.85,
+      duration: 0.6,
+      delay: 0.5,
+      ease: "back.out(1.6)",
+    });
   }, [score, maxScore, pct, circumference]);
 
   return (
-    <div className="mx-auto" style={{ width: 160, height: 160 }}>
-      <svg width={160} height={160} viewBox="0 0 160 160" aria-hidden>
+    <div className="relative mx-auto" style={{ width: 180, height: 180 }}>
+      <svg width={180} height={180} viewBox="0 0 180 180" aria-hidden>
         <circle
-          cx={80}
-          cy={80}
+          cx={90}
+          cy={90}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth={10}
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth={12}
         />
         <circle
           ref={strokeRef}
-          cx={80}
-          cy={80}
+          cx={90}
+          cy={90}
           r={radius}
           fill="none"
           stroke={color}
-          strokeWidth={10}
+          strokeWidth={12}
           strokeLinecap="round"
-          transform="rotate(-90 80 80)"
           strokeDasharray={circumference}
           strokeDashoffset={circumference}
+          transform="rotate(-90 90 90)"
         />
-        <text
-          x={80}
-          y={86}
-          textAnchor="middle"
-          fill={color}
-          fontSize={42}
-          fontWeight={700}
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          {score}
-        </text>
-        <text x={80} y={108} textAnchor="middle" fill="rgba(250,246,238,0.5)" fontSize={12}>
-          out of {maxScore}
-        </text>
       </svg>
+      <div
+        ref={labelRef}
+        className="absolute inset-0 flex flex-col items-center justify-center text-center"
+      >
+        <span className="text-4xl font-bold text-white">{score}</span>
+        <span className="text-xs uppercase tracking-widest text-white/60">
+          of {maxScore} pts
+        </span>
+      </div>
     </div>
   );
 }
 
-/** Semicircle arc gauge: green (left) → amber → red (right). Needle: 0 = left, 90° = up/center, 180° = right. */
-function RiskArcGauge({ score, maxScore }: { score: number; maxScore: number }) {
-  const shadowFilterId = useId().replace(/:/g, "");
-  const cx = 140;
-  const cy = 132;
-  const r = 88;
-  const nLen = r - 18;
-  const hubR = 8;
-  /** Degrees along semicircle: 0 = low (left), 180 = high (right). Animates from 0 after mount. */
-  const [needleRotation, setNeedleRotation] = useState(0);
-
-  useEffect(() => {
-    const clamped = Math.min(Math.max(score, 0), maxScore);
-    const target = maxScore > 0 ? (clamped / maxScore) * 180 : 0;
-    const tid = window.setTimeout(() => {
-      setNeedleRotation(target);
-    }, 300);
-    return () => window.clearTimeout(tid);
-  }, [score, maxScore]);
-
-  const thick = 14;
-  const seg = Math.PI / 3;
-  const a0 = Math.PI;
-  const a1 = Math.PI - seg;
-  const a2 = Math.PI - 2 * seg;
-  const a3 = 0;
-
-  const arcPath = (from: number, to: number) => {
-    const p1 = polar(cx, cy, r, from);
-    const p2 = polar(cx, cy, r, to);
-    const large = Math.abs(to - from) > Math.PI ? 1 : 0;
-    return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${large} 1 ${p2.x} ${p2.y}`;
-  };
-
-  return (
-    <div className="mx-auto w-full max-w-[280px]" aria-hidden="true">
-      <svg viewBox="0 0 280 150" className="w-full overflow-visible">
-        <defs>
-          <filter id={shadowFilterId} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.25" />
-          </filter>
-        </defs>
-        <path
-          d={arcPath(a0, a1)}
-          fill="none"
-          stroke="#16a34a"
-          strokeWidth={thick}
-          strokeLinecap="round"
-          filter={`url(#${shadowFilterId})`}
-        />
-        <path
-          d={arcPath(a1, a2)}
-          fill="none"
-          stroke={AMBER}
-          strokeWidth={thick}
-          strokeLinecap="round"
-        />
-        <path
-          d={arcPath(a2, a3)}
-          fill="none"
-          stroke="#dc2626"
-          strokeWidth={thick}
-          strokeLinecap="round"
-        />
-        <g transform={`translate(${cx},${cy})`}>
-          <g
-            style={{
-              transform: `rotate(${needleRotation - 90}deg)`,
-              transformOrigin: "50% 100%",
-              transformBox: "fill-box",
-              transition: "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
-          >
-            <line
-              x1="0"
-              y1="0"
-              x2="0"
-              y2={-nLen}
-              stroke="#fefce8"
-              strokeWidth={3}
-              strokeLinecap="round"
-            />
-          </g>
-          <circle cx="0" cy="0" r={hubR} fill="#fefce8" stroke="#0a1f12" strokeWidth={2} />
-        </g>
-      </svg>
-    </div>
-  );
+function readStored(): StoredResult | null {
+  if (typeof window === "undefined") return null;
+  for (const key of [LUNG_TEST_STORAGE_KEY, "lungTestResult", "lung_lead"]) {
+    try {
+      const raw = sessionStorage.getItem(key) || localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as StoredResult;
+      if (key === "lung_lead" && parsed.name) {
+        const full = sessionStorage.getItem(LUNG_TEST_STORAGE_KEY);
+        if (full) return JSON.parse(full) as StoredResult;
+        continue;
+      }
+      if (parsed?.name && typeof parsed.score === "number") {
+        return parsed;
+      }
+    } catch {
+      /* try next */
+    }
+  }
+  return null;
 }
 
 export default function LungTestResultClient() {
-  const [stored, setStored] = useState<LungTestStored | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [checkout, setCheckout] = useState(false);
-  const starterPack = PACKS[0];
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [stored, setStored] = useState<StoredResult | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      // Priority 1: URL params (?score=N&name=...)
-      const urlScore = searchParams?.get("score") ?? null;
-      const urlName = searchParams?.get("name") ?? null;
-      if (urlScore !== null) {
-        const score = parseInt(urlScore, 10);
-        if (!Number.isNaN(score)) {
-          // Build a synthetic stored object from URL params; answers not available
-          // so we approximate by generating a score-consistent answers object
-          const fakeAnswers: AnswersShape = {
-            q1: score >= 1, q2: score >= 2, q3: score >= 3, q4: score >= 4,
-            q5: score >= 5, q6: score >= 6, q7: score >= 7, q8: score >= 8,
-          };
-          setStored({
-            name: urlName ? decodeURIComponent(urlName) : "Friend",
-            email: "",
-            phone: "",
-            score,
-            maxScore: LUNG_TEST_MAX_SCORE,
-            answers: fakeAnswers,
-          });
-          setLoaded(true);
-          return;
-        }
-      }
+    setStored(readStored());
+    setLoaded(true);
+  }, []);
 
-      // Priority 2: localStorage fallback
-      const raw = localStorage.getItem("lungTestResult");
-      if (!raw) {
-        setStored(null);
-        setLoaded(true);
-        return;
-      }
-      const parsed = JSON.parse(raw) as LungTestStored;
-      const answers = normalizeAnswers(parsed.answers);
-      if (!parsed || !answers) {
-        setStored(null);
-      } else {
-        const bools = answersToBools(answers);
-        const recomputed = computeLungTestScore(bools);
-        setStored({
-          ...parsed,
-          answers,
-          score: recomputed,
-          maxScore: parsed.maxScore ?? LUNG_TEST_MAX_SCORE,
-        });
-      }
-    } catch {
-      setStored(null);
-    } finally {
-      setLoaded(true);
+  useEffect(() => {
+    if (stored) {
+      trackEvent(EVENTS.LUNG_RESULT_VIEW, { score: stored.score, level: stored.level });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams?.toString()]);
+  }, [stored]);
 
-  const maxScore = stored?.maxScore ?? LUNG_TEST_MAX_SCORE;
-  const band = useMemo(
-    () => (stored ? getLungTestRiskBand(stored.score) : null),
+  const answers: SymptomAnswers | null = useMemo(() => {
+    if (!stored) return null;
+    return {
+      city: !!stored.city,
+      smoke: !!stored.smoke,
+      cough: !!stored.cough,
+      breathless: !!stored.breathless,
+      dust: !!stored.dust,
+    };
+  }, [stored]);
+
+  const lungScore = useMemo(
+    () => (stored ? getLungScore(stored.score) : null),
     [stored]
   );
 
-  const answersNorm = useMemo(
-    () => (stored ? normalizeAnswers(stored.answers) : null),
+  const herbs = useMemo(
+    () => (answers ? getHerbRecommendations(answers) : []),
+    [answers]
+  );
+
+  const breath = useMemo(
+    () =>
+      stored?.breathHoldSeconds != null
+        ? getBreathHoldInsight(stored.breathHoldSeconds)
+        : null,
     [stored]
   );
-
-  const herbCards = useMemo(
-    () => (answersNorm ? getHerbCardsForAnswers(answersNorm) : []),
-    [answersNorm]
-  );
-
-  const handleRetake = () => {
-    try {
-      localStorage.removeItem("lungTestResult");
-      localStorage.removeItem("lungTestAnswers");
-      localStorage.removeItem("lungTestScore");
-    } catch {
-      /* ignore */
-    }
-    router.push("/lung-test");
-  };
 
   if (!loaded) {
     return (
       <div
-        className="flex min-h-[70svh] items-center justify-center px-4 py-16"
-        style={{ backgroundColor: BG }}
+        className="flex min-h-[70svh] items-center justify-center"
+        style={{ background: RESULT_BG }}
       >
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#16a34a] border-t-transparent" />
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#16a34a] border-t-transparent" />
       </div>
     );
   }
 
-  if (!stored || !band || !answersNorm) {
+  if (!stored || !lungScore || !answers) {
     return (
       <div
         className="flex min-h-[70svh] flex-col items-center justify-center px-4 py-16"
-        style={{ backgroundColor: BG }}
+        style={{ background: RESULT_BG }}
       >
-        <div className="w-full max-w-md text-center">
+        <div className="max-w-md text-center">
           <h1
             className="text-2xl font-bold text-white sm:text-3xl"
-            style={{ fontFamily: "var(--font-heading)" }}
+            style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Please complete the Lung Test first
+            Complete your lung test first
           </h1>
-          <p className="mt-3 text-sm text-white/60">
-            Your personalised report will appear here after you finish the quiz.
+          <p className="mt-3 text-sm text-white/65">
+            Your personalised score, breath-hold result, and herb matches appear here after the
+            quiz.
           </p>
           <Link
             href="/lung-test"
-            className="mt-6 inline-flex w-full min-h-[48px] items-center justify-center rounded-xl bg-[#15803d] px-6 py-3 text-base font-bold text-white"
+            className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center rounded-xl bg-[#16a34a] px-6 py-3 text-base font-bold text-white"
           >
             Take Free Lung Test →
           </Link>
@@ -444,226 +214,146 @@ export default function LungTestResultClient() {
     );
   }
 
-  const firstName = stored.name?.trim().split(/\s+/)[0] || "Friend";
-  const bandLabel =
-    band === "low" ? "LOW RISK" : band === "moderate" ? "MODERATE RISK" : "HIGH RISK";
-  const bandColor =
-    band === "low" ? "#4ade80" : band === "moderate" ? AMBER : "#f87171";
-
-  const [tA1, tA2] = TESTIMONIALS[band];
-  const [tB1, tB2] = TESTIMONIALS_B[band];
+  const firstName = stored.name.trim().split(/\s+/)[0] || "Friend";
 
   return (
     <div
-      className="px-4 pb-[60px] pt-6 min-[769px]:pt-8"
-      style={{ background: RESULT_GRADIENT, minHeight: "100vh" }}
+      className="px-4 pb-24 pt-8"
+      style={{ background: RESULT_BG, minHeight: "100vh" }}
     >
       <div className="mx-auto max-w-lg">
-        {/* PERSONALIZATION */}
+        <p className="mb-2 text-center text-xs font-bold uppercase tracking-[0.2em] text-[#9a6f1a]">
+          Your lung profile
+        </p>
         <h1
-          className="mb-10 text-center text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl"
-          style={{ fontFamily: "var(--font-heading)" }}
+          className="mb-8 text-center text-2xl font-bold leading-tight text-white sm:text-3xl"
+          style={{ fontFamily: "var(--font-playfair)" }}
         >
-          {firstName}, here is your Lung Health Report
+          {firstName}, here is your lung health report
         </h1>
 
-        {/* Risk label + gauge */}
-        <div className="mb-2 text-center">
+        <div className="mb-6 flex justify-center">
           <span
-            className="inline-block rounded-full px-3 py-1 text-xs font-bold tracking-widest text-white/90 ring-1 ring-white/20"
-            style={{ backgroundColor: `${bandColor}33`, color: bandColor }}
+            className="rounded-full px-4 py-1.5 text-sm font-bold tracking-wide"
+            style={{
+              backgroundColor: `${lungScore.color}22`,
+              color: lungScore.color,
+              border: `1px solid ${lungScore.color}55`,
+            }}
           >
-            {bandLabel}
+            {lungScore.level} Risk
           </span>
-          <p
-            className="mt-3 text-xl sm:text-2xl"
-            style={{ fontFamily: "var(--font-serif)", color: "#FAF6EE" }}
-          >
-            {RISK_HEADLINE[band]}
-          </p>
         </div>
 
-        <div className="my-8 flex justify-center">
-          <ScoreCircle score={stored.score} maxScore={maxScore} color={bandColor} />
+        <div className="mb-8 flex justify-center">
+          <ScoreGauge
+            score={lungScore.points}
+            maxScore={MAX_SYMPTOM_POINTS}
+            color={lungScore.color}
+          />
         </div>
 
-        {/* Scoring system */}
-        <section
-          className="mb-8 rounded-2xl border border-white/10 bg-black/20 p-5 sm:p-6"
-          aria-labelledby="scoring-heading"
-        >
-          <h2 id="scoring-heading" className="mb-3 text-sm font-bold uppercase tracking-widest text-[#4ade80]">
-            How scoring works
-          </h2>
-          <ul className="space-y-2 text-sm text-white/80">
-            <li>
-              <span className="font-semibold text-[#4ade80]">0–4 points</span> = LOW RISK (Green)
-            </li>
-            <li>
-              <span className="font-semibold text-amber-400">5–10 points</span> = MODERATE RISK (Orange)
-            </li>
-            <li>
-              <span className="font-semibold text-red-300">11–20 points</span> = HIGH RISK (Red)
-            </li>
-          </ul>
-          <p className="mt-4 border-t border-white/10 pt-4 text-sm leading-relaxed text-white/85">
-            The higher your score, the more toxin load your lungs are carrying. A score of 0 means clean, healthy
-            lungs. Your score means your lungs are working harder than they should be.
-          </p>
-        </section>
+        <p className="mb-8 text-center text-sm leading-relaxed text-white/80">
+          {lungScore.recommendation}
+        </p>
 
-        {/* WHAT THIS MEANS */}
-        <section className="mb-10" aria-labelledby="means-heading">
-          <h2
-            id="means-heading"
-            className="mb-3 text-xl font-bold text-white sm:text-2xl"
-            style={{ fontFamily: "var(--font-heading)" }}
+        {breath && (
+          <section
+            className="mb-8 rounded-2xl border border-white/10 bg-black/25 p-5"
+            aria-labelledby="breath-heading"
           >
-            What this means for you
-          </h2>
-          <p className="text-sm leading-relaxed text-white/80 sm:text-base">{WHAT_IT_MEANS[band]}</p>
-        </section>
+            <h2
+              id="breath-heading"
+              className="mb-3 text-sm font-bold uppercase tracking-widest text-white/70"
+            >
+              Breath-hold result
+            </h2>
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-full border-4"
+                style={{ borderColor: breath.color }}
+              >
+                <span className="text-2xl font-bold text-white">{breath.seconds}s</span>
+              </div>
+              <div>
+                <p className="font-semibold" style={{ color: breath.color }}>
+                  {breath.label}
+                </p>
+                <p className="mt-1 text-sm leading-relaxed text-white/75">{breath.note}</p>
+                <p className="mt-2 text-xs text-white/50">Healthy average: 40–60 seconds</p>
+              </div>
+            </div>
+          </section>
+        )}
 
-        {/* Herbs */}
-        <section className="mb-10" aria-labelledby="herbs-heading">
+        <section className="mb-8" aria-labelledby="herbs-heading">
           <h2
             id="herbs-heading"
-            className="mb-4 text-xl font-bold text-white sm:text-2xl"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="mb-4 text-lg font-bold text-white"
+            style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Which herbs target your symptoms
+            Herbs matched to your answers
           </h2>
-          {herbCards.length === 0 ? (
-            <p className="rounded-2xl border border-white/10 bg-black/15 p-4 text-sm text-white/70">
-              You didn&apos;t flag these symptom patterns — Royal Swag still combines all four herbs for daily lung
-              support.
-            </p>
-          ) : (
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {herbCards.map((c) => (
-                <li
-                  key={c.id}
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    borderRadius: 16,
-                    padding: 20,
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      color: "#E8C84A",
-                      fontSize: 18,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {c.herb}
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-sans)",
-                      color: "rgba(250,246,238,0.75)",
-                      fontSize: 14,
-                      marginTop: 8,
-                    }}
-                  >
-                    {c.line}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {herbs.map((h) => (
+              <li
+                key={h.id}
+                className="rounded-2xl border border-white/12 bg-white/5 p-4"
+                style={
+                  h.highlight
+                    ? { boxShadow: `0 0 0 1px ${lungScore.color}40` }
+                    : undefined
+                }
+              >
+                <p className="text-lg font-bold text-[#e8c84a]">{h.name}</p>
+                <p className="mt-2 text-sm leading-relaxed text-white/75">{h.line}</p>
+              </li>
+            ))}
+          </ul>
         </section>
 
-        {/* Urgency + loss aversion + CTA */}
         <section
-          className="rounded-2xl p-5 sm:p-6"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.1)",
-          }}
+          className="rounded-2xl border border-white/10 p-6"
+          style={{ background: "rgba(255,255,255,0.04)" }}
         >
           <h2
-            className="text-xl font-bold leading-snug sm:text-2xl"
-            style={{ fontFamily: "var(--font-serif)", color: "#FAF6EE" }}
+            className="text-xl font-bold text-white"
+            style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Based on your result, Royal Swag is recommended for you
+            Based on your lung profile, we recommend Royal Swag
           </h2>
-          <p className="mt-2 text-sm text-white/70">Your lungs won&apos;t detox on their own.</p>
-          <p className="mt-3 text-sm leading-relaxed text-white/75 sm:text-base">
-            {herbCards.length > 0 ? (
-              <>
-                Royal Swag Lung Detox Tea is the only Ayurvedic blend with all 4 herbs your report identified — in one
-                cup, every morning.
-              </>
-            ) : (
-              <>
-                Royal Swag Lung Detox Tea combines Tulsi, Vasaka, Mulethi &amp; Pippali — the four herbs Ayurveda trusts
-                for daily lung support — in one cup, every morning.
-              </>
-            )}
+          <p className="mt-3 text-sm leading-relaxed text-white/75">
+            Royal Swag Lung Detox Tea combines the herbs your report highlighted — one cup each
+            morning for a 30-day lung cleanse.
           </p>
 
-          <div
-            className="mt-6 rounded-xl border border-amber-600/40 bg-gradient-to-br from-red-950/50 to-amber-950/40 px-4 py-3 text-sm leading-snug text-amber-50"
-            role="note"
+          <Link
+            href="/product"
+            className="mt-6 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-xl bg-[#9a6f1a] text-base font-bold text-[#f4edd6] shadow-lg transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(154,111,26,0.35)]"
+            onClick={() => {
+              trackEvent(EVENTS.LUNG_BUY_CLICK, { page: "/lung-test/result" });
+            }}
           >
-            ⚠️ Untreated lung toxin buildup doubles every 18 months in polluted cities. Your score today is the easiest it
-            will be to reverse.
-          </div>
+            Start Your Detox — ₹599
+          </Link>
 
-          <div className="mt-6 flex justify-center">
-            <AnimatedOrderButton
-              label="Buy Now"
-              price={starterPack.price}
-              onOrder={() => setCheckout(true)}
-            />
-          </div>
-
-          <a
-            href={`https://wa.me/${SITE_CONFIG.whatsappNumber}?text=${starterPack.whatsappText}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 flex w-full items-center justify-center rounded-xl border border-white/20 py-3 text-center text-sm font-semibold text-[#FAF6EE]"
-          >
-            Order via WhatsApp
-          </a>
-
-          {checkout && (
-            <CheckoutModal packId={starterPack.id} onClose={() => setCheckout(false)} />
-          )}
-
-          <p className="mt-3 text-center text-sm font-semibold text-amber-200/90">
-            ⚡ 2,847 people with similar scores ordered this week
+          <p className="mt-4 text-center text-xs text-white/50">
+            ✓ Free delivery · ✓ 30-day guarantee · ✓ Ships in 24h
           </p>
-
-          <p className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-xs leading-relaxed text-white/55">
-            <span>✓ Free delivery</span>
-            <span>✓ 30-day money-back guarantee</span>
-            <span>✓ Ships in 24 hours</span>
-          </p>
-        </section>
-
-        {/* Social proof strip */}
-        <section className="mt-10 space-y-5" aria-label="Testimonials from similar scores">
-          <h2 className="text-center text-sm font-bold uppercase tracking-widest text-[#4ade80]">
-            People with the same risk level
-          </h2>
-          <blockquote className="rounded-xl border border-white/10 bg-black/20 p-4 text-sm text-white/85">
-            <p className="italic">&ldquo;{tA1}&rdquo;</p>
-            <footer className="mt-2 text-xs text-white/60">{tA2}</footer>
-          </blockquote>
-          <blockquote className="rounded-xl border border-white/10 bg-black/20 p-4 text-sm text-white/85">
-            <p className="italic">&ldquo;{tB1}&rdquo;</p>
-            <footer className="mt-2 text-xs text-white/60">{tB2}</footer>
-          </blockquote>
         </section>
 
         <button
           type="button"
-          onClick={handleRetake}
-          className="mt-10 w-full min-h-[48px] rounded-xl border-2 border-[#4ade80]/50 bg-transparent py-3 text-base font-semibold text-[#86efac] transition hover:bg-white/5"
+          onClick={() => {
+            try {
+              sessionStorage.removeItem(LUNG_TEST_STORAGE_KEY);
+              localStorage.removeItem(LUNG_TEST_STORAGE_KEY);
+            } catch {
+              /* ignore */
+            }
+            router.push("/lung-test");
+          }}
+          className="mt-8 w-full min-h-[48px] rounded-xl border border-white/20 py-3 text-sm font-semibold text-white/80 hover:bg-white/5"
         >
           Retake lung test
         </button>

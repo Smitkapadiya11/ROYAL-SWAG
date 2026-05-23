@@ -26,12 +26,12 @@ function numEnv(key: string, fallback: number): number {
 
 export function getPricingFromEnv() {
   return {
-    price20: numEnv("NEXT_PUBLIC_PRICE_20DAY", 359),
-    price40: numEnv("NEXT_PUBLIC_PRICE_40DAY", 649),
-    price60: numEnv("NEXT_PUBLIC_PRICE_60DAY", 899),
+    price20: numEnv("NEXT_PUBLIC_PRICE_20DAY", 349),
+    price40: numEnv("NEXT_PUBLIC_PRICE_40DAY", 599),
+    price60: numEnv("NEXT_PUBLIC_PRICE_60DAY", 849),
     mrp20: numEnv("NEXT_PUBLIC_MRP_20DAY", 499),
-    mrp40: numEnv("NEXT_PUBLIC_MRP_40DAY", 718),
-    mrp60: numEnv("NEXT_PUBLIC_MRP_60DAY", 1077),
+    mrp40: numEnv("NEXT_PUBLIC_MRP_40DAY", 698),
+    mrp60: numEnv("NEXT_PUBLIC_MRP_60DAY", 1047),
   };
 }
 
@@ -47,7 +47,7 @@ export function buildPricingPlans(): PricingPlan[] {
     id: "20",
     title: "Starter Pack",
     bags: 20,
-    days: 20,
+    days: 15,
     priceRupees: p.price20,
     mrpRupees: p.mrp20,
     savingsRupees: 0,
@@ -60,7 +60,7 @@ export function buildPricingPlans(): PricingPlan[] {
     id: "40",
     title: "Double Pack",
     bags: 40,
-    days: 40,
+    days: 30,
     priceRupees: p.price40,
     mrpRupees: p.mrp40,
     savingsRupees: Math.max(0, p.mrp40 - p.price40),
@@ -73,7 +73,7 @@ export function buildPricingPlans(): PricingPlan[] {
     id: "60",
     title: "Full Detox Pack",
     bags: 60,
-    days: 60,
+    days: 45,
     priceRupees: p.price60,
     mrpRupees: p.mrp60,
     savingsRupees: Math.max(0, p.mrp60 - p.price60),

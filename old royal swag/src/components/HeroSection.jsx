@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import RoyalButton from './ui/RoyalButton';
 import { trackEvent } from '../lib/events';
+import { S } from '@/lib/config';
 
 const HERO_IMAGE_CANDIDATES = [
   '/images/hero/asset1-hero-product.jpeg',
@@ -43,7 +44,7 @@ const HeroContainer = styled.section`
   @media (max-width: 767px) {
     display: flex;
     flex-direction: column;
-    background: #495738;
+    background: #324023;
     padding: 32px 20px 24px;
     min-height: auto;
     text-align: center;
@@ -111,7 +112,7 @@ const PreHeadline = styled.p`
 
 const Headline = styled.h1`
   font-size: 52px;
-  color: #495738;
+  color: #324023;
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 24px;
@@ -126,7 +127,7 @@ const Headline = styled.h1`
 
 const Subheadline = styled.p`
   font-size: 18px;
-  color: #495738;
+  color: #324023;
   line-height: 1.5;
   margin-bottom: 0;
 
@@ -153,7 +154,7 @@ const PriceBlock = styled.div`
 
 const OldPrice = styled.span`
   text-decoration: line-through;
-  color: #495738;
+  color: #324023;
   opacity: 0.6;
   font-size: 20px;
 
@@ -166,7 +167,7 @@ const OldPrice = styled.span`
 const NewPrice = styled.span`
   font-size: 32px;
   font-weight: bold;
-  color: #495738;
+  color: #324023;
 
   @media (max-width: 767px) {
     color: #F4EDD6;
@@ -217,7 +218,7 @@ const TrustStripInline = styled.div`
   gap: 16px;
   margin-top: 24px;
   font-size: 12px;
-  color: #495738;
+  color: #324023;
   opacity: 0.8;
   font-weight: 500;
   flex-wrap: wrap;
@@ -288,7 +289,7 @@ export default function HeroSection() {
     <HeroContainer>
       <TextStack>
         <PreHeadline>TAR OUT · LUNG DETOX TEA</PreHeadline>
-        <Headline>Breathe Freely Again.</Headline>
+        <Headline>{S.tagline}</Headline>
         <Subheadline>
           A deeply purifying Ayurvedic blend of seven potent herbs to detoxify your lungs, clear
           respiratory pathways, and combat the effects of daily pollution.
@@ -296,14 +297,14 @@ export default function HeroSection() {
 
         <PriceBlock>
           <OldPrice>₹499</OldPrice>
-          <NewPrice>₹349</NewPrice>
+          <NewPrice>₹599</NewPrice>
           <SaveBadge>SAVE ₹150</SaveBadge>
         </PriceBlock>
 
         <CTAContainer>
           <BuyNowBtn>
             <RoyalButton onClick={handleBuyNow} style={{ width: '100%' }}>
-              Buy Now — ₹349
+              Buy Now — ₹599
             </RoyalButton>
           </BuyNowBtn>
           <SecondaryLink href="/lung-test" onClick={() => trackEvent('lung_test_click')}>
@@ -319,6 +320,8 @@ export default function HeroSection() {
           <span>✓ ISO & GMP</span>
           <span>·</span>
           <span>✓ 4.7★ (847+ reviews)</span>
+          <span>·</span>
+          <span>✓ 30-Day Guarantee</span>
         </TrustStripInline>
       </TextStack>
 

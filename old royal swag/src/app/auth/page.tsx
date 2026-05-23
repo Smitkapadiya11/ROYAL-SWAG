@@ -14,6 +14,11 @@ import {
   ROYAL_SWAG_LOGO_SRC,
   ROYAL_SWAG_LOGO_WIDTH,
 } from "@/lib/brand-logo";
+import {
+  ANALYTICS_EVENTS,
+  setAdvancedMatching,
+  track,
+} from "@/lib/analytics";
 
 const loginSchema = z.object({
   email: z.string().email("Valid email required"),
@@ -115,6 +120,11 @@ export default function AuthPage() {
         .update({ phone: data.phone, full_name: data.full_name })
         .eq("id", signUpData.user.id);
       if (profileError) console.error("[auth signup] profile update:", profileError.message);
+      await setAdvancedMatching({ email: data.email, phone: data.phone });
+      track(ANALYTICS_EVENTS.COMPLETE_REGISTRATION, {
+        method: "email",
+        page: "/auth",
+      });
     }
     setLoading(false);
     toast.success("Account created! Check email to verify.");

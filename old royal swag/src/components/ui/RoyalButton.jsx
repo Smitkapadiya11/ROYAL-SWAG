@@ -16,7 +16,7 @@ const StyledWrapper = styled.div`
   display: inline-block;
   .btn {
     padding: 0.5em 1.5em;
-    background: #495738;
+    background: #324023;
     color: #F4EDD6;
     border: none;
     border-radius: 0.625em;

@@ -135,7 +135,9 @@ export default function CheckoutModal({ packId, onClose }: Props) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              ...response,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
               orderData: {
                 userId: user?.id || null,
                 fullName: formData.full_name,
@@ -153,12 +155,16 @@ export default function CheckoutModal({ packId, onClose }: Props) {
           });
           const result = (await verify.json()) as {
             success?: boolean;
+            orderId?: string;
             order?: { order_number: string };
             error?: string;
           };
           if (result.success && result.order?.order_number) {
             toast.success("Order placed! Confirmation sent to WhatsApp.");
-            router.push("/order-success?order=" + result.order.order_number);
+            const num = result.order?.order_number;
+            router.push(
+              "/order-success?id=" + encodeURIComponent(num || result.orderId || "")
+            );
           } else {
             toast.error(result.error ?? "Payment verification failed");
           }

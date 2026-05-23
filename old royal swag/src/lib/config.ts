@@ -2,10 +2,14 @@
 export const FSSAI_LICENSE_TODO =
   "FSSAI license — set NEXT_PUBLIC_FSSAI_LICENSE in production env";
 
+/** Public support contact (override via env in production). */
+export const SUPPORT_EMAIL =
+  process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@royalswag.in";
+
 export const S = {
   name: "Royal Swag",
   tagline: "Breathe Clean. Live Free.",
-  price: { now: "₹349", was: "₹499" },
+  price: { now: "₹599", was: "₹698" },
   company: "Eximburg International Pvt. Ltd.",
   address: {
     l1: "Plot No. 150, 3rd Floor, Amrut Udhyognagar",
@@ -13,7 +17,7 @@ export const S = {
   },
   phone: "+91 70965 53300",
   phoneRaw: "917096553300",
-  email: "Eximburg@gmail.com",
+  email: SUPPORT_EMAIL,
   fssai: FSSAI_LICENSE_TODO,
   wa: {
     num: "917096553300",
@@ -169,7 +173,7 @@ export const APP_SITE = {
   name: "Royal Swag",
   phone: "+91 70965 53300",
   whatsapp: "917096553300",
-  email: "Eximburg@gmail.com",
+  email: SUPPORT_EMAIL,
   address: "Plot No. 150, 3rd Floor, Amrut Udhyognagar, Kholvad, Kamrej, Surat — Gujarat 394185",
   fssai: FSSAI_LICENSE_TODO,
   adminEmail: "admin@eximburginternational.in",
@@ -182,7 +186,7 @@ export const APP_SITE = {
 export const SITE = {
   name: S.name,
   tagline: S.tagline,
-  price: { display: S.price.now, mrp: S.price.was, savings: "Save ₹150" },
+  price: { display: S.price.now, mrp: S.price.was, savings: "Save ₹99" },
   company: S.company,
   founded: "2015",
   address: { line1: S.address.l1, line2: S.address.l2 },
@@ -231,44 +235,44 @@ export const SITE_ORIGIN = "https://lungdetox.royalswag.in";
 export const PACKS = [
   {
     id: "starter",
-    label: "1 Pack",
-    subLabel: "Starter Pack",
+    label: "Starter Pack",
+    subLabel: "15 days · 1 pack",
     bags: 20,
-    days: 30,
+    days: 15,
     price: 349,
     original: 499,
     saving: 150,
     tag: null,
     image: "/images/product-1.jpg",
     whatsappText:
-      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Lung%20Detox%20Tea%20%E2%80%94%2020%20Bags.%20Please%20confirm.",
+      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Starter%20Pack%20%281%20pack%2C%20%E2%82%B9349%29.%20Please%20confirm.",
   },
   {
     id: "progress",
-    label: "2 Pack Bundle",
-    subLabel: "Progress Pack",
+    label: "Progress Pack",
+    subLabel: "30 days · 2 packs",
     bags: 40,
-    days: 60,
-    price: 649,
-    original: 899,
-    saving: 250,
+    days: 30,
+    price: 599,
+    original: 698,
+    saving: 99,
     tag: "MOST POPULAR",
     image: "/images/product-2.jpg",
     whatsappText:
-      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Lung%20Detox%20Tea%20%E2%80%94%2040%20Bags.%20Please%20confirm.",
+      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Progress%20Pack%20%282%20packs%2C%20%E2%82%B9599%29.%20Please%20confirm.",
   },
   {
     id: "result",
-    label: "3 Pack Bundle",
-    subLabel: "Best Value Pack",
+    label: "Result Pack",
+    subLabel: "45 days · 3 packs",
     bags: 60,
-    days: 90,
-    price: 899,
-    original: 1299,
-    saving: 400,
+    days: 45,
+    price: 849,
+    original: 1047,
+    saving: 198,
     tag: "BEST VALUE",
     image: "/images/product-3.jpg",
     whatsappText:
-      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Lung%20Detox%20Tea%20%E2%80%94%2060%20Bags.%20Please%20confirm.",
+      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Result%20Pack%20%283%20packs%2C%20%E2%82%B9849%29.%20Please%20confirm.",
   },
 ] as const;

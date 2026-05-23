@@ -3,6 +3,7 @@
 import { useEffect, useState }  from "react";
 import Script        from "next/script";
 import { useRouter } from "next/navigation";
+import { SUPPORT_EMAIL } from "@/lib/config";
 
 // ── Global Razorpay SDK types ──────────────────────────────────
 declare global {
@@ -59,7 +60,7 @@ export interface RazorpayButtonProps {
   prefill?: { name?: string; email?: string; contact?: string };
   /** amountPaise: Razorpay order total in paise (from /api/razorpay/order). INR = amountPaise / 100 */
   onSuccess?: (paymentId: string, orderId: string, amountPaise: number) => void;
-  /** When false, skip navigating to /order-confirmed (e.g. parent shows a modal first). Default true. */
+  /** When false, skip navigating to /order-success (e.g. parent shows a modal first). Default true. */
   successRedirect?: boolean;
   /** Called when the user closes the Razorpay modal without completing payment */
   onModalDismiss?: () => void;
@@ -144,7 +145,7 @@ export default function RazorpayButton({
         name:        "Royal Swag",
         description: `Lung Detox Tea — ${packLabel}`,
         order_id:    orderData.orderId,
-        image:       "/images/new_logo.png",
+        image:       "/images/royal-swag-logo.png",
         theme:       { color: "#4A6422" },
         prefill:     {
           name:    prefill?.name ?? "",
@@ -194,7 +195,7 @@ export default function RazorpayButton({
 
             if (successRedirect) {
               router.push(
-                `/order-confirmed?id=${verifyData.paymentId}&order=${verifyData.orderId}`
+                `/order-success?id=${encodeURIComponent(verifyData.orderId || "")}&order=${encodeURIComponent(verifyData.orderId || "")}`
               );
             }
 
@@ -202,7 +203,7 @@ export default function RazorpayButton({
             const msg =
               verifyErr instanceof Error
                 ? verifyErr.message
-                : "Verification failed. If money was deducted, contact Eximburg@gmail.com";
+                : `Verification failed. If money was deducted, contact ${SUPPORT_EMAIL}`;
             setState("failed");
             setErrorMsg(msg);
           }

@@ -9,7 +9,7 @@ const SectionWrapper = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #495738;
+  color: #324023;
 `;
 
 const Headline = styled.h2`
@@ -50,7 +50,7 @@ const Grid = styled.div`
 `;
 
 const CardContainer = styled.div`
-  background: #495738;
+  background: #324023;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -95,7 +95,7 @@ const InfoOverlay = styled.div`
   left: 0;
   width: 100%;
   padding: 40px 20px 20px;
-  background: linear-gradient(transparent, rgba(73, 87, 56, 0.85));
+  background: linear-gradient(transparent, rgba(50, 64, 35, 0.85));
   color: #F4EDD6;
   z-index: 3;
   pointer-events: none;

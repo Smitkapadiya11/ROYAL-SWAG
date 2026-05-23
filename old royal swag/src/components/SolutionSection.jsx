@@ -6,7 +6,7 @@ import Image from 'next/image';
 const SectionWrapper = styled.section`
   background: #F4EDD6;
   padding: 80px 10%;
-  color: #495738;
+  color: #324023;
   display: flex;
   flex-direction: column;
   align-items: center;

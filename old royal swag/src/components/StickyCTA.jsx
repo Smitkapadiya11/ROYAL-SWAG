@@ -9,7 +9,7 @@ const CTABar = styled.div`
   left: 0;
   width: 100%;
   height: 64px;
-  background: #495738;
+  background: #324023;
   z-index: 9998;
   display: flex;
   align-items: center;
@@ -60,7 +60,7 @@ export default function StickyCTA() {
 
   return (
     <CTABar $visible={visible}>
-      <ProductInfo>Royal Swag Lung Detox — ₹349</ProductInfo>
+      <ProductInfo>Royal Swag Lung Detox — ₹599</ProductInfo>
       <BuyBtn onClick={() => router.push('/product')}>Buy Now</BuyBtn>
     </CTABar>
   );

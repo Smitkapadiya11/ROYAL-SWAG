@@ -1,11 +1,10 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { S } from "@/lib/config";
 import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { isProductPath } from "@/lib/is-product-path";
 import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
-import { ROYAL_SWAG_LOGO_HEIGHT, ROYAL_SWAG_LOGO_SRC, ROYAL_SWAG_LOGO_WIDTH } from "@/lib/brand-logo";
+import BrandLogo from "@/components/ui/BrandLogo";
 import SocialButtons from "@/components/SocialButtons";
 
 export default function Footer() {
@@ -19,7 +18,7 @@ export default function Footer() {
 
   return (
     <footer style={{
-      background: "#495738",
+      background: "#324023",
       color: "rgba(244,237,214,0.75)",
     }}>
       {/* Top grid */}
@@ -31,37 +30,11 @@ export default function Footer() {
       }}>
         {/* Brand column */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-              background: "transparent",
-            }}>
-              <Image
-                src={ROYAL_SWAG_LOGO_SRC}
-                alt="Royal Swag"
-                width={ROYAL_SWAG_LOGO_WIDTH}
-                height={ROYAL_SWAG_LOGO_HEIGHT}
-                style={{
-                  objectFit: "contain",
-                  display: "block",
-                  background: "transparent",
-                  width: 52,
-                  height: "auto",
-                  aspectRatio: "1",
-                }}
-              />
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{
-                fontFamily: "var(--ff-head, Georgia, serif)",
-                fontSize: 15, fontWeight: 700,
-                color: "#F2E6CE", letterSpacing: "0.06em",
-              }}>ROYAL SWAG</span>
-              <span style={{ fontSize: 9, color: "rgba(242,230,206,0.45)", letterSpacing: "0.08em" }}>
-                ESTD 2016
-              </span>
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6, marginBottom: 18 }}>
+            <BrandLogo variant="on-dark" width={140} />
+            <span style={{ fontSize: 9, color: "rgba(244,237,214,0.45)", letterSpacing: "0.08em" }}>
+              ESTD 2016
+            </span>
           </div>
           <p style={{ fontSize: 14, lineHeight: 1.67, maxWidth: 260, marginBottom: 24 }}>
             Lung detox tea — seven herbs, Surat-made, ten years of batches people actually reorder.

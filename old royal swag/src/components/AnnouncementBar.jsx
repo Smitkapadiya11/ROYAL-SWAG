@@ -4,15 +4,14 @@ import styled from 'styled-components';
 
 const messages = [
   "🚚 FREE delivery across India · COD available",
-  "🎁 Today only — ₹349 (was ₹499). Save ₹150.",
+  "🎁 Progress Pack — ₹599 (2 packs). Starter from ₹349.",
   "⏰ Order before 6 PM → Ships in 2 Days",
   "🛡️ 30-day money-back guarantee. No questions."
 ];
 
 const Bar = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 9999;
+  position: relative;
+  z-index: 40;
   background: #5C946E;
   color: #F4EDD6;
   height: 36px;

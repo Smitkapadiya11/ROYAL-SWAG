@@ -8,7 +8,7 @@ const SectionWrapper = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #495738;
+  color: #324023;
   overflow: hidden;
 `;
 
@@ -54,7 +54,7 @@ const StepNumber = styled.div`
   top: -30px;
   font-size: 80px;
   font-weight: 900;
-  color: rgba(73, 87, 56, 0.08);
+  color: rgba(50, 64, 35, 0.08);
   z-index: 0;
 `;
 
@@ -116,14 +116,14 @@ const TimelineTrack = styled.div`
     left: 40px;
     right: 40px;
     height: 2px;
-    border-top: 2px dashed #495738;
+    border-top: 2px dashed #324023;
     z-index: 0;
     opacity: 0.3;
   }
 `;
 
 const TimelineCard = styled.div`
-  background: #495738;
+  background: #324023;
   color: #F4EDD6;
   border-radius: 16px;
   padding: 24px;
@@ -152,7 +152,7 @@ const WeekDesc = styled.p`
 const Disclaimer = styled.p`
   font-size: 11px;
   font-style: italic;
-  color: rgba(73, 87, 56, 0.7);
+  color: rgba(50, 64, 35, 0.7);
   margin-top: 60px;
   text-align: center;
   max-width: 600px;

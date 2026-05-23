@@ -37,7 +37,7 @@ const CloseBtn = styled.button`
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #495738;
+  color: #324023;
   line-height: 1;
   opacity: 0.6;
   &:hover { opacity: 1; }
@@ -51,7 +51,7 @@ const GiftIcon = styled.div`
 const Headline = styled.h2`
   font-size: 24px;
   font-weight: 800;
-  color: #495738;
+  color: #324023;
   margin-bottom: 8px;
 `;
 
@@ -65,7 +65,7 @@ const Subhead = styled.p`
 const Input = styled.input`
   width: 100%;
   padding: 14px 16px;
-  border: 2px solid rgba(73, 87, 56, 0.2);
+  border: 2px solid rgba(50, 64, 35, 0.2);
   border-radius: 8px;
   font-size: 16px;
   color: #2A3020;
@@ -73,7 +73,7 @@ const Input = styled.input`
   background: white;
 
   &:focus {
-    border-color: #495738;
+    border-color: #324023;
     outline: none;
   }
 `;
@@ -81,7 +81,7 @@ const Input = styled.input`
 const SubmitBtn = styled.button`
   width: 100%;
   padding: 14px;
-  background: #495738;
+  background: #324023;
   color: #F4EDD6;
   border: none;
   border-radius: 8px;

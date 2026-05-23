@@ -4,8 +4,8 @@ import styled from 'styled-components';
 
 const StripContainer = styled.section`
   background: #F4EDD6;
-  border-top: 1px solid #49573820;
-  border-bottom: 1px solid #49573820;
+  border-top: 1px solid #32402320;
+  border-bottom: 1px solid #32402320;
   padding: 16px 0;
   width: 100%;
 `;
@@ -41,13 +41,13 @@ const Item = styled.div`
 `;
 
 const ItemText = styled.span`
-  color: #495738;
+  color: #324023;
   font-size: 14px;
   font-weight: 500;
 `;
 
 const Separator = styled.span`
-  color: #495738;
+  color: #324023;
   opacity: 0.35;
   font-size: 14px;
   flex-shrink: 0;

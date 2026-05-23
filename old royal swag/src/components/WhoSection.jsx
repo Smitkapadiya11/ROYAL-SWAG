@@ -13,7 +13,7 @@ const SectionWrapper = styled.section`
 const Headline = styled.h2`
   font-size: 36px;
   font-weight: 800;
-  color: #495738;
+  color: #324023;
   margin-bottom: 60px;
   text-align: center;
   
@@ -55,8 +55,8 @@ const IconCircle = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(73, 87, 56, 0.08);
-  color: #495738;
+  background: rgba(50, 64, 35, 0.08);
+  color: #324023;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,7 +73,7 @@ const CardTitle = styled.h3`
 
 const CardDesc = styled.p`
   font-size: 15px;
-  color: #495738;
+  color: #324023;
   line-height: 1.5;
 `;
 

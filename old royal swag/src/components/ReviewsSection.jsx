@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { trackEvent } from '../lib/events';
 
 const SectionWrapper = styled.section`
-  background: #495738;
+  background: #324023;
   padding: 80px 5%;
   display: flex;
   flex-direction: column;
@@ -62,7 +62,7 @@ const Grid = styled.div`
 `;
 
 const ReviewCard = styled.div`
-  background: #495738;
+  background: #324023;
   border-radius: 16px;
   padding: 20px;
   display: flex;
@@ -129,7 +129,7 @@ const Stars = styled.div`
 `;
 
 const VerifiedBadge = styled.span`
-  background: rgba(73, 87, 56, 0.25);
+  background: rgba(50, 64, 35, 0.25);
   color: #F4EDD6;
   font-size: 10px;
   padding: 2px 6px;

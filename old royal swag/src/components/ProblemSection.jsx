@@ -6,7 +6,7 @@ import { trackEvent } from '../lib/events';
 const SectionWrapper = styled.section`
   position: relative;
   padding: 80px 20px;
-  background: #495738;
+  background: #324023;
   color: #F4EDD6;
   text-align: center;
   background-image: url('/images/bg/asset3.jpeg');
@@ -18,7 +18,7 @@ const SectionWrapper = styled.section`
 const Overlay = styled.div`
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(73, 87, 56, 0.88);
+  background: rgba(50, 64, 35, 0.88);
   z-index: 1;
 `;
 

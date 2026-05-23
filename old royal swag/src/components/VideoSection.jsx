@@ -192,7 +192,7 @@ export default function VideoSection() {
               {/* Thumbnail image (fallback to solid color via CSS if not found, but we will use styled div for now) */}
               <div style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                backgroundImage: \`url(\${doctor.thumbnail})\`,
+                backgroundImage: `url(${doctor.thumbnail})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundColor: '#1A2A1A'

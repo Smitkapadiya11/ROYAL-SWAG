@@ -1,6 +1,8 @@
-/** TODO: Set NEXT_PUBLIC_FSSAI_LICENSE in Vercel when the real FSSAI number is confirmed. */
-export const FSSAI_LICENSE_TODO =
-  "FSSAI license — set NEXT_PUBLIC_FSSAI_LICENSE in production env";
+/** FSSAI license shown on site (set NEXT_PUBLIC_FSSAI_LICENSE in production). */
+export const FSSAI_LICENSE =
+  process.env.NEXT_PUBLIC_FSSAI_LICENSE?.trim() ||
+  process.env.NEXT_PUBLIC_FSSAI_NUMBER?.trim() ||
+  "Licensed";
 
 /** Public support contact (override via env in production). */
 export const SUPPORT_EMAIL =
@@ -18,7 +20,7 @@ export const S = {
   phone: "+91 70965 53300",
   phoneRaw: "917096553300",
   email: SUPPORT_EMAIL,
-  fssai: FSSAI_LICENSE_TODO,
+  fssai: FSSAI_LICENSE,
   wa: {
     num: "917096553300",
     msg: encodeURIComponent("Hi, I want to order Royal Swag Lung Detox Tea. Please share pack details."),
@@ -172,12 +174,13 @@ export const S = {
 export const APP_SITE = {
   name: "Royal Swag",
   phone: "+91 70965 53300",
-  whatsapp: "917096553300",
+  whatsapp:
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") || "917096553300",
   email: SUPPORT_EMAIL,
   address: "Plot No. 150, 3rd Floor, Amrut Udhyognagar, Kholvad, Kamrej, Surat — Gujarat 394185",
-  fssai: FSSAI_LICENSE_TODO,
+  fssai: FSSAI_LICENSE,
   adminEmail: "admin@eximburginternational.in",
-  razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+  razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? "",
   instagram: "https://www.instagram.com/royalswag_official/",
   youtube: "https://www.youtube.com/@royalswagofficial",
   facebook: "https://www.facebook.com/royalswag.herbal.cigarette/",

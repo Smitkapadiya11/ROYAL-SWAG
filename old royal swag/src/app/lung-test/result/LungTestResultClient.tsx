@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import {
@@ -234,12 +235,14 @@ export default function LungTestResultClient() {
 
         <div className="mb-6 flex justify-center">
           <span
-            className="rounded-full px-4 py-1.5 text-sm font-bold tracking-wide"
-            style={{
-              backgroundColor: `${lungScore.color}22`,
-              color: lungScore.color,
-              border: `1px solid ${lungScore.color}55`,
-            }}
+            className={cn(
+              "rounded-full px-3 py-1 font-sans text-sm font-semibold",
+              lungScore.level === "Mild" &&
+                "bg-green-100 text-green-800",
+              lungScore.level === "Moderate" &&
+                "bg-amber-100 text-amber-800",
+              lungScore.level === "High" && "bg-red-100 text-red-800"
+            )}
           >
             {lungScore.level} Risk
           </span>
@@ -312,10 +315,7 @@ export default function LungTestResultClient() {
           </ul>
         </section>
 
-        <section
-          className="rounded-2xl border border-white/10 p-6"
-          style={{ background: "rgba(255,255,255,0.04)" }}
-        >
+        <section className="glass-card relative mb-8 overflow-hidden rounded-2xl border border-white/10 p-6">
           <h2
             className="text-xl font-bold text-white"
             style={{ fontFamily: "var(--font-playfair)" }}
@@ -329,7 +329,7 @@ export default function LungTestResultClient() {
 
           <Link
             href="/product"
-            className="mt-6 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-xl bg-[#9a6f1a] text-base font-bold text-[#f4edd6] shadow-lg transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(154,111,26,0.35)]"
+            className="mb-4 mt-6 flex w-full items-center justify-center rounded-xl bg-ayurvedic-gold py-4 font-sans text-sm font-semibold tracking-wide text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
             onClick={() => {
               trackEvent(EVENTS.LUNG_BUY_CLICK, { page: "/lung-test/result" });
             }}

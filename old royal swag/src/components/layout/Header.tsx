@@ -8,17 +8,19 @@ import { cn } from "@/lib/utils";
 
 function HeaderLogo({ className }: { className?: string }) {
   return (
-    <BrandLogo
-      variant="on-light"
-      width={100}
-      header
-      priority
-      className={className}
-    />
+    <BrandLogo variant="on-light" className={cn("h-10 min-h-[40px] w-auto", className)} />
   );
 }
 
 const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/product", label: "Shop" },
+  { href: "/lung-test", label: "Lung Test" },
+  { href: "/reviews", label: "Reviews" },
+  { href: "/about", label: "About" },
+] as const;
+
+const CENTER_NAV = [
   { href: "/", label: "Home" },
   { href: "/product", label: "Shop" },
   { href: "/lung-test", label: "Lung Test" },
@@ -47,6 +49,18 @@ function NavLink({
       )}
     >
       {label}
+    </Link>
+  );
+}
+
+function DesktopCenterLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="group relative font-sans text-sm font-medium text-primary transition-colors hover:text-ayurvedic-gold"
+    >
+      {label}
+      <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-ayurvedic-gold transition-all duration-300 group-hover:w-full" />
     </Link>
   );
 }
@@ -114,39 +128,39 @@ export default function Header() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 h-16 w-full border-b border-white/60 backdrop-blur-md transition-shadow duration-300",
+          "site-chrome-header sticky top-0 z-50 h-16 w-full border-b border-white/60 backdrop-blur-md transition-shadow duration-300",
           scrolled && "shadow-[0_4px_20px_rgba(73,87,56,0.1)]"
         )}
         style={{ background: "rgba(255,255,255,0.4)" }}
       >
-        <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between gap-4 px-5 md:px-8">
+        <div className="relative mx-auto flex h-full max-w-[1200px] items-center justify-between gap-4 px-5 md:px-8">
           <Link
             href="/"
-            className="flex shrink-0 items-center"
+            className="relative z-10 flex shrink-0 items-center"
             aria-label="Royal Swag home"
           >
             <HeaderLogo />
           </Link>
 
-          {/* Desktop */}
-          <div className="hidden items-center gap-8 md:flex">
-            <nav className="flex items-center gap-7" aria-label="Main">
-              {NAV_LINKS.map((link) => (
-                <NavLink key={link.href} href={link.href} label={link.label} />
-              ))}
-            </nav>
-            <Link
-              href="/lung-test"
-              className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2 font-body text-sm font-semibold tracking-[0.05em] text-white transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(154,111,26,0.3)] active:translate-y-px"
-            >
-              Free Lung Test
-            </Link>
-          </div>
+          <nav
+            className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex"
+            aria-label="Main"
+          >
+            {CENTER_NAV.map((n) => (
+              <DesktopCenterLink key={n.href} href={n.href} label={n.label} />
+            ))}
+          </nav>
 
-          {/* Mobile */}
+          <Link
+            href="/lung-test"
+            className="btn-primary relative z-10 hidden items-center gap-2 px-6 py-2.5 text-sm md:flex"
+          >
+            Free Lung Test
+          </Link>
+
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center rounded-lg md:hidden"
+            className="relative z-10 flex h-11 w-11 items-center justify-center rounded-lg md:hidden"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
@@ -156,7 +170,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile drawer + backdrop */}
       <div
         className={cn(
           "fixed inset-0 z-[60] md:hidden",

@@ -17,14 +17,14 @@ import AnalyticsProvider from "@/components/analytics/AnalyticsProvider";
 const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["600", "700"],
-  variable: "--font-playfair",
+  variable: "--font-display",
   display: "swap",
 });
 
 const hanken = Hanken_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-hanken",
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
       "Cleanse your lungs with 7 Ayurvedic herbs. FSSAI certified. Progress Pack ₹599. From ₹349. Free delivery. COD available pan India.",
     images: [
       {
-        url: "/images/asset1-hero-product.jpg",
+        url: "/images/hero/asset1-hero-product.jpeg",
         width: 1200,
         height: 630,
         alt: "Royal Swag Lung Detox Tea",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Royal Swag Lung Detox Tea",
     description: "7 Ayurvedic herbs for clean healthy lungs. Progress Pack ₹599. Free delivery India.",
-    images: ["/images/asset1-hero-product.jpg"],
+    images: ["/images/hero/asset1-hero-product.jpeg"],
   },
 };
 
@@ -76,7 +76,7 @@ export default function RootLayout({
         <AnalyticsScripts />
       </head>
       <body
-        className={`${hanken.className} overflow-x-hidden font-body text-primary antialiased`}
+        className={`${playfair.variable} ${hanken.variable} ${hanken.className} overflow-x-hidden font-sans text-on-surface antialiased`}
       >
         <StyledComponentsRegistry>
           <Suspense fallback={null}>

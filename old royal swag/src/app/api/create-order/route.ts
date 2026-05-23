@@ -110,7 +110,8 @@ export async function POST(req: Request) {
       console.error("[create-order] Supabase unavailable:", dbErr);
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    const keyId =
+      process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
     if (!keyId) {
       return NextResponse.json({ error: "Razorpay key not configured" }, { status: 500 });
     }

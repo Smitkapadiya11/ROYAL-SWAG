@@ -2,210 +2,55 @@
 @config "../../tailwind.config.js";
 
 :root {
-  /* ── Royal Swag design tokens ── */
   --primary: #324023;
   --primary-container: #495738;
-  --gold: #9A6F1A;
+  --on-primary: #ffffff;
+  --on-primary-container: #bccca5;
   --parchment: #F4EDD6;
   --surface: #f5fce7;
   --surface-container: #e9f1dc;
+  --surface-container-high: #e3ebd6;
   --on-surface: #171e11;
   --on-surface-variant: #45483f;
+  --outline: #75786e;
+  --outline-variant: #c5c8bc;
+  --gold: #9A6F1A;
+  --deep-forest: #495738;
   --glass: rgba(255, 255, 255, 0.4);
   --glass-border: rgba(255, 255, 255, 0.6);
-  --ease-glass: cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  --olive: #324023;
-  --cream: #F4EDD6;
-  --sage: #5C946E;
-  --dark: #324023;
-  --text-on-olive: #F4EDD6;
-  --text-on-cream: #324023;
-  --bg-site: #F4EDD6;
-  --footer-dark: #324023;
-
-  --rs-bg:         #F4EDD6;
-  --rs-bg-alt:     #f5fce7;
-  --rs-surface:    #f5fce7;
-  --rs-border:     rgba(50, 64, 35, 0.2);
-
-  --rs-ink:        #324023;
-  --rs-ink-2:      #324023;
-  --rs-muted:      #324023;
-
-  --rs-green-dark: #324023;
-  --rs-green:      #324023;
-  --rs-green-mid:  #5C946E;
-  --rs-green-lt:   #5C946E;
-  --rs-sage:       #5C946E;
-  --rs-mint:       #f5fce7;
-
-  --rs-gold:       #9A6F1A;
-  --rs-gold-lt:    #9A6F1A;
-  --rs-gold-glow:  #9A6F1A;
-  --rs-copper:     #9A6F1A;
-
-  --rs-white:      #F4EDD6;
-  --rs-cream:      #F4EDD6;
-
-  --font-serif: var(--font-playfair), 'Playfair Display', Georgia, serif;
-  --font-sans:  var(--font-hanken), 'Hanken Grotesk', system-ui, sans-serif;
-
-  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  --section-py: clamp(72px, 7vw, 120px);
-  --max-w: 1200px;
-
-  /* Legacy aliases */
-  --deep: #495738;
-  --sand: rgba(73, 87, 56, 0.2);
-  --muted: #495738;
-  --white: #F4EDD6;
-  --border: rgba(73, 87, 56, 0.2);
-  --ff-head: var(--font-serif);
-  --ff-body: var(--font-sans);
-  --font-playfair-display: var(--font-serif);
-  --font-playfair: var(--font-serif);
-  --font-heading: var(--font-serif);
-  --font-inter: var(--font-sans);
-  --max: var(--max-w);
-  --px: clamp(20px, 5vw, 64px);
-  --py: var(--section-py);
-  --rs-olive: #324023;
-  --rs-deep: #324023;
-  --rs-sand: rgba(50, 64, 35, 0.2);
-  --rs-text: #324023;
-  --brand-green: #324023;
-  --brand-gold: #9A6F1A;
-  --brand-sage: #5C946E;
-  --brand-ivory: #F4EDD6;
-  --brand-dark: #324023;
 }
-
-/* ── BASE ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-sans);
-  background-color: var(--parchment);
-  background-image: radial-gradient(rgba(50, 64, 35, 0.05) 1px, transparent 1px);
+  background-color: #F4EDD6;
+  background-image: radial-gradient(rgba(73, 87, 56, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
-  color: var(--on-surface);
-  font-size: 16px;
-  line-height: 1.75;
+  color: #171e11;
+  font-family: "Hanken Grotesk", sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  color: var(--primary);
-  line-height: 1.12;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-h1 { font-size: clamp(40px, 5.5vw, 80px); font-weight: 700; font-family: var(--font-serif); }
-h2 { font-size: clamp(30px, 3.8vw, 52px); }
-h3 { font-size: clamp(20px, 2.4vw, 32px); }
-
-img { display: block; max-width: 100%; }
-section { position: relative; overflow: hidden; }
-a { color: inherit; text-decoration: none; }
-
-button, input, textarea, select { font-family: inherit; }
-button { cursor: pointer; }
-
-p, span, li, label, small { font-family: var(--font-sans); font-weight: 400; }
-
-.font-display { font-family: var(--font-serif); }
-.font-body { font-family: var(--font-sans); }
-
-/* Glass card — Royal Swag pattern */
-.glass-card,
-.card-glass {
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 16px;
-  transition: all 0.4s var(--ease-glass);
-}
-.glass-card:hover,
-.card-glass:hover {
-  transform: scale(1.02);
+.glass-card {
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.glass-card:hover {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform: scale(1.02);
 }
 
-.container {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 64px);
-}
-
-.w,
-.wrap {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 64px);
-}
-
-.container-rs {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 64px);
-}
-
-/* ── NAVBAR ── */
-.navbar-scrolled,
-.navbar-rs-scrolled {
-  background: #324023 !important;
-  backdrop-filter: blur(24px) saturate(200%) !important;
-  border-bottom: 1px solid rgba(244, 237, 214, 0.15) !important;
-}
-
-.rs-main-nav-pad {
-  padding-top: 0;
-}
-
-.navbar-main-logo,
-.nav-main-logo {
-  width: 140px;
-  height: auto;
-  aspect-ratio: 1 / 1;
-}
-@media (min-width: 769px) {
-  .navbar-main-logo,
-  .nav-main-logo {
-    width: 180px;
-    min-width: 180px;
-  }
-}
-
-/* ── BUTTONS ── */
 .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: var(--primary);
+  background: #324023;
   color: #ffffff;
-  font-family: var(--font-sans);
+  border-radius: 12px;
+  font-family: "Hanken Grotesk", sans-serif;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.05em;
-  padding: 12px 24px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.2s var(--ease-glass), box-shadow 0.2s var(--ease-glass);
-  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
@@ -215,159 +60,20 @@ p, span, li, label, small { font-family: var(--font-sans); font-weight: 400; }
   transform: translateY(1px);
 }
 
-.btn-gold {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: linear-gradient(135deg, var(--rs-gold) 0%, var(--rs-copper) 100%);
-  color: #FFFFFF;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 15px 36px;
-  border-radius: 50px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s;
-  box-shadow: 0 4px 24px rgba(184, 134, 11, 0.35);
-  will-change: transform;
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
-.btn-gold:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 36px rgba(184, 134, 11, 0.5);
-}
-.btn-gold:active { transform: translateY(0) scale(1); }
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: transparent;
-  border: 1.5px solid currentColor;
-  color: var(--rs-white);
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 14px;
-  padding: 14px 30px;
-  border-radius: 50px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.btn-outline:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Legacy button aliases */
-.b,
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 13px 28px;
-  border-radius: 6px;
-  border: none;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.18s ease;
-  cursor: pointer;
-  gap: 6px;
-}
-.b-olive,
-.btn-olive { background: var(--rs-green); color: var(--rs-cream); }
-.b-olive:hover,
-.btn-olive:hover { background: var(--rs-green-dark); }
-.b-gold,
-.btn-gold { background: var(--rs-gold); color: var(--rs-green-dark); font-weight: 600; }
-.b-gold:hover,
-.btn-gold:hover { opacity: 0.88; }
-.b-ghost,
-.btn-ghost { background: transparent; color: var(--rs-green); border: 1.5px solid var(--rs-green); }
-.b-ghost:hover,
-.btn-ghost:hover { background: var(--rs-green); color: var(--rs-cream); }
-.b-ghost-w,
-.btn-ghost-light { background: transparent; color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.3); }
-.b-ghost-w:hover,
-.btn-ghost-light:hover { background: rgba(255, 255, 255, 0.08); }
-
-/* ── CARDS ── */
-.card {
-  background: var(--rs-surface);
-  border-radius: 12px;
-  border: 1px solid var(--rs-border);
-}
-
-/* ── EYEBROW / RULE ── */
-.ey,
-.eyebrow {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--rs-gold);
-  margin-bottom: 12px;
-}
-
-.rl,
-.rule,
-.divider {
-  width: 40px;
-  height: 2px;
-  background: var(--rs-gold);
-  margin: 12px 0 24px;
-}
-.rl-c,
-.rule-c,
-.divider--center {
-  width: 40px;
-  height: 2px;
-  background: var(--rs-gold);
-  margin: 12px auto 24px;
-}
-
-.section { padding: var(--section-py) 0; }
-
-/* ── LENIS ── */
-html.lenis { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto; }
-
-/* ── SECTION ALTERNATING BACKGROUNDS ── */
-.section-white  { background: var(--rs-bg-alt); }
-.section-light  { background: var(--rs-bg); }
-.section-dark   { background: var(--rs-green-dark); }
-.section-cream  { background: var(--rs-cream); }
-
-/* ── MOBILE STICKY BAR ── */
-.mobile-sticky {
+.hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
-@media (max-width: 768px) {
-  .mobile-sticky { display: flex !important; }
-  .nav-desktop   { display: none !important; }
-  .nav-mobile    { display: flex !important; }
-  .w,
-  .wrap { padding: 0 20px; }
-}
-@media (min-width: 769px) {
-  .nav-mobile    { display: none !important; }
-}
 
-/* ── SMOOTH SCROLL INPUT FOCUS ── */
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--rs-green-mid) !important;
-  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12) !important;
+/* Layout compatibility (Stitch tokens above) */
+.font-display {
+  font-family: var(--font-display), "Playfair Display", serif;
+}
+.font-body {
+  font-family: var(--font-sans), "Hanken Grotesk", sans-serif;
 }
 
 body.auth-page header,
@@ -378,6 +84,7 @@ body.auth-page nav {
 body.auth-page {
   overflow-x: hidden;
 }
+
 body.admin-page header,
 body.admin-page footer,
 body.admin-page .wa-float-root,
@@ -392,69 +99,111 @@ body.admin-page main {
 }
 
 body.admin-page {
-  background: var(--parchment) !important;
+  background: #f4edd6 !important;
 }
 
+/* Admin dashboard scrollbar */
+.admin-dashboard-root,
+.admin-dashboard-root * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(73, 87, 56, 0.35) transparent;
+}
 
-@media (max-width: 480px) {
-  .checkout-form-row-2,
-  .checkout-form-row-3 {
-    grid-template-columns: 1fr !important;
+.admin-dashboard-root ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-dashboard-root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-dashboard-root ::-webkit-scrollbar-thumb {
+  background: rgba(73, 87, 56, 0.2);
+  border-radius: 4px;
+}
+
+.admin-dashboard-root ::-webkit-scrollbar-thumb:hover {
+  background: rgba(73, 87, 56, 0.4);
+}
+
+/* Shipping label print */
+@media print {
+  @page {
+    size: 100mm 150mm;
+    margin: 0;
   }
 
-  .profile-tabs {
-    overflow-x: auto;
-    flex-wrap: nowrap !important;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+  body * {
+    visibility: hidden !important;
   }
 
-  .profile-tabs::-webkit-scrollbar {
-    display: none;
+  .shipping-label,
+  .shipping-label * {
+    visibility: visible !important;
+  }
+
+  .shipping-label {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100mm !important;
+    height: 150mm !important;
+    margin: 0 !important;
+    padding: 6mm 8mm !important;
+    background: white !important;
   }
 }
 
-.brand-number {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  color: var(--rs-gold);
+/* Lung test view transitions */
+.fade-transition {
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+.view-enter {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.view-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.brand-number-lg {
-  font-family: var(--font-serif);
-  font-size: clamp(48px, 6vw, 72px);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--rs-cream);
+/* Breath-hold orb accents (BreathHoldTest.tsx unchanged) */
+.breath-test__ring {
+  border-color: rgba(73, 87, 56, 0.35) !important;
+}
+.breath-test__orb {
+  background: radial-gradient(circle at 35% 30%, #495738 0%, #324023 70%) !important;
+}
+.breath-test__orb--active {
+  background: #9a6f1a !important;
+  box-shadow: 0 16px 48px rgba(154, 111, 26, 0.4) !important;
 }
 
-.brand-number-sm {
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.05em;
-  line-height: 1;
-  color: #9A6F1A;
+body.lung-test-page [data-announcement],
+body.lung-test-page .site-chrome-header,
+body.lung-test-page .site-chrome-footer,
+body.lung-test-page .wa-float-root,
+body.lung-test-page .lead-popup-root {
+  display: none !important;
 }
 
-@media (max-width: 767px) {
-  body { overflow-x: hidden; }
+body.lung-test-page main {
+  padding: 0 !important;
+  max-width: none !important;
+}
 
-  h1 { font-size: clamp(28px, 8vw, 42px); line-height: 1.15; }
-  h2 { font-size: clamp(24px, 6vw, 32px); }
-  h3 { font-size: clamp(18px, 5vw, 24px); }
+body.about-page .site-chrome-footer {
+  display: none !important;
+}
 
-  .no-scroll-x { overflow-x: hidden; }
+@media (min-width: 768px) {
+  body.about-page .site-chrome-footer {
+    display: block !important;
+  }
+}
 
-  .grid-mobile-1 { grid-template-columns: 1fr; }
-
-  .card { width: 100%; max-width: 100%; }
-
-  main.rs-main-nav-pad { padding-bottom: 80px; }
+body.about-page main {
+  padding: 0 !important;
+  max-width: none !important;
 }

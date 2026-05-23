@@ -1,41 +1,47 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import AdminSidebar, { type AdminSection } from "./AdminSidebar";
+import AdminDashboardShell from "./AdminDashboardShell";
+import AdminOverviewMetrics from "./AdminOverviewMetrics";
 import LungTestLeadsSection from "./LungTestLeadsSection";
 import OrdersSection from "./OrdersSection";
-import LiveClock from "./LiveClock";
 
-export default function AdminPhase1Dashboard() {
+type AdminPhase1DashboardProps = {
+  mode?: "overview" | "orders";
+};
+
+export default function AdminPhase1Dashboard({
+  mode = "overview",
+}: AdminPhase1DashboardProps) {
   const router = useRouter();
-  const [section, setSection] = useState<AdminSection>("leads");
 
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.replace("/admin/login");
+    router.replace("/");
     router.refresh();
   };
 
+  const isOverview = mode === "overview";
+
   return (
-    <div className="flex min-h-screen bg-parchment">
-      <AdminSidebar
-        active={section}
-        onSelect={setSection}
-        onLogout={handleLogout}
-      />
-      <div className="flex min-h-screen flex-1 flex-col overflow-y-auto">
-        <header className="border-b border-primary/10 bg-parchment/80 px-6 py-5 backdrop-blur-sm">
-          <h1 className="font-display text-2xl font-bold text-primary">
-            Royal Swag Admin
-          </h1>
-          <LiveClock />
-        </header>
-        <main className="flex-1 p-6">
-          {section === "leads" ? <LungTestLeadsSection /> : <OrdersSection />}
-        </main>
+    <AdminDashboardShell onSignOut={handleSignOut}>
+      <div className="mb-8">
+        <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-[#324023] md:text-[48px] md:leading-[56px]">
+          {isOverview ? "Overview" : "Orders"}
+        </h2>
+        <p className="mt-2 font-sans text-base text-[#45483f]">
+          {isOverview
+            ? "Monitor lung test leads, orders, and customer data."
+            : "Manage order fulfillment, shipping labels, and exports."}
+        </p>
       </div>
-    </div>
+
+      {isOverview && <AdminOverviewMetrics />}
+      {isOverview && <LungTestLeadsSection />}
+      <div id="orders">
+        <OrdersSection />
+      </div>
+    </AdminDashboardShell>
   );
 }

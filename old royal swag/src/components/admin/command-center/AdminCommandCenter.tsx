@@ -242,7 +242,7 @@ export default function AdminCommandCenter() {
 
   useEffect(() => {
     if (error instanceof Error && error.message === "unauthorized") {
-      router.replace("/admin/login");
+      router.replace("/");
     }
   }, [error, router]);
 
@@ -320,7 +320,7 @@ export default function AdminCommandCenter() {
           type="button"
           onClick={async () => {
             await fetch("/api/admin/logout", { method: "POST" });
-            router.replace("/admin/login");
+            router.replace("/");
           }}
           className="m-4 rounded-xl border border-red-400/30 bg-red-950/30 py-2 text-sm text-red-200"
         >

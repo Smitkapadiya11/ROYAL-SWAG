@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 function LoginForm() {
   const router = useRouter();
@@ -40,15 +40,7 @@ function LoginForm() {
     <main className="flex min-h-screen items-center justify-center bg-parchment px-6 py-12">
       <div className="glass-card w-full max-w-md rounded-2xl p-8 shadow-glass">
         <div className="mb-8 flex flex-col items-center text-center">
-          <Image
-            src="/images/royal-swag-logo.png"
-            alt="Royal Swag"
-            width={180}
-            height={72}
-            className="mb-4 h-12 w-auto object-contain"
-            style={{ filter: "invert(1) sepia(1) saturate(2) hue-rotate(10deg)" }}
-            priority
-          />
+          <BrandLogo variant="on-light" className="mb-4 h-12 w-auto" />
           <h1 className="font-display text-xl font-bold text-primary">Admin</h1>
           <p className="mt-1 font-body text-sm text-on-surface-variant">
             Sign in with your Supabase admin account

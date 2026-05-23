@@ -3,28 +3,25 @@
 import { useEffect, useState } from "react";
 
 export default function LiveClock() {
-  const [now, setNow] = useState<Date | null>(null);
+  const [time, setTime] = useState("");
 
   useEffect(() => {
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
+    const tick = () =>
+      setTime(
+        new Date().toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })
+      );
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
 
-  if (!now) return null;
-
-  const formatted = now.toLocaleString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
+  if (!time) return null;
 
   return (
-    <p className="mt-1 font-body text-sm text-on-surface-variant">{formatted}</p>
+    <span className="hidden font-sans text-xs text-[#45483f] md:block">{time}</span>
   );
 }

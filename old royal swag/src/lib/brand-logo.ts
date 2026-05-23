@@ -1,5 +1,5 @@
-/** Logo asset: `public/images/royal-swag-logo.png` (cream on dark) */
-export const ROYAL_SWAG_LOGO_SRC = "/images/royal-swag-logo.png";
+/** Logo asset: `public/images/logo/Royalswag_LOGO01.png` (cream on dark) */
+export const ROYAL_SWAG_LOGO_SRC = "/images/logo/Royalswag_LOGO01.png";
 
 export const ROYAL_SWAG_LOGO_WIDTH = 512;
 export const ROYAL_SWAG_LOGO_HEIGHT = 200;

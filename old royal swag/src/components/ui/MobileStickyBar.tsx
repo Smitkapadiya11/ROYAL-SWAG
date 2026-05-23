@@ -51,7 +51,7 @@ export default function MobileStickyBar({
         onClick={handleBuy}
         data-track-button="sticky-buy-now"
         data-track-label="Buy Now"
-        className="shrink-0 rounded-xl bg-[#9A6F1A] px-6 py-2 font-body text-sm font-bold text-white transition hover:brightness-110 active:scale-[0.98]"
+        className="flex min-h-[44px] shrink-0 items-center justify-center rounded-xl bg-[#9A6F1A] px-6 py-3 font-body text-sm font-bold text-white transition hover:brightness-110 active:scale-[0.98]"
       >
         Buy Now
       </button>

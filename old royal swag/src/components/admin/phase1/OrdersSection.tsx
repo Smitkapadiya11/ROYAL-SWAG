@@ -3,7 +3,6 @@
 import { useMemo, useRef, useState } from "react";
 import useSWR from "swr";
 import toast from "react-hot-toast";
-import MetricCard from "./MetricCard";
 import { csvDateFilename, downloadCsv } from "@/lib/admin/export-csv";
 import {
   ORDER_STATUS_OPTIONS,
@@ -42,18 +41,38 @@ const fetcher = (url: string) =>
     return r.json() as Promise<{ orders: Order[] }>;
   });
 
+const inputClass =
+  "rounded-xl border border-[#324023]/30 bg-[#F4EDD6] px-4 py-2 font-sans text-sm text-[#171e11] placeholder:text-[#75786e] focus:border-[#9A6F1A] focus:outline-none focus:ring-2 focus:ring-[#9A6F1A]/20";
+
+const toastStyle = {
+  duration: 3000 as const,
+  style: {
+    background: "#324023",
+    color: "#fff",
+    borderRadius: "12px",
+    fontWeight: 600,
+  },
+};
+
+const toastErrorStyle = {
+  duration: 4000 as const,
+  style: {
+    background: "#b91c1c",
+    color: "#fff",
+    borderRadius: "12px",
+    fontWeight: 600,
+  },
+};
+
 export default function OrdersSection() {
   const { data, error, isLoading, mutate } = useSWR(
     "/api/admin/phase1/orders",
     fetcher
   );
   const [search, setSearch] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [downloadOrder, setDownloadOrder] = useState<ShippingLabelOrder | null>(
     null
   );
@@ -65,9 +84,6 @@ export default function OrdersSection() {
     const q = search.trim().toLowerCase();
     return orders.filter((o) => {
       if (statusFilter !== "all" && o.status !== statusFilter) return false;
-      const t = new Date(o.created_at).getTime();
-      if (dateFrom && t < new Date(dateFrom).setHours(0, 0, 0, 0)) return false;
-      if (dateTo && t > new Date(dateTo).setHours(23, 59, 59, 999)) return false;
       if (!q) return true;
       return (
         o.order_id.toLowerCase().includes(q) ||
@@ -76,17 +92,14 @@ export default function OrdersSection() {
         o.pincode.includes(q)
       );
     });
-  }, [orders, search, dateFrom, dateTo, statusFilter]);
-
-  const stats = useMemo(() => {
-    const active = orders.filter((o) => o.status !== "Cancelled");
-    const revenue = active.reduce((sum, o) => sum + (o.amount || 0), 0);
-    const pending = orders.filter((o) => o.status === "Pending").length;
-    return { total: orders.length, revenue, pending };
-  }, [orders]);
+  }, [orders, search, statusFilter]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pageRows = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+  const safePage = Math.min(page, pageCount);
+  const pageRows = filtered.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
 
   const toLabelOrder = (o: Order): ShippingLabelOrder => ({
     order_id: o.order_id,
@@ -102,7 +115,6 @@ export default function OrdersSection() {
   });
 
   const updateStatus = async (id: string, label: OrderStatusLabel) => {
-    setEditingId(null);
     const db = labelToDbStatus(label);
     const res = await fetch("/api/admin/phase1/orders", {
       method: "PATCH",
@@ -110,10 +122,14 @@ export default function OrdersSection() {
       body: JSON.stringify({ id, status: db }),
     });
     if (!res.ok) {
-      toast.error("Failed to update status");
+      const body = await res.json().catch(() => ({}));
+      toast.error(
+        (body as { error?: string }).error || "Failed to update status",
+        toastErrorStyle
+      );
       return;
     }
-    toast.success(`Status updated to ${label}`);
+    toast.success(`Status updated to ${label}`, toastStyle);
     mutate();
   };
 
@@ -126,15 +142,12 @@ export default function OrdersSection() {
     });
   };
 
-  const toggleAllPage = () => {
-    const ids = pageRows.map((o) => o.id);
-    const allOnPage = ids.every((id) => selected.has(id));
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (allOnPage) ids.forEach((id) => next.delete(id));
-      else ids.forEach((id) => next.add(id));
-      return next;
-    });
+  const toggleAllFiltered = (checked: boolean) => {
+    if (checked) {
+      setSelected(new Set(filtered.map((o) => o.id)));
+    } else {
+      setSelected(new Set());
+    }
   };
 
   const exportCsv = () => {
@@ -165,259 +178,227 @@ export default function OrdersSection() {
       ]),
     ];
     downloadCsv(rows, csvDateFilename("orders"));
+    toast.success("CSV downloaded", toastStyle);
   };
 
   const handleDownloadLabel = async (order: Order) => {
     setDownloadOrder(toLabelOrder(order));
     requestAnimationFrame(async () => {
       if (!captureRef.current) return;
-      await downloadLabelPng(captureRef.current, order.order_id);
-      setDownloadOrder(null);
+      try {
+        await downloadLabelPng(captureRef.current, order.order_id);
+        toast.success("Label downloaded", toastStyle);
+      } catch {
+        toast.error("Failed to download label", toastErrorStyle);
+      } finally {
+        setDownloadOrder(null);
+      }
     });
   };
 
   const bulkPrint = () => {
     const list = orders.filter((o) => selected.has(o.id)).map(toLabelOrder);
     if (list.length === 0) {
-      toast.error("Select at least one order");
+      toast.error("Select at least one order", toastErrorStyle);
       return;
     }
     printLabelsBulk(list);
   };
 
-  const inputClass =
-    "rounded-lg border border-primary/15 bg-white/70 px-3 py-2 font-body text-sm text-primary outline-none focus:border-primary/40";
+  const selectedCount = selected.size;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <MetricCard label="Total Orders" value={stats.total} />
-        <MetricCard
-          label="Total Revenue"
-          value={`₹${stats.revenue.toLocaleString("en-IN")}`}
-        />
-        <MetricCard label="Pending Orders" value={stats.pending} />
-      </div>
-
-      <div className="glass-card flex flex-wrap items-end gap-3 rounded-2xl p-4">
-        <label className="flex min-w-[180px] flex-1 flex-col gap-1 font-body text-xs text-on-surface-variant">
-          Search
+    <div className="glass-card mb-6 overflow-hidden rounded-xl">
+      <div className="flex flex-col gap-4 border-b border-[rgba(255,255,255,0.6)] bg-white/20 p-6 md:flex-row md:items-center md:justify-between">
+        <h3 className="font-display text-2xl font-semibold text-[#324023]">Orders</h3>
+        <div className="flex flex-wrap items-center gap-3">
           <input
             type="search"
-            placeholder="Order ID, name, mobile, pincode…"
+            placeholder="Order ID, name, mobile, pincode..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setPage(0);
+              setPage(1);
             }}
-            className={inputClass}
+            className={cn(inputClass, "w-64")}
           />
-        </label>
-        <label className="flex flex-col gap-1 font-body text-xs text-on-surface-variant">
-          From
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => {
-              setDateFrom(e.target.value);
-              setPage(0);
-            }}
-            className={inputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1 font-body text-xs text-on-surface-variant">
-          To
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => {
-              setDateTo(e.target.value);
-              setPage(0);
-            }}
-            className={inputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1 font-body text-xs text-on-surface-variant">
-          Status
           <select
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
-              setPage(0);
+              setPage(1);
             }}
             className={inputClass}
           >
-            <option value="all">All</option>
+            <option value="all">All Status</option>
             {ORDER_STATUS_OPTIONS.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
             ))}
           </select>
-        </label>
-        <button type="button" onClick={exportCsv} className="btn-primary">
-          Download Orders CSV
-        </button>
-        <button
-          type="button"
-          onClick={bulkPrint}
-          className="rounded-xl border border-primary/25 bg-white/50 px-4 py-2 font-body text-sm font-semibold text-primary hover:bg-white/80"
-        >
-          Print Selected Labels
-        </button>
+          <button
+            type="button"
+            onClick={exportCsv}
+            className="flex items-center gap-2 rounded-xl bg-[#324023] px-4 py-2 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            ⬇ Download CSV
+          </button>
+          {selectedCount > 0 && (
+            <button
+              type="button"
+              onClick={bulkPrint}
+              className="flex items-center gap-2 rounded-xl bg-[#9A6F1A] px-4 py-2 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+            >
+              🖨 Print {selectedCount} Labels
+            </button>
+          )}
+        </div>
       </div>
 
       {isLoading && (
-        <p className="font-body text-sm text-on-surface-variant">Loading orders…</p>
+        <p className="p-6 font-sans text-sm text-[#45483f]">Loading orders…</p>
       )}
       {error && (
-        <p className="font-body text-sm text-red-700">Could not load orders.</p>
+        <p className="p-6 font-sans text-sm text-red-700">Could not load orders.</p>
       )}
 
-      <div className="glass-card overflow-hidden rounded-2xl">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1100px] border-collapse text-left">
-            <thead>
-              <tr className="bg-primary font-body text-xs uppercase tracking-wide text-white">
-                <th className="px-3 py-3">
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse text-left">
+          <thead>
+            <tr className="border-b border-[rgba(255,255,255,0.6)] bg-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-[#45483f]">
+              <th className="p-4">
+                <input
+                  type="checkbox"
+                  checked={
+                    filtered.length > 0 &&
+                    filtered.every((o) => selected.has(o.id))
+                  }
+                  onChange={(e) => toggleAllFiltered(e.target.checked)}
+                  className="accent-[#324023]"
+                  aria-label="Select all filtered orders"
+                />
+              </th>
+              <th className="p-4">Order ID</th>
+              <th className="p-4">Customer</th>
+              <th className="p-4">Pack</th>
+              <th className="p-4">Amount</th>
+              <th className="p-4">Status</th>
+              <th className="p-4">Date</th>
+              <th className="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="font-sans text-sm">
+            {pageRows.map((o) => (
+              <tr
+                key={o.id}
+                className="border-b border-[rgba(255,255,255,0.6)] transition-colors hover:bg-white/30"
+              >
+                <td className="p-4">
                   <input
                     type="checkbox"
-                    checked={
-                      pageRows.length > 0 &&
-                      pageRows.every((o) => selected.has(o.id))
-                    }
-                    onChange={toggleAllPage}
-                    aria-label="Select all on page"
+                    checked={selected.has(o.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelected((prev) => new Set(prev).add(o.id));
+                      } else {
+                        setSelected((prev) => {
+                          const next = new Set(prev);
+                          next.delete(o.id);
+                          return next;
+                        });
+                      }
+                    }}
+                    className="accent-[#324023]"
+                    aria-label={`Select ${o.order_id}`}
                   />
-                </th>
-                <th className="px-3 py-3">Order ID</th>
-                <th className="px-3 py-3">Customer</th>
-                <th className="px-3 py-3">Mobile</th>
-                <th className="px-3 py-3">Address</th>
-                <th className="px-3 py-3">City</th>
-                <th className="px-3 py-3">Pincode</th>
-                <th className="px-3 py-3">Pack</th>
-                <th className="px-3 py-3">Amount</th>
-                <th className="px-3 py-3">Status</th>
-                <th className="px-3 py-3">Date</th>
-                <th className="px-3 py-3">Label</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageRows.map((o) => (
-                <tr
-                  key={o.id}
-                  className="border-t border-white/50 font-body text-sm text-primary transition-colors hover:bg-white/60"
-                >
-                  <td className="px-3 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selected.has(o.id)}
-                      onChange={() => toggleSelect(o.id)}
-                      aria-label={`Select ${o.order_id}`}
-                    />
-                  </td>
-                  <td className="px-3 py-3 font-medium">{o.order_id}</td>
-                  <td className="px-3 py-3">{o.customer_name}</td>
-                  <td className="px-3 py-3">{o.mobile}</td>
-                  <td className="max-w-[160px] truncate px-3 py-3" title={o.address}>
-                    {o.address}
-                  </td>
-                  <td className="px-3 py-3">{o.city}</td>
-                  <td className="px-3 py-3">{o.pincode}</td>
-                  <td className="px-3 py-3">{o.pack}</td>
-                  <td className="px-3 py-3">₹{o.amount}</td>
-                  <td className="px-3 py-3">
-                    {editingId === o.id ? (
-                      <select
-                        autoFocus
-                        defaultValue={o.status}
-                        onBlur={() => setEditingId(null)}
-                        onChange={(e) =>
-                          updateStatus(o.id, e.target.value as OrderStatusLabel)
-                        }
-                        className="rounded border border-primary/20 bg-white px-2 py-1 text-xs"
-                      >
-                        {ORDER_STATUS_OPTIONS.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setEditingId(o.id)}
-                        className={cn(
-                          "rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                          statusBadgeClass(o.status)
-                        )}
-                      >
-                        {o.status}
-                      </button>
+                </td>
+                <td className="p-4 font-mono text-xs font-semibold text-[#324023]">
+                  {o.order_id}
+                </td>
+                <td className="p-4">
+                  <p className="font-medium text-[#324023]">{o.customer_name}</p>
+                  <p className="text-xs text-[#45483f]">{o.mobile}</p>
+                </td>
+                <td className="p-4 text-[#45483f]">{o.pack}</td>
+                <td className="p-4 font-semibold text-[#324023]">₹{o.amount}</td>
+                <td className="p-4">
+                  <select
+                    value={o.status}
+                    onChange={(e) =>
+                      updateStatus(o.id, e.target.value as OrderStatusLabel)
+                    }
+                    className={cn(
+                      "cursor-pointer rounded-full border-0 px-2 py-1 text-xs font-semibold focus:outline-none",
+                      statusBadgeClass(o.status)
                     )}
-                  </td>
-                  <td className="px-3 py-3 text-on-surface-variant">
-                    {new Date(o.created_at).toLocaleDateString("en-IN")}
-                  </td>
-                  <td className="px-3 py-3">
-                    <div className="flex flex-wrap gap-1">
-                      <button
-                        type="button"
-                        onClick={() => printLabel(toLabelOrder(o))}
-                        className="rounded border border-primary/20 px-2 py-1 text-[11px] hover:bg-white/80"
-                      >
-                        Print Label
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDownloadLabel(o)}
-                        className="rounded border border-primary/20 px-2 py-1 text-[11px] hover:bg-white/80"
-                      >
-                        Download Label
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {!isLoading && pageRows.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={12}
-                    className="px-4 py-8 text-center text-on-surface-variant"
                   >
-                    No orders match your filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex items-center justify-between border-t border-white/50 px-4 py-3 font-body text-sm">
-          <span className="text-on-surface-variant">
-            {filtered.length} order{filtered.length === 1 ? "" : "s"}
-          </span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              disabled={page === 0}
-              onClick={() => setPage((p) => p - 1)}
-              className="rounded-lg border border-primary/20 px-3 py-1 disabled:opacity-40"
-            >
-              Previous
-            </button>
-            <span className="px-2 py-1 text-on-surface-variant">
-              {page + 1} / {pageCount}
-            </span>
-            <button
-              type="button"
-              disabled={page >= pageCount - 1}
-              onClick={() => setPage((p) => p + 1)}
-              className="rounded-lg border border-primary/20 px-3 py-1 disabled:opacity-40"
-            >
-              Next
-            </button>
-          </div>
+                    {ORDER_STATUS_OPTIONS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="p-4 text-xs text-[#45483f]">
+                  {new Date(o.created_at).toLocaleDateString("en-IN")}
+                </td>
+                <td className="p-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => printLabel(toLabelOrder(o))}
+                      className="rounded-lg px-2 py-1 font-sans text-xs text-[#324023] transition-colors hover:bg-white/50 hover:text-[#9A6F1A]"
+                    >
+                      🖨 Print
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadLabel(o)}
+                      className="rounded-lg px-2 py-1 font-sans text-xs text-[#324023] transition-colors hover:bg-white/50 hover:text-[#9A6F1A]"
+                    >
+                      ⬇ PNG
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {!isLoading && pageRows.length === 0 && (
+              <tr>
+                <td
+                  colSpan={8}
+                  className="p-8 text-center font-sans text-sm text-[#45483f]"
+                >
+                  No orders match your filters.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.6)] bg-white/10 p-4">
+        <span className="font-sans text-xs text-[#45483f]">
+          {filtered.length} order{filtered.length === 1 ? "" : "s"}
+          {selectedCount > 0 ? ` · ${selectedCount} selected` : ""}
+        </span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            disabled={safePage <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="rounded-lg border border-[rgba(255,255,255,0.6)] bg-white/30 px-3 py-1 font-sans text-sm text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-40"
+          >
+            ← Prev
+          </button>
+          <button
+            type="button"
+            disabled={safePage * PAGE_SIZE >= filtered.length}
+            onClick={() => setPage((p) => p + 1)}
+            className="rounded-lg border border-[rgba(255,255,255,0.6)] bg-white/30 px-3 py-1 font-sans text-sm text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-40"
+          >
+            Next →
+          </button>
         </div>
       </div>
 

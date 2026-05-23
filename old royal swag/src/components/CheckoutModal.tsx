@@ -106,15 +106,21 @@ export default function CheckoutModal({ packId, onClose }: Props) {
         }),
       });
 
-      const payload = (await res.json()) as { orderId?: string; error?: string };
-      if (!res.ok || !payload.orderId) {
+      const payload = (await res.json()) as {
+        orderId?: string;
+        key?: string;
+        amount?: number;
+        currency?: string;
+        orderNumber?: string;
+        error?: string;
+      };
+      if (!res.ok || !payload.orderId || !payload.key) {
         throw new Error(payload.error ?? "Could not create payment order");
       }
 
-      const key = APP_SITE.razorpayKeyId;
-      if (!key) {
-        throw new Error("Razorpay key is not configured");
-      }
+      const key = payload.key;
+      const amountPaise = payload.amount ?? pack.price * 100;
+      const orderNumber = payload.orderNumber;
 
       const RazorpayCtor = (window as Window & { Razorpay?: new (o: RazorpayOptions) => { open: () => void } })
         .Razorpay;
@@ -124,8 +130,8 @@ export default function CheckoutModal({ packId, onClose }: Props) {
 
       const options: RazorpayOptions = {
         key,
-        amount: pack.price * 100,
-        currency: "INR",
+        amount: amountPaise,
+        currency: payload.currency || "INR",
         name: "Royal Swag",
         description: pack.label + " — Lung Detox Tea",
         image: ROYAL_SWAG_LOGO_SRC,
@@ -150,6 +156,7 @@ export default function CheckoutModal({ packId, onClose }: Props) {
                 pincode: formData.pincode,
                 packId: pack.id,
                 amount: pack.price,
+                orderNumber,
               },
             }),
           });

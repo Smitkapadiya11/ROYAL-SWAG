@@ -5,13 +5,6 @@ import Script        from "next/script";
 import { useRouter } from "next/navigation";
 import { SUPPORT_EMAIL } from "@/lib/config";
 
-// ── Global Razorpay SDK types ──────────────────────────────────
-declare global {
-  interface Window {
-    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
-  }
-}
-
 interface RazorpayOptions {
   key:         string;
   amount:      number;
@@ -221,13 +214,16 @@ export default function RazorpayButton({
       };
 
       // ── Step 4: Open modal ───────────────────────────────
-      const rzpInstance = new window.Razorpay(options);
+      const rzpInstance = new window.Razorpay!(
+        options as unknown as Record<string, unknown>
+      );
 
       // ── Step 4c: Payment failed ───────────────────────
-      rzpInstance.on("payment.failed", (response: RazorpayFailedResponse) => {
+      rzpInstance.on("payment.failed", (response: unknown) => {
+        const failed = response as RazorpayFailedResponse;
         setState("failed");
         setErrorMsg(
-          `Payment failed: ${response.error.description || "Unknown error"}. ` +
+          `Payment failed: ${failed.error.description || "Unknown error"}. ` +
           "Please try a different payment method."
         );
       });

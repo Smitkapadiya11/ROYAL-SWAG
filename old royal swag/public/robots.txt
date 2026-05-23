@@ -1,11 +1,6 @@
 User-agent: *
-Allow: /
-
-# Disallow admin and auth pages
 Disallow: /admin/
-Disallow: /auth/
-Disallow: /account/
-Disallow: /profile/
-Disallow: /api/
+Disallow: /api/admin/
+Allow: /
 
 Sitemap: https://lungdetox.royalswag.in/sitemap.xml

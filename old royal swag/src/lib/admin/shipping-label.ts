@@ -16,7 +16,7 @@ export function formatLabelDate(iso: string) {
 
 export function renderLabelHTML(order: ShippingLabelOrder): string {
   const site = typeof window !== "undefined" ? window.location.origin : "";
-  const logo = `${site}/images/royal-swag-logo.png`;
+  const logo = `${site}/images/logo/Royalswag_LOGO01.png`;
   const date = formatLabelDate(order.created_at);
 
   return `<!DOCTYPE html>
@@ -109,7 +109,7 @@ export function printLabel(order: ShippingLabelOrder) {
 
 export function printLabelsBulk(orders: ShippingLabelOrder[]) {
   const site = window.location.origin;
-  const logo = `${site}/images/royal-swag-logo.png`;
+  const logo = `${site}/images/logo/Royalswag_LOGO01.png`;
   const fssai =
     process.env.NEXT_PUBLIC_FSSAI_NUMBER ||
     process.env.NEXT_PUBLIC_FSSAI_LICENSE ||

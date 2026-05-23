@@ -42,7 +42,7 @@ export default function WhatsAppButton() {
 
   return (
     <>
-      <div className="wa-float-root">
+      <div className="wa-float-root fixed right-5 bottom-[88px] z-[9999] flex items-center justify-center md:right-6 md:bottom-6">
         <span className="wa-pulse-ring" aria-hidden />
         <button
           type="button"
@@ -64,10 +64,7 @@ export default function WhatsAppButton() {
 
       <style jsx>{`
         .wa-float-root {
-          position: fixed;
-          right: 20px;
-          bottom: 88px;
-          z-index: 9999;
+          /* position via Tailwind: fixed right-5 bottom-[88px] md:right-6 md:bottom-6 z-[9999] */
           display: flex;
           align-items: center;
           justify-content: center;
@@ -170,10 +167,6 @@ export default function WhatsAppButton() {
         }
 
         @media (min-width: 768px) {
-          .wa-float-root {
-            bottom: 24px;
-          }
-
           .wa-float-btn {
             width: 56px;
             min-width: 56px;

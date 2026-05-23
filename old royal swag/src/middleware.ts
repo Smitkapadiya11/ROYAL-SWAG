@@ -1,6 +1,10 @@
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  ADMIN_ENTRY_COOKIE,
+  getAdminSecretPath,
+} from "@/lib/admin/secret-path";
 
 function isAllowedAdminEmail(email: string | undefined | null): boolean {
   if (!email) return false;
@@ -15,31 +19,81 @@ function isAllowedAdminEmail(email: string | undefined | null): boolean {
   return list.includes(email.trim().toLowerCase());
 }
 
+function hideAsNotFound(req: NextRequest) {
+  const url = req.nextUrl.clone();
+  url.pathname = "/404";
+  return NextResponse.rewrite(url);
+}
+
+function pathnameIsSecret(pathname: string): boolean {
+  const secret = getAdminSecretPath();
+  if (!secret) return false;
+  return pathname === `/${secret}` || pathname === `/${secret}/`;
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const res = NextResponse.next();
 
-  if (!pathname.startsWith("/admin")) {
-    const supabase = createMiddlewareClient({ req, res });
-    await supabase.auth.getSession();
-    return res;
+  if (pathnameIsSecret(pathname)) {
+    const allow = NextResponse.next();
+    allow.cookies.set(ADMIN_ENTRY_COOKIE, "1", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60,
+      path: "/",
+    });
+    return allow;
   }
 
-  if (pathname === "/admin/login") {
-    return res;
+  if (pathname.startsWith("/admin")) {
+    const supabase = createMiddlewareClient({ req, res });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const email = session?.user?.email;
+    const hasValidSession =
+      Boolean(email) && isAllowedAdminEmail(email);
+
+    const hasEntryCookie =
+      req.cookies.get(ADMIN_ENTRY_COOKIE)?.value === "1";
+
+    if (pathname === "/admin/login") {
+      if (hasValidSession) {
+        return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      }
+      if (hasEntryCookie) {
+        return res;
+      }
+
+      const referer = req.headers.get("referer") ?? "";
+      const secret = getAdminSecretPath();
+      if (secret && referer.includes(`/${secret}`)) {
+        const allow = NextResponse.next();
+        allow.cookies.set(ADMIN_ENTRY_COOKIE, "1", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60,
+          path: "/",
+        });
+        return allow;
+      }
+
+      return hideAsNotFound(req);
+    }
+
+    if (hasValidSession) {
+      return res;
+    }
+
+    return hideAsNotFound(req);
   }
 
   const supabase = createMiddlewareClient({ req, res });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session?.user?.email || !isAllowedAdminEmail(session.user.email)) {
-    const login = new URL("/admin/login", req.url);
-    login.searchParams.set("next", pathname);
-    return NextResponse.redirect(login);
-  }
-
+  await supabase.auth.getSession();
   return res;
 }
 

@@ -222,21 +222,35 @@ export default function LungTestPage() {
         {view === "intro" && (
           <section className="flex min-h-[70vh] flex-col duration-500 animate-in fade-in">
             <div
-              className="relative mb-8 h-52 w-full overflow-hidden rounded-3xl shadow-lg"
-              style={{
-                backgroundImage: "url('/images/hero/asset2.jpeg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
+              className="relative mb-8 w-full overflow-hidden rounded-2xl shadow-sm"
+              style={{ height: "200px" }}
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-[#324023]/90 via-[#324023]/30 to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5">
-                <span className="text-4xl" aria-hidden>
-                  🫁
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/lungtest.jpeg"
+                alt="Lung Health Test"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  display: "block",
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.style.background =
+                      "linear-gradient(160deg, #324023 0%, #495738 60%, #9A6F1A 100%)";
+                  }
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#495738]/80 to-transparent" />
+              <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                <span className="text-2xl">🫁</span>
+                <span className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-white">
+                  60-Second Assessment
                 </span>
-                <p className="mt-2 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-[#e8c84a]">
-                  60-second assessment
-                </p>
               </div>
             </div>
 
@@ -387,7 +401,14 @@ export default function LungTestPage() {
                   circle.
                 </p>
               </div>
-              <BreathHoldTest onComplete={saveAndShowResult} disabled={submitting} />
+              <BreathHoldTest
+                onComplete={saveAndShowResult}
+                disabled={submitting}
+                onBack={() => {
+                  setView("questions");
+                  setCurrentQ(LUNG_TEST_QUESTIONS.length - 1);
+                }}
+              />
               <p className="max-w-xs font-sans text-xs text-[#75786e]">
                 Normal: 25+ seconds. Don&apos;t push past comfort.
               </p>

@@ -12,6 +12,7 @@ export default function LiveClock() {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
+          hour12: true,
         })
       );
     tick();
@@ -19,9 +20,7 @@ export default function LiveClock() {
     return () => clearInterval(id);
   }, []);
 
-  if (!time) return null;
-
   return (
-    <span className="hidden font-sans text-xs text-[#45483f] md:block">{time}</span>
+    <span className="font-sans text-sm tabular-nums text-[#45483f]">{time || "—"}</span>
   );
 }

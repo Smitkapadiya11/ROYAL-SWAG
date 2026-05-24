@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminSessionRoute } from "@/lib/admin/session";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { isAdminAuthorized } from "@/lib/admin/session";
+import { tryGetSupabaseAdmin } from "@/lib/supabase/admin";
 import { dbStatusToLabel } from "@/lib/admin/order-status";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const session = await getAdminSessionRoute();
-  if (!session) {
+export async function GET(req: NextRequest) {
+  if (!(await isAdminAuthorized(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const admin = tryGetSupabaseAdmin();
+  if (!admin) {
+    console.error(
+      "ORDERS ERROR: Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
+    );
+    return NextResponse.json(
+      { error: "Supabase admin not configured", orders: [] },
+      { status: 503 }
+    );
+  }
+
   try {
-    const admin = getSupabaseAdmin();
     const { data, error } = await admin
       .from("orders")
       .select(
@@ -22,7 +31,8 @@ export async function GET() {
       .limit(5000);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error("ORDERS ERROR:", error.message, error.code);
+      return NextResponse.json({ error: error.message, orders: [] }, { status: 500 });
     }
 
     const orders = (data ?? []).map((o) => ({
@@ -44,14 +54,19 @@ export async function GET() {
     return NextResponse.json({ orders });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Failed to load orders";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("ORDERS ERROR:", message);
+    return NextResponse.json({ error: message, orders: [] }, { status: 500 });
   }
 }
 
 export async function PATCH(req: NextRequest) {
-  const session = await getAdminSessionRoute();
-  if (!session) {
+  if (!(await isAdminAuthorized(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const admin = tryGetSupabaseAdmin();
+  if (!admin) {
+    return NextResponse.json({ error: "Supabase admin not configured" }, { status: 503 });
   }
 
   const body = (await req.json()) as { id?: string; status?: string };
@@ -60,13 +75,13 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    const admin = getSupabaseAdmin();
     const { error } = await admin
       .from("orders")
       .update({ status: body.status, updated_at: new Date().toISOString() })
       .eq("id", body.id);
 
     if (error) {
+      console.error("ORDERS PATCH ERROR:", error.message, error.code);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 

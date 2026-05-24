@@ -5,17 +5,73 @@ import useSWR from "swr";
 type Lead = { risk_level: string; created_at: string };
 type Order = { status: string; amount: number };
 
-const leadsFetcher = (url: string) =>
-  fetch(url, { cache: "no-store" }).then((r) => {
-    if (!r.ok) throw new Error("Failed to load leads");
-    return r.json() as Promise<{ leads: Lead[] }>;
-  });
+const leadsFetcher = async (url: string) => {
+  const r = await fetch(url, { cache: "no-store" });
+  const json = (await r.json().catch(() => ({}))) as {
+    leads?: Lead[];
+    error?: string;
+  };
+  if (!r.ok) {
+    throw new Error(json.error || "Failed to load leads");
+  }
+  return { leads: json.leads ?? [] };
+};
 
-const ordersFetcher = (url: string) =>
-  fetch(url, { cache: "no-store" }).then((r) => {
-    if (!r.ok) throw new Error("Failed to load orders");
-    return r.json() as Promise<{ orders: Order[] }>;
-  });
+const ordersFetcher = async (url: string) => {
+  const r = await fetch(url, { cache: "no-store" });
+  const json = (await r.json().catch(() => ({}))) as {
+    orders?: Order[];
+    error?: string;
+  };
+  if (!r.ok) {
+    throw new Error(json.error || "Failed to load orders");
+  }
+  return { orders: json.orders ?? [] };
+};
+
+function MetricCard({
+  label,
+  value,
+  sub,
+  subColor,
+  icon,
+  highlight = false,
+  gold = false,
+}: {
+  label: string;
+  value: string | number;
+  sub: string;
+  subColor: string;
+  icon: string;
+  highlight?: boolean;
+  gold?: boolean;
+}) {
+  return (
+    <div
+      className={`flex flex-col gap-3 rounded-2xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+        gold
+          ? "border-[#9A6F1A]/20 bg-[#9A6F1A]/5"
+          : highlight
+            ? "border-red-200/50 bg-red-50/50"
+            : "border-[rgba(200,210,190,0.5)] bg-white/50"
+      }`}
+      style={{ backdropFilter: "blur(12px)" }}
+    >
+      <div className="flex items-start justify-between">
+        <p className="font-sans text-sm font-medium text-[#45483f]">{label}</p>
+        <span className="text-xl" aria-hidden>
+          {icon}
+        </span>
+      </div>
+      <p
+        className={`font-display text-4xl font-bold ${gold ? "text-[#9A6F1A]" : "text-[#324023]"}`}
+      >
+        {value}
+      </p>
+      <p className={`font-sans text-xs ${subColor}`}>{sub}</p>
+    </div>
+  );
+}
 
 export default function AdminOverviewMetrics() {
   const { data: leadsData } = useSWR("/api/admin/phase1/leads", leadsFetcher);
@@ -47,74 +103,37 @@ export default function AdminOverviewMetrics() {
   ).length;
 
   return (
-    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-12">
-      <div className="glass-card flex flex-col justify-between rounded-xl p-6 md:col-span-3">
-        <div className="flex items-start justify-between">
-          <p className="font-sans text-sm font-semibold text-[#45483f]">Total Leads</p>
-          <span className="text-xl text-[#9A6F1A]" aria-hidden>
-            🫁
-          </span>
-        </div>
-        <div className="mt-4">
-          <p className="font-number text-[36px] font-bold text-[#495738]">
-            {leads.length}
-          </p>
-          <p className="mt-1 flex items-center gap-1 font-sans text-xs text-green-700">
-            ↑ {todayLeads} today
-          </p>
-        </div>
-      </div>
-
-      <div className="glass-card flex flex-col justify-between rounded-xl p-6 md:col-span-3">
-        <div className="flex items-start justify-between">
-          <p className="font-sans text-sm font-semibold text-[#45483f]">High Risk</p>
-          <span className="text-xl text-red-500" aria-hidden>
-            ⚠
-          </span>
-        </div>
-        <div className="mt-4">
-          <p className="font-number text-[36px] font-bold text-red-600">
-            {highRiskCount}
-          </p>
-          <p className="mt-1 font-sans text-xs text-[#45483f]">Needs follow-up</p>
-        </div>
-      </div>
-
-      <div className="glass-card flex flex-col justify-between rounded-xl p-6 md:col-span-3">
-        <div className="flex items-start justify-between">
-          <p className="font-sans text-sm font-semibold text-[#45483f]">Total Orders</p>
-          <span className="text-xl text-[#9A6F1A]" aria-hidden>
-            🛍
-          </span>
-        </div>
-        <div className="mt-4">
-          <p className="font-number text-[36px] font-bold text-[#495738]">
-            {orders.length}
-          </p>
-          <p className="mt-1 font-sans text-xs text-[#45483f]">
-            {pendingOrders} pending fulfillment
-          </p>
-        </div>
-      </div>
-
-      <div className="glass-card flex flex-col justify-between rounded-xl border-[#9A6F1A]/20 bg-[#9A6F1A]/5 p-6 md:col-span-3">
-        <div className="flex items-start justify-between">
-          <p className="font-sans text-sm font-semibold text-[#45483f]">
-            Total Revenue
-          </p>
-          <span className="text-xl text-[#9A6F1A]" aria-hidden>
-            ₹
-          </span>
-        </div>
-        <div className="mt-4">
-          <p className="font-number text-[36px] font-bold text-[#9A6F1A]">
-            ₹{totalRevenue.toLocaleString("en-IN")}
-          </p>
-          <p className="mt-1 font-sans text-xs text-[#45483f]">
-            Excl. cancelled orders
-          </p>
-        </div>
-      </div>
+    <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricCard
+        label="Total Leads"
+        value={leads.length}
+        sub={`+${todayLeads} today`}
+        subColor="text-green-700"
+        icon="🫁"
+      />
+      <MetricCard
+        label="High Risk"
+        value={highRiskCount}
+        sub="Needs follow-up"
+        subColor="text-red-600"
+        icon="⚠️"
+        highlight={highRiskCount > 0}
+      />
+      <MetricCard
+        label="Total Orders"
+        value={orders.length}
+        sub={`${pendingOrders} pending`}
+        subColor="text-amber-700"
+        icon="🛍️"
+      />
+      <MetricCard
+        label="Total Revenue"
+        value={`₹${totalRevenue.toLocaleString("en-IN")}`}
+        sub="Excl. cancelled"
+        subColor="text-[#45483f]"
+        icon="₹"
+        gold
+      />
     </div>
   );
 }

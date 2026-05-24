@@ -158,6 +158,9 @@ body.auth-page {
 body.admin-page header,
 body.admin-page footer,
 body.admin-page .wa-float-root,
+body.admin-page .whatsapp-button,
+body.admin-page .mobile-sticky-bar,
+body.admin-page nav.bottom-nav,
 body.admin-page [data-announcement],
 body.admin-page .lead-popup-root {
   display: none !important;

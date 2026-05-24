@@ -18,8 +18,15 @@ export async function GET() {
 
     const [ordersRes, lungRes] = await Promise.all([
       supabaseAdmin.from('orders').select('*').order('created_at', { ascending: false }).limit(500),
-      supabaseAdmin.from('lung_test_results').select('*').order('created_at', { ascending: false }).limit(500),
+      supabaseAdmin.from('lung_test_leads').select('*').order('created_at', { ascending: false }).limit(500),
     ])
+
+    if (ordersRes.error) {
+      console.error('ORDERS ERROR:', ordersRes.error.message, ordersRes.error.code)
+    }
+    if (lungRes.error) {
+      console.error('LEADS ERROR:', lungRes.error.message, lungRes.error.code)
+    }
 
     return NextResponse.json({
       orders: ordersRes.data || [],

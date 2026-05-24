@@ -18,25 +18,18 @@ export default function AdminPhase1Dashboard({
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.replace("/");
+    await fetch("/api/admin/logout", { method: "POST" }).catch(() => undefined);
+    router.replace("/admin/login");
     router.refresh();
   };
 
   const isOverview = mode === "overview";
 
   return (
-    <AdminDashboardShell onSignOut={handleSignOut}>
-      <div className="mb-8">
-        <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-[#324023] md:text-[48px] md:leading-[56px]">
-          {isOverview ? "Overview" : "Orders"}
-        </h2>
-        <p className="mt-2 font-sans text-base text-[#45483f]">
-          {isOverview
-            ? "Monitor lung test leads, orders, and customer data."
-            : "Manage order fulfillment, shipping labels, and exports."}
-        </p>
-      </div>
-
+    <AdminDashboardShell
+      onSignOut={handleSignOut}
+      title={isOverview ? "Overview" : "Orders"}
+    >
       {isOverview && <AdminOverviewMetrics />}
       {isOverview && <LungTestLeadsSection />}
       <div id="orders">

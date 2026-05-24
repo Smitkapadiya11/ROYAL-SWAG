@@ -5,56 +5,47 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AdminSidebar from "./AdminSidebar";
 import LiveClock from "./LiveClock";
-import BrandLogo from "@/components/ui/BrandLogo";
 import { cn } from "@/lib/utils";
 
 type AdminDashboardShellProps = {
   children: ReactNode;
   onSignOut: () => void;
+  title?: string;
 };
 
 export default function AdminDashboardShell({
   children,
   onSignOut,
+  title = "Overview",
 }: AdminDashboardShellProps) {
   const pathname = usePathname();
   const onDashboard =
     pathname === "/admin/dashboard" || pathname === "/admin";
   const onOrders = pathname === "/admin/orders";
 
+  const dateLabel = new Date().toLocaleDateString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
   return (
-    <div className="admin-dashboard-root flex h-screen flex-col overflow-hidden bg-[#F4EDD6] text-[#171e11] antialiased selection:bg-[#9A6F1A]/30 selection:text-[#495738] md:flex-row">
+    <div className="admin-dashboard-root flex min-h-screen bg-[#F4EDD6]">
       <AdminSidebar onSignOut={onSignOut} />
 
-      <main className="relative flex h-screen flex-1 flex-col overflow-hidden">
-        <div
-          className="pointer-events-none absolute right-[-5%] top-[-10%] z-0 h-96 w-96 rounded-full bg-[#9A6F1A]/10 blur-[100px]"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute bottom-[-10%] left-[20%] z-0 h-[500px] w-[500px] rounded-full bg-[#495738]/5 blur-[120px]"
-          aria-hidden
-        />
-
-        <header className="relative z-50 flex h-16 w-full shrink-0 items-center justify-between border-b border-[rgba(255,255,255,0.6)] bg-[rgba(255,255,255,0.4)] px-6 shadow-sm backdrop-blur-md md:px-16">
-          <div className="flex items-center gap-4 md:hidden">
-            <BrandLogo variant="on-light" className="h-8 w-auto" />
-          </div>
-          <div className="hidden md:block" aria-hidden />
+      <div className="ml-[220px] flex min-h-screen flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-[rgba(200,210,190,0.5)] bg-[rgba(244,237,214,0.9)] px-8 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <LiveClock />
-            <button
-              type="button"
-              onClick={onSignOut}
-              className="font-sans text-xs text-[#45483f] transition-colors hover:text-[#9A6F1A] md:hidden"
-            >
-              Sign out
-            </button>
+            <h1 className="font-display text-xl font-bold text-[#324023]">{title}</h1>
+            <span className="rounded-full bg-[#e9f1dc] px-2 py-0.5 font-sans text-xs text-[#45483f]">
+              {dateLabel}
+            </span>
           </div>
+          <LiveClock />
         </header>
 
         <nav
-          className="relative z-40 flex shrink-0 gap-2 border-b border-[rgba(255,255,255,0.6)] bg-white/30 px-4 py-2 md:hidden"
+          className="sticky top-14 z-20 flex shrink-0 gap-2 border-b border-[rgba(200,210,190,0.5)] bg-[rgba(244,237,214,0.95)] px-4 py-2 md:hidden"
           aria-label="Admin mobile"
         >
           <Link
@@ -62,7 +53,7 @@ export default function AdminDashboardShell({
             className={cn(
               "flex-1 rounded-lg py-2 text-center font-sans text-xs font-semibold",
               onDashboard
-                ? "bg-[#495738] text-white"
+                ? "bg-[#324023] text-white"
                 : "bg-white/50 text-[#45483f]"
             )}
           >
@@ -72,17 +63,15 @@ export default function AdminDashboardShell({
             href="/admin/orders"
             className={cn(
               "flex-1 rounded-lg py-2 text-center font-sans text-xs font-semibold",
-              onOrders ? "bg-[#495738] text-white" : "bg-white/50 text-[#45483f]"
+              onOrders ? "bg-[#324023] text-white" : "bg-white/50 text-[#45483f]"
             )}
           >
             Orders
           </Link>
         </nav>
 
-        <div className="relative z-10 flex-1 overflow-y-auto p-5 pb-32 md:p-16 md:pb-16">
-          {children}
-        </div>
-      </main>
+        <div className="flex-1 overflow-y-auto p-5 pb-24 md:p-8 md:pb-8">{children}</div>
+      </div>
     </div>
   );
 }

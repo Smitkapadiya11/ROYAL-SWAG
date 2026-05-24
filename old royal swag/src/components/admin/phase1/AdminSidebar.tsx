@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import BrandLogo from "@/components/ui/BrandLogo";
 import { cn } from "@/lib/utils";
 
 const COMING_SOON = [
@@ -14,11 +13,32 @@ const COMING_SOON = [
   "Hindi Translations",
 ] as const;
 
-const activeStyle =
-  "flex items-center gap-3 rounded-xl border-l-2 border-[#9A6F1A] bg-[rgba(255,255,255,0.1)] px-4 py-3 font-semibold text-[#9A6F1A] shadow-inner transition-colors";
-
-const inactiveStyle =
-  "flex items-center gap-3 rounded-xl px-4 py-3 text-white/80 transition-colors hover:bg-[rgba(255,255,255,0.08)] hover:text-white";
+function NavItem({
+  href,
+  label,
+  icon,
+  active,
+}: {
+  href: string;
+  label: string;
+  icon: string;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-sm transition-all duration-200",
+        active
+          ? "border-l-2 border-[#9A6F1A] bg-white/10 font-semibold text-[#9A6F1A]"
+          : "text-white/70 hover:bg-white/5 hover:text-white"
+      )}
+    >
+      <span aria-hidden>{icon}</span>
+      {label}
+    </Link>
+  );
+}
 
 type AdminSidebarProps = {
   onSignOut: () => void;
@@ -31,65 +51,68 @@ export default function AdminSidebar({ onSignOut }: AdminSidebarProps) {
   const onOrders = pathname === "/admin/orders";
 
   return (
-    <aside className="relative z-40 hidden w-64 shrink-0 flex-col border-r border-white/10 bg-[#495738] shadow-lg md:flex">
-      <div className="p-8">
-        <BrandLogo variant="on-dark" className="mb-3 h-8 w-auto" />
-        <p className="mt-1 font-sans text-[10px] uppercase tracking-[0.2em] text-white/60">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[220px] flex-col bg-[#324023] shadow-xl">
+      <div className="border-b border-white/10 px-6 pb-5 pt-7">
+        <img
+          src="/logo/Royalswag_LOGO01.png"
+          alt="Royal Swag"
+          className="h-8 w-auto object-contain"
+        />
+        <p className="mt-2 font-sans text-[10px] uppercase tracking-[0.2em] text-white/40">
           Admin Portal
         </p>
       </div>
 
-      <nav className="flex-1 space-y-2 px-4" aria-label="Admin">
-        <Link
+      <nav className="flex flex-1 flex-col gap-1 px-3 py-4" aria-label="Admin">
+        <NavItem
           href="/admin/dashboard"
-          className={cn(onDashboard ? activeStyle : inactiveStyle)}
-        >
-          <span aria-hidden>🧪</span>
-          <span className="font-sans text-sm font-semibold">Lung Test Leads</span>
-        </Link>
-        <Link
+          label="Lung Test Leads"
+          icon="🫁"
+          active={onDashboard}
+        />
+        <NavItem
           href="/admin/orders"
-          className={cn(onOrders ? activeStyle : inactiveStyle)}
-        >
-          <span aria-hidden>🛍</span>
-          <span className={cn("font-sans text-sm", onOrders && "font-semibold")}>
-            Orders
-          </span>
-        </Link>
+          label="Orders"
+          icon="🛍"
+          active={onOrders}
+        />
 
-        <div className="mt-6 px-4">
-          <p className="mb-3 font-sans text-[10px] uppercase tracking-[0.2em] text-white/40">
+        <div className="px-3 pb-2 pt-5">
+          <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/25">
             Coming Soon
           </p>
         </div>
         {COMING_SOON.map((item) => (
           <div
             key={item}
-            title="Coming in Phase 2"
-            className="flex cursor-not-allowed select-none items-center gap-3 rounded-xl px-4 py-3 text-white/25"
+            className="flex cursor-not-allowed select-none items-center gap-3 rounded-xl px-3 py-2.5 opacity-25"
           >
             <span className="text-sm" aria-hidden>
               🔒
             </span>
-            <span className="font-sans text-sm line-through">{item}</span>
+            <span className="font-sans text-sm text-white line-through">{item}</span>
           </div>
         ))}
       </nav>
 
-      <div className="mt-auto border-t border-white/10 p-6">
+      <div className="border-t border-white/10 px-4 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#9A6F1A] font-sans font-bold text-white">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#9A6F1A] font-sans text-sm font-bold text-white">
             A
           </div>
-          <div>
-            <p className="font-sans text-sm font-semibold text-white">Admin User</p>
-            <p className="font-sans text-xs text-white/60">System Operator</p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-sans text-sm font-semibold text-white">
+              Admin User
+            </p>
+            <p className="truncate font-sans text-[10px] text-white/40">
+              System Operator
+            </p>
           </div>
         </div>
         <button
           type="button"
           onClick={onSignOut}
-          className="mt-4 w-full text-left font-sans text-xs text-white/40 transition-colors hover:text-white/70"
+          className="mt-3 w-full text-left font-sans text-xs text-white/30 transition-colors hover:text-white/60"
         >
           Sign out →
         </button>

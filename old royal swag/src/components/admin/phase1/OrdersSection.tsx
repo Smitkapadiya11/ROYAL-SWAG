@@ -35,14 +35,20 @@ type Order = {
 
 const PAGE_SIZE = 20;
 
-const fetcher = (url: string) =>
-  fetch(url, { cache: "no-store" }).then((r) => {
-    if (!r.ok) throw new Error("Failed to load orders");
-    return r.json() as Promise<{ orders: Order[] }>;
-  });
+const fetcher = async (url: string) => {
+  const r = await fetch(url, { cache: "no-store" });
+  const json = (await r.json().catch(() => ({}))) as {
+    orders?: Order[];
+    error?: string;
+  };
+  if (!r.ok) {
+    throw new Error(json.error || "Failed to load orders");
+  }
+  return { orders: json.orders ?? [] };
+};
 
 const inputClass =
-  "rounded-xl border border-[#324023]/30 bg-[#F4EDD6] px-4 py-2 font-sans text-sm text-[#171e11] placeholder:text-[#75786e] focus:border-[#9A6F1A] focus:outline-none focus:ring-2 focus:ring-[#9A6F1A]/20";
+  "h-9 rounded-xl border border-[#324023]/20 bg-[#F4EDD6] px-4 font-sans text-sm text-[#171e11] placeholder:text-[#75786e] transition-all focus:border-[#9A6F1A] focus:outline-none focus:ring-2 focus:ring-[#9A6F1A]/15";
 
 const toastStyle = {
   duration: 3000 as const,
@@ -79,6 +85,7 @@ export default function OrdersSection() {
   const captureRef = useRef<HTMLDivElement>(null);
 
   const orders = data?.orders ?? [];
+  const ordersError = error instanceof Error ? error.message : null;
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -129,7 +136,7 @@ export default function OrdersSection() {
       );
       return;
     }
-    toast.success(`Status updated to ${label}`, toastStyle);
+    toast.success(`Status updated to ${label} ✓`, toastStyle);
     mutate();
   };
 
@@ -208,10 +215,13 @@ export default function OrdersSection() {
   const selectedCount = selected.size;
 
   return (
-    <div className="glass-card mb-6 overflow-hidden rounded-xl">
-      <div className="flex flex-col gap-4 border-b border-[rgba(255,255,255,0.6)] bg-white/20 p-6 md:flex-row md:items-center md:justify-between">
-        <h3 className="font-display text-2xl font-semibold text-[#324023]">Orders</h3>
-        <div className="flex flex-wrap items-center gap-3">
+    <div
+      className="mb-6 overflow-hidden rounded-2xl border border-[rgba(200,210,190,0.5)] bg-white/50"
+      style={{ backdropFilter: "blur(12px)" }}
+    >
+      <div className="flex flex-col gap-4 border-b border-[rgba(200,210,190,0.4)] bg-white/30 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <h2 className="shrink-0 font-display text-xl font-bold text-[#324023]">Orders</h2>
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
           <input
             type="search"
             placeholder="Order ID, name, mobile, pincode..."
@@ -220,7 +230,7 @@ export default function OrdersSection() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className={cn(inputClass, "w-64")}
+            className={cn(inputClass, "w-72")}
           />
           <select
             value={statusFilter}
@@ -228,7 +238,7 @@ export default function OrdersSection() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className={inputClass}
+            className={cn(inputClass, "cursor-pointer px-3")}
           >
             <option value="all">All Status</option>
             {ORDER_STATUS_OPTIONS.map((s) => (
@@ -240,33 +250,26 @@ export default function OrdersSection() {
           <button
             type="button"
             onClick={exportCsv}
-            className="flex items-center gap-2 rounded-xl bg-[#324023] px-4 py-2 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md"
+            className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#324023] px-4 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
-            ⬇ Download CSV
+            ⬇ CSV
           </button>
           {selectedCount > 0 && (
             <button
               type="button"
               onClick={bulkPrint}
-              className="flex items-center gap-2 rounded-xl bg-[#9A6F1A] px-4 py-2 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+              className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#9A6F1A] px-4 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
             >
-              🖨 Print {selectedCount} Labels
+              🖨 Print {selectedCount}
             </button>
           )}
         </div>
       </div>
 
-      {isLoading && (
-        <p className="p-6 font-sans text-sm text-[#45483f]">Loading orders…</p>
-      )}
-      {error && (
-        <p className="p-6 font-sans text-sm text-red-700">Could not load orders.</p>
-      )}
-
-      <div className="w-full overflow-x-auto">
-        <table className="w-full border-collapse text-left">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-[rgba(255,255,255,0.6)] bg-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-[#45483f]">
+            <tr className="border-b border-[rgba(200,210,190,0.4)] bg-[#e9f1dc]/60">
               <th className="p-4">
                 <input
                   type="checkbox"
@@ -289,10 +292,32 @@ export default function OrdersSection() {
             </tr>
           </thead>
           <tbody className="font-sans text-sm">
-            {pageRows.map((o) => (
+            {isLoading ? (
+              <tr>
+                <td colSpan={8} className="px-5 py-16 text-center font-sans text-sm text-[#75786e]">
+                  Loading orders…
+                </td>
+              </tr>
+            ) : pageRows.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-5 py-16 text-center font-sans text-sm text-[#75786e]">
+                  {ordersError ? (
+                    <span className="text-red-500">
+                      ⚠ {ordersError} — check Supabase connection
+                    </span>
+                  ) : (
+                    "No orders yet. They appear here after customers pay."
+                  )}
+                </td>
+              </tr>
+            ) : (
+              pageRows.map((o, i) => (
               <tr
                 key={o.id}
-                className="border-b border-[rgba(255,255,255,0.6)] transition-colors hover:bg-white/30"
+                className={cn(
+                  "border-b border-[rgba(200,210,190,0.3)] transition-colors hover:bg-[#9A6F1A]/5",
+                  i % 2 === 0 ? "bg-white/20" : "bg-transparent"
+                )}
               >
                 <td className="p-4">
                   <input
@@ -321,7 +346,9 @@ export default function OrdersSection() {
                   <p className="text-xs text-[#45483f]">{o.mobile}</p>
                 </td>
                 <td className="p-4 text-[#45483f]">{o.pack}</td>
-                <td className="p-4 font-semibold text-[#324023]">₹{o.amount}</td>
+                <td className="p-4 font-semibold text-[#324023]">
+                  ₹{Number(o.amount).toLocaleString("en-IN")}
+                </td>
                 <td className="p-4">
                   <select
                     value={o.status}
@@ -362,16 +389,7 @@ export default function OrdersSection() {
                   </div>
                 </td>
               </tr>
-            ))}
-            {!isLoading && pageRows.length === 0 && (
-              <tr>
-                <td
-                  colSpan={8}
-                  className="p-8 text-center font-sans text-sm text-[#45483f]"
-                >
-                  No orders match your filters.
-                </td>
-              </tr>
+              ))
             )}
           </tbody>
         </table>

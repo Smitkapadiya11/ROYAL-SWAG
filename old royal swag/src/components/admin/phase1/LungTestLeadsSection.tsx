@@ -18,14 +18,21 @@ type Lead = {
 };
 
 const PAGE_SIZE = 20;
-const fetcher = (url: string) =>
-  fetch(url, { cache: "no-store" }).then((r) => {
-    if (!r.ok) throw new Error("Failed to load leads");
-    return r.json() as Promise<{ leads: Lead[] }>;
-  });
+
+const fetcher = async (url: string) => {
+  const r = await fetch(url, { cache: "no-store" });
+  const json = (await r.json().catch(() => ({}))) as {
+    leads?: Lead[];
+    error?: string;
+  };
+  if (!r.ok) {
+    throw new Error(json.error || "Failed to load leads");
+  }
+  return { leads: json.leads ?? [] };
+};
 
 const inputClass =
-  "rounded-xl border border-[#324023]/30 bg-[#F4EDD6] px-4 py-2 font-sans text-sm text-[#171e11] placeholder:text-[#75786e] focus:border-[#9A6F1A] focus:outline-none focus:ring-2 focus:ring-[#9A6F1A]/20";
+  "h-9 rounded-xl border border-[#324023]/20 bg-[#F4EDD6] px-4 font-sans text-sm text-[#171e11] placeholder:text-[#75786e] transition-all focus:border-[#9A6F1A] focus:outline-none focus:ring-2 focus:ring-[#9A6F1A]/15";
 
 function riskBadge(level: string) {
   const l = level.toLowerCase();
@@ -54,6 +61,7 @@ export default function LungTestLeadsSection() {
   const [page, setPage] = useState(1);
 
   const leads = data?.leads ?? [];
+  const leadsError = error instanceof Error ? error.message : null;
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -108,16 +116,16 @@ export default function LungTestLeadsSection() {
     });
   };
 
-  const showingFrom = filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
-  const showingTo = Math.min(safePage * PAGE_SIZE, filtered.length);
-
   return (
-    <div className="glass-card mb-6 overflow-hidden rounded-xl">
-      <div className="flex flex-col gap-4 border-b border-[rgba(255,255,255,0.6)] bg-white/20 p-6 md:flex-row md:items-center md:justify-between">
-        <h3 className="font-display text-2xl font-semibold text-[#324023]">
+    <div
+      className="mb-6 overflow-hidden rounded-2xl border border-[rgba(200,210,190,0.5)] bg-white/50"
+      style={{ backdropFilter: "blur(12px)" }}
+    >
+      <div className="flex flex-col gap-4 border-b border-[rgba(200,210,190,0.4)] bg-white/30 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <h2 className="shrink-0 font-display text-xl font-bold text-[#324023]">
           Lung Test Leads
-        </h3>
-        <div className="flex flex-wrap items-center gap-3">
+        </h2>
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
           <input
             type="search"
             placeholder="Search name, email, mobile..."
@@ -134,7 +142,7 @@ export default function LungTestLeadsSection() {
               setRiskFilter(e.target.value);
               setPage(1);
             }}
-            className={inputClass}
+            className={cn(inputClass, "cursor-pointer px-3")}
           >
             <option value="all">All Risk Levels</option>
             <option value="Mild">Mild</option>
@@ -150,6 +158,7 @@ export default function LungTestLeadsSection() {
             }}
             className={cn(inputClass, "px-3")}
           />
+          <span className="font-sans text-xs text-[#75786e]">to</span>
           <input
             type="date"
             value={dateTo}
@@ -162,100 +171,121 @@ export default function LungTestLeadsSection() {
           <button
             type="button"
             onClick={exportCsv}
-            className="flex items-center gap-2 rounded-xl bg-[#324023] px-4 py-2 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md"
+            className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#324023] px-4 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
-            ⬇ Download CSV
+            \u2B07 CSV
           </button>
         </div>
       </div>
 
-      {isLoading && (
-        <p className="p-6 font-sans text-sm text-[#45483f]">Loading leads…</p>
-      )}
-      {error && (
-        <p className="p-6 font-sans text-sm text-red-700">Could not load leads.</p>
-      )}
-
-      <div className="w-full overflow-x-auto">
-        <table className="w-full border-collapse text-left">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-[rgba(255,255,255,0.6)] bg-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-[#45483f]">
-              <th className="p-4">Name</th>
-              <th className="p-4">Email</th>
-              <th className="p-4">Mobile</th>
-              <th className="p-4">Risk Level</th>
-              <th className="p-4">City</th>
-              <th className="p-4">Date</th>
+            <tr className="border-b border-[rgba(200,210,190,0.4)] bg-[#e9f1dc]/60">
+              {["Name", "Email", "Mobile", "Risk Level", "City", "Date"].map((col) => (
+                <th
+                  key={col}
+                  className="px-5 py-3 font-sans text-[11px] font-semibold uppercase tracking-wider text-[#45483f]"
+                >
+                  {col}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody className="font-sans text-sm">
-            {pageRows.map((l) => (
-              <tr
-                key={l.id}
-                className="border-b border-[rgba(255,255,255,0.6)] transition-colors hover:bg-white/30"
-              >
-                <td className="p-4 font-medium text-[#324023]">{l.name}</td>
-                <td className="p-4 text-[#45483f]">{l.email}</td>
-                <td className="p-4">
-                  <a
-                    href={waLink(l.mobile)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-[#25D366] hover:underline"
-                  >
-                    {l.mobile}
-                  </a>
-                </td>
-                <td className="p-4">
-                  <span
-                    className={cn(
-                      "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
-                      riskBadge(l.risk_level)
-                    )}
-                  >
-                    {capitalizeRisk(l.risk_level)}
-                  </span>
-                </td>
-                <td className="p-4 text-[#45483f]">{l.city || "—"}</td>
-                <td className="p-4 text-xs text-[#45483f]">
-                  {new Date(l.created_at).toLocaleDateString("en-IN")}
-                </td>
-              </tr>
-            ))}
-            {!isLoading && pageRows.length === 0 && (
+          <tbody>
+            {isLoading ? (
               <tr>
-                <td
-                  colSpan={6}
-                  className="p-8 text-center font-sans text-sm text-[#45483f]"
-                >
-                  No leads match your filters.
+                <td colSpan={6} className="px-5 py-16 text-center font-sans text-sm text-[#75786e]">
+                  Loading leads\u2026
                 </td>
               </tr>
+            ) : pageRows.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-5 py-16 text-center font-sans text-sm text-[#75786e]">
+                  {leadsError ? (
+                    <span className="text-red-500">
+                      \u26A0 {leadsError} \u2014 check Supabase connection
+                    </span>
+                  ) : (
+                    "No leads yet. They appear here after customers complete the Lung Test."
+                  )}
+                </td>
+              </tr>
+            ) : (
+              pageRows.map((l, i) => (
+                <tr
+                  key={l.id}
+                  className={cn(
+                    "border-b border-[rgba(200,210,190,0.3)] transition-colors hover:bg-[#9A6F1A]/5",
+                    i % 2 === 0 ? "bg-white/20" : "bg-transparent"
+                  )}
+                >
+                  <td className="px-5 py-3.5 font-sans text-sm font-semibold text-[#324023]">
+                    {l.name}
+                  </td>
+                  <td className="px-5 py-3.5 font-sans text-sm text-[#45483f]">
+                    {l.email || "\u2014"}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <a
+                      href={waLink(l.mobile)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-sans text-sm font-medium text-[#25D366] hover:underline"
+                    >
+                      {l.mobile}
+                    </a>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <span
+                      className={cn(
+                        "inline-flex rounded-full px-2.5 py-1 font-sans text-xs font-semibold",
+                        riskBadge(l.risk_level)
+                      )}
+                    >
+                      {capitalizeRisk(l.risk_level) || "Mild"}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5 font-sans text-sm text-[#45483f]">
+                    {l.city || "\u2014"}
+                  </td>
+                  <td className="px-5 py-3.5 font-sans text-xs text-[#75786e]">
+                    {new Date(l.created_at).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
 
-      <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.6)] bg-white/10 p-4">
+      <div className="flex items-center justify-between border-t border-[rgba(200,210,190,0.4)] bg-white/20 px-6 py-3">
         <span className="font-sans text-xs text-[#45483f]">
-          Showing {showingFrom}–{showingTo} of {filtered.length}
+          {filtered.length} total leads
         </span>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             disabled={safePage <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded-lg border border-[rgba(255,255,255,0.6)] bg-white/30 px-3 py-1 font-sans text-sm text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-40"
+            className="h-8 rounded-lg border border-[rgba(200,210,190,0.6)] px-3 font-sans text-xs text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-30"
           >
-            ← Prev
+            \u2190 Prev
           </button>
+          <span className="px-2 font-sans text-xs text-[#45483f]">
+            Page {safePage} of {pageCount}
+          </span>
           <button
             type="button"
             disabled={safePage * PAGE_SIZE >= filtered.length}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border border-[rgba(255,255,255,0.6)] bg-white/30 px-3 py-1 font-sans text-sm text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-40"
+            className="h-8 rounded-lg border border-[rgba(200,210,190,0.6)] px-3 font-sans text-xs text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-30"
           >
-            Next →
+            Next \u2192
           </button>
         </div>
       </div>

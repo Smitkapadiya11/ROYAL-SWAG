@@ -1,7 +1,9 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+import type { NextRequest } from "next/server";
 import type { Session } from "@supabase/supabase-js";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export function getAdminAllowlist(): string[] {
   const raw =
@@ -20,21 +22,36 @@ export function isAllowedAdminEmail(email: string | undefined | null): boolean {
 }
 
 export async function getAdminSession(): Promise<Session | null> {
-  const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session?.user?.email) return null;
-  if (!isAllowedAdminEmail(session.user.email)) return null;
-  return session;
+  try {
+    const supabase = createServerComponentClient({ cookies });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.user?.email) return null;
+    if (!isAllowedAdminEmail(session.user.email)) return null;
+    return session;
+  } catch {
+    return null;
+  }
 }
 
 export async function getAdminSessionRoute(): Promise<Session | null> {
-  const supabase = createRouteHandlerClient({ cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session?.user?.email) return null;
-  if (!isAllowedAdminEmail(session.user.email)) return null;
-  return session;
+  try {
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.user?.email) return null;
+    if (!isAllowedAdminEmail(session.user.email)) return null;
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+/** Accept Supabase admin session or legacy admin_token cookie. */
+export async function isAdminAuthorized(req: NextRequest): Promise<boolean> {
+  if (isAdminRequest(req)) return true;
+  const session = await getAdminSessionRoute();
+  return session !== null;
 }

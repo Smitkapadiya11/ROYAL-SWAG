@@ -260,7 +260,7 @@ export const PACKS = [
     original: 698,
     saving: 99,
     tag: "MOST POPULAR",
-    image: "/images/product/product-2.jpg",
+    image: "/images/product/product-4.jpg",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Progress%20Pack%20%282%20packs%2C%20%E2%82%B9599%29.%20Please%20confirm.",
   },
@@ -274,7 +274,7 @@ export const PACKS = [
     original: 1047,
     saving: 198,
     tag: "BEST VALUE",
-    image: "/images/product/product-3.jpg",
+    image: "/images/product/product-7.jpg",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Result%20Pack%20%283%20packs%2C%20%E2%82%B9849%29.%20Please%20confirm.",
   },

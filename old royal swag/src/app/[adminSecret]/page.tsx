@@ -14,6 +14,6 @@ export default async function AdminSecretGatePage({ params }: PageProps) {
     notFound();
   }
 
-  // Entry cookie is set in middleware; login page redirects to dashboard if already signed in.
+  // Entry cookie is set in proxy; login page redirects to dashboard if already signed in.
   redirect("/admin/login");
 }

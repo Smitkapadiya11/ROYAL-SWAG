@@ -31,7 +31,7 @@ function pathnameIsSecret(pathname: string): boolean {
   return pathname === `/${secret}` || pathname === `/${secret}/`;
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const res = NextResponse.next();
 

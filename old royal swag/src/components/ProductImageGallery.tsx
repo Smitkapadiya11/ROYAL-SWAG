@@ -3,14 +3,9 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
+import { PRODUCT_GALLERY } from "@/lib/product-images";
 
-const IMAGES = [
-  "/images/product/product-1.jpg",
-  "/images/product/product-2.jpg",
-  "/images/product/product-3.jpg",
-  "/images/product/product-4.jpg",
-  "/images/product/product-5.jpg",
-];
+const IMAGES = [...PRODUCT_GALLERY];
 
 export default function ProductImageGallery() {
   const [active, setActive] = useState(0);

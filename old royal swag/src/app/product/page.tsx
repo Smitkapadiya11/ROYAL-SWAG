@@ -15,24 +15,12 @@ import {
   type Bundle,
 } from "@/lib/productPricing";
 import { EVENTS, trackEvent } from "@/lib/events";
+import {
+  MAIN_PRODUCT_IMAGE,
+  PRODUCT_GALLERY,
+} from "@/lib/product-images";
 
-const PRODUCT_IMAGES = [
-  "/images/product/product-1.jpg",
-  "/images/product/product-2.jpg",
-  "/images/product/product-3.jpg",
-  "/images/product/product-4.jpg",
-  "/images/product/product-5.jpg",
-  "/images/product/product-6.jpg",
-  "/images/product/product-7.jpg",
-  "/images/product/product-8.jpg",
-  "/images/product/product-9.jpg",
-  "/images/product/product-10.jpg",
-  "/images/product/product-11.jpg",
-  "/images/product/product-12.jpg",
-  "/images/product/product-13.jpg",
-];
-
-const MAIN_FALLBACK = "/images/product/product-1.jpg";
+const MAIN_FALLBACK = MAIN_PRODUCT_IMAGE;
 
 function hideBrokenImage(e: React.SyntheticEvent<HTMLImageElement>) {
   e.currentTarget.style.display = "none";
@@ -52,13 +40,13 @@ function handleImageFallback(
 
 export default function ProductPage() {
   const [activeIdx, setActiveIdx] = useState(0);
-  const [activeImage, setActiveImage] = useState(
-    PRODUCT_IMAGES[0] ?? MAIN_FALLBACK
+  const [activeImage, setActiveImage] = useState<string>(
+    PRODUCT_GALLERY[0] ?? MAIN_FALLBACK
   );
   const [selectedBundle, setSelectedBundle] = useState<Bundle>(DEFAULT_BUNDLE);
 
   const productImages = useMemo(
-    () => (PRODUCT_IMAGES.length > 0 ? PRODUCT_IMAGES : [MAIN_FALLBACK]),
+    () => (PRODUCT_GALLERY.length > 0 ? [...PRODUCT_GALLERY] : [MAIN_FALLBACK]),
     []
   );
 
@@ -122,7 +110,7 @@ export default function ProductPage() {
                   className="h-full w-full rounded-lg object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                   src={activeImage || MAIN_FALLBACK}
                   alt="Lung Detox Tea"
-                  onError={(e) => handleImageFallback(e, "/images/product/product-1.jpg")}
+                  onError={(e) => handleImageFallback(e, MAIN_FALLBACK)}
                 />
                 <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md">
                   <span className="text-sm text-ayurvedic-gold">★</span>
@@ -177,11 +165,17 @@ export default function ProductPage() {
                 Cleanse, soothe, and rejuvenate your respiratory system with
                 ancient botanical wisdom.
               </p>
-              <PriceDisplay
-                price={selectedBundle.price}
-                mrp={selectedBundle.mrp}
-                size="lg"
-              />
+              <div className="mt-2 flex items-baseline gap-3">
+                <span className="font-display text-[32px] font-semibold text-primary">
+                  ₹{selectedBundle.price}
+                </span>
+                <span className="font-sans text-base text-on-surface-variant line-through">
+                  ₹{selectedBundle.mrp}
+                </span>
+                <span className="ml-auto rounded-full bg-ayurvedic-gold/10 px-2 py-1 font-sans text-xs font-bold text-ayurvedic-gold">
+                  Save {getSaving(selectedBundle.price, selectedBundle.mrp)}%
+                </span>
+              </div>
               <div className="mt-2">
                 <CountdownTimer />
               </div>

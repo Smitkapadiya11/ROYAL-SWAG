@@ -12,7 +12,6 @@ const HERO_IMAGE_CANDIDATES = [
   '/images/hero/asset1-hero-product.jpg',
   '/images/hero/asset1-hero-product.png',
   '/images/product/product-1.jpg',
-  '/images/product/product-2.jpg',
 ];
 
 const float = keyframes`

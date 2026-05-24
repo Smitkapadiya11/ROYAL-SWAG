@@ -36,6 +36,8 @@ type ProductCheckoutProps = {
   packLabel?: string;
   className?: string;
   showSocialProof?: boolean;
+  /** When true, omits outer section wrapper (for bottom-sheet modal). */
+  embedded?: boolean;
 };
 
 function loadRazorpayScript(): Promise<boolean> {
@@ -59,6 +61,7 @@ export default function ProductCheckout({
   packLabel = "Lung Detox Tea",
   className,
   showSocialProof = false,
+  embedded = false,
 }: ProductCheckoutProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -246,9 +249,8 @@ export default function ProductCheckout({
   const fieldClass =
     "w-full rounded-xl border border-primary/20 bg-white/80 px-4 py-3 text-sm text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15";
 
-  return (
-    <section id="product-checkout" className={cn("w-full scroll-mt-24", className)}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+  const form = (
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-primary/70">
@@ -354,6 +356,15 @@ export default function ProductCheckout({
           Secure checkout · UPI · Cards · Net Banking · Razorpay
         </p>
       </form>
+  );
+
+  if (embedded) {
+    return <div className={cn("w-full", className)}>{form}</div>;
+  }
+
+  return (
+    <section id="product-checkout" className={cn("w-full scroll-mt-24", className)}>
+      {form}
     </section>
   );
 }

@@ -36,7 +36,7 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "serif"],
-        number: ["var(--font-number)", "serif"],
+        number: ["DM Sans", "var(--font-sans)", "system-ui", "sans-serif"],
         body: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       spacing: {

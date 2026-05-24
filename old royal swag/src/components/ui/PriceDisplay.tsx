@@ -13,10 +13,10 @@ export function PriceDisplay({
   if (size === "sm") {
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-number text-2xl font-bold text-[#324023]">
+        <span className="price-num font-number text-2xl font-bold text-[#324023]" data-price>
           ₹{price}
         </span>
-        <span className="font-sans text-sm text-[#75786e] line-through decoration-[#ba1a1a]/60">
+        <span className="price-num font-number text-sm text-[#75786e] line-through decoration-[#ba1a1a]/60" data-price>
           ₹{mrp}
         </span>
         <span className="rounded-full bg-[#9A6F1A]/10 px-2 py-0.5 font-sans text-[10px] font-bold text-[#9A6F1A]">
@@ -29,14 +29,14 @@ export function PriceDisplay({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-baseline gap-3">
-        <span className="font-number text-[40px] font-bold leading-none text-[#324023]">
+        <span className="price-num font-number text-[40px] font-bold leading-none text-[#324023]" data-price>
           ₹{price.toLocaleString("en-IN")}
         </span>
         <div className="flex flex-col">
           <span className="font-sans text-xs uppercase tracking-wide text-[#75786e]">
             MRP
           </span>
-          <span className="font-number text-lg text-[#75786e] line-through decoration-[#ba1a1a] decoration-2">
+          <span className="price-num font-number text-lg text-[#75786e] line-through decoration-[#ba1a1a] decoration-2" data-price>
             ₹{mrp.toLocaleString("en-IN")}
           </span>
         </div>

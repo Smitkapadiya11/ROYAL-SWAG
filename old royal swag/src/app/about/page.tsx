@@ -183,32 +183,27 @@ export default function AboutPage() {
               The minds architecting Ayurvedic respiratory care.
             </p>
           </div>
-          <div className="relative z-10 flex flex-col gap-5 md:grid md:grid-cols-3 md:gap-6">
-            {FOUNDERS.map((f, i) => (
+          <div className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+            {FOUNDERS.map((f) => (
               <div
                 key={f.name}
                 className="glass-card overflow-hidden rounded-2xl transition-all duration-400 hover:-translate-y-1 hover:shadow-xl"
-                style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-[#324023] to-[#9A6F1A]">
+                <div
+                  className="flex w-full items-center justify-center bg-gradient-to-br from-[#e9f1dc] to-[#dee5d1]"
+                  style={{ minHeight: "320px" }}
+                >
                   <FounderPhoto src={f.img} alt={f.name} />
-                  <div
-                    className="absolute right-0 top-0 h-12 w-12"
-                    style={{
-                      background:
-                        "linear-gradient(225deg, rgba(154,111,26,0.4), transparent)",
-                    }}
-                  />
                 </div>
-                <div className="p-5">
+                <div className="bg-white/50 p-5">
                   <h4 className="font-display text-xl font-bold text-[#324023]">
                     {f.name}
                   </h4>
-                  <p className="mt-1 font-sans text-[11px] font-semibold uppercase tracking-[0.15em] text-[#9A6F1A]">
+                  <p className="mt-1 font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-[#9A6F1A]">
                     {f.role}
                   </p>
-                  <div className="mt-2 border-t border-[rgba(255,255,255,0.4)] pt-2">
-                    <p className="font-sans text-xs text-[#45483f]">{f.focus}</p>
+                  <div className="mt-2 border-t border-[rgba(200,210,190,0.4)] pt-2">
+                    <p className="font-sans text-sm text-[#45483f]">{f.focus}</p>
                   </div>
                 </div>
               </div>

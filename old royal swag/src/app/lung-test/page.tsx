@@ -392,17 +392,6 @@ export default function LungTestPage() {
                 Normal: 25+ seconds. Don&apos;t push past comfort.
               </p>
             </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setView("questions");
-                setCurrentQ(LUNG_TEST_QUESTIONS.length - 1);
-              }}
-              className="mt-6 font-sans text-sm text-[#75786e] hover:text-[#324023]"
-            >
-              ← Back to questions
-            </button>
           </section>
         )}
 

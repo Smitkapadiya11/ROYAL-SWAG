@@ -2,6 +2,7 @@
 
 import { APP_SITE } from "@/lib/config";
 import { EVENTS, trackEvent } from "@/lib/events";
+import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
 
 const WA_MESSAGE =
   "Hi, I want to order Royal Swag Progress Pack (2 packs, ₹599). Please share payment details.";
@@ -26,7 +27,9 @@ function WhatsAppIcon({ size = 26 }: { size?: number }) {
   );
 }
 
-export default function WhatsAppButton() {
+export default function WhatsAppButton({ hidden = false }: { hidden?: boolean }) {
+  const { showCheckout } = useCheckoutUi();
+  const isHidden = hidden || showCheckout;
   const phone = normalizePhone(
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || APP_SITE.whatsapp
   );
@@ -42,7 +45,11 @@ export default function WhatsAppButton() {
 
   return (
     <>
-      <div className="wa-float-root fixed right-5 bottom-[88px] z-[9999] flex items-center justify-center md:right-6 md:bottom-6">
+      <div
+        className={`wa-float-root fixed right-4 bottom-24 z-[9999] flex items-center justify-center transition-opacity duration-200 md:right-6 md:bottom-6 ${
+          isHidden ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
+      >
         <span className="wa-pulse-ring" aria-hidden />
         <button
           type="button"

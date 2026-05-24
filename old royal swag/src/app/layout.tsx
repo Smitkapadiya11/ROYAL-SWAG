@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import {
-  Playfair_Display,
   DM_Sans,
   DM_Serif_Display,
 } from "next/font/google";import "./globals.css";
@@ -16,6 +15,7 @@ import { Suspense } from "react";
 import SiteTracker from "@/components/analytics/SiteTracker";
 import AnalyticsScripts from "@/components/analytics/AnalyticsScripts";
 import AnalyticsProvider from "@/components/analytics/AnalyticsProvider";
+import { CheckoutUiProvider } from "@/contexts/CheckoutUiContext";
 
 const dmSerif = DM_Serif_Display({
   subsets: ["latin"],
@@ -31,12 +31,6 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-number",
-  display: "swap",
-});
 export const metadata: Metadata = {
   title: "Royal Swag Lung Detox Tea | 7 Ayurvedic Herbs — Free Delivery India",
   description:
@@ -75,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerif.variable} ${dmSans.variable} ${playfair.variable} overflow-x-hidden`}
+      className={`${dmSerif.variable} ${dmSans.variable} overflow-x-hidden`}
     >
       <head>
         <link
@@ -85,9 +79,10 @@ export default function RootLayout({
         <AnalyticsScripts />
       </head>
       <body
-        className={`${dmSerif.variable} ${dmSans.variable} ${playfair.variable} ${dmSans.className} overflow-x-hidden font-sans text-on-surface antialiased`}
+        className={`${dmSerif.variable} ${dmSans.variable} ${dmSans.className} overflow-x-hidden font-sans text-on-surface antialiased`}
       >
         <StyledComponentsRegistry>
+          <CheckoutUiProvider>
           <Suspense fallback={null}>
             <AnalyticsProvider />
             <SiteTracker />
@@ -101,6 +96,7 @@ export default function RootLayout({
           <WhatsAppButton />
           <LeadPopup />
           <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+          </CheckoutUiProvider>
         </StyledComponentsRegistry>
       </body>
     </html>

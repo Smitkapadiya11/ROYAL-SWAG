@@ -51,11 +51,15 @@ export default function LungTestResultClient() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    document.body.classList.add("lung-test-page");
     const id = window.setTimeout(() => {
       setStored(readStored());
       setLoaded(true);
     }, 0);
-    return () => window.clearTimeout(id);
+    return () => {
+      window.clearTimeout(id);
+      document.body.classList.remove("lung-test-page");
+    };
   }, []);
 
   useEffect(() => {
@@ -115,8 +119,8 @@ export default function LungTestResultClient() {
   const breathSeconds = stored.breathHoldSeconds ?? 0;
 
   return (
-    <div className="min-h-screen bg-parchment px-5 pb-24 pt-8">
-      <div className="mx-auto max-w-lg">
+    <div className="min-h-screen bg-parchment px-5 pb-24 pt-8 md:px-10">
+      <div className="mx-auto w-full max-w-lg md:max-w-5xl">
         <p className="mb-2 text-center font-sans text-xs font-bold uppercase tracking-[0.2em] text-[#9A6F1A]">
           {stored.name.trim().split(/\s+/)[0] ?? "Your"} lung profile
         </p>

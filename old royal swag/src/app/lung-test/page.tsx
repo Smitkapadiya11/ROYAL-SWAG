@@ -46,6 +46,117 @@ function StepPill({ label, active }: { label: string; active: boolean }) {
   );
 }
 
+const INTRO_BULLETS = [
+  "5 simple yes/no questions",
+  "Interactive breath-hold test",
+  "Instant risk score & herb match",
+] as const;
+
+function IntroHeroImage({
+  height,
+  className = "mb-8",
+}: {
+  height: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative w-full overflow-hidden rounded-2xl shadow-sm md:rounded-3xl",
+        className
+      )}
+      style={{ height }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/lungtest.jpeg"
+        alt="Lung Health Test"
+        className="block h-full w-full object-cover object-center"
+        onError={(e) => {
+          e.currentTarget.style.display = "none";
+          const parent = e.currentTarget.parentElement;
+          if (parent) {
+            parent.style.background =
+              "linear-gradient(160deg, #324023 0%, #495738 60%, #9A6F1A 100%)";
+          }
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#495738]/80 to-transparent" />
+      <div className="absolute bottom-4 left-4 flex items-center gap-2 md:bottom-6 md:left-6">
+        <span className="text-2xl md:text-3xl">🫁</span>
+        <span className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-white md:text-sm">
+          60-Second Assessment
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function IntroCopy({
+  onStart,
+  desktop = false,
+}: {
+  onStart: () => void;
+  desktop?: boolean;
+}) {
+  return (
+    <div className={cn("flex flex-col", desktop ? "justify-center" : "flex-1")}>
+      <h1
+        className={cn(
+          "mb-3 font-display font-bold leading-tight text-[#324023]",
+          desktop ? "text-5xl lg:text-6xl" : "text-[36px]"
+        )}
+      >
+        Discover Your
+        <br />
+        <span className="text-[#9A6F1A]">Lung Capacity</span>
+      </h1>
+      <p
+        className={cn(
+          "mb-8 font-sans leading-relaxed text-[#45483f]",
+          desktop ? "max-w-lg text-lg" : "text-base"
+        )}
+      >
+        A quick symptom quiz plus breath-hold test — personalised Ayurvedic herb
+        recommendations in under a minute.
+      </p>
+
+      <ul className={cn("space-y-3", desktop ? "mb-10 space-y-4" : "mb-8")}>
+        {INTRO_BULLETS.map((item) => (
+          <li
+            key={item}
+            className={cn(
+              "flex items-center gap-3 font-sans text-[#45483f]",
+              desktop ? "text-base" : "text-sm"
+            )}
+          >
+            <span
+              className={cn(
+                "flex items-center justify-center rounded-full bg-[#9A6F1A]/15 text-[#9A6F1A]",
+                desktop ? "h-8 w-8 text-sm" : "h-6 w-6 text-xs"
+              )}
+            >
+              ✓
+            </span>
+            {item}
+          </li>
+        ))}
+      </ul>
+
+      <button
+        type="button"
+        onClick={onStart}
+        className={cn(
+          "w-full rounded-2xl bg-[#324023] py-4 font-sans font-bold tracking-wide text-white shadow-[0_8px_24px_rgba(50,64,35,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(50,64,35,0.35)]",
+          desktop ? "max-w-sm text-base" : "mt-auto text-sm"
+        )}
+      >
+        Start Assessment →
+      </button>
+    </div>
+  );
+}
+
 export default function LungTestPage() {
   const [view, setView] = useState<View>("intro");
   const [currentQ, setCurrentQ] = useState(0);
@@ -198,19 +309,19 @@ export default function LungTestPage() {
       </div>
 
       <header
-        className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-white/60 px-5 backdrop-blur-md"
+        className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-white/60 px-5 backdrop-blur-md md:px-10"
         style={{ background: "rgba(255,255,255,0.45)" }}
       >
         <Link href="/" aria-label="Royal Swag home">
-          <BrandLogo variant="on-light" className="h-9 w-auto" />
+          <BrandLogo variant="on-light" className="h-9 w-auto md:h-10" />
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 md:gap-3">
           {view !== "intro" && view !== "result" && (
-            <>
+            <div className="hidden items-center gap-2 sm:flex">
               <StepPill label="Details" active={view === "form"} />
               <StepPill label="Quiz" active={view === "questions"} />
               <StepPill label="Breath" active={view === "breath"} />
-            </>
+            </div>
           )}
           <span className="rounded-full bg-[#324023]/10 px-3 py-1 font-sans text-xs font-bold text-[#9A6F1A]">
             Free Lung Test
@@ -218,130 +329,94 @@ export default function LungTestPage() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-24 pt-6 md:max-w-lg">
+      <main className="lung-test-shell relative z-10 flex w-full min-w-0 flex-1 flex-col pb-24 pt-6 md:pb-16 md:pt-10">
         {view === "intro" && (
-          <section className="flex min-h-[70vh] flex-col duration-500 animate-in fade-in">
-            <div
-              className="relative mb-8 w-full overflow-hidden rounded-2xl shadow-sm"
-              style={{ height: "200px" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/lungtest.jpeg"
-                alt="Lung Health Test"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center",
-                  display: "block",
-                }}
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                  const parent = e.currentTarget.parentElement;
-                  if (parent) {
-                    parent.style.background =
-                      "linear-gradient(160deg, #324023 0%, #495738 60%, #9A6F1A 100%)";
-                  }
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#495738]/80 to-transparent" />
-              <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                <span className="text-2xl">🫁</span>
-                <span className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-white">
-                  60-Second Assessment
-                </span>
-              </div>
-            </div>
+          <>
+            {/* Mobile intro */}
+            <section className="flex min-h-[70vh] flex-col duration-500 animate-in fade-in md:hidden">
+              <IntroHeroImage height="200px" />
+              <IntroCopy onStart={() => setView("form")} />
+            </section>
 
-            <h1 className="mb-3 font-display text-[36px] font-bold leading-tight text-[#324023]">
-              Discover Your
-              <br />
-              <span className="text-[#9A6F1A]">Lung Capacity</span>
-            </h1>
-            <p className="mb-8 font-sans text-base leading-relaxed text-[#45483f]">
-              A quick symptom quiz plus breath-hold test — personalised Ayurvedic
-              herb recommendations in under a minute.
-            </p>
-
-            <ul className="mb-8 space-y-3">
-              {[
-                "5 simple yes/no questions",
-                "Interactive breath-hold test",
-                "Instant risk score & herb match",
-              ].map((item) => (
-                <li
-                  key={item}
-                  className="flex items-center gap-3 font-sans text-sm text-[#45483f]"
-                >
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#9A6F1A]/15 text-xs text-[#9A6F1A]">
-                    ✓
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-
-            <button
-              type="button"
-              onClick={() => setView("form")}
-              className="mt-auto w-full rounded-2xl bg-[#324023] py-4 font-sans text-sm font-bold tracking-wide text-white shadow-[0_8px_24px_rgba(50,64,35,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(50,64,35,0.35)]"
-            >
-              Start Assessment →
-            </button>
-          </section>
+            {/* Desktop intro — split layout */}
+            <section className="hidden min-h-[72vh] grid-cols-2 items-center gap-12 duration-500 animate-in fade-in md:grid lg:gap-16">
+              <IntroHeroImage height="min(420px, 60vh)" className="mb-0" />
+              <IntroCopy onStart={() => setView("form")} desktop />
+            </section>
+          </>
         )}
 
         {view === "form" && (
-          <section className="flex min-h-[70vh] flex-col duration-300 animate-in fade-in slide-in-from-right">
-            <p className="mb-1 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
+          <section className="mx-auto flex w-full min-h-[70vh] max-w-3xl flex-col duration-300 animate-in fade-in slide-in-from-right md:min-h-[60vh]">
+            <p className="mb-1 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A] md:text-xs">
               Step 1 of 3
             </p>
-            <h2 className="mb-2 font-display text-[28px] font-bold text-[#324023]">
+            <h2 className="mb-2 font-display text-[28px] font-bold text-[#324023] md:text-4xl">
               Your details
             </h2>
-            <p className="mb-6 font-sans text-sm text-[#45483f]">
+            <p className="mb-6 font-sans text-sm text-[#45483f] md:text-base">
               We&apos;ll email your personalised lung report instantly.
             </p>
 
-            <form
-              onSubmit={handleLeadSubmit}
-              className="glass-card flex flex-col gap-4 rounded-3xl p-6 shadow-sm"
-            >
-              <input
-                type="text"
-                placeholder="Full name"
-                value={lead.name}
-                onChange={(e) => setLead({ ...lead, name: e.target.value })}
-                className={INPUT_CLASS}
-                required
-              />
-              <input
-                type="email"
-                placeholder="Email address"
-                value={lead.email}
-                onChange={(e) => setLead({ ...lead, email: e.target.value })}
-                className={INPUT_CLASS}
-                required
-              />
-              <input
-                type="tel"
-                placeholder="10-digit mobile"
-                value={lead.phone}
-                onChange={(e) => setLead({ ...lead, phone: e.target.value })}
-                maxLength={10}
-                className={INPUT_CLASS}
-                required
-              />
-              <button
-                type="submit"
-                data-track-button="lung-test-start"
-                data-track-label="Start Free Test"
-                className="w-full rounded-2xl bg-[#9A6F1A] py-4 font-sans text-sm font-bold tracking-wide text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:items-start md:gap-8">
+              <form
+                onSubmit={handleLeadSubmit}
+                className="glass-card flex flex-col gap-4 rounded-3xl p-6 shadow-sm md:p-8"
               >
-                Continue to Quiz →
-              </button>
-            </form>
+                <input
+                  type="text"
+                  placeholder="Full name"
+                  value={lead.name}
+                  onChange={(e) => setLead({ ...lead, name: e.target.value })}
+                  className={INPUT_CLASS}
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={lead.email}
+                  onChange={(e) => setLead({ ...lead, email: e.target.value })}
+                  className={INPUT_CLASS}
+                  required
+                />
+                <input
+                  type="tel"
+                  placeholder="10-digit mobile"
+                  value={lead.phone}
+                  onChange={(e) => setLead({ ...lead, phone: e.target.value })}
+                  maxLength={10}
+                  className={INPUT_CLASS}
+                  required
+                />
+                <button
+                  type="submit"
+                  data-track-button="lung-test-start"
+                  data-track-label="Start Free Test"
+                  className="w-full rounded-2xl bg-[#9A6F1A] py-4 font-sans text-sm font-bold tracking-wide text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:text-base"
+                >
+                  Continue to Quiz →
+                </button>
+              </form>
+
+              <ul className="mt-6 hidden space-y-4 md:mt-0 md:block">
+                {[
+                  "5 quick yes/no questions",
+                  "Breath-hold capacity test",
+                  "Personalised herb match",
+                  "Instant email report",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-center gap-3 font-sans text-sm text-[#45483f]"
+                  >
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#9A6F1A]/15 text-sm text-[#9A6F1A]">
+                      ✓
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <button
               type="button"
@@ -354,7 +429,7 @@ export default function LungTestPage() {
         )}
 
         {view === "questions" && currentQuestion && (
-          <section className="min-h-[70vh]">
+          <section className="mx-auto min-h-[70vh] w-full max-w-3xl md:min-h-[60vh]">
             <p className="mb-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
               Step 2 of 3
             </p>
@@ -387,8 +462,8 @@ export default function LungTestPage() {
         )}
 
         {view === "breath" && (
-          <section className="flex min-h-[70vh] flex-col duration-300 animate-in fade-in">
-            <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
+          <section className="mx-auto flex min-h-[70vh] w-full max-w-3xl flex-col duration-300 animate-in fade-in md:min-h-[65vh]">
+            <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center md:gap-8">
               <div className="mb-4">
                 <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
                   Step 3 of 3
@@ -417,7 +492,7 @@ export default function LungTestPage() {
         )}
 
         {view === "result" && (
-          <section className="min-h-[70vh] py-2">
+          <section className="min-h-[70vh] w-full py-2 md:max-w-5xl md:py-4">
             <p className="mb-4 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
               Your personalised result
             </p>

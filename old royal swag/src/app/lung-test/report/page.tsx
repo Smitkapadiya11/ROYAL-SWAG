@@ -138,8 +138,8 @@ export default function LungTestReportPage() {
   const result = TIER_RESULTS[tier];
 
   return (
-    <div ref={pageRef} className="min-h-[100svh] bg-[var(--brand-ivory)] px-4 pb-20 pt-6">
-      <div className="max-w-2xl mx-auto">
+    <div ref={pageRef} className="min-h-[100svh] bg-[var(--brand-ivory)] px-4 pb-20 pt-6 md:px-10">
+      <div className="mx-auto max-w-2xl md:max-w-4xl lg:max-w-5xl">
 
         {/* Header */}
         <div className="text-center mb-10 report-header opacity-0">

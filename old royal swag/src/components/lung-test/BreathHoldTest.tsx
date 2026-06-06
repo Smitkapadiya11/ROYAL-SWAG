@@ -102,7 +102,7 @@ export default function BreathHoldTest({
           type="button"
           onPointerDown={handleStart}
           disabled={disabled}
-          className="flex h-44 w-44 cursor-pointer touch-none select-none flex-col items-center justify-center gap-2 rounded-full bg-[#324023] text-white shadow-[0_0_0_12px_rgba(73,87,56,0.15),0_0_0_24px_rgba(73,87,56,0.08)] transition-transform duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-44 w-44 cursor-pointer touch-none select-none flex-col items-center justify-center gap-2 rounded-full bg-[#324023] text-white shadow-[0_0_0_12px_rgba(73,87,56,0.15),0_0_0_24px_rgba(73,87,56,0.08)] transition-transform duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 md:h-52 md:w-52"
           style={{ WebkitTapHighlightColor: "transparent" }}
         >
           <span className="text-4xl">🫁</span>
@@ -119,7 +119,7 @@ export default function BreathHoldTest({
             type="button"
             onPointerUp={handleStop}
             onPointerLeave={handleStop}
-            className="relative flex h-44 w-44 cursor-pointer touch-none select-none flex-col items-center justify-center gap-1 rounded-full bg-[#9A6F1A] text-white shadow-[0_0_0_12px_rgba(154,111,26,0.2),0_0_0_24px_rgba(154,111,26,0.1)]"
+            className="relative flex h-44 w-44 cursor-pointer touch-none select-none flex-col items-center justify-center gap-1 rounded-full bg-[#9A6F1A] text-white shadow-[0_0_0_12px_rgba(154,111,26,0.2),0_0_0_24px_rgba(154,111,26,0.1)] md:h-52 md:w-52"
             style={{ WebkitTapHighlightColor: "transparent" }}
           >
             <span className="font-number text-5xl font-bold tabular-nums">{elapsed}</span>

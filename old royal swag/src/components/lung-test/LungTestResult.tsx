@@ -133,8 +133,9 @@ export function LungTestResult({
       : "recommended herbs";
 
   return (
-    <div className="flex flex-col gap-6 duration-500 animate-in fade-in">
-      <div className="glass-card relative overflow-hidden rounded-3xl p-8 text-center">
+    <div className="flex flex-col gap-6 duration-500 animate-in fade-in md:grid md:grid-cols-2 md:items-start md:gap-8 lg:gap-10">
+      <div className="flex flex-col gap-6 md:col-span-1">
+      <div className="glass-card relative overflow-hidden rounded-3xl p-8 text-center md:p-10">
         <div
           className="absolute inset-0 rounded-3xl opacity-20"
           style={{
@@ -206,8 +207,8 @@ export function LungTestResult({
         </div>
       </div>
 
-      <div className="glass-card flex items-center gap-4 rounded-2xl p-5">
-        <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-[#324023]">
+      <div className="glass-card flex items-center gap-4 rounded-2xl p-5 md:p-6">
+        <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-[#324023] md:h-16 md:w-16">
           <span className="font-number text-xl font-bold text-white">
             {roundedBreath}
           </span>
@@ -227,7 +228,9 @@ export function LungTestResult({
           </p>
         </div>
       </div>
+      </div>
 
+      <div className="flex flex-col gap-6 md:sticky md:top-24 md:col-span-1">
       {recommendedHerbs.length > 0 && showHerbs && (
         <div className="flex flex-col gap-3 duration-500 animate-in slide-in-from-bottom">
           <h4 className="font-display text-xl font-bold text-[#324023]">
@@ -317,18 +320,19 @@ export function LungTestResult({
         <button
           type="button"
           onClick={onRetake}
-          className="py-2 text-center font-sans text-sm text-[#75786e] transition-colors hover:text-[#324023]"
+          className="py-2 text-center font-sans text-sm text-[#75786e] transition-colors hover:text-[#324023] md:text-left"
         >
           ← Retake Assessment
         </button>
       ) : (
         <Link
           href="/lung-test"
-          className="py-2 text-center font-sans text-sm text-[#75786e] transition-colors hover:text-[#324023]"
+          className="py-2 text-center font-sans text-sm text-[#75786e] transition-colors hover:text-[#324023] md:text-left"
         >
           ← Retake Assessment
         </Link>
       )}
+      </div>
     </div>
   );
 }

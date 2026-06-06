@@ -34,6 +34,15 @@ body {
 }
 
 :root {
+  /* Legacy brand tokens (quiz report, terms, older sections) */
+  --brand-ivory: #f4edd6;
+  --brand-green: #324023;
+  --brand-gold: #9a6f1a;
+  --brand-sage: #e9f1dc;
+  --brand-dark: #171e11;
+  --rs-deep: #324023;
+  --rs-olive: #9a6f1a;
+
   --primary: #324023;
   --primary-container: #495738;
   --on-primary: #ffffff;
@@ -291,6 +300,26 @@ body.lung-test-page .lead-popup-root {
 body.lung-test-page main {
   padding: 0 !important;
   max-width: none !important;
+}
+
+body.lung-test-page {
+  overflow-x: hidden;
+}
+
+.lung-test-shell {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .lung-test-shell {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
 }
 
 body.about-page .site-chrome-footer {

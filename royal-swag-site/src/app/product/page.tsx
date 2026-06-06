@@ -418,11 +418,15 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Mobile title + details — all content preserved */}
+        {/* Mobile: purchase first, details below */}
         <div className="mt-6 flex min-w-0 flex-col gap-6 md:mt-12">
-          <div className="md:hidden">{titleBlock}</div>
+          <div className="flex flex-col gap-4 md:hidden">
+            {titleBlock}
+            {bundlePicker}
+            <div ref={mobilePurchaseAnchorRef}>{buyCta()}</div>
+          </div>
 
-          <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
+          <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3 md:mt-0">
             <span className="text-2xl">🛡</span>
             <div>
               <p className="font-sans text-sm font-bold text-white">
@@ -501,13 +505,6 @@ export default function ProductPage() {
                 </span>
               </div>
             ))}
-          </div>
-
-          {/* Mobile-only bundle picker (desktop has it in purchase panel) */}
-          <div className="md:hidden">{bundlePicker}</div>
-
-          <div ref={mobilePurchaseAnchorRef} className="md:hidden">
-            {buyCta()}
           </div>
 
           <ProductSocialProof className="mx-auto max-w-full" />

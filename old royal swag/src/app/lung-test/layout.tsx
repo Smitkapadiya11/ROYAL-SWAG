@@ -1,3 +1,4 @@
+import { LungTestChrome } from "@/components/lung-test/LungTestChrome";
 import { QuizProvider } from "@/store/quiz-store";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -11,5 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function LungTestLayout({ children }: { children: ReactNode }) {
-  return <QuizProvider>{children}</QuizProvider>;
+  return (
+    <QuizProvider>
+      <LungTestChrome />
+      {children}
+    </QuizProvider>
+  );
 }

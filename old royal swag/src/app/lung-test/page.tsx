@@ -167,11 +167,6 @@ export default function LungTestPage() {
   const [resultLevel, setResultLevel] = useState<LungLevel>("Mild");
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    document.body.classList.add("lung-test-page");
-    return () => document.body.classList.remove("lung-test-page");
-  }, []);
-
   const resetTest = useCallback(() => {
     setView("intro");
     setCurrentQ(0);

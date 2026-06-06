@@ -51,15 +51,11 @@ export default function LungTestResultClient() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    document.body.classList.add("lung-test-page");
     const id = window.setTimeout(() => {
       setStored(readStored());
       setLoaded(true);
     }, 0);
-    return () => {
-      window.clearTimeout(id);
-      document.body.classList.remove("lung-test-page");
-    };
+    return () => window.clearTimeout(id);
   }, []);
 
   useEffect(() => {

@@ -289,6 +289,11 @@ body.admin-page {
   box-shadow: 0 16px 48px rgba(154, 111, 26, 0.4) !important;
 }
 
+html.lung-test-route [data-announcement],
+html.lung-test-route .site-chrome-header,
+html.lung-test-route .site-chrome-footer,
+html.lung-test-route .wa-float-root,
+html.lung-test-route .lead-popup-root,
 body.lung-test-page [data-announcement],
 body.lung-test-page .site-chrome-header,
 body.lung-test-page .site-chrome-footer,
@@ -297,6 +302,7 @@ body.lung-test-page .lead-popup-root {
   display: none !important;
 }
 
+html.lung-test-route main,
 body.lung-test-page main {
   padding: 0 !important;
   max-width: none !important;

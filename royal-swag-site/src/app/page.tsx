@@ -91,7 +91,7 @@ export default function Home() {
           className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/35 to-transparent"
           aria-hidden
         />
-        <div className="relative z-10 flex w-full min-w-0 flex-col justify-end overflow-hidden px-5 pb-12 pt-24">
+        <div className="relative z-10 flex w-full min-w-0 flex-col justify-end overflow-hidden px-5 pb-12 pt-28">
           <HeroCopy className="w-full min-w-0 max-w-full" />
         </div>
       </section>

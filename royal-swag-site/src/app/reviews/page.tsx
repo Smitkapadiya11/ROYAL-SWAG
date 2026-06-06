@@ -5,7 +5,7 @@ import { S } from "@/lib/config";
 
 export default function ReviewsPage() {
   return (
-    <div className="w-full min-w-0">
+    <div className="page-mobile-pad w-full min-w-0">
       <section className="bg-primary px-5 py-20 text-center md:px-16 md:py-28">
         <div className="site-container">
           <span className="font-sans text-xs font-semibold uppercase tracking-[0.25em] text-ayurvedic-gold/80">

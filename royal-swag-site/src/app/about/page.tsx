@@ -47,7 +47,7 @@ const FOUNDERS = [
     name: "Jaideep Singh",
     role: "Co-Founder",
     focus: "Brand & Marketing",
-    img: "/images/jaideep singh.jpeg",
+    img: "/images/jaideep%20singh.jpeg",
   },
 ] as const;
 
@@ -75,7 +75,7 @@ export default function AboutPage() {
   return (
     <div className="page-mobile-pad relative flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-parchment font-sans text-on-surface antialiased">
       {/* Mobile hero */}
-      <section className="relative flex flex-col items-center gap-6 px-5 pb-16 pt-12 text-center md:hidden">
+      <section className="relative flex flex-col items-center gap-6 px-5 pb-16 pt-24 text-center md:hidden">
         <h1 className="font-display text-[36px] font-bold leading-[42px] text-primary-container">
           Born in Surat.
           <br />
@@ -199,7 +199,7 @@ export default function AboutPage() {
             {FOUNDERS.map((f) => (
               <div
                 key={f.name}
-                className="glass-card overflow-hidden rounded-2xl transition-all duration-400 hover:-translate-y-1 hover:shadow-xl"
+                className="glass-card overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 <div
                   className="flex w-full items-center justify-center bg-gradient-to-br from-[#e9f1dc] to-[#dee5d1]"

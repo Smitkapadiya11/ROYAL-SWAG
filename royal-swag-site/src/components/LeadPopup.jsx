@@ -1,13 +1,15 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { usePathname } from 'next/navigation';
 import { trackEvent } from '@/lib/events';
+import { useCheckoutUi } from '@/contexts/CheckoutUiContext';
 
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 99999;
+  z-index: 70;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -105,13 +107,23 @@ const SuccessMsg = styled.div`
 const STORAGE_KEY = 'rs_lead_popup_shown';
 
 export default function LeadPopup() {
+  const pathname = usePathname();
+  const { showCheckout } = useCheckoutUi();
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (showCheckout) {
+      setVisible(false);
+    }
+  }, [showCheckout]);
+
+  useEffect(() => {
     if (localStorage.getItem(STORAGE_KEY)) return;
+    if (pathname?.startsWith('/lung-test') || pathname?.startsWith('/admin')) return;
+    if (showCheckout) return;
 
     const isMobile = window.innerWidth < 768;
 
@@ -128,7 +140,7 @@ export default function LeadPopup() {
       document.addEventListener('mouseleave', handleExit);
       return () => document.removeEventListener('mouseleave', handleExit);
     }
-  }, []);
+  }, [pathname, showCheckout]);
 
   const close = () => {
     setVisible(false);
@@ -158,7 +170,7 @@ export default function LeadPopup() {
   };
 
   return (
-    <Overlay $visible={visible} onClick={(e) => e.target === e.currentTarget && close()}>
+    <Overlay className="lead-popup-root" $visible={visible} onClick={(e) => e.target === e.currentTarget && close()}>
       <Card $visible={visible}>
         <CloseBtn onClick={close} aria-label="Close">×</CloseBtn>
         <GiftIcon>🌿</GiftIcon>

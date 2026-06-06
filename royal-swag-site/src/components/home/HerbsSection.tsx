@@ -112,10 +112,13 @@ function HerbCard({
           <span className="mt-1 inline-block rounded-full bg-[#9A6F1A]/80 px-2 py-0.5 text-[10px] font-semibold text-white">
             {herb.benefit}
           </span>
+          <p className="mt-2 font-sans text-xs leading-5 text-white/85 md:hidden">
+            {herb.desc}
+          </p>
         </div>
 
         <div
-          className="absolute bottom-0 left-0 right-0 p-4 transition-all duration-500"
+          className="absolute bottom-0 left-0 right-0 hidden p-4 transition-all duration-500 md:block"
           style={{
             transform: hovered ? "translateY(0)" : "translateY(100%)",
             opacity: hovered ? 1 : 0,

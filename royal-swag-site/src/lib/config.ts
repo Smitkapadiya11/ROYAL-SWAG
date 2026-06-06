@@ -121,7 +121,7 @@ export const S = {
       initials: "JS",
       name: "Jaideep Singh",
       role: "Business Director",
-      img: "/images/jaideep singh.jpeg",
+      img: "/images/jaideep%20singh.jpeg",
       bio: "Twelve years in e-commerce. Handles Amazon, our own site, and the numbers behind what ships each week.",
     },
   ],

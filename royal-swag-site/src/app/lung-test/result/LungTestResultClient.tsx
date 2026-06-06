@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LungTestResult } from "@/components/lung-test/LungTestResult";
+import LungTestHeader from "@/components/lung-test/LungTestHeader";
 import { LUNG_TEST_STORAGE_KEY } from "@/lib/lung-test-constants";
 import type { LungLevel, SymptomAnswers } from "@/lib/lungScore";
 import { EVENTS, trackEvent } from "@/lib/events";
@@ -115,8 +116,9 @@ export default function LungTestResultClient() {
   const breathSeconds = stored.breathHoldSeconds ?? 0;
 
   return (
-    <div className="min-h-screen bg-parchment px-5 pb-24 pt-8 md:px-10">
-      <div className="mx-auto w-full max-w-lg md:max-w-5xl">
+    <div className="flex min-h-screen flex-col bg-parchment">
+      <LungTestHeader />
+      <div className="mx-auto w-full max-w-lg flex-1 px-5 pb-24 pt-8 md:max-w-5xl md:px-10">
         <p className="mb-2 text-center font-sans text-xs font-bold uppercase tracking-[0.2em] text-[#9A6F1A]">
           {stored.name.trim().split(/\s+/)[0] ?? "Your"} lung profile
         </p>

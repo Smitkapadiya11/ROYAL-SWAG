@@ -129,6 +129,7 @@ export default function ProductPage() {
   const [selectedBundle, setSelectedBundle] = useState<Bundle>(DEFAULT_BUNDLE);
   const [showStickyBuy, setShowStickyBuy] = useState(false);
   const purchasePanelRef = useRef<HTMLDivElement>(null);
+  const mobilePurchaseAnchorRef = useRef<HTMLDivElement>(null);
 
   const productImages = useMemo(
     () => (PRODUCT_GALLERY.length > 0 ? [...PRODUCT_GALLERY] : [MAIN_FALLBACK]),
@@ -151,12 +152,16 @@ export default function ProductPage() {
   }, [showCheckout, setShowCheckout]);
 
   useEffect(() => {
-    const panel = purchasePanelRef.current;
-    if (!panel) return;
-
     const updateSticky = () => {
-      const rect = panel.getBoundingClientRect();
-      // Only show float after purchase panel has fully left the viewport
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+      const anchor = isDesktop
+        ? purchasePanelRef.current
+        : mobilePurchaseAnchorRef.current;
+      if (!anchor) {
+        setShowStickyBuy(false);
+        return;
+      }
+      const rect = anchor.getBoundingClientRect();
       setShowStickyBuy(rect.bottom <= 0);
     };
 
@@ -168,6 +173,15 @@ export default function ProductPage() {
       window.removeEventListener("resize", updateSticky);
     };
   }, []);
+
+  useEffect(() => {
+    if (showStickyBuy) {
+      document.body.classList.add("product-sticky-buy");
+    } else {
+      document.body.classList.remove("product-sticky-buy");
+    }
+    return () => document.body.classList.remove("product-sticky-buy");
+  }, [showStickyBuy]);
 
   const selectBundle = useCallback((bundle: Bundle) => {
     setSelectedBundle(bundle);
@@ -353,7 +367,7 @@ export default function ProductPage() {
         </div>
       </ClientPortal>
 
-      <main className="site-container mx-auto w-full min-w-0 max-w-none">
+      <div className="site-container mx-auto w-full min-w-0 max-w-none">
         <nav className="mb-4 flex items-center gap-2 pt-4 text-xs text-on-surface-variant">
           <Link href="/" className="hover:text-primary">
             Home
@@ -492,7 +506,9 @@ export default function ProductPage() {
           {/* Mobile-only bundle picker (desktop has it in purchase panel) */}
           <div className="md:hidden">{bundlePicker}</div>
 
-          <div className="md:hidden">{buyCta()}</div>
+          <div ref={mobilePurchaseAnchorRef} className="md:hidden">
+            {buyCta()}
+          </div>
 
           <ProductSocialProof className="mx-auto max-w-full" />
 
@@ -681,7 +697,7 @@ export default function ProductPage() {
             ))}
           </div>
         </section>
-      </main>
+      </div>
 
       {showCheckout && (
         <ClientPortal>
@@ -749,8 +765,10 @@ export default function ProductPage() {
       {/* Mobile sticky buy bar — portaled for reliable viewport positioning */}
       <ClientPortal>
         <div
-          className={`fixed bottom-0 left-0 z-[45] w-full border-t border-glass-border bg-glass-surface/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(73,87,56,0.12)] backdrop-blur-xl transition-opacity duration-300 md:hidden ${
-            showCheckout ? "pointer-events-none opacity-0" : "opacity-100"
+          className={`fixed bottom-0 left-0 z-[45] w-full border-t border-glass-border bg-glass-surface/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(73,87,56,0.12)] backdrop-blur-xl transition-all duration-300 md:hidden ${
+            showStickyBuy && !showCheckout
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-full opacity-0"
           }`}
         >
           <div className="mx-auto max-w-md">{buyCta(true)}</div>

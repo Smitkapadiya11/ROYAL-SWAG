@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import {
   DM_Sans,
   DM_Serif_Display,
-} from "next/font/google";import "./globals.css";
+} from "next/font/google";
+import "./globals.css";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/Footer";

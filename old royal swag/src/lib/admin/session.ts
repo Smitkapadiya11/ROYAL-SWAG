@@ -1,9 +1,25 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import type { Session } from "@supabase/supabase-js";
 import { isAdminRequest } from "@/lib/admin-auth";
+
+export function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    console.error("MISSING ENV:", { url: !!url, key: !!key });
+    throw new Error("Supabase admin credentials missing");
+  }
+  return createClient(url, key, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
 
 export function getAdminAllowlist(): string[] {
   const raw =

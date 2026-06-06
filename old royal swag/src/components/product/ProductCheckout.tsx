@@ -119,7 +119,6 @@ export default function ProductCheckout({
         amount?: number;
         currency?: string;
         key?: string;
-        orderNumber?: string;
         error?: string;
       };
 
@@ -129,7 +128,6 @@ export default function ProductCheckout({
 
       const checkoutKey = created.key;
       const razorpayOrderId = created.orderId;
-      const orderNumber = created.orderNumber;
       const amountPaise = created.amount ?? price * 100;
 
       const RazorpayCtor = (
@@ -167,17 +165,19 @@ export default function ProductCheckout({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
-                  orderData: {
-                    fullName: form.fullName,
+                  customerData: {
+                    name: form.fullName,
                     phone: form.phone,
                     email: form.email || "",
-                    addressLine1: form.addressLine1,
+                    address: form.addressLine1,
                     city: form.city,
                     state: form.state,
                     pincode: form.pincode,
+                  },
+                  packData: {
+                    pack_name: packId,
                     packId,
                     amount: price,
-                    orderNumber,
                   },
                 }),
               });
@@ -185,6 +185,7 @@ export default function ProductCheckout({
               const verified = (await verifyRes.json()) as {
                 success?: boolean;
                 orderId?: string;
+                orderNumber?: string;
                 order?: { order_number: string };
                 error?: string;
               };
@@ -194,9 +195,10 @@ export default function ProductCheckout({
               }
 
               const id =
+                verified.orderNumber ||
                 verified.orderId ||
                 verified.order?.order_number ||
-                orderNumber;
+                "";
 
               trackPurchaseOnce(String(id), {
                 value: price,

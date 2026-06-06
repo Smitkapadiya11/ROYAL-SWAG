@@ -1,34 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
-import { isAdminAuthorized } from "@/lib/admin/session";
-import { tryGetSupabaseAdmin } from "@/lib/supabase/admin";
+import { NextResponse } from "next/server";
+import { logAdminEnvCheck } from "@/lib/admin/env-check";
+import { getSupabaseAdmin } from "@/lib/admin/session";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
-  if (!(await isAdminAuthorized(req))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const admin = tryGetSupabaseAdmin();
-  if (!admin) {
-    console.error(
-      "LEADS ERROR: Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
-    );
-    return NextResponse.json(
-      { error: "Supabase admin not configured", leads: [] },
-      { status: 503 }
-    );
-  }
+export async function GET() {
+  logAdminEnvCheck();
 
   try {
-    const { data, error } = await admin
+    const supabase = getSupabaseAdmin();
+
+    const { data, error } = await supabase
       .from("lung_test_leads")
-      .select("id,name,email,phone,level,score,city,created_at")
-      .order("created_at", { ascending: false })
-      .limit(5000);
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("LEADS ERROR:", error.message, error.code);
+      console.error("LEADS QUERY ERROR:", error);
       return NextResponse.json({ error: error.message, leads: [] }, { status: 500 });
     }
 
@@ -44,9 +32,9 @@ export async function GET(req: NextRequest) {
     }));
 
     return NextResponse.json({ leads });
-  } catch (e) {
-    const message = e instanceof Error ? e.message : "Failed to load leads";
-    console.error("LEADS ERROR:", message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to load leads";
+    console.error("LEADS ROUTE ERROR:", message);
     return NextResponse.json({ error: message, leads: [] }, { status: 500 });
   }
 }

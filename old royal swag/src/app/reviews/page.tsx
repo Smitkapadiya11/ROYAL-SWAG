@@ -5,27 +5,19 @@ import { S } from "@/lib/config";
 
 export default function ReviewsPage() {
   return (
-    <>
-      {/* Header */}
-      <section
-        style={{
-          background: "#2D3D15",
-          color: "#F2E6CE",
-          padding: "clamp(80px,8vw,120px) 0 clamp(60px,6vw,80px)",
-          textAlign: "center",
-        }}
-      >
-        <div className="w">
-          <span className="ey" style={{ color: "rgba(196,154,42,0.7)" }}>
+    <div className="w-full min-w-0">
+      <section className="bg-primary px-5 py-20 text-center md:px-16 md:py-28">
+        <div className="site-container">
+          <span className="font-sans text-xs font-semibold uppercase tracking-[0.25em] text-ayurvedic-gold/80">
             Real Stories
           </span>
-          <h1 style={{ color: "#F2E6CE", marginBottom: 12 }}>
+          <h1 className="mt-4 font-display text-4xl font-bold leading-tight text-parchment md:text-5xl lg:text-6xl">
             People Like You.
             <br />
-            <em style={{ color: "#C49A2A" }}>Specific Results.</em>
+            <span className="text-ayurvedic-gold">Specific Results.</span>
           </h1>
-          <div className="rl-c" style={{ background: "#C49A2A" }} />
-          <p style={{ color: "rgba(242,230,206,0.6)", fontSize: 15 }}>
+          <div className="mx-auto mt-6 h-1 w-16 rounded-full bg-ayurvedic-gold" />
+          <p className="mt-6 font-sans text-base text-parchment/70 md:text-lg">
             4.7 stars · 847+ verified Amazon reviews
           </p>
         </div>
@@ -33,131 +25,67 @@ export default function ReviewsPage() {
 
       <DoctorEndorsements />
 
-      {/* Reviews grid */}
-      <section style={{ background: "transparent", padding: "80px 0" }}>
-        <div className="w">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: 20,
-            }}
-          >
-            {S.reviews.map((r) => (
-              <div key={r.name} className="card" style={{ padding: "28px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 20,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: "50%",
-                      background: "#4A6422",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#F2E6CE",
-                      fontSize: 14,
-                      fontWeight: 600,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {r.initials}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 9,
-                      fontWeight: 700,
-                      background: "#F2E6CE",
-                      color: "#4A6422",
-                      border: "1px solid #4A6422",
-                      padding: "3px 10px",
-                      borderRadius: 4,
-                    }}
-                  >
-                    WAS: {r.risk.toUpperCase()}
-                  </span>
+      <section className="site-container py-16 md:py-20">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {S.reviews.map((r) => (
+            <article
+              key={r.name}
+              className="glass-card rounded-2xl p-7 transition-transform duration-300 hover:-translate-y-1"
+            >
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-container font-sans text-sm font-semibold text-parchment">
+                  {r.initials}
                 </div>
-                <div style={{ color: "#C49A2A", fontSize: 15, marginBottom: 16 }}>
-                  ★★★★★
-                </div>
-                <p style={{ fontSize: 13, marginBottom: 8, lineHeight: 1.7 }}>
-                  <strong style={{ color: "#5C5647", fontWeight: 500 }}>
-                    Before:{" "}
-                  </strong>
-                  {r.before}
-                </p>
-                <p
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 1.7,
-                    color: "#4A6422",
-                    fontWeight: 500,
-                  }}
-                >
-                  After: {r.after}
-                </p>
-                <p
-                  style={{
-                    marginTop: 20,
-                    paddingTop: 16,
-                    borderTop: "1px solid rgba(212,200,168,0.6)",
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: "#5C5647",
-                  }}
-                >
-                  — {r.name}
-                </p>
+                <span className="rounded border border-primary/20 bg-surface px-2.5 py-1 font-sans text-[9px] font-bold uppercase tracking-wide text-primary">
+                  Was: {r.risk}
+                </span>
               </div>
-            ))}
-          </div>
+
+              <div className="mb-4 text-ayurvedic-gold">★★★★★</div>
+
+              <p className="mb-3 font-sans text-sm leading-relaxed text-on-surface-variant">
+                <strong className="font-medium text-on-surface">Before: </strong>
+                {r.before}
+              </p>
+              <p className="font-sans text-sm font-medium leading-relaxed text-primary">
+                After: {r.after}
+              </p>
+
+              <p className="mt-5 border-t border-outline-variant/60 pt-4 font-sans text-xs font-semibold text-on-surface-variant">
+                — {r.name}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section
-        style={{ background: "#4A6422", padding: "80px 0", textAlign: "center" }}
-      >
-        <div className="w">
-          <h2 style={{ color: "#F2E6CE", marginBottom: 12 }}>
+      <section className="bg-primary-container px-5 py-20 text-center md:px-16">
+        <div className="site-container">
+          <h2 className="font-display text-3xl font-bold text-parchment md:text-4xl">
             Join 847+ Customers
             <br />
             Breathing Easier.
           </h2>
-          <div className="rl-c" style={{ background: "#C49A2A" }} />
-          <p
-            style={{
-              color: "rgba(242,230,206,0.7)",
-              fontSize: 16,
-              marginBottom: 32,
-            }}
-          >
+          <div className="mx-auto mt-6 h-1 w-16 rounded-full bg-ayurvedic-gold" />
+          <p className="mx-auto mt-6 max-w-lg font-sans text-base text-parchment/80 md:text-lg">
             {S.price.now} · Free Delivery · 30-Day Guarantee · COD Available
           </p>
-          <div
-            style={{
-              display: "flex",
-              gap: 14,
-              justifyContent: "center",
-              flexWrap: "wrap",
-            }}
-          >
-            <LeadGuardLink href="/product" className="b b-gold">
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <LeadGuardLink
+              href="/product"
+              className="btn-primary inline-flex items-center justify-center px-8 py-3.5"
+            >
               Order Now — {S.price.now} →
             </LeadGuardLink>
-            <Link href="/lung-test" className="b b-ghost-w">
+            <Link
+              href="/lung-test"
+              className="inline-flex items-center justify-center rounded-xl border border-parchment/30 px-8 py-3.5 font-sans text-sm font-semibold text-parchment transition-colors hover:bg-white/10"
+            >
               Take Free Lung Test
             </Link>
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

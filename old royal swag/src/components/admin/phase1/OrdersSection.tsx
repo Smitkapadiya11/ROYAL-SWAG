@@ -20,8 +20,9 @@ import { cn } from "@/lib/utils";
 type Order = {
   id: string;
   order_id: string;
-  customer_name: string;
+  full_name: string;
   mobile: string;
+  payment_id?: string;
   address: string;
   city: string;
   state: string;
@@ -94,7 +95,7 @@ export default function OrdersSection() {
       if (!q) return true;
       return (
         o.order_id.toLowerCase().includes(q) ||
-        o.customer_name.toLowerCase().includes(q) ||
+        o.full_name.toLowerCase().includes(q) ||
         o.mobile.includes(q) ||
         o.pincode.includes(q)
       );
@@ -110,7 +111,7 @@ export default function OrdersSection() {
 
   const toLabelOrder = (o: Order): ShippingLabelOrder => ({
     order_id: o.order_id,
-    customer_name: o.customer_name,
+    customer_name: o.full_name,
     mobile: o.mobile,
     address: o.address,
     city: o.city,
@@ -173,7 +174,7 @@ export default function OrdersSection() {
       ],
       ...filtered.map((o) => [
         o.order_id,
-        o.customer_name,
+        o.full_name,
         o.mobile,
         o.address,
         o.city,
@@ -342,7 +343,7 @@ export default function OrdersSection() {
                   {o.order_id}
                 </td>
                 <td className="p-4">
-                  <p className="font-medium text-[#324023]">{o.customer_name}</p>
+                  <p className="font-medium text-[#324023]">{o.full_name}</p>
                   <p className="text-xs text-[#45483f]">{o.mobile}</p>
                 </td>
                 <td className="p-4 text-[#45483f]">{o.pack}</td>

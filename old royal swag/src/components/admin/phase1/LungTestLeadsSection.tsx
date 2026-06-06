@@ -173,7 +173,7 @@ export default function LungTestLeadsSection() {
             onClick={exportCsv}
             className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#324023] px-4 font-sans text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
-            \u2B07 CSV
+            ↓ CSV
           </button>
         </div>
       </div>
@@ -274,7 +274,7 @@ export default function LungTestLeadsSection() {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="h-8 rounded-lg border border-[rgba(200,210,190,0.6)] px-3 font-sans text-xs text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-30"
           >
-            \u2190 Prev
+            ← Prev
           </button>
           <span className="px-2 font-sans text-xs text-[#45483f]">
             Page {safePage} of {pageCount}
@@ -285,7 +285,7 @@ export default function LungTestLeadsSection() {
             onClick={() => setPage((p) => p + 1)}
             className="h-8 rounded-lg border border-[rgba(200,210,190,0.6)] px-3 font-sans text-xs text-[#324023] transition-colors hover:bg-white/50 disabled:opacity-30"
           >
-            Next \u2192
+            Next →
           </button>
         </div>
       </div>

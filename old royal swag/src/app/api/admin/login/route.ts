@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { logAdminEnvCheck } from '@/lib/admin/env-check'
 
 function verifyPassword(input: string): boolean {
   const adminPass = process.env.ADMIN_PASSWORD?.trim()
@@ -25,6 +26,8 @@ function issueToken(username: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  logAdminEnvCheck()
+
   try {
     const { username, password } = await req.json()
 

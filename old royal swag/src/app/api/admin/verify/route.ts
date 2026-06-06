@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { logAdminEnvCheck } from '@/lib/admin/env-check'
 
 function verifyToken(token: string): boolean {
   try {
@@ -17,6 +18,8 @@ function verifyToken(token: string): boolean {
 }
 
 export async function GET(req: NextRequest) {
+  logAdminEnvCheck()
+
   const token = req.cookies.get('admin_token')?.value
   if (!token || !verifyToken(token)) {
     return NextResponse.json({ authenticated: false }, { status: 401 })

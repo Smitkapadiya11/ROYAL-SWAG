@@ -6,6 +6,7 @@ import BrandLogo from "@/components/ui/BrandLogo";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { FounderPhoto } from "@/components/about/FounderPhoto";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { cn } from "@/lib/utils";
 
 const TIMELINE = [
@@ -65,13 +66,6 @@ const FOOTER_LINKS = [
   "LEAN Manufacturing",
 ] as const;
 
-const MOBILE_NAV = [
-  { label: "Home", href: "/", icon: "🏠", active: false },
-  { label: "Shop", href: "/product", icon: "🛍", active: false },
-  { label: "Test", href: "/lung-test", icon: "🫁", active: false },
-  { label: "About", href: "/about", icon: "ℹ", active: true },
-] as const;
-
 export default function AboutPage() {
   useEffect(() => {
     document.body.classList.add("about-page");
@@ -79,23 +73,15 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-parchment font-sans text-on-surface antialiased md:mx-auto md:max-w-4xl">
-      {/* Hero */}
-      <section className="relative flex flex-col items-center gap-6 px-5 pb-16 pt-12 text-center md:grid md:grid-cols-2 md:items-center md:gap-12 md:px-16 md:pb-20 md:pt-16 md:text-left">
-        <div
-          className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[150%] w-[150%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(244,237,214,0.5),transparent)] md:left-0 md:top-0 md:h-full md:w-1/2 md:translate-x-0 md:translate-y-0"
-          aria-hidden
-        />
-
-        <div>
-          <h1 className="font-display text-[36px] font-bold leading-[42px] text-primary-container md:text-[42px] md:leading-tight">
-            Born in Surat.
-            <br />
-            <span className="text-ayurvedic-gold">Built for India&apos;s Lungs.</span>
-          </h1>
-        </div>
-
-        <div className="relative mt-4 aspect-[4/5] w-full overflow-hidden rounded-[32px] border border-glass-border shadow-lg md:mt-0">
+    <div className="page-mobile-pad relative flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-parchment font-sans text-on-surface antialiased">
+      {/* Mobile hero */}
+      <section className="relative flex flex-col items-center gap-6 px-5 pb-16 pt-12 text-center md:hidden">
+        <h1 className="font-display text-[36px] font-bold leading-[42px] text-primary-container">
+          Born in Surat.
+          <br />
+          <span className="text-ayurvedic-gold">Built for India&apos;s Lungs.</span>
+        </h1>
+        <div className="relative mt-4 aspect-[4/5] w-full overflow-hidden rounded-[32px] border border-glass-border shadow-lg">
           <SafeImage
             className="h-full w-full"
             src="/images/hero/asset2.jpeg"
@@ -109,16 +95,43 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="relative px-5 py-20">
-        <div className="mb-12 text-center">
-          <h2 className="font-display text-[32px] font-semibold text-primary">
+      {/* Desktop hero */}
+      <section className="site-container hidden gap-12 py-16 md:grid md:grid-cols-2 md:items-center md:py-20">
+        <div className="text-left">
+          <h1 className="font-display text-[42px] font-bold leading-tight text-primary-container lg:text-5xl">
+            Born in Surat.
+            <br />
+            <span className="text-ayurvedic-gold">Built for India&apos;s Lungs.</span>
+          </h1>
+          <p className="mt-6 max-w-md font-sans text-lg leading-relaxed text-on-surface-variant">
+            From helping India quit smoking to healing lungs damaged by pollution
+            and past habits — our story is rooted in Surat and built for every
+            Indian city.
+          </p>
+        </div>
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[32px] border border-glass-border shadow-lg">
+          <SafeImage
+            className="h-full w-full"
+            src="/images/hero/asset2.jpeg"
+            alt="Lush tea fields"
+            label="Tea Fields"
+          />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent"
+            aria-hidden
+          />
+        </div>
+      </section>
+
+      <section className="site-container relative py-16 md:py-20">
+        <div className="mb-12 text-center md:mb-16">
+          <h2 className="font-display text-[32px] font-semibold text-primary md:text-4xl">
             Our Journey
           </h2>
           <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-ayurvedic-gold opacity-80" />
         </div>
 
-        <div className="relative ml-5 flex flex-col gap-14 border-l-2 border-surface-container-highest pl-10">
+        <div className="relative ml-5 flex flex-col gap-14 border-l-2 border-surface-container-highest pl-10 md:mx-auto md:max-w-3xl">
           {TIMELINE.map((item, i) => (
             <div key={i} className="relative">
               <div
@@ -127,7 +140,7 @@ export default function AboutPage() {
               />
               <div
                 className={cn(
-                  "glass-card rounded-2xl p-5 shadow-sm transition-colors hover:bg-surface-container-highest/30",
+                  "glass-card rounded-2xl p-5 shadow-sm transition-colors hover:bg-surface-container-highest/30 md:p-6",
                   item.year === "Today" &&
                     "border border-primary-fixed bg-primary-fixed/30"
                 )}
@@ -149,9 +162,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="px-5 py-16 md:px-16">
+      <section className="site-container py-16 md:py-20">
         <div className="mx-auto max-w-3xl text-center md:text-left">
-          <h2 className="font-display text-[32px] font-semibold text-primary">
+          <h2 className="font-display text-[32px] font-semibold text-primary md:text-4xl">
             The Journey to Clarity
           </h2>
           <p className="mt-2 font-sans text-base text-on-surface-variant">
@@ -168,18 +181,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Founders */}
-      <section className="px-4 py-20">
-        <div className="relative overflow-hidden rounded-[40px] border border-glass-border bg-[#eff6e1] px-5 py-12 shadow-sm">
+      <section className="site-container py-16 md:py-20">
+        <div className="relative overflow-hidden rounded-[40px] border border-glass-border bg-[#eff6e1] px-5 py-12 shadow-sm md:px-10 md:py-14">
           <div
             className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-surface-container-high opacity-60 blur-3xl"
             aria-hidden
           />
           <div className="relative z-10 mb-10 text-center">
-            <h2 className="font-display text-[32px] font-semibold text-primary">
+            <h2 className="font-display text-[32px] font-semibold text-primary md:text-4xl">
               The Visionaries
             </h2>
-            <p className="mx-auto mt-2 max-w-xs font-sans text-base text-on-surface-variant">
+            <p className="mx-auto mt-2 max-w-xs font-sans text-base text-on-surface-variant md:max-w-md">
               The minds architecting Ayurvedic respiratory care.
             </p>
           </div>
@@ -191,7 +203,7 @@ export default function AboutPage() {
               >
                 <div
                   className="flex w-full items-center justify-center bg-gradient-to-br from-[#e9f1dc] to-[#dee5d1]"
-                  style={{ minHeight: "320px" }}
+                  style={{ minHeight: "280px" }}
                 >
                   <FounderPhoto src={f.img} alt={f.name} />
                 </div>
@@ -212,21 +224,22 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Certifications */}
-      <section className="px-5 py-20" id="certifications">
+      <section className="site-container py-16 md:py-20" id="certifications">
         <div className="mb-10 text-center">
-          <h2 className="font-display text-[32px] font-semibold text-primary">
+          <h2 className="font-display text-[32px] font-semibold text-primary md:text-4xl">
             Uncompromising Quality
           </h2>
-          <p className="mx-auto mt-3 max-w-[280px] font-sans text-base text-on-surface-variant">
+          <p className="mx-auto mt-3 max-w-sm font-sans text-base text-on-surface-variant">
             World-class facilities. Highest global safety standards.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+
+        {/* Mobile cert grid */}
+        <div className="grid grid-cols-2 gap-3 md:hidden">
           {CERT_GRID.map((c) => (
             <div
               key={c.label}
-              className="glass-card flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center shadow-sm transition-transform duration-300 hover:-translate-y-1"
+              className="glass-card flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center shadow-sm"
             >
               <span className="text-[40px] text-ayurvedic-gold">{c.icon}</span>
               <span className="font-sans text-sm font-semibold text-primary-container">
@@ -241,9 +254,25 @@ export default function AboutPage() {
             </span>
           </div>
         </div>
+
+        {/* Desktop cert grid */}
+        <div className="hidden gap-4 md:grid md:grid-cols-3 lg:grid-cols-5">
+          {[...CERT_GRID, { icon: "🏭", label: "LEAN Manufacturing" }].map(
+            (c) => (
+              <div
+                key={c.label}
+                className="glass-card flex flex-col items-center justify-center gap-3 rounded-2xl p-8 text-center shadow-sm transition-transform hover:-translate-y-1"
+              >
+                <span className="text-4xl text-ayurvedic-gold">{c.icon}</span>
+                <span className="font-sans text-sm font-semibold text-primary-container">
+                  {c.label}
+                </span>
+              </div>
+            )
+          )}
+        </div>
       </section>
 
-      {/* Page footer (mobile only — site footer on md+) */}
       <footer className="flex w-full flex-col gap-8 rounded-t-[40px] bg-primary px-5 py-12 pb-28 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:hidden">
         <BrandLogo variant="on-dark" className="h-10 w-auto" />
         <div className="flex flex-col gap-5">
@@ -262,37 +291,7 @@ export default function AboutPage() {
         </div>
       </footer>
 
-      {/* Mobile bottom nav */}
-      <nav
-        className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around rounded-t-2xl border-t border-glass-border bg-glass-surface px-2 pb-5 pt-3 shadow-lg backdrop-blur-xl md:hidden"
-        aria-label="Mobile primary"
-      >
-        {MOBILE_NAV.map((t) => (
-          <Link
-            key={t.label}
-            href={t.href}
-            className={cn(
-              "flex flex-col items-center justify-center rounded-2xl p-2 transition-all duration-300",
-              t.active
-                ? "relative -top-1 w-20 scale-105 bg-primary-container text-on-primary-container shadow-sm"
-                : "w-16 text-on-surface-variant hover:bg-surface-container-highest/20"
-            )}
-            aria-current={t.active ? "page" : undefined}
-          >
-            <span className="text-xl" aria-hidden>
-              {t.icon}
-            </span>
-            <span
-              className={cn(
-                "mt-1 font-sans",
-                t.active ? "text-sm font-semibold" : "text-xs"
-              )}
-            >
-              {t.label}
-            </span>
-          </Link>
-        ))}
-      </nav>
+      <MobileBottomNav />
     </div>
   );
 }

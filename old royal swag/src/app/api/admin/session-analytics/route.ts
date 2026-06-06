@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logAdminEnvCheck } from "@/lib/admin/env-check";
 import { isAdminRequest } from "@/lib/admin-auth";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/admin/session";
 import {
   buildCityOrders,
   buildDeviceSplit,
@@ -21,6 +22,8 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
+  logAdminEnvCheck();
+
   if (!isAdminRequest(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

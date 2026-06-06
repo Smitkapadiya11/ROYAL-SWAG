@@ -6,6 +6,33 @@ body {
   overflow-x: hidden;
 }
 
+/* Shared responsive layout */
+.site-container {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .site-container {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
+.page-mobile-pad {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  .page-mobile-pad {
+    padding-bottom: 0;
+  }
+}
+
 :root {
   --primary: #324023;
   --primary-container: #495738;

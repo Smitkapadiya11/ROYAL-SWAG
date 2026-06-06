@@ -111,7 +111,6 @@ export default function CheckoutModal({ packId, onClose }: Props) {
         key?: string;
         amount?: number;
         currency?: string;
-        orderNumber?: string;
         error?: string;
       };
       if (!res.ok || !payload.orderId || !payload.key) {
@@ -120,7 +119,6 @@ export default function CheckoutModal({ packId, onClose }: Props) {
 
       const key = payload.key;
       const amountPaise = payload.amount ?? pack.price * 100;
-      const orderNumber = payload.orderNumber;
 
       const RazorpayCtor = (window as Window & { Razorpay?: new (o: RazorpayOptions) => { open: () => void } })
         .Razorpay;
@@ -144,34 +142,39 @@ export default function CheckoutModal({ packId, onClose }: Props) {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              orderData: {
-                userId: user?.id || null,
-                fullName: formData.full_name,
+              customerData: {
+                name: formData.full_name,
                 phone: formData.phone,
                 email: formData.email || user?.email || "",
-                addressLine1: formData.line1,
-                addressLine2: formData.line2,
+                address: formData.line1,
                 city: formData.city,
                 state: formData.state,
                 pincode: formData.pincode,
+                userId: user?.id || null,
+              },
+              packData: {
+                pack_name: pack.id,
                 packId: pack.id,
                 amount: pack.price,
-                orderNumber,
+                days: pack.days,
               },
             }),
           });
           const result = (await verify.json()) as {
             success?: boolean;
             orderId?: string;
+            orderNumber?: string;
             order?: { order_number: string };
             error?: string;
           };
-          if (result.success && result.order?.order_number) {
+          if (result.success) {
             toast.success("Order placed! Confirmation sent to WhatsApp.");
-            const num = result.order?.order_number;
-            router.push(
-              "/order-success?id=" + encodeURIComponent(num || result.orderId || "")
-            );
+            const num =
+              result.orderNumber ||
+              result.order?.order_number ||
+              result.orderId ||
+              "";
+            router.push("/order-success?id=" + encodeURIComponent(num));
           } else {
             toast.error(result.error ?? "Payment verification failed");
           }

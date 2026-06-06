@@ -117,7 +117,7 @@ export function DoctorEndorsements() {
   };
 
   return (
-    <section className="px-5 py-16 md:mx-auto md:max-w-6xl md:px-16">
+    <section className="site-container py-16 md:py-20">
       <div className="mb-10 text-center">
         <span className="mb-3 inline-block rounded-full bg-[#9A6F1A]/10 px-4 py-1.5 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9A6F1A]">
           Medical Endorsements

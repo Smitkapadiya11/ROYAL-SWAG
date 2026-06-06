@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logAdminEnvCheck } from "@/lib/admin/env-check";
 import { isAdminRequest } from "@/lib/admin-auth";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/admin/session";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 export const dynamic = "force-dynamic";
@@ -44,6 +45,8 @@ function riskToScore(level: string): number {
 }
 
 export async function GET(req: NextRequest) {
+  logAdminEnvCheck();
+
   if (!isAdminRequest(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

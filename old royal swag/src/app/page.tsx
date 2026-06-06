@@ -8,8 +8,8 @@ import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { CountUp } from "@/components/ui/CountUp";
 import { Reveal } from "@/components/ui/Reveal";
 import { SafeImage } from "@/components/ui/SafeImage";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { S } from "@/lib/config";
-import { cn } from "@/lib/utils";
 
 const HERO_BG = "/images/hero/asset1-hero-product.jpeg";
 
@@ -36,20 +36,49 @@ const ritualSteps = [
   },
 ];
 
-const MOBILE_NAV = [
-  { href: "/", label: "Home", icon: "🏠", active: true },
-  { href: "/product", label: "Shop", icon: "🛍", active: false },
-  { href: "/lung-test", label: "Test", icon: "🫁", active: false },
-  { href: "/about", label: "About", icon: "ℹ", active: false },
-] as const;
+function HeroCopy({ className = "" }: { className?: string }) {
+  return (
+    <div className={className}>
+      <p className="hero-label font-body text-xs font-semibold uppercase tracking-[0.2em] text-ayurvedic-gold">
+        Modern Ayurvedic
+      </p>
+      <h1 className="hero-title mt-2 break-words font-display text-4xl font-bold leading-[1.05] text-parchment sm:text-5xl">
+        {S.tagline.split(". ").map((line, i, arr) => (
+          <span key={line}>
+            {line}
+            {i < arr.length - 1 ? "." : ""}
+            {i < arr.length - 1 ? <br /> : null}
+          </span>
+        ))}
+      </h1>
+      <p className="hero-subtitle mt-4 max-w-md font-body text-base leading-relaxed text-parchment/90 md:text-lg">
+        Decades of research distilled into a premium lung detox tea.
+      </p>
+      <div className="mt-8 flex w-full max-w-full flex-col gap-3">
+        <Link
+          href="/lung-test"
+          className="hero-cta btn-primary inline-flex w-full items-center justify-center px-6 py-3.5 sm:w-fit sm:px-8"
+        >
+          Take the Free Lung Test
+        </Link>
+        <Link
+          href="/product"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-parchment/40 px-6 py-3.5 font-body text-sm font-semibold text-parchment transition-colors hover:bg-parchment/10 sm:w-fit sm:px-8"
+        >
+          Shop Detox Tea →
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="pb-[calc(80px+env(safe-area-inset-bottom,0px))] md:pb-0">
+    <div className="page-mobile-pad w-full min-w-0">
       <FaqJsonLd />
 
-      {/* Hero — above fold, no scroll reveal */}
-      <section className="relative flex h-[70vh] min-h-[500px] w-full items-end overflow-hidden md:h-screen">
+      {/* Mobile hero — full-bleed background */}
+      <section className="relative flex h-[70vh] min-h-[500px] w-full items-end overflow-hidden md:hidden">
         <div className="absolute inset-0">
           <SafeImage
             src={HERO_BG}
@@ -62,13 +91,19 @@ export default function Home() {
           className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/35 to-transparent"
           aria-hidden
         />
+        <div className="relative z-10 flex w-full min-w-0 flex-col justify-end overflow-hidden px-5 pb-12 pt-24">
+          <HeroCopy className="w-full min-w-0 max-w-full" />
+        </div>
+      </section>
 
-        <div className="relative z-10 flex w-full flex-col justify-end px-5 pb-12 pt-24 md:px-16 md:pb-24">
-          <div className="md:max-w-xl">
-            <p className="hero-label font-body text-xs font-semibold uppercase tracking-[0.2em] text-ayurvedic-gold">
+      {/* Desktop hero — split layout */}
+      <section className="relative hidden min-h-[calc(100svh-100px)] w-full overflow-hidden bg-parchment md:grid md:grid-cols-2">
+        <div className="flex flex-col justify-center px-16 py-20 lg:px-20">
+          <div className="max-w-xl">
+            <p className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-ayurvedic-gold">
               Modern Ayurvedic
             </p>
-            <h1 className="hero-title mt-2 font-display text-4xl font-bold leading-[1.05] text-parchment sm:text-5xl md:text-6xl">
+            <h1 className="mt-3 font-display text-5xl font-bold leading-[1.05] text-primary lg:text-6xl">
               {S.tagline.split(". ").map((line, i, arr) => (
                 <span key={line}>
                   {line}
@@ -77,22 +112,43 @@ export default function Home() {
                 </span>
               ))}
             </h1>
-            <p className="hero-subtitle mt-4 max-w-md font-body text-base leading-relaxed text-parchment/90">
+            <p className="mt-5 max-w-md font-body text-lg leading-relaxed text-on-surface-variant">
               Decades of research distilled into a premium lung detox tea.
             </p>
-            <Link
-              href="/lung-test"
-              className="hero-cta btn-primary mt-8 inline-flex w-fit items-center justify-center px-8 py-3.5"
-            >
-              Take the Free Lung Test
-            </Link>
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Link
+                href="/lung-test"
+                className="btn-primary inline-flex items-center justify-center px-8 py-3.5"
+              >
+                Take the Free Lung Test
+              </Link>
+              <Link
+                href="/product"
+                className="inline-flex items-center justify-center rounded-xl border border-primary/20 bg-white/50 px-8 py-3.5 font-body text-sm font-semibold text-primary transition-colors hover:bg-white/80"
+              >
+                Shop Detox Tea →
+              </Link>
+            </div>
           </div>
+        </div>
+
+        <div className="relative min-h-[480px]">
+          <SafeImage
+            src={HERO_BG}
+            alt="Royal Swag Lung Detox Tea"
+            label="Royal Swag"
+            className="h-full w-full object-cover"
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-parchment/30 via-transparent to-transparent"
+            aria-hidden
+          />
         </div>
       </section>
 
-      <div className="md:mx-auto md:max-w-6xl md:px-16">
+      <div className="site-container md:py-4">
         <Reveal direction="up">
-          <section className="border-y border-glass-border bg-surface/50 px-5 py-8 md:rounded-2xl md:border md:py-10">
+          <section className="border-y border-glass-border bg-surface/50 py-8 md:rounded-2xl md:border md:py-10">
             <p className="mb-6 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
               Trusted across India
             </p>
@@ -125,9 +181,9 @@ export default function Home() {
           </section>
         </Reveal>
 
-        <div className="md:grid md:grid-cols-2 md:gap-12 md:py-20">
+        <div className="md:grid md:grid-cols-2 md:items-center md:gap-12 md:py-20">
           <Reveal direction="up" delay={0}>
-            <section className="bg-parchment px-5 py-section-gap md:px-0 md:py-0">
+            <section className="bg-parchment py-section-gap md:py-0">
               <div className="text-center md:text-left">
                 <p className="font-body text-sm font-semibold tracking-widest text-ayurvedic-gold">
                   ✦
@@ -147,7 +203,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal direction="up" delay={100}>
-            <section className="bg-surface px-5 py-section-gap md:px-0 md:py-0">
+            <section className="bg-surface py-section-gap md:rounded-2xl md:p-6 md:py-0">
               <div>
                 <h2 className="text-center font-display text-3xl font-bold text-primary md:text-left md:text-4xl">
                   The Journey to Clarity
@@ -176,7 +232,7 @@ export default function Home() {
           <DoctorEndorsements />
         </Reveal>
 
-        <section className="bg-parchment px-5 py-section-gap md:mx-auto md:max-w-2xl md:px-0">
+        <section className="bg-parchment py-section-gap">
           <Reveal direction="up">
             <h2 className="text-center font-display text-3xl font-bold text-primary md:text-4xl">
               The Daily Ritual
@@ -201,35 +257,34 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* Desktop CTA band */}
+        <section className="mb-8 hidden rounded-2xl bg-primary px-12 py-14 text-center md:block">
+          <h2 className="font-display text-3xl font-bold text-parchment lg:text-4xl">
+            Ready to Breathe Cleaner?
+          </h2>
+          <p className="mx-auto mt-4 max-w-lg font-body text-base text-parchment/80">
+            Take the free lung test or order the Progress Pack — free delivery
+            across India with COD available.
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Link
+              href="/lung-test"
+              className="inline-flex items-center justify-center rounded-xl bg-ayurvedic-gold px-8 py-3.5 font-body text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
+            >
+              Free Lung Test
+            </Link>
+            <Link
+              href="/product"
+              className="inline-flex items-center justify-center rounded-xl border border-parchment/30 px-8 py-3.5 font-body text-sm font-semibold text-parchment transition-colors hover:bg-white/10"
+            >
+              Order Now — {S.price.now}
+            </Link>
+          </div>
+        </section>
       </div>
 
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/60 bg-glass-surface backdrop-blur-md md:hidden"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-        aria-label="Mobile primary"
-      >
-        <ul className="grid h-16 grid-cols-4">
-          {MOBILE_NAV.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={cn(
-                  "bottom-nav-link flex h-full min-h-[44px] flex-col items-center justify-center gap-0.5 font-body text-[10px] font-medium",
-                  item.active
-                    ? "bottom-nav-link--active text-primary"
-                    : "text-on-surface-variant hover:text-primary"
-                )}
-                aria-current={item.active ? "page" : undefined}
-              >
-                <span className="text-lg leading-none" aria-hidden>
-                  {item.icon}
-                </span>
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <MobileBottomNav />
     </div>
   );
 }

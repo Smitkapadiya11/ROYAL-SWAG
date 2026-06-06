@@ -53,7 +53,7 @@ export default function Header() {
         </Link>
 
         <nav
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex"
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-5 md:flex lg:gap-8"
           aria-label="Main"
         >
           {CENTER_NAV.map((n) => (
@@ -63,9 +63,9 @@ export default function Header() {
 
         <Link
           href="/lung-test"
-          className="btn-primary relative z-10 flex items-center gap-2 px-4 py-2.5 text-xs md:px-6 md:text-sm"
+          className="btn-primary relative z-10 flex shrink-0 items-center gap-2 px-4 py-2.5 text-xs md:px-5 md:text-sm lg:px-6"
         >
-          Free Lung Test
+          <span className="hidden sm:inline">Free </span>Lung Test
         </Link>
       </div>
     </header>

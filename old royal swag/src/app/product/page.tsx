@@ -176,8 +176,8 @@ export default function ProductPage() {
       <ProductViewTracker />
       <ProductJsonLd />
 
-      <main className="mx-auto w-full max-w-md md:max-w-6xl">
-        <nav className="mb-4 flex items-center gap-2 px-5 pt-4 text-xs text-on-surface-variant">
+      <main className="site-container mx-auto w-full min-w-0 max-w-none">
+        <nav className="mb-4 flex items-center gap-2 pt-4 text-xs text-on-surface-variant">
           <Link href="/" className="hover:text-primary">
             Home
           </Link>
@@ -189,9 +189,9 @@ export default function ProductPage() {
           <span className="font-semibold text-primary">Detox Tea</span>
         </nav>
 
-        <div className="md:mx-auto md:grid md:max-w-6xl md:grid-cols-2 md:gap-16 md:px-16 md:pt-12">
+        <div className="md:grid md:grid-cols-2 md:gap-12 md:pt-12 lg:gap-16">
           <div className="md:sticky md:top-24 md:self-start">
-            <section className="relative w-full overflow-hidden px-5 pb-8 pt-4">
+            <section className="relative w-full overflow-hidden pb-8 pt-4 md:px-0">
               <div
                 className="absolute left-1/2 top-1/4 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-primary-container/10 blur-3xl"
                 aria-hidden
@@ -241,7 +241,7 @@ export default function ProductPage() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <div className="mb-2 flex flex-col gap-2 px-5">
+            <div className="mb-2 flex flex-col gap-2 md:px-0">
               <div className="mb-1 flex items-center gap-2">
                 <span className="rounded bg-primary-container/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-container">
                   Bestseller
@@ -625,7 +625,7 @@ export default function ProductPage() {
           </div>
         </div>
 
-        <div className="md:mx-auto md:max-w-6xl md:px-16">
+        <div>
           <section className="border-y border-glass-border bg-surface-container/50 px-5 py-8 md:rounded-2xl md:border md:py-10">
             <h3 className="mb-6 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
               Backed By Science & Tradition

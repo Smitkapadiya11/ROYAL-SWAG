@@ -1,6 +1,7 @@
 "use client";
 
 import styled from "styled-components";
+import { ShoppingBagIcon } from "@/components/ui/BrandIcons";
 import { cn } from "@/lib/utils";
 
 type ProductBuyButtonProps = {
@@ -34,7 +35,7 @@ export default function ProductBuyButton({
       >
         <Face className="buy-face" $compact={compact}>
           <Icon $compact={compact} aria-hidden>
-            🛍
+            <ShoppingBagIcon size={compact ? 18 : 22} />
           </Icon>
           <Copy>
             <Title $compact={compact}>Buy Now</Title>
@@ -174,9 +175,9 @@ const Icon = styled.span<{ $compact: boolean }>`
   width: ${({ $compact }) => ($compact ? "2.25rem" : "2.75rem")};
   height: ${({ $compact }) => ($compact ? "2.25rem" : "2.75rem")};
   border-radius: 0.55em;
-  background: rgba(50, 64, 35, 0.28);
-  border: 1px solid rgba(244, 237, 214, 0.25);
-  font-size: ${({ $compact }) => ($compact ? "1rem" : "1.2rem")};
+  background: rgba(50, 64, 35, 0.32);
+  border: 1px solid rgba(244, 237, 214, 0.28);
+  color: #f4edd6;
 `;
 
 const Copy = styled.span`

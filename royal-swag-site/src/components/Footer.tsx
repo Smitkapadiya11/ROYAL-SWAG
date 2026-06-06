@@ -36,7 +36,7 @@ export default function Footer() {
             <br />
             {S.address.l2}
           </p>
-          <div className="hidden flex-wrap gap-2 md:flex">
+          <div className="flex flex-wrap gap-2">
             {S.certs.map((c) => (
               <span
                 key={c}

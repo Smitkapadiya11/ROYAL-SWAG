@@ -1,9 +1,27 @@
 @import "tailwindcss";
 @config "../../tailwind.config.js";
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Shared responsive layout */
@@ -96,6 +114,13 @@ body {
   -webkit-backdrop-filter: blur(20px);
   transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(73, 87, 56, 0.12);
+}
+
+@media (hover: none) {
+  .glass-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 .btn-primary {

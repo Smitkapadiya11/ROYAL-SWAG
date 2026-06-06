@@ -22,6 +22,7 @@ import {
   PRODUCT_GALLERY,
 } from "@/lib/product-images";
 import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
+import ClientPortal from "@/components/ui/ClientPortal";
 
 const MAIN_FALLBACK = MAIN_PRODUCT_IMAGE;
 
@@ -155,7 +156,8 @@ export default function ProductPage() {
 
     const updateSticky = () => {
       const rect = panel.getBoundingClientRect();
-      setShowStickyBuy(rect.bottom < 100);
+      // Only show float after purchase panel has fully left the viewport
+      setShowStickyBuy(rect.bottom <= 0);
     };
 
     updateSticky();
@@ -335,19 +337,21 @@ export default function ProductPage() {
       <ProductViewTracker />
       <ProductJsonLd />
 
-      {/* Desktop floating buy bar — bottom center when purchase panel scrolls away */}
-      <div
-        className={`pointer-events-none fixed inset-x-0 bottom-6 z-50 hidden justify-center px-4 transition-all duration-500 md:flex ${
-          showStickyBuy
-            ? "translate-y-0 opacity-100"
-            : "translate-y-8 opacity-0"
-        }`}
-        aria-hidden={!showStickyBuy}
-      >
-        <div className="pointer-events-auto w-full max-w-xl rounded-2xl border border-glass-border bg-glass-surface/95 p-2 shadow-[0_12px_48px_rgba(50,64,35,0.2)] backdrop-blur-xl">
-          {buyCta(true)}
+      {/* Desktop floating buy bar — portaled so fixed positioning stays viewport-locked */}
+      <ClientPortal>
+        <div
+          className={`pointer-events-none fixed inset-x-0 bottom-6 z-40 hidden justify-center px-4 transition-all duration-500 md:flex ${
+            showStickyBuy && !showCheckout
+              ? "translate-y-0 opacity-100"
+              : "translate-y-6 opacity-0"
+          }`}
+          aria-hidden={!showStickyBuy || showCheckout}
+        >
+          <div className="pointer-events-auto w-full max-w-xl rounded-2xl border border-glass-border bg-glass-surface/95 p-2 shadow-[0_12px_48px_rgba(50,64,35,0.2)] backdrop-blur-xl">
+            {buyCta(true)}
+          </div>
         </div>
-      </div>
+      </ClientPortal>
 
       <main className="site-container mx-auto w-full min-w-0 max-w-none">
         <nav className="mb-4 flex items-center gap-2 pt-4 text-xs text-on-surface-variant">
@@ -380,12 +384,11 @@ export default function ProductPage() {
           <div
             ref={purchasePanelRef}
             id="purchase-panel"
-            className="hidden min-w-0 flex-col gap-5 md:sticky md:top-24 md:flex md:max-h-[calc(100vh-7rem)] md:self-start md:overflow-y-auto md:pr-1"
-            style={{ scrollbarWidth: "thin" }}
+            className="hidden min-w-0 flex-col gap-5 md:sticky md:top-24 md:flex md:self-start"
           >
             {titleBlock}
-            {buyCta()}
             {bundlePicker}
+            {buyCta()}
             <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
               <span className="text-2xl">🛡</span>
               <div>
@@ -404,8 +407,6 @@ export default function ProductPage() {
         {/* Mobile title + details — all content preserved */}
         <div className="mt-6 flex min-w-0 flex-col gap-6 md:mt-12">
           <div className="md:hidden">{titleBlock}</div>
-
-          <div className="md:hidden">{buyCta()}</div>
 
           <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
             <span className="text-2xl">🛡</span>
@@ -490,6 +491,8 @@ export default function ProductPage() {
 
           {/* Mobile-only bundle picker (desktop has it in purchase panel) */}
           <div className="md:hidden">{bundlePicker}</div>
+
+          <div className="md:hidden">{buyCta()}</div>
 
           <ProductSocialProof className="mx-auto max-w-full" />
 
@@ -681,6 +684,7 @@ export default function ProductPage() {
       </main>
 
       {showCheckout && (
+        <ClientPortal>
         <div className="fixed inset-0 z-[80] flex flex-col justify-end md:items-center md:justify-center md:p-6">
           <button
             type="button"
@@ -739,12 +743,19 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+        </ClientPortal>
       )}
 
-      {/* Mobile sticky buy bar */}
-      <div className="fixed bottom-0 left-0 z-[60] w-full border-t border-glass-border bg-glass-surface/95 p-3 shadow-[0_-8px_30px_rgba(73,87,56,0.12)] backdrop-blur-xl md:hidden">
-        <div className="mx-auto max-w-md">{buyCta(true)}</div>
-      </div>
+      {/* Mobile sticky buy bar — portaled for reliable viewport positioning */}
+      <ClientPortal>
+        <div
+          className={`fixed bottom-0 left-0 z-[45] w-full border-t border-glass-border bg-glass-surface/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(73,87,56,0.12)] backdrop-blur-xl transition-opacity duration-300 md:hidden ${
+            showCheckout ? "pointer-events-none opacity-0" : "opacity-100"
+          }`}
+        >
+          <div className="mx-auto max-w-md">{buyCta(true)}</div>
+        </div>
+      </ClientPortal>
     </div>
   );
 }

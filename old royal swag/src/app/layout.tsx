@@ -90,7 +90,7 @@ export default function RootLayout({
           <AnnouncementBar />
           <Header />
           <main className="w-full min-w-0 overflow-x-hidden">
-            <div className="animate-in fade-in w-full min-w-0 duration-300">
+            <div className="w-full min-w-0">
               {children}
             </div>
           </main>

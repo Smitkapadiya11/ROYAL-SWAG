@@ -65,7 +65,7 @@ export default function ProductBuyButton({
           🛍
         </span>
 
-        <span className="min-w-0 flex-1">
+        <span className="min-w-0 flex-1 overflow-hidden">
           <span
             className={cn(
               "block font-sans font-bold tracking-wide text-white",

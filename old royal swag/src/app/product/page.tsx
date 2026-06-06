@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CountdownTimer from "@/components/ui/CountdownTimer";
 import ProductSocialProof from "@/components/ui/ProductSocialProof";
 import ProductCheckout from "@/components/product/ProductCheckout";
+import ProductBuyButton from "@/components/product/ProductBuyButton";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductJsonLd from "@/components/seo/ProductJsonLd";
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
@@ -152,12 +153,18 @@ export default function ProductPage() {
     const panel = purchasePanelRef.current;
     if (!panel) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setShowStickyBuy(!entry.isIntersecting),
-      { threshold: 0, rootMargin: "-80px 0px 0px 0px" }
-    );
-    observer.observe(panel);
-    return () => observer.disconnect();
+    const updateSticky = () => {
+      const rect = panel.getBoundingClientRect();
+      setShowStickyBuy(rect.bottom < 100);
+    };
+
+    updateSticky();
+    window.addEventListener("scroll", updateSticky, { passive: true });
+    window.addEventListener("resize", updateSticky);
+    return () => {
+      window.removeEventListener("scroll", updateSticky);
+      window.removeEventListener("resize", updateSticky);
+    };
   }, []);
 
   const selectBundle = useCallback((bundle: Bundle) => {
@@ -305,14 +312,15 @@ export default function ProductPage() {
     </section>
   );
 
-  const buyNowButton = (className = "") => (
-    <button
-      type="button"
+  const buyCta = (compact = false) => (
+    <ProductBuyButton
+      price={selectedBundle.price}
+      mrp={selectedBundle.mrp}
+      packLabel={selectedBundle.label}
+      savingPct={savingPct}
       onClick={handleBuyNow}
-      className={`btn-primary flex w-full items-center justify-center gap-2 py-4 text-base font-semibold tracking-wide ${className}`}
-    >
-      🛍 Buy Now — ₹{selectedBundle.price}
-    </button>
+      size={compact ? "compact" : "default"}
+    />
   );
 
   return (
@@ -327,32 +335,17 @@ export default function ProductPage() {
       <ProductViewTracker />
       <ProductJsonLd />
 
-      {/* Desktop sticky buy bar — appears when purchase panel scrolls away */}
+      {/* Desktop floating buy bar — bottom center when purchase panel scrolls away */}
       <div
-        className={`fixed left-0 right-0 top-16 z-40 hidden border-b border-glass-border bg-glass-surface/95 shadow-md backdrop-blur-xl transition-transform duration-300 md:block ${
-          showStickyBuy ? "translate-y-0" : "-translate-y-full pointer-events-none"
+        className={`pointer-events-none fixed inset-x-0 bottom-6 z-50 hidden justify-center px-4 transition-all duration-500 md:flex ${
+          showStickyBuy
+            ? "translate-y-0 opacity-100"
+            : "translate-y-8 opacity-0"
         }`}
         aria-hidden={!showStickyBuy}
       >
-        <div className="site-container flex items-center justify-between gap-6 py-3">
-          <div className="min-w-0">
-            <p className="truncate font-sans text-sm font-semibold text-primary">
-              {selectedBundle.label}
-            </p>
-            <p className="font-number text-lg font-bold tabular-nums text-primary">
-              ₹{selectedBundle.price}
-              <span className="ml-2 text-sm font-normal text-on-surface-variant line-through">
-                ₹{selectedBundle.mrp}
-              </span>
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleBuyNow}
-            className="btn-primary shrink-0 px-8 py-3 text-sm"
-          >
-            🛍 Buy Now
-          </button>
+        <div className="pointer-events-auto w-full max-w-xl rounded-2xl border border-glass-border bg-glass-surface/95 p-2 shadow-[0_12px_48px_rgba(50,64,35,0.2)] backdrop-blur-xl">
+          {buyCta(true)}
         </div>
       </div>
 
@@ -387,11 +380,12 @@ export default function ProductPage() {
           <div
             ref={purchasePanelRef}
             id="purchase-panel"
-            className="hidden min-w-0 flex-col gap-5 md:flex"
+            className="hidden min-w-0 flex-col gap-5 md:sticky md:top-24 md:flex md:max-h-[calc(100vh-7rem)] md:self-start md:overflow-y-auto md:pr-1"
+            style={{ scrollbarWidth: "thin" }}
           >
             {titleBlock}
+            {buyCta()}
             {bundlePicker}
-            {buyNowButton()}
             <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
               <span className="text-2xl">🛡</span>
               <div>
@@ -410,6 +404,8 @@ export default function ProductPage() {
         {/* Mobile title + details — all content preserved */}
         <div className="mt-6 flex min-w-0 flex-col gap-6 md:mt-12">
           <div className="md:hidden">{titleBlock}</div>
+
+          <div className="md:hidden">{buyCta()}</div>
 
           <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
             <span className="text-2xl">🛡</span>
@@ -746,28 +742,8 @@ export default function ProductPage() {
       )}
 
       {/* Mobile sticky buy bar */}
-      <div className="fixed bottom-0 left-0 z-[60] w-full border-t border-glass-border bg-glass-surface px-5 py-4 shadow-[0_-8px_30px_rgba(73,87,56,0.1)] backdrop-blur-xl md:hidden">
-        <div className="mx-auto flex max-w-md items-center gap-4">
-          <div className="flex flex-col">
-            <span className="font-sans text-[10px] text-on-surface-variant">
-              <span className="font-number line-through tabular-nums">
-                ₹{selectedBundle.mrp}
-              </span>{" "}
-              → Save{" "}
-              <span className="font-number tabular-nums">{savingPct}</span>%
-            </span>
-            <span className="font-number text-2xl font-bold leading-none tabular-nums text-primary">
-              ₹{selectedBundle.price}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={handleBuyNow}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-sans text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:-skew-x-3 hover:shadow-lg"
-          >
-            🛍 Buy Now
-          </button>
-        </div>
+      <div className="fixed bottom-0 left-0 z-[60] w-full border-t border-glass-border bg-glass-surface/95 p-3 shadow-[0_-8px_30px_rgba(73,87,56,0.12)] backdrop-blur-xl md:hidden">
+        <div className="mx-auto max-w-md">{buyCta(true)}</div>
       </div>
     </div>
   );

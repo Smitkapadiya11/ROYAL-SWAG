@@ -370,7 +370,7 @@ export default function ProductPage() {
         </nav>
 
         {/* Above-fold: gallery + desktop purchase panel */}
-        <div className="grid min-w-0 grid-cols-1 items-start gap-8 md:grid-cols-2 md:gap-10 lg:gap-14">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 lg:gap-14">
           <div className="min-w-0 md:sticky md:top-24 md:self-start">
             <ProductGallery
               images={productImages}

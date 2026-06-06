@@ -65,27 +65,10 @@ export default function ProductGallery({
         aria-hidden
       />
 
-      {/* Desktop: vertical thumbs + main image */}
-      <div className="hidden min-w-0 md:flex md:gap-4">
-        <div
-          className="flex max-h-[min(520px,calc(100vh-8rem))] w-[72px] shrink-0 flex-col gap-2 overflow-y-auto pr-1"
-          style={{ scrollbarWidth: "thin" }}
-        >
-          {images.map((img, i) => (
-            <ThumbButton
-              key={img}
-              src={img}
-              idx={i}
-              active={activeIdx === i}
-              onSelect={onSelect}
-              onError={onThumbError}
-              className="h-16 w-16"
-            />
-          ))}
-        </div>
-
-        <div className="glass-card group relative min-w-0 flex-1 overflow-hidden rounded-xl p-4 shadow-sm">
-          <div className="relative aspect-square max-h-[min(520px,calc(100vh-8rem))] w-full">
+      {/* Desktop: main image + wrapped thumb grid (no scroll) */}
+      <div className="hidden min-w-0 md:block">
+        <div className="glass-card group relative min-w-0 overflow-hidden rounded-xl p-4 shadow-sm">
+          <div className="relative aspect-square w-full max-h-[min(480px,calc(100vh-12rem))]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="h-full w-full rounded-lg object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
@@ -100,6 +83,20 @@ export default function ProductGallery({
               </span>
             </div>
           </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-4 gap-2 lg:grid-cols-8 lg:gap-2">
+          {images.map((img, i) => (
+            <ThumbButton
+              key={img}
+              src={img}
+              idx={i}
+              active={activeIdx === i}
+              onSelect={onSelect}
+              onError={onThumbError}
+              className="aspect-square h-auto w-full"
+            />
+          ))}
         </div>
       </div>
 

@@ -710,7 +710,10 @@ export default function ProductPage() {
 
       <CheckoutModal
         open={showCheckout}
-        onClose={() => setShowCheckout(false)}
+        onClose={() => {
+          setShowCheckout(false);
+          setCheckoutPhase(1);
+        }}
         price={selectedBundle.price}
         mrp={selectedBundle.mrp}
         packId={selectedBundle.id}

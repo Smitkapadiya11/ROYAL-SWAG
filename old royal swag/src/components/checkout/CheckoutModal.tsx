@@ -11,18 +11,22 @@ import { ROYAL_SWAG_LOGO_SRC } from "@/lib/brand-logo";
 import { PRODUCT_SKU } from "@/lib/product-price";
 import { ANALYTICS_EVENTS, track, trackPurchaseOnce } from "@/lib/analytics";
 import { getStoredReferralCode, getStoredUtm } from "@/lib/customer-analytics";
-import { MAIN_PRODUCT_IMAGE } from "@/lib/product-images";
+import { BUNDLE_GALLERY_IMAGE, productImageSrc } from "@/lib/product-images";
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
   fullName: z.string().min(2, "Name is required"),
   phone: z
     .string()
-    .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
+    .transform((s) => s.replace(/\D/g, "").slice(-10))
+    .pipe(z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number")),
   email: z.string().email("Enter a valid email address"),
   addressLine1: z.string().min(5, "Address is required"),
   city: z.string().min(2, "City is required"),
-  pincode: z.string().regex(/^\d{6}$/, "Enter a 6-digit pincode"),
+  pincode: z
+    .string()
+    .transform((s) => s.replace(/\D/g, "").slice(0, 6))
+    .pipe(z.string().regex(/^\d{6}$/, "Enter a 6-digit pincode")),
 });
 
 type CheckoutForm = z.infer<typeof schema>;
@@ -82,7 +86,6 @@ export default function CheckoutModal({
     register,
     handleSubmit,
     getValues,
-    trigger,
     formState: { errors },
   } = useForm<CheckoutForm>({
     resolver: zodResolver(schema),
@@ -90,7 +93,10 @@ export default function CheckoutModal({
   });
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setLoading(false);
+      return;
+    }
     setPhase(initialPhase);
     loadRazorpayScript().then(setScriptReady);
   }, [open, initialPhase]);
@@ -106,10 +112,18 @@ export default function CheckoutModal({
 
   if (!open) return null;
 
-  const goToSummary = async () => {
-    const valid = await trigger();
-    if (valid) setPhase(2);
-  };
+  const packImage =
+    BUNDLE_GALLERY_IMAGE[packId] ?? BUNDLE_GALLERY_IMAGE.single ?? "/images/product/product-1.webp";
+
+  const onStepOneSubmit = handleSubmit(
+    () => {
+      setPhase(2);
+    },
+    (fieldErrors) => {
+      const first = Object.values(fieldErrors).find((e) => e?.message);
+      toast.error(first?.message ?? "Please complete all required fields.");
+    }
+  );
 
   const startPayment = async (form: CheckoutForm) => {
     setLoading(true);
@@ -334,8 +348,9 @@ export default function CheckoutModal({
 
           {phase === 1 ? (
             <form
-              onSubmit={handleSubmit(goToSummary)}
+              onSubmit={onStepOneSubmit}
               className="flex flex-col gap-4 px-5 pb-8 pt-4"
+              noValidate
             >
               <div>
                 <input
@@ -418,19 +433,39 @@ export default function CheckoutModal({
                 </div>
               </div>
 
-              <button type="submit" className="btn-buy-now mt-2">
-                Continue to Summary
+              <button type="submit" className="btn-buy-now mt-3 min-h-[52px] text-base">
+                Continue to Summary →
               </button>
+              <p className="text-center font-sans text-[11px] text-on-surface-variant">
+                Step 1 of 2 · Your details are saved for the next step
+              </p>
             </form>
           ) : (
             <div className="flex flex-col gap-4 px-5 pb-8 pt-4">
+              <div className="rounded-xl border border-primary/10 bg-white/60 px-4 py-3">
+                <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                  Delivering to
+                </p>
+                <p className="mt-1 font-sans text-sm font-semibold text-primary">
+                  {getValues("fullName")}
+                </p>
+                <p className="font-sans text-xs leading-relaxed text-on-surface-variant">
+                  {getValues("addressLine1")}, {getValues("city")} — {getValues("pincode")}
+                </p>
+                <p className="mt-1 font-sans text-xs text-on-surface-variant">
+                  {getValues("phone")} · {getValues("email")}
+                </p>
+              </div>
+
               <div className="flex gap-4 rounded-2xl border border-primary/10 bg-white/50 p-4">
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-surface">
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={MAIN_PRODUCT_IMAGE}
+                    src={productImageSrc(packImage)}
                     alt="Royal Swag Lung Detox Tea"
-                    className="h-full w-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                    className="h-full w-full object-contain p-1"
                   />
                 </div>
                 <div className="min-w-0 flex-1">

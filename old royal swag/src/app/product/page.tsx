@@ -13,6 +13,7 @@ import ProductSchema from "@/components/seo/ProductSchema";
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
 import {
   DEFAULT_PRODUCT_BUNDLE,
+  getProductBundleById,
   type ProductBundleOption,
 } from "@/lib/bundle-options";
 import { getSaving } from "@/lib/productPricing";
@@ -202,6 +203,13 @@ export default function ProductPage() {
       price: bundle.price,
       page: "/product",
     });
+  }, []);
+
+  useEffect(() => {
+    const packId = new URLSearchParams(window.location.search).get("pack");
+    if (!packId) return;
+    const bundle = getProductBundleById(packId);
+    if (bundle.id === packId) setSelectedBundle(bundle);
   }, []);
 
   const handleBuyNow = useCallback(() => {

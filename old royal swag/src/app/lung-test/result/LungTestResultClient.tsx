@@ -126,7 +126,7 @@ export default function LungTestResultClient() {
         </span>
       </header>
 
-      <div className="mx-auto w-full max-w-lg px-5 pb-24 pt-8 md:max-w-3xl md:px-10">
+      <div className="mx-auto w-full max-w-lg px-5 pb-24 pt-8 md:max-w-4xl md:px-10">
         <LungHealthReport
           stored={stored}
           onRetake={() => {

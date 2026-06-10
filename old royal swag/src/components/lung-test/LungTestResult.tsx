@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { HERB_IMAGE_BY_NAME } from "@/lib/lung-test-questions";
 import type { SymptomAnswers } from "@/lib/lungScore";
 import { MAX_SYMPTOM_POINTS } from "@/lib/lungScore";
+import { getStarterPackOffer } from "@/lib/product-price";
+import { productImageSrc, SINGLE_PACK_OFFER_IMAGE } from "@/lib/product-images";
 import { EVENTS, trackEvent } from "@/lib/events";
 
 const RISK_CONFIG = {
@@ -131,6 +133,8 @@ export function LungTestResult({
     recommendedHerbs.length > 0
       ? recommendedHerbs.map((h) => h.name).join(", ")
       : "recommended herbs";
+
+  const starterPack = getStarterPackOffer();
 
   return (
     <div className="flex flex-col gap-6 duration-500 animate-in fade-in md:grid md:grid-cols-2 md:items-start md:gap-8 lg:gap-10">
@@ -284,9 +288,11 @@ export function LungTestResult({
         <div className="mb-4 flex items-start gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/product/product-1.jpg"
-            alt="Royal Swag"
-            className="h-20 w-20 shrink-0 rounded-xl object-contain"
+            src={productImageSrc(SINGLE_PACK_OFFER_IMAGE)}
+            alt="Royal Swag — 1 Pack"
+            loading="eager"
+            decoding="async"
+            className="h-20 w-20 shrink-0 rounded-xl object-contain bg-white p-1"
             onError={(e) => {
               e.currentTarget.style.background =
                 "linear-gradient(135deg, #324023, #9A6F1A)";
@@ -305,14 +311,14 @@ export function LungTestResult({
           </div>
         </div>
         <Link
-          href="/product"
+          href="/product?pack=single&utm_source=lung-test&utm_medium=result"
           onClick={() => {
             trackEvent(EVENTS.LUNG_BUY_CLICK, { page: "/lung-test/result" });
           }}
           className="block w-full rounded-2xl py-4 text-center font-sans text-sm font-bold tracking-wide text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           style={{ background: "#9A6F1A" }}
         >
-          Start Your Detox — ₹349
+          Start Your Detox — 1 Pack · ₹{starterPack.price}
         </Link>
       </div>
 

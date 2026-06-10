@@ -1,17 +1,22 @@
 import { PRODUCT_BUNDLE_OPTIONS } from "@/lib/bundle-options";
 import { BUNDLES } from "@/lib/productPricing";
 
-/** Primary SKU price — requires Manoj Bhai approval to change env default. */
-export function getPrimaryProductPrice(): number {
-  const fromEnv = Number(process.env.NEXT_PUBLIC_PRODUCT_PRICE);
-  if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
-  return 349;
+/** Primary SKU = 1 Pack starter (₹349 / ₹399 MRP). */
+export function getStarterPackOffer() {
+  return (
+    PRODUCT_BUNDLE_OPTIONS.find((b) => b.id === "single") ??
+    PRODUCT_BUNDLE_OPTIONS[0]
+  );
 }
 
+/** @deprecated Use getStarterPackOffer().price */
+export function getPrimaryProductPrice(): number {
+  return getStarterPackOffer().price;
+}
+
+/** @deprecated Use getStarterPackOffer().mrp */
 export function getPrimaryProductMrp(): number {
-  const fromEnv = Number(process.env.NEXT_PUBLIC_PRODUCT_MRP);
-  if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
-  return 399;
+  return getStarterPackOffer().mrp;
 }
 
 export function getPrimaryDiscountPercent(): number {

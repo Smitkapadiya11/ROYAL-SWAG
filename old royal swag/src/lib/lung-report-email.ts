@@ -1,6 +1,6 @@
 import type { RiskSlug } from "@/lib/lungScore";
 import { SITE_ORIGIN } from "@/lib/config";
-import { getPrimaryProductPrice } from "@/lib/product-price";
+import { getStarterPackOffer } from "@/lib/product-price";
 
 export type LungReportEmailPayload = {
   name: string;
@@ -15,8 +15,8 @@ export type LungReportEmailPayload = {
 
 export function buildLungReportEmailHtml(data: LungReportEmailPayload): string {
   const firstName = data.name.trim().split(/\s+/)[0] || "there";
-  const price = getPrimaryProductPrice();
-  const buyUrl = `${SITE_ORIGIN}/product?utm_source=email&utm_medium=lung-test&utm_campaign=result`;
+  const buyUrl = `${SITE_ORIGIN}/product?pack=single&utm_source=email&utm_medium=lung-test&utm_campaign=result`;
+  const starter = getStarterPackOffer();
 
   const herbList =
     data.matchedHerbs.length > 0
@@ -38,8 +38,8 @@ export function buildLungReportEmailHtml(data: LungReportEmailPayload): string {
     </div>
     <h2 style="font-size:16px;margin:0 0 12px">Herbs matched to your profile</h2>
     <ul style="margin:0 0 24px;padding-left:20px;line-height:1.7">${herbList}</ul>
-    <a href="${buyUrl}" style="display:inline-block;background:#0D3B1F;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600">Buy Lung Detox Tea — ₹${price}</a>
-    <p style="margin:24px 0 0;font-size:13px;color:#666">Free delivery · 30-day guarantee</p>
+    <a href="${buyUrl}" style="display:inline-block;background:#0D3B1F;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600">Buy 1 Pack (30 bags) — ₹${starter.price}</a>
+    <p style="margin:8px 0 0;font-size:12px;color:#888">MRP ₹${starter.mrp} · Free delivery · 30-day guarantee</p>
   </div>
 </body>
 </html>`;

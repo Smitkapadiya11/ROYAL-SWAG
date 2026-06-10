@@ -1,6 +1,13 @@
-/** Lung health symptom scoring — 5 questions + result bands */
+/** Lung health symptom scoring — 7 questions + result bands */
 
-export type SymptomKey = "city" | "smoke" | "cough" | "breathless" | "dust";
+export type SymptomKey =
+  | "city"
+  | "smoke"
+  | "cough"
+  | "breathless"
+  | "dust"
+  | "mucus"
+  | "worsened";
 
 export type SymptomAnswers = Record<SymptomKey, boolean>;
 
@@ -9,22 +16,34 @@ export const SYMPTOM_QUESTIONS: ReadonlyArray<{
   text: string;
   weight: number;
 }> = [
-  { key: "city", text: "Do you live in a high-pollution city?", weight: 2 },
-  { key: "smoke", text: "Do you smoke or recently quit?", weight: 3 },
-  { key: "cough", text: "Do you have morning cough?", weight: 2 },
-  { key: "breathless", text: "Feel breathless climbing stairs?", weight: 2 },
-  { key: "dust", text: "Work near dust, chemicals, or fumes?", weight: 2 },
+  { key: "city", text: "High-pollution city", weight: 2 },
+  { key: "smoke", text: "Smoking / recent quit", weight: 3 },
+  { key: "cough", text: "Morning cough or chest heaviness", weight: 3 },
+  { key: "breathless", text: "Breathless on stairs", weight: 2 },
+  { key: "dust", text: "Dust, chemicals, or fumes exposure", weight: 2 },
+  { key: "mucus", text: "Throat clearing / mucus buildup", weight: 1 },
+  { key: "worsened", text: "Breathing worsened (6 months)", weight: 2 },
 ] as const;
 
 export const MAX_SYMPTOM_POINTS = SYMPTOM_QUESTIONS.reduce((s, q) => s + q.weight, 0);
 
 export type LungLevel = "Mild" | "Moderate" | "High";
+export type RiskSlug = "mild" | "moderate" | "high";
 
 export interface LungScore {
   points: number;
   level: LungLevel;
+  riskSlug: RiskSlug;
   color: string;
+  label: string;
   recommendation: string;
+  subtitle: string;
+}
+
+export function riskSlugFromLevel(level: LungLevel): RiskSlug {
+  if (level === "Mild") return "mild";
+  if (level === "Moderate") return "moderate";
+  return "high";
 }
 
 export function computeSymptomPoints(answers: SymptomAnswers): number {
@@ -35,20 +54,26 @@ export function computeSymptomPoints(answers: SymptomAnswers): number {
 }
 
 export function getLungScore(points: number): LungScore {
-  if (points <= 3) {
+  if (points <= 4) {
     return {
       points,
       level: "Mild",
-      color: "#16a34a",
+      riskSlug: "mild",
+      color: "#4CAF50",
+      label: "MILD",
+      subtitle: "Your lungs are holding up well — preventive care will keep them strong.",
       recommendation:
         "Your symptom score is in the mild range. Keep protecting your lungs with clean air habits and consider preventive herbal support.",
     };
   }
-  if (points <= 6) {
+  if (points <= 9) {
     return {
       points,
       level: "Moderate",
-      color: "#d97706",
+      riskSlug: "moderate",
+      color: "#FF9800",
+      label: "MODERATE",
+      subtitle: "Your lungs are under stress — a structured detox can restore clarity.",
       recommendation:
         "Your lungs are showing moderate stress from pollution or lifestyle factors. A structured 30-day detox routine can help clear buildup before symptoms worsen.",
     };
@@ -56,7 +81,10 @@ export function getLungScore(points: number): LungScore {
   return {
     points,
     level: "High",
-    color: "#dc2626",
+    riskSlug: "high",
+    color: "#F44336",
+    label: "HIGH",
+    subtitle: "Significant strain detected — early daily detox is strongly recommended.",
     recommendation:
       "Your answers suggest significant respiratory strain. Start a daily lung detox plan now — early action makes recovery faster and easier.",
   };
@@ -69,38 +97,76 @@ export type HerbHighlight = {
   highlight: boolean;
 };
 
+export type SymptomHerbMatch = {
+  symptomKey: SymptomKey;
+  symptomLabel: string;
+  herbName: string;
+  benefit: string;
+};
+
+const HERB_BENEFITS: Record<string, string> = {
+  Tulsi: "Fights pollution-related inflammation and morning respiratory stress",
+  Vasaka: "Clears chest heaviness and supports open, easy breathing",
+  Mulethi: "Soothes throat irritation and reduces mucus buildup",
+  Pippali: "Aids smoking recovery and rebuilds lung capacity",
+};
+
+export function getSymptomHerbMatches(answers: SymptomAnswers): SymptomHerbMatch[] {
+  const matches: SymptomHerbMatch[] = [];
+
+  const add = (key: SymptomKey, label: string, herbName: string) => {
+    if (!answers[key]) return;
+    matches.push({
+      symptomKey: key,
+      symptomLabel: label,
+      herbName,
+      benefit: HERB_BENEFITS[herbName] ?? "Supports respiratory wellness",
+    });
+  };
+
+  add("city", "High-pollution city exposure", "Tulsi");
+  add("smoke", "Smoking or recent quit", "Pippali");
+  add("cough", "Morning cough", "Tulsi");
+  add("cough", "Chest heaviness", "Vasaka");
+  add("breathless", "Breathlessness on exertion", "Vasaka");
+  add("dust", "Dust, chemicals, or fumes", "Pippali");
+  add("mucus", "Throat clearing / mucus", "Mulethi");
+  add("worsened", "Worsening breathing (6 months)", "Pippali");
+
+  return matches;
+}
+
+export function getMatchedHerbNames(answers: SymptomAnswers): string[] {
+  const names = new Set<string>();
+  for (const m of getSymptomHerbMatches(answers)) {
+    names.add(m.herbName);
+  }
+  if (names.size === 0) {
+    return ["Tulsi", "Vasaka"];
+  }
+  return [...names];
+}
+
 export function getHerbRecommendations(answers: SymptomAnswers): HerbHighlight[] {
   const out: HerbHighlight[] = [];
   const seen = new Set<string>();
 
-  const push = (id: string, name: string, line: string) => {
-    if (seen.has(id)) return;
-    seen.add(id);
-    out.push({ id, name, line, highlight: true });
-  };
-
-  if (answers.smoke) {
-    push("vasaka", "Vasaka", "Clears tar and opens airways — key for smokers & recent quitters");
-    push("pippali", "Pippali", "Rebuilds lung capacity and oxygen uptake");
-  }
-  if (answers.city) {
-    push("tulsi", "Tulsi", "Fights pollution-related inflammation");
-    push("mulethi", "Mulethi", "Soothes irritated airways from PM2.5 exposure");
-  }
-  if (answers.cough) {
-    push("kantakari", "Kantakari", "Targets morning cough and mucus buildup");
-  }
-  if (answers.breathless) {
-    push("pippali", "Pippali", "Supports stamina and breath on exertion");
-  }
-  if (answers.dust) {
-    push("vasaka", "Vasaka", "Helps clear occupational dust & fume exposure");
-    push("tulsi", "Tulsi", "Antioxidant shield for chemical irritants");
+  for (const match of getSymptomHerbMatches(answers)) {
+    if (seen.has(match.herbName)) continue;
+    seen.add(match.herbName);
+    out.push({
+      id: match.herbName.toLowerCase(),
+      name: match.herbName,
+      line: match.benefit,
+      highlight: true,
+    });
   }
 
   if (out.length === 0) {
-    push("tulsi", "Tulsi", "Daily lung shield for urban India");
-    push("vasaka", "Vasaka", "Keeps airways clear year-round");
+    return [
+      { id: "tulsi", name: "Tulsi", line: HERB_BENEFITS.Tulsi, highlight: true },
+      { id: "vasaka", name: "Vasaka", line: HERB_BENEFITS.Vasaka, highlight: true },
+    ];
   }
 
   return out;
@@ -121,7 +187,7 @@ export function getBreathHoldInsight(seconds: number): BreathHoldInsight {
       seconds: s,
       tier: "low",
       label: "Below average hold",
-      color: "#dc2626",
+      color: "#F44336",
       note: "Most healthy adults hold 40–60 seconds. Shorter holds often pair with higher symptom scores.",
     };
   }
@@ -130,7 +196,7 @@ export function getBreathHoldInsight(seconds: number): BreathHoldInsight {
       seconds: s,
       tier: "average",
       label: "Average capacity",
-      color: "#d97706",
+      color: "#FF9800",
       note: "Room to improve — daily breath work plus herbal detox can raise retention over 2–4 weeks.",
     };
   }
@@ -139,7 +205,7 @@ export function getBreathHoldInsight(seconds: number): BreathHoldInsight {
       seconds: s,
       tier: "strong",
       label: "Good lung retention",
-      color: "#16a34a",
+      color: "#4CAF50",
       note: "Solid hold time. Symptom score still matters — toxins from pollution can build silently.",
     };
   }
@@ -147,14 +213,22 @@ export function getBreathHoldInsight(seconds: number): BreathHoldInsight {
     seconds: s,
     tier: "excellent",
     label: "Excellent hold",
-    color: "#16a34a",
+    color: "#4CAF50",
     note: "Strong breath hold! Keep protecting lungs from daily pollution with preventive care.",
   };
 }
 
 /** @deprecated Use getLungScore + computeSymptomPoints */
 export function computeLungTestScore(yesAnswers: readonly boolean[]): number {
-  const keys: SymptomKey[] = ["city", "smoke", "cough", "breathless", "dust"];
+  const keys: SymptomKey[] = [
+    "city",
+    "smoke",
+    "cough",
+    "breathless",
+    "dust",
+    "mucus",
+    "worsened",
+  ];
   const answers = keys.reduce((acc, k, i) => {
     acc[k] = !!yesAnswers[i];
     return acc;
@@ -163,11 +237,8 @@ export function computeLungTestScore(yesAnswers: readonly boolean[]): number {
 }
 
 /** @deprecated Use getLungScore */
-export function getLungTestRiskBand(score: number): "low" | "moderate" | "high" {
-  const { level } = getLungScore(score);
-  if (level === "Mild") return "low";
-  if (level === "Moderate") return "moderate";
-  return "high";
+export function getLungTestRiskBand(score: number): RiskSlug {
+  return getLungScore(score).riskSlug;
 }
 
 export const LUNG_TEST_MAX_SCORE = MAX_SYMPTOM_POINTS;

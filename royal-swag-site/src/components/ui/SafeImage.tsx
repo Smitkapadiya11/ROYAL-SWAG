@@ -1,42 +1,35 @@
 "use client";
 
-import { useState } from "react";
-import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
-import { cn } from "@/lib/utils";
+import { OptimizedImage, type OptimizedImageProps } from "@/components/ui/OptimizedImage";
 
-type SafeImageProps = {
-  src: string;
-  alt: string;
-  label?: string;
-  className?: string;
+export type SafeImageProps = Omit<OptimizedImageProps, "fill" | "width" | "height"> & {
   imgClassName?: string;
+  fill?: boolean;
+  width?: number;
+  height?: number;
 };
 
+/** Next.js Image wrapper with WebP, blur placeholder, and JPEG fallback. */
 export function SafeImage({
-  src,
-  alt,
-  label,
-  className,
   imgClassName,
+  className,
+  fill = true,
+  width,
+  height,
+  ...props
 }: SafeImageProps) {
-  const [failed, setFailed] = useState(false);
+  const mergedClass = [className, imgClassName].filter(Boolean).join(" ") || undefined;
 
-  if (failed) {
-    return (
-      <ImagePlaceholder
-        label={label || alt}
-        className={cn("h-full w-full", className)}
-      />
-    );
+  if (fill || (!width && !height)) {
+    return <OptimizedImage {...props} fill className={mergedClass} />;
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      className={cn("h-full w-full object-cover", imgClassName, className)}
-      onError={() => setFailed(true)}
+    <OptimizedImage
+      {...props}
+      width={width!}
+      height={height!}
+      className={mergedClass}
     />
   );
 }

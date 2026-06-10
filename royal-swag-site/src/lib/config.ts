@@ -1,37 +1,39 @@
+import { siteConfig } from "@/lib/siteConfig";
+
 /** FSSAI license shown on site (set NEXT_PUBLIC_FSSAI_LICENSE in production). */
-export const FSSAI_LICENSE =
-  process.env.NEXT_PUBLIC_FSSAI_LICENSE?.trim() ||
-  process.env.NEXT_PUBLIC_FSSAI_NUMBER?.trim() ||
-  "Licensed";
+export const FSSAI_LICENSE = siteConfig.fssaiLicense;
 
 /** Public support contact (override via env in production). */
-export const SUPPORT_EMAIL =
-  process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@royalswag.in";
+export const SUPPORT_EMAIL = siteConfig.email;
+
+const addressParts = siteConfig.address.split(",").map((s) => s.trim());
+const addressL1 = addressParts.slice(0, 2).join(", ") || siteConfig.address;
+const addressL2 = addressParts.slice(2).join(", ") || "";
 
 export const S = {
   name: "Royal Swag",
   tagline: "Breathe Clean. Live Free.",
   price: { now: "₹599", was: "₹698" },
-  company: "Eximburg International Pvt. Ltd.",
+  company: siteConfig.companyName,
   address: {
-    l1: "Plot No. 150, 3rd Floor, Amrut Udhyognagar",
-    l2: "Kholvad, Kamrej, Surat — Gujarat 394185",
+    l1: addressL1,
+    l2: addressL2,
   },
-  phone: "+91 70965 53300",
-  phoneRaw: "917096553300",
-  email: SUPPORT_EMAIL,
-  fssai: FSSAI_LICENSE,
+  phone: siteConfig.phone,
+  phoneRaw: siteConfig.whatsappNumber,
+  email: siteConfig.email,
+  fssai: siteConfig.fssaiLicense,
   wa: {
-    num: "917096553300",
-    msg: encodeURIComponent("Hi, I want to order Royal Swag Lung Detox Tea. Please share pack details."),
+    num: siteConfig.whatsappNumber,
+    msg: siteConfig.whatsappOrderMessage,
     get url() {
-      return `https://wa.me/${this.num}?text=${this.msg}`;
+      return siteConfig.whatsappOrderLink;
     },
   },
   social: {
-    ig: "https://www.instagram.com/royalswag_official/",
-    yt: "https://www.youtube.com/@royalswagofficial",
-    fb: "https://www.facebook.com/royalswag.herbal.cigarette/",
+    ig: siteConfig.social.instagram,
+    yt: siteConfig.social.youtube,
+    fb: siteConfig.social.facebook,
     tw: "https://twitter.com/royalswag",
   },
   certs: ["ISO", "GMP", "FSSAI", "AYUSH", "LEAN"],
@@ -48,7 +50,7 @@ export const S = {
       bot: "Adhatoda vasica",
       role: "The Airway Opener",
       benefit: "Breaks down mucus, opens bronchial passages.",
-      img: "/images/herbs/vasaka.jpeg",
+      img: "/images/herbs/vasaka.webp",
     },
     {
       id: "mulethi",
@@ -56,7 +58,7 @@ export const S = {
       bot: "Glycyrrhiza glabra",
       role: "The Soother",
       benefit: "Soothes inflamed airways, eases chronic cough.",
-      img: "/images/herbs/mulethi.jpeg",
+      img: "/images/herbs/mulethi.webp",
     },
     {
       id: "tulsi",
@@ -64,7 +66,7 @@ export const S = {
       bot: "Ocimum sanctum",
       role: "The Sacred Healer",
       benefit: "Anti-inflammatory, fights respiratory infections.",
-      img: "/images/herbs/tulsi.jpg",
+      img: "/images/herbs/tulsi.webp",
     },
     {
       id: "pippali",
@@ -72,7 +74,7 @@ export const S = {
       bot: "Piper longum",
       role: "The Reviver",
       benefit: "Expands lung capacity, improves oxygen absorption.",
-      img: "/images/herbs/pippali.jpeg",
+      img: "/images/herbs/pippali.webp",
     },
     {
       id: "kantakari",
@@ -80,7 +82,7 @@ export const S = {
       bot: "Solanum xanthocarpum",
       role: "The Cleanser",
       benefit: "Relieves bronchitis, clears blocked airways.",
-      img: "/images/herbs/kantakari.jpg",
+      img: "/images/herbs/kantakari.webp",
     },
     {
       id: "bibhitaki",
@@ -88,7 +90,7 @@ export const S = {
       bot: "Terminalia bellirica",
       role: "The Protector",
       benefit: "Prevents infection, clears accumulated lung toxins.",
-      img: "/images/bibhitaki.jpg",
+      img: "/images/bibhitaki.webp",
     },
     {
       id: "pushkarmool",
@@ -96,7 +98,7 @@ export const S = {
       bot: "Inula racemosa",
       role: "The Deep Purifier",
       benefit: "Deep lung purification, reduces pulmonary inflammation.",
-      img: "/images/herbs/pushkarmool.jpg",
+      img: "/images/herbs/pushkarmool.webp",
     },
   ],
   team: [
@@ -105,7 +107,7 @@ export const S = {
       initials: "HS",
       name: "Hitesh Sabhadiya",
       role: "Founder & CEO",
-      img: "/images/hitesh.jpeg",
+      img: "/images/hitesh.webp",
       bio: "Started Eximburg in 2015. Built Royal Swag from Surat into something people trust on four continents. You may have seen us on Amazon Prime or Netflix.",
     },
     {
@@ -113,7 +115,7 @@ export const S = {
       initials: "MK",
       name: "Manoj Koshiya",
       role: "Co-Founder",
-      img: "/images/manoj.jpeg",
+      img: "/images/manoj.webp",
       bio: "Runs R&D and the factory floor. He won't release a batch until it clears ISO, GMP, FSSAI, and AYUSH checks.",
     },
     {
@@ -121,7 +123,7 @@ export const S = {
       initials: "JS",
       name: "Jaideep Singh",
       role: "Business Director",
-      img: "/images/jaideep%20singh.jpeg",
+      img: "/images/jaideep singh.webp",
       bio: "Twelve years in e-commerce. Handles Amazon, our own site, and the numbers behind what ships each week.",
     },
   ],
@@ -173,17 +175,16 @@ export const S = {
 
 export const APP_SITE = {
   name: "Royal Swag",
-  phone: "+91 70965 53300",
-  whatsapp:
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") || "917096553300",
-  email: SUPPORT_EMAIL,
-  address: "Plot No. 150, 3rd Floor, Amrut Udhyognagar, Kholvad, Kamrej, Surat — Gujarat 394185",
-  fssai: FSSAI_LICENSE,
+  phone: siteConfig.phone,
+  whatsapp: siteConfig.whatsappNumber,
+  email: siteConfig.email,
+  address: siteConfig.address,
+  fssai: siteConfig.fssaiLicense,
   adminEmail: "admin@eximburginternational.in",
   razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? "",
-  instagram: "https://www.instagram.com/royalswag_official/",
-  youtube: "https://www.youtube.com/@royalswagofficial",
-  facebook: "https://www.facebook.com/royalswag.herbal.cigarette/",
+  instagram: siteConfig.social.instagram,
+  youtube: siteConfig.social.youtube,
+  facebook: siteConfig.social.facebook,
 } as const;
 
 export const SITE = {
@@ -233,7 +234,9 @@ export const SITE_CONFIG = {
   whatsappNumber: APP_SITE.whatsapp,
 };
 
-export const SITE_ORIGIN = "https://lungdetox.royalswag.in";
+export const SITE_ORIGIN =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://lungdetox.royalswag.in";
 
 export const PACKS = [
   {
@@ -246,7 +249,7 @@ export const PACKS = [
     original: 499,
     saving: 150,
     tag: null,
-    image: "/images/product/product-1.jpg",
+    image: "/images/product/product-1.webp",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Starter%20Pack%20%281%20pack%2C%20%E2%82%B9349%29.%20Please%20confirm.",
   },
@@ -260,7 +263,7 @@ export const PACKS = [
     original: 698,
     saving: 99,
     tag: "MOST POPULAR",
-    image: "/images/product/product-4.jpg",
+    image: "/images/product/product-4.webp",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Progress%20Pack%20%282%20packs%2C%20%E2%82%B9599%29.%20Please%20confirm.",
   },
@@ -274,7 +277,7 @@ export const PACKS = [
     original: 1047,
     saving: 198,
     tag: "BEST VALUE",
-    image: "/images/product/product-7.jpg",
+    image: "/images/product/product-7.webp",
     whatsappText:
       "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Result%20Pack%20%283%20packs%2C%20%E2%82%B9849%29.%20Please%20confirm.",
   },

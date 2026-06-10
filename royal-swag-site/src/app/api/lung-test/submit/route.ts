@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { sendNurtureEmail } from "@/lib/nurture-email";
 import {
   computeSymptomPoints,
   getHerbRecommendations,
   getLungScore,
+  getMatchedHerbNames,
   type SymptomAnswers,
 } from "@/lib/lungScore";
-import { sendLungTestResultEmail } from "@/lib/lung-test-email";
-import { SITE_ORIGIN } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,9 +24,11 @@ export async function POST(req: NextRequest) {
       cough,
       breathless,
       dust,
+      mucus,
+      worsened,
       breathHoldSeconds,
       score: clientScore,
-      level: clientLevel,
+      sourceUrl,
     } = body as {
       name?: string;
       email?: string;
@@ -36,9 +38,11 @@ export async function POST(req: NextRequest) {
       cough?: boolean;
       breathless?: boolean;
       dust?: boolean;
+      mucus?: boolean;
+      worsened?: boolean;
       breathHoldSeconds?: number;
       score?: number;
-      level?: string;
+      sourceUrl?: string;
     };
 
     if (!name?.trim() || !email?.trim()) {
@@ -58,6 +62,8 @@ export async function POST(req: NextRequest) {
       cough: Boolean(cough),
       breathless: Boolean(breathless),
       dust: Boolean(dust),
+      mucus: Boolean(mucus),
+      worsened: Boolean(worsened),
     };
 
     const points = computeSymptomPoints(answers);
@@ -67,14 +73,17 @@ export async function POST(req: NextRequest) {
       console.warn("[lung-test/submit] score mismatch", { clientScore, points });
     }
 
-    const level = lungScore.level;
+    const matchedHerbs = getMatchedHerbNames(answers);
+    const herbs = getHerbRecommendations(answers);
     const breath =
       typeof breathHoldSeconds === "number" && !Number.isNaN(breathHoldSeconds)
         ? Math.round(breathHoldSeconds * 10) / 10
         : null;
 
     const admin = getSupabaseAdmin();
-    const row = {
+    const sourcePage = sourceUrl || "/lung-test";
+
+    const lungRow = {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       phone: phoneDigits,
@@ -83,57 +92,52 @@ export async function POST(req: NextRequest) {
       cough: answers.cough,
       breathless: answers.breathless,
       dust: answers.dust,
+      mucus: answers.mucus,
+      worsened: answers.worsened,
       breath_hold_seconds: breath,
       score: points,
-      level,
+      level: lungScore.level,
+      matched_herbs: matchedHerbs,
+      source_page: sourcePage,
     };
 
     const { data: inserted, error: leadError } = await admin
       .from("lung_test_leads")
-      .insert(row)
+      .insert(lungRow)
       .select("id")
       .single();
 
     if (leadError) {
       console.error("[lung-test/submit] lung_test_leads:", leadError.message);
-      return NextResponse.json({ error: leadError.message }, { status: 500 });
     }
 
     try {
-      await admin.from("lung_test_results").insert({
-        name: row.name,
-        mobile: row.phone,
-        email: row.email,
-        risk_level: level,
+      await admin.from("leads").insert({
+        name: lungRow.name,
+        email: lungRow.email,
+        phone: lungRow.phone,
         score: points,
-        answers: {
-          ...answers,
-          breath_hold_seconds: breath,
-        },
+        risk_level: lungScore.riskSlug,
+        answers,
+        matched_herbs: matchedHerbs,
+        source_page: sourcePage,
+        source: "lung_test",
+        nurture_emails_sent: ["day0"],
       });
-    } catch {
-      /* legacy table optional */
+      void sendNurtureEmail(lungRow.email, 0);
+    } catch (leadsErr) {
+      console.error("[lung-test/submit] leads:", leadsErr);
     }
-
-    const herbs = getHerbRecommendations(answers);
-    const reportUrl = `${SITE_ORIGIN}/lung-test/result`;
-
-    await sendLungTestResultEmail({
-      name: row.name,
-      email: row.email,
-      score: lungScore,
-      herbs,
-      answers,
-      breathHoldSeconds: breath ?? 0,
-      reportUrl,
-    });
 
     return NextResponse.json({
       ok: true,
-      id: inserted.id,
+      id: inserted?.id,
       score: points,
-      level,
+      level: lungScore.level,
+      riskSlug: lungScore.riskSlug,
       color: lungScore.color,
+      matchedHerbs,
+      herbs,
     });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Save failed";

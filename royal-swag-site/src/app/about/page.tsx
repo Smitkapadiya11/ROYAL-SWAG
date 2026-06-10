@@ -7,6 +7,7 @@ import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { FounderPhoto } from "@/components/about/FounderPhoto";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
+import { Container, Grid, GridCol, Section } from "@/components/layout";
 import { cn } from "@/lib/utils";
 
 const TIMELINE = [
@@ -47,7 +48,7 @@ const FOUNDERS = [
     name: "Jaideep Singh",
     role: "Co-Founder",
     focus: "Brand & Marketing",
-    img: "/images/jaideep%20singh.jpeg",
+    img: "/images/jaideep singh.jpeg",
   },
 ] as const;
 
@@ -75,15 +76,16 @@ export default function AboutPage() {
   return (
     <div className="page-mobile-pad relative flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-parchment font-sans text-on-surface antialiased">
       {/* Mobile hero */}
-      <section className="relative flex flex-col items-center gap-6 px-5 pb-16 pt-24 text-center md:hidden">
+      <Section compact className="flex flex-col items-center gap-6 pb-16 pt-12 text-center md:hidden">
+        <Container>
         <h1 className="font-display text-[36px] font-bold leading-[42px] text-primary-container">
           Born in Surat.
           <br />
           <span className="text-ayurvedic-gold">Built for India&apos;s Lungs.</span>
         </h1>
-        <div className="relative mt-4 aspect-[4/5] w-full overflow-hidden rounded-[32px] border border-glass-border shadow-lg">
+        <div className="layout-media--fill relative mt-4 aspect-[4/5] w-full overflow-hidden rounded-layout-lg border border-glass-border shadow-lg">
           <SafeImage
-            className="h-full w-full"
+            className="h-full w-full max-w-full object-cover"
             src="/images/hero/asset2.jpeg"
             alt="Lush tea fields"
             label="Tea Fields"
@@ -93,37 +95,45 @@ export default function AboutPage() {
             aria-hidden
           />
         </div>
-      </section>
+        </Container>
+      </Section>
 
-      {/* Desktop hero */}
-      <section className="site-container hidden gap-12 py-16 md:grid md:grid-cols-2 md:items-center md:py-20">
-        <div className="text-left">
-          <h1 className="font-display text-[42px] font-bold leading-tight text-primary-container lg:text-5xl">
-            Born in Surat.
-            <br />
-            <span className="text-ayurvedic-gold">Built for India&apos;s Lungs.</span>
-          </h1>
-          <p className="mt-6 max-w-md font-sans text-lg leading-relaxed text-on-surface-variant">
-            From helping India quit smoking to healing lungs damaged by pollution
-            and past habits — our story is rooted in Surat and built for every
-            Indian city.
-          </p>
-        </div>
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[32px] border border-glass-border shadow-lg">
-          <SafeImage
-            className="h-full w-full"
-            src="/images/hero/asset2.jpeg"
-            alt="Lush tea fields"
-            label="Tea Fields"
-          />
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent"
-            aria-hidden
-          />
-        </div>
-      </section>
+      {/* Desktop hero — 5/12 + 7/12 */}
+      <Section bg="cream" className="hidden md:block">
+        <Container>
+          <Grid twelveCol className="items-center">
+            <GridCol span={{ mobile: 4, tablet: 6, desktop: 5 }}>
+              <h1 className="text-left font-display text-[42px] font-bold leading-tight text-primary-container lg:text-5xl">
+                Born in Surat.
+                <br />
+                <span className="text-ayurvedic-gold">Built for India&apos;s Lungs.</span>
+              </h1>
+              <p className="mt-6 max-w-md font-sans text-lg leading-relaxed text-on-surface-variant">
+                From helping India quit smoking to healing lungs damaged by pollution
+                and past habits — our story is rooted in Surat and built for every
+                Indian city.
+              </p>
+            </GridCol>
+            <GridCol span={{ mobile: 4, tablet: 6, desktop: 7 }}>
+              <div className="layout-media--fill relative aspect-[4/5] w-full overflow-hidden rounded-layout-lg border border-glass-border shadow-lg">
+                <SafeImage
+                  className="h-full w-full max-w-full object-cover"
+                  src="/images/hero/asset2.jpeg"
+                  alt="Lush tea fields"
+                  label="Tea Fields"
+                />
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent"
+                  aria-hidden
+                />
+              </div>
+            </GridCol>
+          </Grid>
+        </Container>
+      </Section>
 
-      <section className="site-container relative py-16 md:py-20">
+      <Section>
+        <Container className="relative">
         <div className="mb-12 text-center md:mb-16">
           <h2 className="font-display text-[32px] font-semibold text-primary md:text-4xl">
             Our Journey
@@ -160,10 +170,12 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-      </section>
+        </Container>
+      </Section>
 
-      <section className="site-container py-16 md:py-20">
-        <div className="mx-auto max-w-3xl text-center md:text-left">
+      <Section>
+        <Container size="md">
+        <div className="text-center md:text-left">
           <h2 className="font-display text-[32px] font-semibold text-primary md:text-4xl">
             The Journey to Clarity
           </h2>
@@ -171,7 +183,7 @@ export default function AboutPage() {
             Drag to compare lung health before and after 30 days of Royal Swag.
           </p>
         </div>
-        <div className="mx-auto mt-8 max-w-3xl">
+        <div className="mt-8 min-w-0">
           <BeforeAfterSlider
             beforeSrc="/images/lungs-before.png"
             afterSrc="/images/lungs-after.png"
@@ -179,10 +191,12 @@ export default function AboutPage() {
             afterLabel="After 30 Days"
           />
         </div>
-      </section>
+        </Container>
+      </Section>
 
-      <section className="site-container py-16 md:py-20">
-        <div className="relative overflow-hidden rounded-[40px] border border-glass-border bg-[#eff6e1] px-5 py-12 shadow-sm md:px-10 md:py-14">
+      <Section>
+        <Container>
+        <div className="relative overflow-hidden rounded-layout-lg border border-glass-border bg-[#eff6e1] px-5 py-12 shadow-sm md:px-10 md:py-14">
           <div
             className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-surface-container-high opacity-60 blur-3xl"
             aria-hidden
@@ -195,11 +209,11 @@ export default function AboutPage() {
               The minds architecting Ayurvedic respiratory care.
             </p>
           </div>
-          <div className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+          <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }} className="relative z-10">
             {FOUNDERS.map((f) => (
               <div
                 key={f.name}
-                className="glass-card overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="glass-card overflow-hidden rounded-2xl transition-all duration-400 hover:-translate-y-1 hover:shadow-xl"
               >
                 <div
                   className="flex w-full items-center justify-center bg-gradient-to-br from-[#e9f1dc] to-[#dee5d1]"
@@ -220,11 +234,13 @@ export default function AboutPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </Grid>
         </div>
-      </section>
+        </Container>
+      </Section>
 
-      <section className="site-container py-16 md:py-20" id="certifications">
+      <Section id="certifications">
+        <Container>
         <div className="mb-10 text-center">
           <h2 className="font-display text-[32px] font-semibold text-primary md:text-4xl">
             Uncompromising Quality
@@ -271,9 +287,10 @@ export default function AboutPage() {
             )
           )}
         </div>
-      </section>
+        </Container>
+      </Section>
 
-      <footer className="flex w-full flex-col gap-8 rounded-t-[40px] bg-primary px-5 py-12 pb-28 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:hidden">
+      <footer className="flex w-full flex-col gap-8 rounded-t-layout-lg bg-primary px-5 py-12 pb-28 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:hidden">
         <BrandLogo variant="on-dark" className="h-10 w-auto" />
         <div className="flex flex-col gap-5">
           {FOOTER_LINKS.map((l) => (

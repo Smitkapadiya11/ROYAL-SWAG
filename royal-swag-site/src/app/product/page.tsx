@@ -2,20 +2,21 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import CountdownTimer from "@/components/ui/CountdownTimer";
-import ProductSocialProof from "@/components/ui/ProductSocialProof";
-import ProductCheckout from "@/components/product/ProductCheckout";
+import toast from "react-hot-toast";
+import dynamic from "next/dynamic";
+import UrgencySignals, { TrustStrip } from "@/components/product/UrgencySignals";
 import ProductBuyButton from "@/components/product/ProductBuyButton";
+import { ProductCta } from "@/components/product/ProductCta";
+import { writeCart } from "@/lib/cart";
 import ProductGallery from "@/components/product/ProductGallery";
-import ProductJsonLd from "@/components/seo/ProductJsonLd";
+import ProductSchema from "@/components/seo/ProductSchema";
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
-import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import {
-  BUNDLES,
-  DEFAULT_BUNDLE,
-  getSaving,
-  type Bundle,
-} from "@/lib/productPricing";
+  DEFAULT_PRODUCT_BUNDLE,
+  type ProductBundleOption,
+} from "@/lib/bundle-options";
+import { getSaving } from "@/lib/productPricing";
+import { useConversionBar } from "@/contexts/ConversionBarContext";
 import { EVENTS, trackEvent } from "@/lib/events";
 import {
   MAIN_PRODUCT_IMAGE,
@@ -23,8 +24,23 @@ import {
 } from "@/lib/product-images";
 import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
 import ClientPortal from "@/components/ui/ClientPortal";
+import { Container } from "@/components/layout";
+import { useTranslations } from "@/contexts/LocaleContext";
 
 const MAIN_FALLBACK = MAIN_PRODUCT_IMAGE;
+
+const CountdownTimer = dynamic(() => import("@/components/product/CountdownTimer"), {
+  ssr: false,
+  loading: () => <div className="h-8 w-48 animate-pulse rounded bg-surface-container" />,
+});
+
+const BundleSelector = dynamic(() => import("@/components/product/BundleSelector"), {
+  loading: () => <div className="h-40 animate-pulse rounded-2xl bg-surface-container" />,
+});
+
+const CheckoutModal = dynamic(() => import("@/components/checkout/CheckoutModal"), {
+  ssr: false,
+});
 
 const HERBS = [
   {
@@ -104,37 +120,33 @@ const COMPARISON_ROWS = [
   ["Daily in 5 minutes", "✓", "✓"],
 ] as const;
 
-function hideBrokenImage(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
-
-function handleImageFallback(
-  e: React.SyntheticEvent<HTMLImageElement>,
-  fallback: string
-) {
-  const el = e.currentTarget;
-  if (el.src.endsWith(fallback)) {
-    el.style.display = "none";
-    return;
-  }
-  el.src = fallback;
-}
-
 export default function ProductPage() {
+  const { t } = useTranslations();
   const { showCheckout, setShowCheckout, openCheckout } = useCheckoutUi();
   const [activeIdx, setActiveIdx] = useState(0);
   const [activeImage, setActiveImage] = useState<string>(
     PRODUCT_GALLERY[0] ?? MAIN_FALLBACK
   );
-  const [selectedBundle, setSelectedBundle] = useState<Bundle>(DEFAULT_BUNDLE);
-  const [showStickyBuy, setShowStickyBuy] = useState(false);
-  const purchasePanelRef = useRef<HTMLDivElement>(null);
-  const mobilePurchaseAnchorRef = useRef<HTMLDivElement>(null);
-
-  const productImages = useMemo(
-    () => (PRODUCT_GALLERY.length > 0 ? [...PRODUCT_GALLERY] : [MAIN_FALLBACK]),
-    []
+  const { setBarConfig } = useConversionBar();
+  const [selectedBundle, setSelectedBundle] = useState<ProductBundleOption>(
+    DEFAULT_PRODUCT_BUNDLE
   );
+  const [showStickyBuy, setShowStickyBuy] = useState(false);
+  const [checkoutPhase, setCheckoutPhase] = useState<1 | 2>(1);
+  const purchasePanelRef = useRef<HTMLDivElement>(null);
+
+  const [productImages, setProductImages] = useState<string[]>(() =>
+    PRODUCT_GALLERY.length > 0 ? [...PRODUCT_GALLERY] : [MAIN_FALLBACK]
+  );
+
+  const handleMainImageError = useCallback(() => {
+    setActiveImage(MAIN_FALLBACK);
+    setActiveIdx(0);
+  }, []);
+
+  const handleThumbImageError = useCallback((src: string) => {
+    setProductImages((prev) => prev.filter((img) => img !== src));
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = showCheckout ? "hidden" : "";
@@ -152,16 +164,12 @@ export default function ProductPage() {
   }, [showCheckout, setShowCheckout]);
 
   useEffect(() => {
+    const panel = purchasePanelRef.current;
+    if (!panel) return;
+
     const updateSticky = () => {
-      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-      const anchor = isDesktop
-        ? purchasePanelRef.current
-        : mobilePurchaseAnchorRef.current;
-      if (!anchor) {
-        setShowStickyBuy(false);
-        return;
-      }
-      const rect = anchor.getBoundingClientRect();
+      const rect = panel.getBoundingClientRect();
+      // Only show float after purchase panel has fully left the viewport
       setShowStickyBuy(rect.bottom <= 0);
     };
 
@@ -174,19 +182,10 @@ export default function ProductPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (showStickyBuy) {
-      document.body.classList.add("product-sticky-buy");
-    } else {
-      document.body.classList.remove("product-sticky-buy");
-    }
-    return () => document.body.classList.remove("product-sticky-buy");
-  }, [showStickyBuy]);
-
-  const selectBundle = useCallback((bundle: Bundle) => {
+  const selectBundle = useCallback((bundle: ProductBundleOption) => {
     setSelectedBundle(bundle);
     trackEvent(EVENTS.BUNDLE_SELECT, {
-      pack_name: bundle.label,
+      pack_name: bundle.title,
       packId: bundle.id,
       price: bundle.price,
       page: "/product",
@@ -199,8 +198,39 @@ export default function ProductPage() {
       packId: selectedBundle.id,
       price: selectedBundle.price,
     });
+    setCheckoutPhase(1);
     openCheckout();
   }, [openCheckout, selectedBundle.id, selectedBundle.price]);
+
+  useEffect(() => {
+    setBarConfig({
+      productName: "Royal Swag Lung Detox Tea",
+      price: selectedBundle.price,
+      mrp: selectedBundle.mrp,
+      packId: selectedBundle.id,
+      packLabel: selectedBundle.title,
+      onBuyNow: handleBuyNow,
+    });
+    return () => setBarConfig(null);
+  }, [selectedBundle, setBarConfig, handleBuyNow]);
+
+  const handleAddToCart = useCallback(() => {
+    writeCart({
+      packId: selectedBundle.id,
+      packLabel: selectedBundle.title,
+      price: selectedBundle.price,
+      mrp: selectedBundle.mrp,
+      quantity: 1,
+    });
+    trackEvent(EVENTS.ADD_TO_CART, {
+      page: "/product",
+      packId: selectedBundle.id,
+      price: selectedBundle.price,
+    });
+    toast.success("Added to cart");
+    setCheckoutPhase(2);
+    openCheckout();
+  }, [openCheckout, selectedBundle]);
 
   const handleImageSelect = useCallback((idx: number, src: string) => {
     setActiveIdx(idx);
@@ -220,119 +250,42 @@ export default function ProductPage() {
         </span>
       </div>
       <h1 className="font-display text-[32px] font-bold leading-tight text-primary md:text-[36px] md:leading-[42px]">
-        Lung Detox Tea
+        {t("product.title")}
       </h1>
       <p className="font-sans text-base leading-6 text-on-surface-variant">
-        Cleanse, soothe, and rejuvenate your respiratory system with ancient
-        botanical wisdom.
+        {t("product.subtitle")}
       </p>
-      <div className="mt-1 flex flex-wrap items-baseline gap-3">
-        <span className="price-num font-number text-[32px] font-semibold tabular-nums text-primary">
-          ₹{selectedBundle.price}
-        </span>
-        <span className="price-num font-number text-base tabular-nums text-on-surface-variant line-through">
-          ₹{selectedBundle.mrp}
-        </span>
-        <span className="rounded-full bg-ayurvedic-gold/10 px-2 py-1 font-sans text-xs font-bold text-ayurvedic-gold">
-          Save <span className="font-number tabular-nums">{savingPct}</span>%
-        </span>
-      </div>
-      <div className="mt-1">
-        <CountdownTimer />
-      </div>
+      <ProductCta
+        price={selectedBundle.price}
+        mrp={selectedBundle.mrp}
+        discountPct={savingPct}
+        onBuyNow={handleBuyNow}
+        onAddToCart={handleAddToCart}
+        hideDeliveryNote
+        beforeBuy={
+          <>
+            <CountdownTimer className="mb-3 mt-1" />
+            <UrgencySignals className="mb-3" />
+          </>
+        }
+        afterBuy={<TrustStrip className="mt-2" />}
+      />
     </div>
   );
 
   const bundlePicker = (
-    <section className="rounded-2xl bg-white/30 p-4 md:bg-white/40 md:p-5">
-      <h2 className="mb-4 text-center font-display text-xl font-semibold text-primary md:text-left md:text-2xl">
-        Choose Your Detox Pack
-      </h2>
-      <div className="flex flex-col gap-3 md:gap-4">
-        {BUNDLES.map((bundle) => (
-          <div
-            key={bundle.id}
-            role="button"
-            tabIndex={0}
-            data-track-button={`bundle-${bundle.id}`}
-            data-track-label={bundle.label}
-            onClick={() => selectBundle(bundle)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                selectBundle(bundle);
-              }
-            }}
-            className={`relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-300 ${
-              selectedBundle.id === bundle.id
-                ? "shadow-[0_8px_32px_rgba(154,111,26,0.2)] ring-2 ring-[#9A6F1A]"
-                : "ring-1 ring-[rgba(255,255,255,0.5)] hover:ring-[#9A6F1A]/50"
-            }`}
-            style={{
-              background:
-                selectedBundle.id === bundle.id
-                  ? "rgba(154,111,26,0.05)"
-                  : "rgba(255,255,255,0.4)",
-              backdropFilter: "blur(12px)",
-            }}
-          >
-            {bundle.badge && (
-              <div className="absolute left-0 right-0 top-0 z-10 flex justify-center">
-                <span
-                  className={`px-4 py-1 font-sans text-[10px] font-bold tracking-wider ${
-                    bundle.badge === "BEST VALUE"
-                      ? "bg-[#9A6F1A] text-white"
-                      : "bg-[#324023] text-white"
-                  }`}
-                >
-                  {bundle.badge}
-                </span>
-              </div>
-            )}
-            <div className="flex items-center gap-3 p-4 pt-6">
-              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[#324023] to-[#9A6F1A] md:h-24 md:w-24">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={bundle.img}
-                  alt={bundle.label}
-                  className="h-full w-full object-contain p-1"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="mb-1 font-sans text-sm font-bold text-[#324023]">
-                  {bundle.label}
-                </h4>
-                <p className="mb-2 font-sans text-[11px] text-[#45483f]">
-                  {bundle.packs} · {bundle.description}
-                </p>
-                <PriceDisplay price={bundle.price} mrp={bundle.mrp} size="sm" />
-              </div>
-              <div
-                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-                  selectedBundle.id === bundle.id
-                    ? "border-[#9A6F1A] bg-[#9A6F1A]"
-                    : "border-[#c5c8bc] bg-white"
-                }`}
-              >
-                {selectedBundle.id === bundle.id && (
-                  <div className="h-2 w-2 rounded-full bg-white" />
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
+    <BundleSelector
+      selectedId={selectedBundle.id}
+      onSelect={selectBundle}
+      className="rounded-2xl bg-white/30 p-4 md:bg-white/40 md:p-5"
+    />
   );
 
   const buyCta = (compact = false) => (
     <ProductBuyButton
       price={selectedBundle.price}
       mrp={selectedBundle.mrp}
-      packLabel={selectedBundle.label}
+      packLabel={selectedBundle.title}
       savingPct={savingPct}
       onClick={handleBuyNow}
       size={compact ? "compact" : "default"}
@@ -341,7 +294,7 @@ export default function ProductPage() {
 
   return (
     <div
-      className="min-h-screen bg-parchment pb-32 font-sans text-on-surface md:pb-16"
+      className="product-page-root min-h-screen w-full min-w-0 overflow-x-hidden bg-parchment pb-32 font-sans text-on-surface md:pb-16"
       style={{
         backgroundImage:
           "radial-gradient(rgba(73,87,56,0.05) 1px, transparent 1px)",
@@ -349,7 +302,7 @@ export default function ProductPage() {
       }}
     >
       <ProductViewTracker />
-      <ProductJsonLd />
+      <ProductSchema />
 
       {/* Desktop floating buy bar — portaled so fixed positioning stays viewport-locked */}
       <ClientPortal>
@@ -367,7 +320,7 @@ export default function ProductPage() {
         </div>
       </ClientPortal>
 
-      <div className="site-container mx-auto w-full min-w-0 max-w-none">
+      <Container as="main" className="w-full min-w-0">
         <nav className="mb-4 flex items-center gap-2 pt-4 text-xs text-on-surface-variant">
           <Link href="/" className="hover:text-primary">
             Home
@@ -389,9 +342,10 @@ export default function ProductPage() {
               activeImage={activeImage}
               fallback={MAIN_FALLBACK}
               onSelect={handleImageSelect}
-              onMainError={(e) => handleImageFallback(e, MAIN_FALLBACK)}
-              onThumbError={hideBrokenImage}
+              onMainError={handleMainImageError}
+              onThumbError={handleThumbImageError}
             />
+            <div className="mt-4 md:hidden">{titleBlock}</div>
           </div>
 
           {/* Desktop purchase panel — title, packs, buy at top */}
@@ -402,12 +356,11 @@ export default function ProductPage() {
           >
             {titleBlock}
             {bundlePicker}
-            {buyCta()}
             <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
               <span className="text-2xl">🛡</span>
               <div>
                 <p className="font-sans text-sm font-bold text-white">
-                  30-Day Money Back. Zero Questions.
+                  {t("product.guarantee")}
                 </p>
                 <p className="font-sans text-[11px] text-white/70">
                   Full refund via WhatsApp — we&apos;ve done this 47 times in 3
@@ -418,19 +371,13 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Mobile: purchase first, details below */}
+        {/* Mobile title + details — all content preserved */}
         <div className="mt-6 flex min-w-0 flex-col gap-6 md:mt-12">
-          <div className="flex flex-col gap-4 md:hidden">
-            {titleBlock}
-            {bundlePicker}
-            <div ref={mobilePurchaseAnchorRef}>{buyCta()}</div>
-          </div>
-
-          <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3 md:mt-0">
+          <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
             <span className="text-2xl">🛡</span>
             <div>
               <p className="font-sans text-sm font-bold text-white">
-                30-Day Money Back. Zero Questions.
+                {t("product.guarantee")}
               </p>
               <p className="font-sans text-[11px] text-white/70">
                 If you don&apos;t feel a difference — WhatsApp us. Full refund.
@@ -507,7 +454,8 @@ export default function ProductPage() {
             ))}
           </div>
 
-          <ProductSocialProof className="mx-auto max-w-full" />
+          {/* Mobile-only bundle picker (desktop has it in purchase panel) */}
+          <div className="md:hidden">{bundlePicker}</div>
 
           <section className="border-t border-[rgba(200,210,190,0.4)] py-8">
             <h3 className="mb-2 font-display text-2xl font-bold text-[#324023]">
@@ -694,83 +642,18 @@ export default function ProductPage() {
             ))}
           </div>
         </section>
-      </div>
+      </Container>
 
-      {showCheckout && (
-        <ClientPortal>
-        <div className="fixed inset-0 z-[80] flex flex-col justify-end md:items-center md:justify-center md:p-6">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            aria-label="Close checkout"
-            onClick={() => setShowCheckout(false)}
-          />
-          <div
-            className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-[#F4EDD6] md:max-w-lg md:rounded-3xl md:shadow-2xl"
-            style={{
-              animation: "slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
-            }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="checkout-sheet-title"
-          >
-            <div className="flex justify-center pb-1 pt-3 md:hidden">
-              <div className="h-1 w-10 rounded-full bg-[#c5c8bc]" />
-            </div>
-            <div className="flex items-center justify-between border-b border-[rgba(200,210,190,0.4)] px-5 py-3">
-              <div>
-                <h3
-                  id="checkout-sheet-title"
-                  className="font-display text-xl font-bold text-[#324023]"
-                >
-                  Complete Your Order
-                </h3>
-                <p className="font-sans text-xs text-[#45483f]">
-                  {selectedBundle.label} ·{" "}
-                  <span className="font-number tabular-nums">
-                    ₹{selectedBundle.price}
-                  </span>
-                  <span className="ml-1 font-number text-[#75786e] line-through tabular-nums">
-                    ₹{selectedBundle.mrp}
-                  </span>
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCheckout(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#dee5d1] text-sm font-bold text-[#324023]"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="px-5 pb-8 pt-4">
-              <ProductCheckout
-                key={selectedBundle.id}
-                price={selectedBundle.price}
-                packId={selectedBundle.id}
-                packLabel={selectedBundle.label}
-                showSocialProof={false}
-                embedded
-              />
-            </div>
-          </div>
-        </div>
-        </ClientPortal>
-      )}
+      <CheckoutModal
+        open={showCheckout}
+        onClose={() => setShowCheckout(false)}
+        price={selectedBundle.price}
+        mrp={selectedBundle.mrp}
+        packId={selectedBundle.id}
+        packLabel={selectedBundle.title}
+        initialPhase={checkoutPhase}
+      />
 
-      {/* Mobile sticky buy bar — portaled for reliable viewport positioning */}
-      <ClientPortal>
-        <div
-          className={`fixed bottom-0 left-0 z-[45] w-full border-t border-glass-border bg-glass-surface/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(73,87,56,0.12)] backdrop-blur-xl transition-all duration-300 md:hidden ${
-            showStickyBuy && !showCheckout
-              ? "translate-y-0 opacity-100"
-              : "pointer-events-none translate-y-full opacity-0"
-          }`}
-        >
-          <div className="mx-auto max-w-md">{buyCta(true)}</div>
-        </div>
-      </ClientPortal>
     </div>
   );
 }

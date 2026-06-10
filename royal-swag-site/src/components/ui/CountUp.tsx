@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useInViewReveal } from "@/hooks/useScrollReveal";
 
 type CountUpProps = {
   end: number;
@@ -18,11 +18,15 @@ export function CountUp({
   duration = 2000,
   className = "font-number",
 }: CountUpProps) {
-  const { ref, visible } = useScrollReveal();
-  const [count, setCount] = useState(0);
+  const { ref, visible, reduceMotion } = useInViewReveal<HTMLSpanElement>();
+  const [count, setCount] = useState(reduceMotion ? end : 0);
 
   useEffect(() => {
     if (!visible || end <= 0) return;
+    if (reduceMotion) {
+      setCount(end);
+      return;
+    }
 
     let start = 0;
     const step = Math.max(duration / end, 16);
@@ -39,7 +43,7 @@ export function CountUp({
     }, step);
 
     return () => clearInterval(timer);
-  }, [visible, end, duration]);
+  }, [visible, end, duration, reduceMotion]);
 
   const display = end <= 0 ? 0 : count;
 

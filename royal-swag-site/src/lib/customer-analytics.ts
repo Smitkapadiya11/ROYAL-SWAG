@@ -31,6 +31,7 @@ export type CustomerEventPayload = {
 const VISITOR_KEY = "rs_visitor_id";
 const SESSION_KEY = "rs_session_id";
 const UTM_KEY = "rs_utm";
+const REF_KEY = "rs_referral_code";
 
 export type StoredUtm = {
   utm_source?: string;
@@ -76,7 +77,22 @@ export function captureUtmFromUrl(): StoredUtm {
   if (utm.utm_source || utm.utm_campaign) {
     sessionStorage.setItem(UTM_KEY, JSON.stringify(utm));
   }
+  const ref = params.get("ref");
+  if (ref?.trim()) {
+    sessionStorage.setItem(REF_KEY, ref.trim().toUpperCase());
+    if (!utm.utm_source) {
+      sessionStorage.setItem(
+        UTM_KEY,
+        JSON.stringify({ ...utm, utm_source: ref.trim().toUpperCase() })
+      );
+    }
+  }
   return utm;
+}
+
+export function getStoredReferralCode(): string {
+  if (typeof window === "undefined") return "";
+  return sessionStorage.getItem(REF_KEY) || "";
 }
 
 export function getStoredUtm(): StoredUtm {

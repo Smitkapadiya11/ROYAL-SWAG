@@ -1,8 +1,10 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import { APP_SITE } from "@/lib/config";
 import { EVENTS, trackEvent } from "@/lib/events";
 import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
+import { whatsappHover, whatsappHoverTransition, whatsappMountVariants } from "@/lib/motionVariants";
 
 const WA_MESSAGE =
   "Hi, I want to order Royal Swag Progress Pack (2 packs, ₹599). Please share payment details.";
@@ -29,6 +31,7 @@ function WhatsAppIcon({ size = 26 }: { size?: number }) {
 
 export default function WhatsAppButton({ hidden = false }: { hidden?: boolean }) {
   const { showCheckout } = useCheckoutUi();
+  const reduceMotion = useReducedMotion();
   const isHidden = hidden || showCheckout;
   const phone = normalizePhone(
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || APP_SITE.whatsapp
@@ -45,33 +48,37 @@ export default function WhatsAppButton({ hidden = false }: { hidden?: boolean })
 
   return (
     <>
-      <div
-        className={`wa-float-root fixed right-4 bottom-24 z-[9999] flex items-center justify-center transition-opacity duration-200 md:right-6 md:bottom-6 ${
+      <motion.div
+        className={`wa-float-root fixed right-4 bottom-24 z-[9999] flex items-center justify-center md:right-6 md:bottom-6 ${
           isHidden ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
+        variants={reduceMotion ? undefined : whatsappMountVariants}
+        initial={reduceMotion ? false : "hidden"}
+        animate={isHidden ? undefined : "visible"}
       >
         <span className="wa-pulse-ring" aria-hidden />
-        <button
+        <motion.button
           type="button"
           className="wa-float-btn"
           onClick={handleClick}
           data-track-button="whatsapp-float"
           data-track-label="Order on WhatsApp"
           aria-label="Order on WhatsApp"
+          whileHover={reduceMotion ? undefined : whatsappHover}
+          transition={reduceMotion ? undefined : whatsappHoverTransition}
         >
           <span className="wa-float-icon">
             <WhatsAppIcon />
           </span>
           <span className="wa-float-label">Order on WhatsApp</span>
-        </button>
+        </motion.button>
         <span className="wa-float-tooltip" role="tooltip">
           Order on WhatsApp
         </span>
-      </div>
+      </motion.div>
 
       <style jsx>{`
         .wa-float-root {
-          /* position via Tailwind: fixed right-5 bottom-[88px] md:right-6 md:bottom-6 z-[9999] */
           display: flex;
           align-items: center;
           justify-content: center;
@@ -113,20 +120,10 @@ export default function WhatsAppButton({ hidden = false }: { hidden?: boolean })
           color: #fff;
           cursor: pointer;
           box-shadow: 0 4px 16px rgba(37, 211, 102, 0.45);
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
           font-family: var(--font-hanken, system-ui, sans-serif);
           font-size: 14px;
           font-weight: 600;
           white-space: nowrap;
-        }
-
-        .wa-float-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 22px rgba(37, 211, 102, 0.55);
-        }
-
-        .wa-float-btn:active {
-          transform: translateY(0);
         }
 
         .wa-float-icon {

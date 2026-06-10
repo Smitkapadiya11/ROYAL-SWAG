@@ -1,0 +1,315 @@
+/**
+ * Royal Swag layout & semantic tokens.
+ * Brand colors alias existing :root vars — do not replace --primary, --gold, etc.
+ */
+
+:root {
+  /* Semantic aliases → existing brand palette */
+  --color-primary: var(--primary);
+  --color-gold: var(--gold);
+  --color-cream: var(--parchment);
+  --color-text: var(--on-surface);
+  --color-text-muted: var(--on-surface-variant);
+
+  /* Layout */
+  --container-max: 1200px;
+  --container-max-md: 960px;
+  --container-max-sm: 640px;
+  --container-pad-desktop: 80px;
+  --container-pad-tablet: 40px;
+  --container-pad-mobile: 20px;
+  --section-gap-desktop: 96px;
+  --section-gap-mobile: 56px;
+  --grid-cols: 12;
+  --grid-gap: 24px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.14);
+
+  /* Typography aliases → existing Next.js font variables */
+  --layout-font-display: var(--font-display), "Playfair Display", "DM Serif Display", serif;
+  --layout-font-body: var(--font-sans), "Hanken Grotesk", "DM Sans", system-ui, sans-serif;
+}
+
+/* ——— Container ——— */
+.layout-container,
+.site-container,
+.container-rs {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad-mobile);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .layout-container,
+  .site-container,
+  .container-rs {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (min-width: 1280px) {
+  .layout-container,
+  .site-container,
+  .container-rs {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.layout-container--sm {
+  max-width: var(--container-max-sm);
+}
+
+.layout-container--md {
+  max-width: var(--container-max-md);
+}
+
+.layout-container--full {
+  max-width: none;
+}
+
+/* ——— Section ——— */
+.layout-section {
+  width: 100%;
+  min-width: 0;
+  padding-block: var(--section-gap-mobile);
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .layout-section {
+    padding-block: var(--section-gap-desktop);
+  }
+}
+
+.layout-section--compact {
+  padding-block: calc(var(--section-gap-mobile) * 0.5);
+}
+
+@media (min-width: 768px) {
+  .layout-section--compact {
+    padding-block: calc(var(--section-gap-desktop) * 0.5);
+  }
+}
+
+.layout-section--bg-cream {
+  background-color: var(--color-cream);
+}
+
+.layout-section--bg-white {
+  background-color: #ffffff;
+}
+
+.layout-section--bg-surface {
+  background-color: var(--surface);
+}
+
+.layout-section--bg-green {
+  background-color: var(--color-primary);
+  color: var(--on-primary);
+}
+
+.layout-section--bg-transparent {
+  background-color: transparent;
+}
+
+/* ——— Grid (auto columns via CSS vars) ——— */
+.layout-grid {
+  display: grid;
+  gap: var(--grid-gap);
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: repeat(var(--grid-cols-mobile, 1), minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .layout-grid {
+    grid-template-columns: repeat(var(--grid-cols-tablet, 2), minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-grid {
+    grid-template-columns: repeat(var(--grid-cols-desktop, 3), minmax(0, 1fr));
+  }
+}
+
+/* 12-column system: 4 mobile → 6 tablet → 12 desktop */
+.layout-grid--12 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .layout-grid--12 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-grid--12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+.layout-grid--12 > .layout-grid-col {
+  grid-column: span var(--col-span-mobile, 4);
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .layout-grid--12 > .layout-grid-col {
+    grid-column: span var(--col-span-tablet, 6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-grid--12 > .layout-grid-col {
+    grid-column: span var(--col-span-desktop, 12);
+  }
+}
+
+/* Horizontal scroll snap row (testimonials, herbs mobile) */
+.layout-scroll-snap {
+  display: flex;
+  gap: var(--grid-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin-inline: calc(-1 * var(--container-pad-mobile));
+  padding-inline: var(--container-pad-mobile);
+  padding-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .layout-scroll-snap {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
+
+.layout-scroll-snap > * {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  min-width: 0;
+}
+
+.layout-scroll-snap.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ——— Media ——— */
+.layout-media,
+.layout-media img,
+.layout-media video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.layout-media--fill {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.layout-media--fill img,
+.layout-media--fill video {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Prevent horizontal overflow from wide children */
+main img:not([class*="object-"]),
+main video:not([class*="object-"]) {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ——— Homepage hero ——— */
+.home-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.home-hero-copy {
+  order: 1;
+  min-width: 0;
+}
+
+.home-hero-media {
+  order: 2;
+  min-width: 0;
+  width: 100%;
+}
+
+.hero-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-height: 380px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-container);
+}
+
+@media (min-width: 768px) {
+  .home-hero-grid {
+    grid-template-columns: 1fr 1fr;
+    min-height: 500px;
+  }
+
+  .hero-image-wrapper {
+    max-height: none;
+    aspect-ratio: 3 / 4;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero-grid {
+    grid-template-columns: 5fr 7fr;
+    min-height: 600px;
+  }
+
+  .hero-image-wrapper {
+    aspect-ratio: unset;
+    height: 100%;
+    min-height: 480px;
+    max-height: none;
+  }
+
+  .home-hero-media {
+    align-self: stretch;
+    display: flex;
+  }
+
+  .home-hero-media .hero-image-wrapper {
+    flex: 1;
+  }
+}
+
+/* Lung test intro frame */
+.lung-test-intro-frame {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface-container);
+}

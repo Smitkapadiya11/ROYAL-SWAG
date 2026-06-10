@@ -1,24 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import BrandLogo from "@/components/ui/BrandLogo";
-import BreathHoldTest from "@/components/lung-test/BreathHoldTest";
-import { LungTestResult } from "@/components/lung-test/LungTestResult";
 import { QuestionScreen } from "@/components/lung-test/QuestionScreen";
 import { trackEvent } from "@/lib/events";
 import { ANALYTICS_EVENTS, setAdvancedMatching, track } from "@/lib/analytics";
-import { LUNG_TEST_QUESTIONS } from "@/lib/lung-test-questions";
-import { LUNG_TEST_STORAGE_KEY } from "@/lib/lung-test-constants";
+import { LUNG_TEST_QUESTIONS, type LungTestQuestion } from "@/lib/lung-test-questions";
+import { writeStoredLungResult, type StoredLungResult } from "@/lib/lung-test-constants";
 import {
   computeSymptomPoints,
   getLungScore,
-  type LungLevel,
+  getMatchedHerbNames,
   type SymptomAnswers,
 } from "@/lib/lungScore";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/contexts/LocaleContext";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { LUNG_TEST_INTRO_ALT, LUNG_TEST_INTRO_IMAGE } from "@/lib/image-assets";
+import { lungQuestionStepTransition, lungQuestionStepVariants } from "@/lib/motionVariants";
 
-type View = "intro" | "form" | "questions" | "breath" | "result";
+type View = "intro" | "form" | "questions";
 
 const INPUT_CLASS =
   "w-full rounded-xl border border-[#c5c8bc] bg-white/60 px-4 py-3.5 font-sans text-base text-[#324023] placeholder:text-[#75786e] transition-colors focus:border-[#9A6F1A] focus:outline-none focus:ring-2 focus:ring-[#9A6F1A]/20";
@@ -29,6 +33,8 @@ const EMPTY_ANSWERS: SymptomAnswers = {
   cough: false,
   breathless: false,
   dust: false,
+  mucus: false,
+  worsened: false,
 };
 
 function StepPill({ label, active }: { label: string; active: boolean }) {
@@ -46,49 +52,83 @@ function StepPill({ label, active }: { label: string; active: boolean }) {
   );
 }
 
-const INTRO_BULLETS = [
-  "5 simple yes/no questions",
-  "Interactive breath-hold test",
-  "Instant risk score & herb match",
+const INTRO_BULLET_KEYS = [
+  "lungTest.intro.bullet1",
+  "lungTest.intro.bullet2",
+  "lungTest.intro.bullet3",
 ] as const;
 
-function IntroHeroImage({
-  height,
-  className = "mb-8",
-}: {
-  height: string;
-  className?: string;
-}) {
+function IntroHeroImage({ className = "mb-8" }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "relative w-full overflow-hidden rounded-2xl shadow-sm md:rounded-3xl",
-        className
-      )}
-      style={{ height }}
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/images/lungtest.jpeg"
-        alt="Lung Health Test"
-        className="block h-full w-full object-cover object-center"
-        onError={(e) => {
-          e.currentTarget.style.display = "none";
-          const parent = e.currentTarget.parentElement;
-          if (parent) {
-            parent.style.background =
-              "linear-gradient(160deg, #324023 0%, #495738 60%, #9A6F1A 100%)";
-          }
-        }}
+    <div className={cn("lung-test-intro-frame mx-auto w-full shadow-sm", className)}>
+      <OptimizedImage
+        src={LUNG_TEST_INTRO_IMAGE}
+        alt={LUNG_TEST_INTRO_ALT}
+        fill
+        sizes="(max-width: 768px) 100vw, 520px"
+        objectFit="cover"
+        objectPosition="center"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#495738]/80 to-transparent" />
       <div className="absolute bottom-4 left-4 flex items-center gap-2 md:bottom-6 md:left-6">
-        <span className="text-2xl md:text-3xl">🫁</span>
+        <span className="text-2xl md:text-3xl" aria-hidden>
+          🫁
+        </span>
         <span className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-white md:text-sm">
           60-Second Assessment
         </span>
       </div>
     </div>
+  );
+}
+
+function LungTestQuestionsStep({
+  questionId,
+  question,
+  current,
+  total,
+  onAnswer,
+  onBack,
+}: {
+  questionId: string;
+  question: LungTestQuestion;
+  current: number;
+  total: number;
+  onAnswer: (yes: boolean) => void;
+  onBack: () => void;
+}) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <section className="mx-auto min-h-[70vh] w-full max-w-3xl md:min-h-[60vh]">
+      <p className="mb-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
+        Step 2 of 2
+      </p>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={questionId}
+          variants={reduceMotion ? undefined : lungQuestionStepVariants}
+          initial={reduceMotion ? false : "initial"}
+          animate="animate"
+          exit={reduceMotion ? undefined : "exit"}
+          transition={lungQuestionStepTransition}
+        >
+          <QuestionScreen
+            question={question}
+            current={current}
+            total={total}
+            onAnswer={onAnswer}
+          />
+        </motion.div>
+      </AnimatePresence>
+      <button
+        type="button"
+        onClick={onBack}
+        className="mt-4 font-sans text-sm text-[#75786e] hover:text-[#324023]"
+      >
+        ← Back
+      </button>
+    </section>
   );
 }
 
@@ -99,6 +139,8 @@ function IntroCopy({
   onStart: () => void;
   desktop?: boolean;
 }) {
+  const { t } = useTranslations();
+
   return (
     <div className={cn("flex flex-col", desktop ? "justify-center" : "flex-1")}>
       <h1
@@ -107,9 +149,7 @@ function IntroCopy({
           desktop ? "text-5xl lg:text-6xl" : "text-[36px]"
         )}
       >
-        Discover Your
-        <br />
-        <span className="text-[#9A6F1A]">Lung Capacity</span>
+        {t("lungTest.intro.title")}
       </h1>
       <p
         className={cn(
@@ -117,14 +157,13 @@ function IntroCopy({
           desktop ? "max-w-lg text-lg" : "text-base"
         )}
       >
-        A quick symptom quiz plus breath-hold test — personalised Ayurvedic herb
-        recommendations in under a minute.
+        {t("lungTest.intro.subtitle")}
       </p>
 
       <ul className={cn("space-y-3", desktop ? "mb-10 space-y-4" : "mb-8")}>
-        {INTRO_BULLETS.map((item) => (
+        {INTRO_BULLET_KEYS.map((key) => (
           <li
-            key={item}
+            key={key}
             className={cn(
               "flex items-center gap-3 font-sans text-[#45483f]",
               desktop ? "text-base" : "text-sm"
@@ -138,7 +177,7 @@ function IntroCopy({
             >
               ✓
             </span>
-            {item}
+            {t(key)}
           </li>
         ))}
       </ul>
@@ -151,38 +190,20 @@ function IntroCopy({
           desktop ? "max-w-sm text-base" : "mt-auto text-sm"
         )}
       >
-        Start Assessment →
+        {t("lungTest.intro.cta")} →
       </button>
     </div>
   );
 }
 
 export default function LungTestPage() {
+  const router = useRouter();
   const [view, setView] = useState<View>("intro");
   const [currentQ, setCurrentQ] = useState(0);
   const [lead, setLead] = useState({ name: "", email: "", phone: "" });
   const [answers, setAnswers] = useState<SymptomAnswers>(EMPTY_ANSWERS);
   const [score, setScore] = useState(0);
-  const [breathSeconds, setBreathSeconds] = useState(0);
-  const [resultLevel, setResultLevel] = useState<LungLevel>("Mild");
   const [submitting, setSubmitting] = useState(false);
-
-  const resetTest = useCallback(() => {
-    setView("intro");
-    setCurrentQ(0);
-    setLead({ name: "", email: "", phone: "" });
-    setAnswers(EMPTY_ANSWERS);
-    setScore(0);
-    setBreathSeconds(0);
-    setResultLevel("Mild");
-    setSubmitting(false);
-    try {
-      sessionStorage.removeItem(LUNG_TEST_STORAGE_KEY);
-      localStorage.removeItem(LUNG_TEST_STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
-  }, []);
 
   const handleLeadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,6 +222,61 @@ export default function LungTestPage() {
       page: "/lung-test",
     });
     trackEvent("lung_test_start", { page: "/lung-test" });
+  };
+
+  const finishQuiz = async (finalAnswers: SymptomAnswers) => {
+    if (submitting) return;
+    setSubmitting(true);
+
+    const points = computeSymptomPoints(finalAnswers);
+    const lungScore = getLungScore(points);
+    const matchedHerbs = getMatchedHerbNames(finalAnswers);
+
+    const payload: StoredLungResult = {
+      name: lead.name.trim(),
+      email: lead.email.trim(),
+      phone: lead.phone.replace(/\D/g, "").slice(-10),
+      ...finalAnswers,
+      score: points,
+      level: lungScore.level,
+      riskSlug: lungScore.riskSlug,
+      matchedHerbs,
+      timestamp: Date.now(),
+    };
+
+    writeStoredLungResult(payload);
+
+    trackEvent("lung_test_complete", {
+      score: points,
+      level: lungScore.level,
+      page: "/lung-test",
+    });
+
+    try {
+      await fetch("/api/lung-test/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: payload.name,
+          email: payload.email,
+          phone: payload.phone,
+          city: finalAnswers.city,
+          smoke: finalAnswers.smoke,
+          cough: finalAnswers.cough,
+          breathless: finalAnswers.breathless,
+          dust: finalAnswers.dust,
+          mucus: finalAnswers.mucus,
+          worsened: finalAnswers.worsened,
+          score: points,
+          sourceUrl: window.location.href,
+        }),
+      });
+    } catch (err) {
+      console.error("lung test submit failed", err);
+    }
+
+    setSubmitting(false);
+    router.push("/lung-test/result");
   };
 
   const handleAnswer = (yes: boolean) => {
@@ -226,72 +302,7 @@ export default function LungTestPage() {
     }
 
     trackEvent("lung_test_questions_complete", { page: "/lung-test" });
-    setView("breath");
-  };
-
-  const saveAndShowResult = async (seconds: number) => {
-    if (submitting) return;
-    setSubmitting(true);
-
-    const points = computeSymptomPoints(answers);
-    const lungScore = getLungScore(points);
-    const level = lungScore.level;
-
-    setBreathSeconds(seconds);
-    setScore(points);
-    setResultLevel(level);
-
-    const payload = {
-      name: lead.name.trim(),
-      email: lead.email.trim(),
-      phone: lead.phone.replace(/\D/g, "").slice(-10),
-      ...answers,
-      breathHoldSeconds: seconds,
-      score: points,
-      level,
-      color: lungScore.color,
-      recommendation: lungScore.recommendation,
-      timestamp: Date.now(),
-    };
-
-    try {
-      sessionStorage.setItem(LUNG_TEST_STORAGE_KEY, JSON.stringify(payload));
-      localStorage.setItem(LUNG_TEST_STORAGE_KEY, JSON.stringify(payload));
-    } catch {
-      /* ignore */
-    }
-
-    trackEvent("lung_test_complete", {
-      score: points,
-      level,
-      breath_seconds: seconds,
-      page: "/lung-test",
-    });
-
-    try {
-      await fetch("/api/lung-test/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: payload.name,
-          email: payload.email,
-          phone: payload.phone,
-          city: payload.city,
-          smoke: payload.smoke,
-          cough: payload.cough,
-          breathless: payload.breathless,
-          dust: payload.dust,
-          breathHoldSeconds: seconds,
-          score: points,
-          level,
-        }),
-      });
-    } catch (err) {
-      console.error("lung test submit failed", err);
-    }
-
-    setSubmitting(false);
-    setView("result");
+    void finishQuiz(newAnswers);
   };
 
   const currentQuestion = LUNG_TEST_QUESTIONS[currentQ];
@@ -311,11 +322,10 @@ export default function LungTestPage() {
           <BrandLogo variant="on-light" className="h-9 w-auto md:h-10" />
         </Link>
         <div className="flex items-center gap-2 md:gap-3">
-          {view !== "intro" && view !== "result" && (
+          {view !== "intro" && (
             <div className="hidden items-center gap-2 sm:flex">
               <StepPill label="Details" active={view === "form"} />
-              <StepPill label="Quiz" active={view === "questions"} />
-              <StepPill label="Breath" active={view === "breath"} />
+              <StepPill label="Symptoms" active={view === "questions"} />
             </div>
           )}
           <span className="rounded-full bg-[#324023]/10 px-3 py-1 font-sans text-xs font-bold text-[#9A6F1A]">
@@ -327,15 +337,13 @@ export default function LungTestPage() {
       <main className="lung-test-shell relative z-10 flex w-full min-w-0 flex-1 flex-col pb-24 pt-6 md:pb-16 md:pt-10">
         {view === "intro" && (
           <>
-            {/* Mobile intro */}
             <section className="flex min-h-[70vh] flex-col duration-500 animate-in fade-in md:hidden">
-              <IntroHeroImage height="200px" />
+              <IntroHeroImage />
               <IntroCopy onStart={() => setView("form")} />
             </section>
 
-            {/* Desktop intro — split layout */}
             <section className="hidden min-h-[72vh] grid-cols-2 items-center gap-12 duration-500 animate-in fade-in md:grid lg:gap-16">
-              <IntroHeroImage height="min(420px, 60vh)" className="mb-0" />
+              <IntroHeroImage className="mb-0 md:mx-0" />
               <IntroCopy onStart={() => setView("form")} desktop />
             </section>
           </>
@@ -344,7 +352,7 @@ export default function LungTestPage() {
         {view === "form" && (
           <section className="mx-auto flex w-full min-h-[70vh] max-w-3xl flex-col duration-300 animate-in fade-in slide-in-from-right md:min-h-[60vh]">
             <p className="mb-1 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A] md:text-xs">
-              Step 1 of 3
+              Step 1 of 2
             </p>
             <h2 className="mb-2 font-display text-[28px] font-bold text-[#324023] md:text-4xl">
               Your details
@@ -389,16 +397,16 @@ export default function LungTestPage() {
                   data-track-label="Start Free Test"
                   className="w-full rounded-2xl bg-[#9A6F1A] py-4 font-sans text-sm font-bold tracking-wide text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:text-base"
                 >
-                  Continue to Quiz →
+                  Continue to Symptoms →
                 </button>
               </form>
 
               <ul className="mt-6 hidden space-y-4 md:mt-0 md:block">
                 {[
-                  "5 quick yes/no questions",
-                  "Breath-hold capacity test",
+                  "7 quick yes/no questions",
                   "Personalised herb match",
-                  "Instant email report",
+                  "Instant risk score",
+                  "Email report on request",
                 ].map((item) => (
                   <li
                     key={item}
@@ -424,81 +432,25 @@ export default function LungTestPage() {
         )}
 
         {view === "questions" && currentQuestion && (
-          <section className="mx-auto min-h-[70vh] w-full max-w-3xl md:min-h-[60vh]">
-            <p className="mb-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
-              Step 2 of 3
-            </p>
-            <QuestionScreen
-              key={currentQuestion.id}
-              question={currentQuestion}
-              current={currentQ + 1}
-              total={LUNG_TEST_QUESTIONS.length}
-              onAnswer={handleAnswer}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                if (currentQ > 0) {
-                  const qToUndo = LUNG_TEST_QUESTIONS[currentQ - 1];
-                  if (answers[qToUndo.key]) {
-                    setScore((s) => s - qToUndo.points);
-                  }
-                  setAnswers((a) => ({ ...a, [qToUndo.key]: false }));
-                  setCurrentQ((i) => i - 1);
-                } else {
-                  setView("form");
+          <LungTestQuestionsStep
+            questionId={currentQuestion.id}
+            question={currentQuestion}
+            current={currentQ + 1}
+            total={LUNG_TEST_QUESTIONS.length}
+            onAnswer={handleAnswer}
+            onBack={() => {
+              if (currentQ > 0) {
+                const qToUndo = LUNG_TEST_QUESTIONS[currentQ - 1];
+                if (answers[qToUndo.key]) {
+                  setScore((s) => s - qToUndo.points);
                 }
-              }}
-              className="mt-4 font-sans text-sm text-[#75786e] hover:text-[#324023]"
-            >
-              ← Back
-            </button>
-          </section>
-        )}
-
-        {view === "breath" && (
-          <section className="mx-auto flex min-h-[70vh] w-full max-w-3xl flex-col duration-300 animate-in fade-in md:min-h-[65vh]">
-            <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center md:gap-8">
-              <div className="mb-4">
-                <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
-                  Step 3 of 3
-                </span>
-                <h2 className="mt-2 font-display text-[28px] font-bold text-[#324023]">
-                  Breath Hold Test
-                </h2>
-                <p className="mt-1 font-sans text-sm text-[#45483f]">
-                  Hold your breath as long as comfortable. Press and hold the
-                  circle.
-                </p>
-              </div>
-              <BreathHoldTest
-                onComplete={saveAndShowResult}
-                disabled={submitting}
-                onBack={() => {
-                  setView("questions");
-                  setCurrentQ(LUNG_TEST_QUESTIONS.length - 1);
-                }}
-              />
-              <p className="max-w-xs font-sans text-xs text-[#75786e]">
-                Normal: 25+ seconds. Don&apos;t push past comfort.
-              </p>
-            </div>
-          </section>
-        )}
-
-        {view === "result" && (
-          <section className="min-h-[70vh] w-full py-2 md:max-w-5xl md:py-4">
-            <p className="mb-4 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
-              Your personalised result
-            </p>
-            <LungTestResult
-              score={score}
-              level={resultLevel}
-              breathSeconds={breathSeconds}
-              answers={answers}
-              onRetake={resetTest}
-            />
-          </section>
+                setAnswers((a) => ({ ...a, [qToUndo.key]: false }));
+                setCurrentQ((i) => i - 1);
+              } else {
+                setView("form");
+              }
+            }}
+          />
         )}
       </main>
 

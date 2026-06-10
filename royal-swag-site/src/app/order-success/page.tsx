@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
 import Link from "next/link";
-import { APP_SITE } from "@/lib/config";
+import { siteConfig } from "@/lib/siteConfig";
 
 function fireConfetti() {
   import("canvas-confetti").then(({ default: confetti }) => {
@@ -48,9 +48,7 @@ function OrderSuccessContent() {
     d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
   useEffect(() => {
-    document.body.classList.add("auth-page");
     fireConfetti();
-    return () => document.body.classList.remove("auth-page");
   }, []);
 
   useEffect(() => {
@@ -64,8 +62,8 @@ function OrderSuccessContent() {
   }, []);
 
   const whatsappHref = orderId
-    ? `https://wa.me/${APP_SITE.whatsapp}?text=${encodeURIComponent(`Hi, my order is #${orderId}`)}`
-    : `https://wa.me/${APP_SITE.whatsapp}`;
+    ? `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(`Hi, my order is #${orderId}`)}`
+    : siteConfig.whatsappOrderLink;
 
   return (
     <div
@@ -76,7 +74,6 @@ function OrderSuccessContent() {
         justifyContent: "center",
         background: "linear-gradient(135deg,#0D2010,#1A3A1A)",
         padding: 20,
-        marginTop: -72,
       }}
     >
       <div

@@ -40,12 +40,19 @@ module.exports = {
         body: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       spacing: {
-        "margin-mobile": "20px",
-        "margin-desktop": "64px",
-        "section-gap": "80px",
-        gutter: "24px",
+        "margin-mobile": "var(--container-pad-mobile)",
+        "margin-desktop": "var(--container-pad-desktop)",
+        "section-gap": "var(--section-gap-desktop)",
+        "section-gap-mobile": "var(--section-gap-mobile)",
+        gutter: "var(--grid-gap)",
+      },
+      maxWidth: {
+        container: "var(--container-max)",
       },
       borderRadius: {
+        "layout-sm": "var(--radius-sm)",
+        "layout-md": "var(--radius-md)",
+        "layout-lg": "var(--radius-lg)",
         glass: "16px",
         btn: "12px",
       },
@@ -56,6 +63,8 @@ module.exports = {
         glass: "cubic-bezier(0.25, 0.8, 0.25, 1)",
       },
       boxShadow: {
+        card: "var(--shadow-card)",
+        "card-hover": "var(--shadow-hover)",
         glass: "0 8px 32px rgba(50, 64, 35, 0.08)",
         "btn-primary-hover": "0 4px 12px rgba(154, 111, 26, 0.3)",
       },

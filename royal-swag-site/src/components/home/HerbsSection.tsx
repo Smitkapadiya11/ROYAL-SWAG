@@ -1,6 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import type React from "react";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { toWebp } from "@/lib/image-assets";
+import {
+  herbCardHoverTransition,
+  herbCardVariants,
+  herbGridVariants,
+  sectionRevealViewport,
+} from "@/lib/motionVariants";
 
 const herbs = [
   {
@@ -60,15 +70,27 @@ function HerbCard({
   hovered,
   onHover,
   className = "",
+  reduceMotion,
 }: {
   herb: Herb;
   hovered: boolean;
   onHover: (name: string | null) => void;
   className?: string;
+  reduceMotion: boolean;
 }) {
   return (
-    <div
-      className={`cursor-pointer overflow-hidden rounded-2xl ${className}`}
+    <motion.div
+      variants={reduceMotion ? undefined : herbCardVariants}
+      whileHover={
+        reduceMotion
+          ? undefined
+          : {
+              scale: 1.02,
+              boxShadow: "0 16px 48px rgba(50, 64, 35, 0.18)",
+            }
+      }
+      transition={herbCardHoverTransition}
+      className={`min-w-0 cursor-pointer overflow-hidden rounded-layout-md ${className}`}
       style={{ height: "320px" }}
       onMouseEnter={() => onHover(herb.name)}
       onMouseLeave={() => onHover(null)}
@@ -78,21 +100,23 @@ function HerbCard({
         style={{ transform: hovered ? "scale(1.02)" : "scale(1)" }}
       >
         <div
-          className="absolute inset-0"
+          className="layout-media--fill absolute inset-0"
           style={{
             background: `linear-gradient(135deg, ${herb.color}, #9A6F1A)`,
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={herb.img}
-            alt={herb.name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out"
+          <div
+            className="h-full w-full transition-transform duration-700 ease-out"
             style={{ transform: hovered ? "scale(1.1)" : "scale(1)" }}
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
+          >
+            <OptimizedImage
+              src={toWebp(herb.img)}
+              alt={`Royal Swag ${herb.name} — ${herb.benefit}`}
+              fill
+              sizes="(max-width: 768px) 72vw, 320px"
+              objectFit="cover"
+            />
+          </div>
         </div>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -112,13 +136,10 @@ function HerbCard({
           <span className="mt-1 inline-block rounded-full bg-[#9A6F1A]/80 px-2 py-0.5 text-[10px] font-semibold text-white">
             {herb.benefit}
           </span>
-          <p className="mt-2 font-sans text-xs leading-5 text-white/85 md:hidden">
-            {herb.desc}
-          </p>
         </div>
 
         <div
-          className="absolute bottom-0 left-0 right-0 hidden p-4 transition-all duration-500 md:block"
+          className="absolute bottom-0 left-0 right-0 p-4 transition-all duration-500"
           style={{
             transform: hovered ? "translateY(0)" : "translateY(100%)",
             opacity: hovered ? 1 : 0,
@@ -134,33 +155,37 @@ function HerbCard({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 export function HerbsSection() {
   const [hoveredHerb, setHoveredHerb] = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section id="herbs" className="flex flex-col gap-6 overflow-hidden py-10">
-      <div className="flex items-end justify-between">
-        <div>
-          <h2 className="font-display text-[32px] font-bold text-[#324023] md:text-4xl">
+    <div className="flex min-w-0 flex-col gap-6 overflow-hidden">
+      <div className="flex items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-[32px] font-bold text-primary md:text-4xl">
             The Sacred Seven
           </h2>
-          <p className="mt-1 font-sans text-sm text-[#45483f] md:text-base">
+          <p className="mt-1 font-sans text-sm text-on-surface-variant md:text-base">
             Ancient herbs. Modern science.
           </p>
         </div>
-        <span className="flex items-center gap-1 font-sans text-xs text-[#9A6F1A] md:hidden">
+        <span className="flex shrink-0 items-center gap-1 font-sans text-xs text-ayurvedic-gold md:hidden">
           Swipe
-          <span style={{ display: "inline-block", marginLeft: "2px" }}>→</span>
+          <span aria-hidden>→</span>
         </span>
       </div>
 
-      <div
-        className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 md:hidden"
-        style={{ scrollbarWidth: "none" }}
+      <motion.div
+        className="layout-scroll-snap hide-scrollbar md:hidden"
+        initial={reduceMotion ? false : "hidden"}
+        whileInView={reduceMotion ? undefined : "visible"}
+        viewport={sectionRevealViewport}
+        variants={herbGridVariants}
       >
         {herbs.map((herb) => (
           <HerbCard
@@ -168,21 +193,36 @@ export function HerbsSection() {
             herb={herb}
             hovered={hoveredHerb === herb.name}
             onHover={setHoveredHerb}
-            className="w-56 shrink-0 snap-center"
+            reduceMotion={!!reduceMotion}
+            className="w-[min(14rem,72vw)] shrink-0"
           />
         ))}
-      </div>
+      </motion.div>
 
-      <div className="hidden gap-5 md:grid md:grid-cols-2 lg:grid-cols-3">
+      <motion.div
+        className="layout-grid hidden md:grid"
+        style={
+          {
+            "--grid-cols-mobile": 1,
+            "--grid-cols-tablet": 2,
+            "--grid-cols-desktop": 3,
+          } as React.CSSProperties
+        }
+        initial={reduceMotion ? false : "hidden"}
+        whileInView={reduceMotion ? undefined : "visible"}
+        viewport={sectionRevealViewport}
+        variants={herbGridVariants}
+      >
         {herbs.map((herb) => (
           <HerbCard
             key={herb.name}
             herb={herb}
             hovered={hoveredHerb === herb.name}
             onHover={setHoveredHerb}
+            reduceMotion={!!reduceMotion}
           />
         ))}
-      </div>
-    </section>
+      </motion.div>
+    </div>
   );
 }

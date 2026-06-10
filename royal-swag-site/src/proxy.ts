@@ -5,6 +5,11 @@ import {
   ADMIN_ENTRY_COOKIE,
   getAdminSecretPath,
 } from "@/lib/admin/secret-path";
+import {
+  DASHBOARD_AUTH_COOKIE,
+  verifyDashboardSessionToken,
+} from "@/lib/dashboard-auth";
+import { applyCorsHeaders, validateApiRequest } from "@/lib/api-security";
 
 function isAllowedAdminEmail(email: string | undefined | null): boolean {
   if (!email) return false;
@@ -31,8 +36,35 @@ function pathnameIsSecret(pathname: string): boolean {
   return pathname === `/${secret}` || pathname === `/${secret}/`;
 }
 
+const LOCALE_PREFIX = /^\/(hi|en)(\/.*)?$/;
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  const localeMatch = pathname.match(LOCALE_PREFIX);
+  if (localeMatch) {
+    const locale = localeMatch[1];
+    const rest = localeMatch[2] || "/";
+    const url = req.nextUrl.clone();
+    url.pathname = rest === "" ? "/" : rest;
+    const res = NextResponse.rewrite(url);
+    res.cookies.set("rs_locale", locale, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    return res;
+  }
+
+  if (pathname.startsWith("/api/")) {
+    const apiError = validateApiRequest(req);
+    if (apiError) {
+      return applyCorsHeaders(req, apiError);
+    }
+    const res = NextResponse.next();
+    return applyCorsHeaders(req, res);
+  }
+
   const res = NextResponse.next();
 
   if (pathnameIsSecret(pathname)) {
@@ -45,6 +77,24 @@ export async function proxy(req: NextRequest) {
       path: "/",
     });
     return allow;
+  }
+
+  if (pathname.startsWith("/dashboard")) {
+    const token = req.cookies.get(DASHBOARD_AUTH_COOKIE)?.value;
+    const authed = verifyDashboardSessionToken(token);
+
+    if (pathname === "/dashboard/login" || pathname === "/dashboard/login/") {
+      if (authed) {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+      return res;
+    }
+
+    if (!authed) {
+      return NextResponse.redirect(new URL("/dashboard/login", req.url));
+    }
+
+    return res;
   }
 
   if (pathname.startsWith("/admin")) {

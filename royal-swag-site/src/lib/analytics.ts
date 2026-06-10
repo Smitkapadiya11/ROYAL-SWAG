@@ -311,3 +311,117 @@ export function track(
     postInternal(toInternalEvent(event), payload);
   }
 }
+
+export type CartItem = {
+  productId: string;
+  quantity: number;
+  price: number;
+};
+
+function fire(
+  event: string,
+  data?: Record<string, unknown>,
+  options?: TrackOptions
+): void {
+  track(event, data, options);
+}
+
+/** Unified tracking API — Meta + GA4 + Supabase + session replay hooks */
+export const trackUnified = {
+  pageView(path: string, referrer?: string) {
+    fire(ANALYTICS_EVENTS.PAGE_VIEW, {
+      page: path,
+      referrer: referrer ?? document.referrer,
+      page_title: document.title,
+    });
+  },
+  viewContent(productId: string, price: number) {
+    fire(ANALYTICS_EVENTS.VIEW_CONTENT, {
+      content_ids: [productId],
+      content_type: "product",
+      value: price,
+      currency: "INR",
+    });
+  },
+  addToCart(productId: string, quantity: number, price: number) {
+    fire(ANALYTICS_EVENTS.ADD_TO_CART, {
+      content_ids: [productId],
+      num_items: quantity,
+      value: price * quantity,
+      currency: "INR",
+    });
+  },
+  initiateCheckout(items: CartItem[], total: number) {
+    fire(ANALYTICS_EVENTS.INITIATE_CHECKOUT, {
+      num_items: items.reduce((s, i) => s + i.quantity, 0),
+      value: total,
+      currency: "INR",
+      items,
+    });
+  },
+  purchase(orderId: string, total: number, items: CartItem[]) {
+    trackPurchaseOnce(orderId, {
+      order_id: orderId,
+      value: total,
+      currency: "INR",
+      num_items: items.reduce((s, i) => s + i.quantity, 0),
+      items,
+    });
+  },
+  lungTestStart() {
+    fire("lung_test_start", { page: window.location.pathname }, { platforms: ["internal", "meta", "ga4"] });
+  },
+  lungTestComplete(score: number, riskLevel: string) {
+    fire(
+      "lung_test_complete",
+      { score, risk_level: riskLevel, page: window.location.pathname },
+      { platforms: ["internal", "meta", "ga4"] }
+    );
+  },
+  leadCapture(source: string, email?: string) {
+    fire(ANALYTICS_EVENTS.LEAD, {
+      lead_type: source,
+      email,
+      page: window.location.pathname,
+    });
+  },
+  buttonClick(buttonId: string, buttonText: string, page: string) {
+    fire(
+      "button_click",
+      { button_id: buttonId, button_text: buttonText, page },
+      { platforms: ["internal"] }
+    );
+  },
+  scrollDepth(percentage: number, page: string) {
+    fire(
+      "scroll_depth",
+      { depth: percentage, page },
+      { platforms: ["internal"] }
+    );
+  },
+  timeOnPage(seconds: number, page: string) {
+    fire(
+      "time_on_page",
+      { seconds, page },
+      { platforms: ["internal"] }
+    );
+  },
+  exitIntent(page: string) {
+    fire("exit_intent", { page }, { platforms: ["internal"] });
+  },
+  videoPlay(videoId: string) {
+    fire("video_play", { video_id: videoId, page: window.location.pathname }, {
+      platforms: ["internal", "meta", "ga4"],
+    });
+  },
+  whatsappClick(source: string) {
+    fire(
+      "whatsapp_click",
+      { source, page: window.location.pathname },
+      { platforms: ["internal", "meta", "ga4"] }
+    );
+  },
+  customEvent(name: string, data: Record<string, unknown>) {
+    fire(name, { ...data, page: window.location.pathname });
+  },
+};

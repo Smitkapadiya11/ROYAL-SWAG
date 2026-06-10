@@ -1,135 +1,160 @@
 "use client";
 
 import Link from "next/link";
-import { S } from "@/lib/config";
 import { LeadGuardLink } from "@/components/LeadGuardLink";
 import { isProductPath } from "@/lib/is-product-path";
-import LeadGuardExternalLink from "@/components/LeadGuardExternalLink";
 import BrandLogo from "@/components/ui/BrandLogo";
-import SocialButtons from "@/components/SocialButtons";
+import { SocialIconLinks } from "@/components/ui/SocialIconLinks";
+import { Container, Grid, Section } from "@/components/layout";
+import { siteConfig } from "@/lib/siteConfig";
 
 const NAV_LINKS = [
-  { l: "Buy Now", h: "/product" },
-  { l: "Our Story", h: "/about" },
-  { l: "Reviews", h: "/reviews" },
-  { l: "Free Lung Test", h: "/lung-test" },
-];
-
-const CERT_LINKS = [
-  "ISO Certified",
-  "GMP Quality",
-  "AYUSH Ministry",
-  "LEAN Manufacturing",
+  { label: "Home", href: "/" },
+  { label: "Lung Test", href: "/lung-test" },
+  { label: "Shop", href: "/product" },
+  { label: "Reviews", href: "/reviews" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: `mailto:${siteConfig.email}` },
 ] as const;
 
-const fssaiLicense =
-  process.env.NEXT_PUBLIC_FSSAI_LICENSE?.trim() || "Licensed";
+const LEGAL_LINKS = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Refund Policy", href: "/refund-policy" },
+] as const;
 
 export default function Footer() {
   return (
-    <footer className="site-chrome-footer w-full rounded-t-3xl bg-primary px-5 py-10 md:px-16 md:py-14">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-12">
-        <div className="flex flex-col gap-4">
-          <BrandLogo variant="on-dark" className="h-10 w-auto" />
-          <p className="max-w-xs font-sans text-xs leading-relaxed text-white/50">
-            {S.address.l1}
-            <br />
-            {S.address.l2}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {S.certs.map((c) => (
-              <span
-                key={c}
-                className="rounded border border-white/20 px-2.5 py-1 font-sans text-[11px] font-medium text-white/70"
+    <Section
+      as="footer"
+      compact
+      bg="green"
+      className="site-chrome-footer rounded-t-layout-lg pb-[calc(1rem+env(safe-area-inset-bottom,0px))]"
+    >
+      <Container>
+        <Grid cols={{ mobile: 1, tablet: 2, desktop: 4 }} className="items-start gap-y-8">
+          <div className="flex min-w-0 flex-col gap-4">
+            <BrandLogo variant="on-dark" className="h-10 w-auto max-w-full" />
+            <p className="font-display text-sm font-semibold text-white/90">
+              {siteConfig.tagline}
+            </p>
+            <p className="max-w-xs font-sans text-xs leading-relaxed text-white/50">
+              {siteConfig.address}
+            </p>
+          </div>
+
+          <div className="min-w-0">
+            <p className="mb-3 font-sans text-xs font-semibold uppercase tracking-wider text-white/50">
+              Links
+            </p>
+            <nav className="flex flex-col gap-2 font-sans text-sm">
+              {NAV_LINKS.map((item) => {
+                const className =
+                  "text-white/80 transition-colors hover:text-ayurvedic-gold";
+                if (item.href.startsWith("mailto:")) {
+                  return (
+                    <a key={item.label} href={item.href} className={className}>
+                      {item.label}
+                    </a>
+                  );
+                }
+                return isProductPath(item.href) ? (
+                  <LeadGuardLink key={item.href} href={item.href} className={className}>
+                    {item.label}
+                  </LeadGuardLink>
+                ) : (
+                  <Link key={item.href} href={item.href} className={className}>
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="min-w-0">
+            <p className="mb-3 font-sans text-xs font-semibold uppercase tracking-wider text-white/50">
+              Contact
+            </p>
+            <div className="flex flex-col gap-2 font-sans text-sm">
+              {siteConfig.phone ? (
+                <a
+                  href={`tel:${siteConfig.phoneTel}`}
+                  className="text-white/80 transition-colors hover:text-ayurvedic-gold"
+                >
+                  {siteConfig.phone}
+                </a>
+              ) : null}
+              <a
+                href={`mailto:${siteConfig.email}`}
+                className="break-all text-white/80 transition-colors hover:text-ayurvedic-gold"
               >
-                {c}
-              </span>
-            ))}
-          </div>
-          <div className="hidden md:block">
-            <SocialButtons />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-6 md:items-end">
-          <div className="flex flex-wrap gap-x-8 gap-y-4 font-sans text-sm">
-            <a
-              href="https://foscos.fssai.gov.in/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/80 transition-colors hover:text-ayurvedic-gold"
-            >
-              FSSAI Lic. No. {fssaiLicense}
-            </a>
-            {CERT_LINKS.map((l) => (
-              <span
-                key={l}
-                className="text-white/80"
-              >
-                {l}
-              </span>
-            ))}
+                {siteConfig.email}
+              </a>
+              {siteConfig.whatsappOrderLink ? (
+                <a
+                  href={siteConfig.whatsappOrderLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/80 transition-colors hover:text-ayurvedic-gold"
+                >
+                  WhatsApp
+                </a>
+              ) : null}
+            </div>
           </div>
 
-          <nav className="flex flex-col gap-2 font-sans text-sm md:items-end">
-            {NAV_LINKS.map((item) => {
-              const className =
-                "text-white/80 transition-colors hover:text-ayurvedic-gold";
-              return isProductPath(item.h) ? (
-                <LeadGuardLink key={item.h} href={item.h} className={className}>
-                  {item.l}
-                </LeadGuardLink>
-              ) : (
-                <Link key={item.h} href={item.h} className={className}>
-                  {item.l}
-                </Link>
-              );
-            })}
-            <LeadGuardExternalLink
-              href={S.wa.url}
-              className="text-white/80 transition-colors hover:text-ayurvedic-gold"
-            >
-              {S.phone}
-            </LeadGuardExternalLink>
-            <a
-              href={`mailto:${S.email}`}
-              className="text-white/80 transition-colors hover:text-ayurvedic-gold"
-            >
-              {S.email}
-            </a>
-          </nav>
-
-          <div className="flex gap-6 md:hidden">
-            <SocialButtons />
+          <div className="min-w-0">
+            <p className="mb-3 font-sans text-xs font-semibold uppercase tracking-wider text-white/50">
+              Legal
+            </p>
+            <div className="flex flex-col gap-2 font-sans text-sm text-white/80">
+              {siteConfig.fssaiLicense && siteConfig.fssaiVerifyLink ? (
+                <a
+                  href={siteConfig.fssaiVerifyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-ayurvedic-gold"
+                >
+                  FSSAI Lic. No. {siteConfig.fssaiLicense}
+                </a>
+              ) : null}
+              <p className="text-xs leading-relaxed text-white/70">{siteConfig.address}</p>
+              {siteConfig.gstin ? (
+                <p className="text-xs text-white/70">GSTIN: {siteConfig.gstin}</p>
+              ) : null}
+            </div>
+            <div className="mt-4">
+              <p className="mb-2 font-sans text-xs font-semibold uppercase tracking-wider text-white/50">
+                Social
+              </p>
+              <SocialIconLinks />
+            </div>
           </div>
-        </div>
-      </div>
+        </Grid>
 
-      <div className="mx-auto mt-8 max-w-6xl border-t border-white/10 pt-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <p className="font-sans text-xs text-white/40">
-            © {new Date().getFullYear()} Royal Swag Lung Detox. All Rights Reserved.
+        <div className="mt-8 border-t border-white/10 pt-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="font-sans text-xs text-white/40">
+              © {new Date().getFullYear()} {siteConfig.companyName} |{" "}
+              {LEGAL_LINKS.map((link, i) => (
+                <span key={link.href}>
+                  {i > 0 ? " | " : null}
+                  <Link
+                    href={link.href}
+                    className="transition-colors hover:text-white/70"
+                  >
+                    {link.label}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          </div>
+          <p className="mt-4 font-sans text-[11px] leading-relaxed text-white/30">
+            These statements have not been evaluated by FSSAI as a drug. Not intended
+            to diagnose, treat, cure, or prevent any disease. Results may vary.
           </p>
-          <div className="flex gap-6">
-            <Link
-              href="/privacy"
-              className="font-sans text-xs text-white/40 transition-colors hover:text-white/70"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="font-sans text-xs text-white/40 transition-colors hover:text-white/70"
-            >
-              Terms
-            </Link>
-          </div>
         </div>
-        <p className="mt-4 font-sans text-[11px] leading-relaxed text-white/30">
-          These statements have not been evaluated by FSSAI as a drug. Not intended
-          to diagnose, treat, cure, or prevent any disease. Results may vary.
-        </p>
-      </div>
-    </footer>
+      </Container>
+    </Section>
   );
 }

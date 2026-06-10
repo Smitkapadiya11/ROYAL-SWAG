@@ -10,6 +10,6 @@ function readCount(name: string, fallback: number): number {
 export const URGENCY_CONFIG = {
   stockCount: readCount("NEXT_PUBLIC_STOCK_COUNT", 38),
   orderCount: readCount("NEXT_PUBLIC_ORDER_COUNT", 12),
-  stickyPrice: readCount("NEXT_PUBLIC_STICKY_BAR_PRICE", 599),
-  productName: "Lung Detox Tea",
+  stickyPrice: readCount("NEXT_PUBLIC_STICKY_BAR_PRICE", 699),
+  productName: "Royal Swag Lung Detox Tea",
 } as const;

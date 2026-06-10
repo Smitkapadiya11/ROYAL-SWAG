@@ -70,7 +70,7 @@ const founders = [
     initials: "JS",
     name: "Jaideep Singh",
     role: "Business Director — E-Commerce & Operations",
-    img: "/images/jaideep%20singh.jpeg",
+    img: "/images/jaideep singh.jpeg",
     bio: "Twelve years selling online. He runs Amazon listings, our site, and the spreadsheets that show what's actually moving each week.",
   },
 ];

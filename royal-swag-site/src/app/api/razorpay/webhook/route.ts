@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { writeAuditLog } from "@/lib/audit-log";
+import { hashIp } from "@/lib/api-security";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -49,6 +51,16 @@ export async function POST(req: NextRequest) {
         order?:   { entity: Record<string, unknown> };
       };
     };
+
+    const ipHash = hashIp(
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || ""
+    );
+
+    await writeAuditLog({
+      event_type: `razorpay_webhook_${event.event}`,
+      ip_hash: ipHash,
+      payload: { event: event.event },
+    });
 
     console.log("[webhook] Event received:", event.event);
 

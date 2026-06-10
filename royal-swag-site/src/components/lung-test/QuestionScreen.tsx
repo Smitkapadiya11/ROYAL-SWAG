@@ -1,6 +1,8 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import type { LungTestQuestion } from "@/lib/lung-test-questions";
+import { lungProgressSpring } from "@/lib/motionVariants";
 
 type QuestionScreenProps = {
   question: LungTestQuestion;
@@ -15,21 +17,26 @@ export function QuestionScreen({
   total,
   onAnswer,
 }: QuestionScreenProps) {
+  const reduceMotion = useReducedMotion();
+  const progressPct = (current / total) * 100;
+
   return (
-    <div className="question-enter flex h-full min-h-[420px] flex-col md:min-h-[360px]">
+    <div className="flex h-full min-h-[420px] flex-col md:min-h-[360px]">
       <div className="mb-6 md:mb-8">
         <div className="mb-2 flex items-center justify-between">
           <span className="font-sans text-xs text-[#45483f] md:text-sm">
             Question {current} of {total}
           </span>
           <span className="font-sans text-xs font-semibold text-[#9A6F1A] md:text-sm">
-            {Math.round((current / total) * 100)}% done
+            {Math.round(progressPct)}% done
           </span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#dee5d1] md:h-2">
-          <div
-            className="h-full rounded-full bg-[#9A6F1A] transition-all duration-500"
-            style={{ width: `${(current / total) * 100}%` }}
+          <motion.div
+            className="h-full rounded-full bg-[#4CAF50]"
+            initial={false}
+            animate={{ width: `${progressPct}%` }}
+            transition={reduceMotion ? { duration: 0 } : lungProgressSpring}
           />
         </div>
       </div>

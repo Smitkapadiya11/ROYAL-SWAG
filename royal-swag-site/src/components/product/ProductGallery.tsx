@@ -1,13 +1,16 @@
 "use client";
 
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { PRODUCT_IMAGE_ALT } from "@/lib/product-images";
+
 type ProductGalleryProps = {
   images: string[];
   activeIdx: number;
   activeImage: string;
   fallback: string;
   onSelect: (idx: number, src: string) => void;
-  onMainError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
-  onThumbError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
+  onMainError?: () => void;
+  onThumbError?: (src: string) => void;
 };
 
 function ThumbButton({
@@ -22,14 +25,14 @@ function ThumbButton({
   idx: number;
   active: boolean;
   onSelect: (idx: number, src: string) => void;
-  onError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
+  onError: () => void;
   className?: string;
 }) {
   return (
     <button
       type="button"
       onClick={() => onSelect(idx, src)}
-      className={`shrink-0 overflow-hidden rounded-lg transition-all ${className ?? ""} ${
+      className={`relative shrink-0 overflow-hidden rounded-lg transition-all ${className ?? ""} ${
         active
           ? "border-2 border-primary ring-2 ring-primary/20"
           : "border border-glass-border hover:border-primary/40"
@@ -37,13 +40,13 @@ function ThumbButton({
       aria-label={`View product image ${idx + 1}`}
       aria-current={active ? "true" : undefined}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <OptimizedImage
         src={src}
         alt=""
-        className="h-full w-full object-cover"
-        loading="lazy"
-        onError={onError}
+        fill
+        sizes="72px"
+        className="object-cover"
+        onImageError={onError}
       />
     </button>
   );
@@ -58,6 +61,8 @@ export default function ProductGallery({
   onMainError,
   onThumbError,
 }: ProductGalleryProps) {
+  const mainSrc = activeImage || fallback;
+
   return (
     <section className="relative w-full min-w-0 overflow-hidden md:max-h-[calc(100vh-7rem)]">
       <div
@@ -65,16 +70,18 @@ export default function ProductGallery({
         aria-hidden
       />
 
-      {/* Desktop: main image + wrapped thumb grid (no scroll) */}
       <div className="hidden min-w-0 md:block">
         <div className="glass-card group relative min-w-0 overflow-hidden rounded-xl p-4 shadow-sm">
           <div className="relative aspect-square w-full max-h-[min(480px,calc(100vh-12rem))]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="h-full w-full rounded-lg object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-              src={activeImage || fallback}
-              alt="Lung Detox Tea"
-              onError={onMainError}
+            <OptimizedImage
+              src={mainSrc}
+              alt={PRODUCT_IMAGE_ALT}
+              fill
+              priority
+              sizes="(max-width: 1024px) 50vw, 480px"
+              objectFit="contain"
+              className="rounded-lg transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+              onImageError={onMainError}
             />
             <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md">
               <span className="text-sm text-ayurvedic-gold">★</span>
@@ -93,22 +100,24 @@ export default function ProductGallery({
               idx={i}
               active={activeIdx === i}
               onSelect={onSelect}
-              onError={onThumbError}
+              onError={() => onThumbError?.(img)}
               className="aspect-square h-auto w-full"
             />
           ))}
         </div>
       </div>
 
-      {/* Mobile: main image + horizontal thumbs */}
       <div className="md:hidden">
         <div className="glass-card group relative aspect-square w-full overflow-hidden rounded-xl p-4 shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="h-full w-full rounded-lg object-contain transition-transform duration-700 ease-out group-hover:scale-105"
-            src={activeImage || fallback}
-            alt="Lung Detox Tea"
-            onError={onMainError}
+          <OptimizedImage
+            src={mainSrc}
+            alt={PRODUCT_IMAGE_ALT}
+            fill
+            priority
+            sizes="100vw"
+            objectFit="contain"
+            className="rounded-lg transition-transform duration-700 ease-out group-hover:scale-105"
+            onImageError={onMainError}
           />
           <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md">
             <span className="text-sm text-ayurvedic-gold">★</span>
@@ -129,7 +138,7 @@ export default function ProductGallery({
               idx={i}
               active={activeIdx === i}
               onSelect={onSelect}
-              onError={onThumbError}
+              onError={() => onThumbError?.(img)}
               className="h-16 w-16"
             />
           ))}

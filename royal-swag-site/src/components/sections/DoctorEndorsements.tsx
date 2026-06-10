@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Container, Grid, Section } from "@/components/layout";
 
 const DOCTORS = [
   {
@@ -36,11 +37,131 @@ const DOCTORS = [
 
 function DoctorVideoFallback() {
   return (
-<div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-[#324023] to-[#495738]">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-primary to-primary-container">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden>
         <path d="M8 5v14l11-7L8 5z" fill="rgba(154,111,26,0.6)" />
       </svg>
       <p className="mt-2 font-sans text-xs text-white/40">Video loading…</p>
+    </div>
+  );
+}
+
+function DoctorCard({
+  doc,
+  index,
+  activeVideo,
+  failedVideos,
+  onToggle,
+  onVideoError,
+  cardRef,
+  videoRef,
+}: {
+  doc: (typeof DOCTORS)[number];
+  index: number;
+  activeVideo: number | null;
+  failedVideos: Record<string, boolean>;
+  onToggle: (i: number) => void;
+  onVideoError: (id: string) => void;
+  cardRef: (el: HTMLDivElement | null) => void;
+  videoRef: (el: HTMLVideoElement | null) => void;
+}) {
+  return (
+    <div
+      ref={cardRef}
+      className="group relative min-w-0 w-[min(17.5rem,72vw)] shrink-0 cursor-pointer overflow-hidden rounded-layout-md transition-all duration-500 md:w-auto"
+      style={{
+        boxShadow:
+          activeVideo === index
+            ? "var(--shadow-hover), 0 0 0 2px rgba(154,111,26,0.4)"
+            : "var(--shadow-card)",
+        transform: activeVideo === index ? "scale(1.02)" : "scale(1)",
+      }}
+      onClick={() => onToggle(index)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle(index);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Play ${doc.name} endorsement video`}
+    >
+      <div className="layout-media--fill relative" style={{ aspectRatio: "3/4" }}>
+        {failedVideos[doc.id] ? (
+          <DoctorVideoFallback />
+        ) : (
+          <video
+            ref={videoRef}
+            src={doc.videoSrc}
+            className="h-full w-full max-w-full object-cover"
+            playsInline
+            preload="metadata"
+            loop
+            muted
+            onError={() => onVideoError(doc.id)}
+          />
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+        <div
+          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${
+            activeVideo === index
+              ? "bg-ayurvedic-gold"
+              : "bg-black/40 backdrop-blur-sm"
+          }`}
+        >
+          {activeVideo === index ? (
+            <div className="flex gap-0.5">
+              <div className="h-3 w-1 rounded-sm bg-white" />
+              <div className="h-3 w-1 rounded-sm bg-white" />
+            </div>
+          ) : (
+            <div className="ml-0.5 h-0 w-0 border-b-[5px] border-l-[8px] border-t-[5px] border-b-transparent border-l-white border-t-transparent" />
+          )}
+        </div>
+
+        {activeVideo === index && (
+          <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-red-500 px-2 py-1">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+            <span className="font-sans text-[10px] font-bold text-white">
+              PLAYING
+            </span>
+          </div>
+        )}
+
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <p className="font-display text-lg font-bold leading-tight text-white">
+            {doc.name}
+          </p>
+          <p className="mt-0.5 font-sans text-[11px] text-white/80">
+            {doc.title}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-primary px-4 py-3">
+        <div className="mb-1 flex items-center gap-2">
+          <div className="h-1 w-1 rounded-full bg-ayurvedic-gold" />
+          <p className="font-sans text-[11px] text-white/70">{doc.hospital}</p>
+        </div>
+        <p className="font-sans text-xs italic leading-4 text-white/90">
+          &ldquo;{doc.quote}&rdquo;
+        </p>
+        <div className="mt-2 flex items-center justify-between">
+          <span className="font-sans text-[10px] font-semibold text-ayurvedic-gold">
+            {doc.years}
+          </span>
+          <div className="flex">
+            {[1, 2, 3, 4, 5].map((s) => (
+              <span key={s} className="text-[10px] text-ayurvedic-gold">
+                ★
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -117,139 +238,73 @@ export function DoctorEndorsements() {
   };
 
   return (
-    <section className="site-container py-16 md:py-20">
-      <div className="mb-10 text-center">
-        <span className="mb-3 inline-block rounded-full bg-[#9A6F1A]/10 px-4 py-1.5 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9A6F1A]">
-          Medical Endorsements
-        </span>
-        <h2 className="mt-2 font-display text-[36px] font-bold leading-tight text-[#324023]">
-          Trusted by Doctors.
-          <br />
-          Proven by Science.
-        </h2>
-        <p className="mx-auto mt-3 max-w-sm font-sans text-base text-[#45483f]">
-          Leading physicians across India recommend Royal Swag for respiratory
-          health.
-        </p>
-      </div>
+    <Section bg="transparent">
+      <Container>
+        <div className="mb-10 text-center">
+          <span className="mb-3 inline-block rounded-full bg-ayurvedic-gold/10 px-4 py-1.5 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-ayurvedic-gold">
+            Medical Endorsements
+          </span>
+          <h2 className="mt-2 font-display text-[36px] font-bold leading-tight text-primary">
+            Trusted by Doctors.
+            <br />
+            Proven by Science.
+          </h2>
+          <p className="mx-auto mt-3 max-w-sm font-sans text-base text-on-surface-variant">
+            Leading physicians across India recommend Royal Swag for respiratory
+            health.
+          </p>
+        </div>
 
-      <div
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible"
-        style={{ scrollbarWidth: "none" }}
-      >
-        {DOCTORS.map((doc, i) => (
-          <div
-            key={doc.id}
-            ref={(el) => {
-              cardRefs.current[i] = el;
-            }}
-            className="group relative w-[72vw] max-w-[280px] shrink-0 cursor-pointer snap-center overflow-hidden rounded-2xl transition-all duration-500 md:w-auto md:max-w-none"
-            style={{
-              boxShadow:
-                activeVideo === i
-                  ? "0 20px 60px rgba(50,64,35,0.25), 0 0 0 2px rgba(154,111,26,0.4)"
-                  : "0 4px 20px rgba(50,64,35,0.08)",
-              transform: activeVideo === i ? "scale(1.02)" : "scale(1)",
-            }}
-            onClick={() => toggleVideo(i)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                toggleVideo(i);
+        {/* Mobile: horizontal scroll snap */}
+        <div className="layout-scroll-snap hide-scrollbar md:hidden">
+          {DOCTORS.map((doc, i) => (
+            <DoctorCard
+              key={doc.id}
+              doc={doc}
+              index={i}
+              activeVideo={activeVideo}
+              failedVideos={failedVideos}
+              onToggle={toggleVideo}
+              onVideoError={(id) =>
+                setFailedVideos((prev) => ({ ...prev, [id]: true }))
               }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label={`Play ${doc.name} endorsement video`}
-          >
-            <div className="relative" style={{ aspectRatio: "3/4" }}>
-              {failedVideos[doc.id] ? (
-                <DoctorVideoFallback />
-              ) : (
-                <video
-                  ref={(el) => {
-                    videoRefs.current[i] = el;
-                  }}
-                  src={doc.videoSrc}
-                  className="h-full w-full object-cover"
-                  playsInline
-                  preload="metadata"
-                  loop
-                  muted
-                  onError={() =>
-                    setFailedVideos((prev) => ({ ...prev, [doc.id]: true }))
-                  }
-                />
-              )}
+              cardRef={(el) => {
+                cardRefs.current[i] = el;
+              }}
+              videoRef={(el) => {
+                videoRefs.current[i] = el;
+              }}
+            />
+          ))}
+        </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+        {/* Desktop: 3-column grid */}
+        <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }} className="hidden md:grid">
+          {DOCTORS.map((doc, i) => (
+            <DoctorCard
+              key={doc.id}
+              doc={doc}
+              index={i}
+              activeVideo={activeVideo}
+              failedVideos={failedVideos}
+              onToggle={toggleVideo}
+              onVideoError={(id) =>
+                setFailedVideos((prev) => ({ ...prev, [id]: true }))
+              }
+              cardRef={(el) => {
+                cardRefs.current[i] = el;
+              }}
+              videoRef={(el) => {
+                videoRefs.current[i] = el;
+              }}
+            />
+          ))}
+        </Grid>
 
-              <div
-                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${
-                  activeVideo === i
-                    ? "bg-[#9A6F1A]"
-                    : "bg-black/40 backdrop-blur-sm"
-                }`}
-              >
-                {activeVideo === i ? (
-                  <div className="flex gap-0.5">
-                    <div className="h-3 w-1 rounded-sm bg-white" />
-                    <div className="h-3 w-1 rounded-sm bg-white" />
-                  </div>
-                ) : (
-                  <div className="ml-0.5 h-0 w-0 border-b-[5px] border-l-[8px] border-t-[5px] border-b-transparent border-l-white border-t-transparent" />
-                )}
-              </div>
-
-              {activeVideo === i && (
-                <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-red-500 px-2 py-1">
-                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                  <span className="font-sans text-[10px] font-bold text-white">
-                    PLAYING
-                  </span>
-                </div>
-              )}
-
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <p className="font-display text-lg font-bold leading-tight text-white">
-                  {doc.name}
-                </p>
-                <p className="mt-0.5 font-sans text-[11px] text-white/80">
-                  {doc.title}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#324023] px-4 py-3">
-              <div className="mb-1 flex items-center gap-2">
-                <div className="h-1 w-1 rounded-full bg-[#9A6F1A]" />
-                <p className="font-sans text-[11px] text-white/70">
-                  {doc.hospital}
-                </p>
-              </div>
-              <p className="font-sans text-xs italic leading-4 text-white/90">
-                &ldquo;{doc.quote}&rdquo;
-              </p>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="font-sans text-[10px] font-semibold text-[#9A6F1A]">
-                  {doc.years}
-                </span>
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <span key={s} className="text-[10px] text-[#9A6F1A]">
-                      ★
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <p className="mt-4 text-center font-sans text-[11px] text-[#75786e] md:hidden">
-        ← Scroll to see all doctors · Videos auto-play with sound →
-      </p>
-    </section>
+        <p className="mt-4 text-center font-sans text-[11px] text-outline md:hidden">
+          ← Scroll to see all doctors · Videos auto-play with sound →
+        </p>
+      </Container>
+    </Section>
   );
 }

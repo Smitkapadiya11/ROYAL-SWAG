@@ -56,7 +56,7 @@ export default function AnnouncementBar() {
   }, []);
 
   return (
-    <Bar data-announcement>
+    <Bar>
       <Message $visible={visible} aria-live="polite">
         {messages[currentIndex]}
       </Message>

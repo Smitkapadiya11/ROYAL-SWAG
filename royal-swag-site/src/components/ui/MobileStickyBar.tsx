@@ -1,83 +1,95 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { URGENCY_CONFIG } from "@/lib/urgency-config";
-import { getSaving } from "@/lib/productPricing";
+import { motion, useReducedMotion } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
+import {
+  resolveBarCheckout,
+  useConversionBar,
+} from "@/contexts/ConversionBarContext";
 import { EVENTS, trackEvent } from "@/lib/events";
+import { stickyBarMountVariants } from "@/lib/motionVariants";
 
-type SelectedBundle = {
-  price: number;
-  mrp: number;
-};
+const ALLOWED_PATHS = new Set(["/", "/product"]);
+const HERO_CTA_SELECTOR = "[data-hero-buy-cta]";
 
 type MobileStickyBarProps = {
-  selectedBundle?: SelectedBundle;
-  /** Fallback when selectedBundle is not passed */
-  selectedPrice?: number;
-  productName?: string;
+  onBuyNow: () => void;
 };
 
-export default function MobileStickyBar({
-  selectedBundle,
-  selectedPrice = URGENCY_CONFIG.stickyPrice,
-  productName = URGENCY_CONFIG.productName,
-}: MobileStickyBarProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const price = selectedBundle?.price ?? selectedPrice;
-  const mrp = selectedBundle?.mrp;
+export default function MobileStickyBar({ onBuyNow }: MobileStickyBarProps) {
+  const pathname = usePathname() ?? "/";
+  const { showCheckout } = useCheckoutUi();
+  const { config, heroBuyDismissed } = useConversionBar();
+  const reduceMotion = useReducedMotion();
 
-  const handleBuy = () => {
-    trackEvent(EVENTS.STICKY_BAR_BUY, { page: pathname || "/" });
+  const [pastHero, setPastHero] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-    if (pathname === "/product") {
-      const el = document.getElementById("product-checkout");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
+  const { price, productName } = resolveBarCheckout(config);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!ALLOWED_PATHS.has(pathname)) return;
+
+    const heroEl = document.querySelector(HERO_CTA_SELECTOR);
+    if (!heroEl) {
+      setPastHero(true);
+      return;
     }
 
-    router.push("/product#product-checkout");
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setPastHero(!entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: "0px 0px -20% 0px" }
+    );
+
+    observer.observe(heroEl);
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  if (!mounted || !ALLOWED_PATHS.has(pathname)) {
+    return null;
+  }
+
+  const visible = pastHero && !heroBuyDismissed && !showCheckout;
+
+  if (!visible) {
+    return null;
+  }
+
+  const handleBuy = () => {
+    trackEvent(EVENTS.STICKY_BAR_BUY, { page: pathname, price });
+    onBuyNow();
   };
 
   return (
-    <div
-      className="mobile-sticky-bar fixed bottom-0 left-0 right-0 z-[60] flex h-[60px] items-center justify-between border-t border-white/10 px-5 backdrop-blur-xl md:hidden"
-      style={{ backgroundColor: "#0D3B1F" }}
+    <motion.div
+      className="mobile-sticky-bar"
       role="region"
       aria-label="Quick purchase"
+      variants={reduceMotion ? undefined : stickyBarMountVariants}
+      initial={reduceMotion ? false : "hidden"}
+      animate="visible"
     >
-      <div className="min-w-0 flex-1 pr-3">
-        <p className="truncate font-sans text-xs font-medium text-white/90">
-          {productName}
-        </p>
-        {selectedBundle && mrp ? (
-          <div className="flex flex-col">
-            <span className="font-sans text-[10px] text-white/60">
-              <span className="line-through">₹{mrp}</span>
-              {" "}
-              → Save {getSaving(price, mrp)}%
-            </span>
-            <span className="font-number text-2xl font-bold leading-none text-white">
-              ₹{price}
-            </span>
-          </div>
-        ) : (
-          <p className="font-number text-xl font-bold leading-tight text-white">
-            ₹{price}
-          </p>
-        )}
+      <div className="mobile-sticky-bar__copy">
+        <p className="mobile-sticky-bar__title">{productName}</p>
+        <p className="mobile-sticky-bar__price">₹{price}</p>
       </div>
       <button
         type="button"
         onClick={handleBuy}
         data-track-button="sticky-buy-now"
         data-track-label="Buy Now"
-        className="flex min-h-[44px] shrink-0 items-center justify-center rounded-xl bg-[#9A6F1A] px-6 py-3 font-sans text-sm font-bold text-white transition hover:brightness-110 active:scale-[0.98]"
+        className="mobile-sticky-bar__btn"
       >
         Buy Now
       </button>
-    </div>
+    </motion.div>
   );
 }

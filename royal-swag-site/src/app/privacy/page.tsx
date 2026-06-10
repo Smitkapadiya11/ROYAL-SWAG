@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Container, Section } from "@/components/layout";
+import { siteConfig } from "@/lib/siteConfig";
+
+const LAST_UPDATED = "June 2026";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -8,30 +12,45 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-[100svh] bg-[var(--brand-ivory)] py-20 px-4">
-      <div className="container-rs max-w-2xl mx-auto">
-        <h1
-          className="text-3xl font-bold text-[var(--brand-dark)] mb-6"
-          style={{ fontFamily: "var(--font-playfair)" }}
-        >
+    <Section bg="cream" className="min-h-[100svh]">
+      <Container size="sm">
+        <h1 className="mb-6 font-display text-3xl font-bold text-on-surface">
           Privacy Policy
         </h1>
-        <p className="text-sm text-[var(--brand-dark)]/70 leading-relaxed mb-4">
-          Royal Swag (&quot;we&quot;, &quot;us&quot;) respects your privacy. This page describes how we collect and use
-          information when you use our website, including the free lung test and checkout.
+        <p className="mb-4 font-body text-sm leading-relaxed text-on-surface-variant">
+          {siteConfig.companyName} (&quot;Royal Swag&quot;, &quot;we&quot;, &quot;us&quot;) respects your privacy.
+          This policy explains how we collect, use, and protect personal information when you use
+          lungdetox.royalswag.in, including the free lung test, checkout, and WhatsApp ordering.
+          This notice is provided in accordance with the Information Technology Act, 2000 and
+          applicable data protection principles.
         </p>
-        <ul className="list-disc pl-5 text-sm text-[var(--brand-dark)]/70 space-y-2 mb-8">
-          <li>We use your contact details to fulfil orders and respond to enquiries.</li>
-          <li>Payment processing is handled securely by Razorpay; we do not store your full card details on our servers.</li>
-          <li>You may request correction or deletion of your data by contacting us at the email shown in the site footer.</li>
+        <h2 className="mb-2 font-display text-xl font-semibold text-primary">Information we collect</h2>
+        <ul className="mb-4 list-disc space-y-2 pl-5 font-body text-sm text-on-surface-variant">
+          <li>Name, phone number, email, and delivery address when you place an order or take the lung test.</li>
+          <li>Payment references from Razorpay (we do not store full card or UPI credentials).</li>
+          <li>Technical data such as browser type and pages visited via analytics cookies where enabled.</li>
         </ul>
-        <p className="text-xs text-[var(--brand-dark)]/50">
-          Last updated: April 2026. For questions, use the contact details in the footer.
+        <h2 className="mb-2 font-display text-xl font-semibold text-primary">How we use your data</h2>
+        <ul className="mb-4 list-disc space-y-2 pl-5 font-body text-sm text-on-surface-variant">
+          <li>To fulfil orders, send confirmations (SMS/email), and provide customer support.</li>
+          <li>To personalise lung test results and improve our Ayurvedic wellness content.</li>
+          <li>We do not sell your personal data to third parties.</li>
+        </ul>
+        <h2 className="mb-2 font-display text-xl font-semibold text-primary">Your rights</h2>
+        <ul className="mb-8 list-disc space-y-2 pl-5 font-body text-sm text-on-surface-variant">
+          <li>Request access, correction, or deletion of your data by emailing {siteConfig.email}.</li>
+          <li>Opt out of marketing messages at any time via reply or unsubscribe instructions.</li>
+        </ul>
+        <p className="font-body text-xs text-on-surface-variant/70">
+          Last updated: {LAST_UPDATED}. Questions: {siteConfig.email}
         </p>
-        <Link href="/" className="inline-block mt-8 text-sm font-semibold text-[var(--brand-green)] underline">
+        <Link
+          href="/"
+          className="mt-8 inline-block font-body text-sm font-semibold text-primary underline"
+        >
           ← Back to home
         </Link>
-      </div>
-    </div>
+      </Container>
+    </Section>
   );
 }

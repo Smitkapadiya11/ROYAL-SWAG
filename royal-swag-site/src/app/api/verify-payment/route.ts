@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { getSupabaseAdmin } from "@/lib/admin/session";
-import {
-  sendOrderConfirmationEmail,
-  sendOrderConfirmationSms,
-} from "@/lib/notifications";
+import { sendOrderConfirmationSms } from "@/lib/notifications";
+import { sendOrderConfirmationEmailResend } from "@/lib/send-confirmation-email";
+import { writeAuditLog } from "@/lib/audit-log";
+import { trackReferralOnOrder } from "@/lib/referral";
+import { apiNoStoreHeaders, hashIp, readJsonBody } from "@/lib/api-security";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -88,12 +90,23 @@ function normalizePack(raw?: PackPayload, legacyPackId?: string, legacyAmount?: 
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    if (!rateLimit(`verify-payment:${ip}`, 10, 60_000)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again in a minute." },
+        { status: 429 }
+      );
+    }
+
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret) {
       return NextResponse.json({ error: "Razorpay secret not configured" }, { status: 500 });
     }
 
-    const body = await req.json();
+    const ipHash = hashIp(ip);
+    const parsed = await readJsonBody(req);
+    if (parsed.error) return parsed.error;
+    const body = parsed.data as Record<string, unknown>;
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -101,6 +114,8 @@ export async function POST(req: NextRequest) {
       customerData,
       packData,
       orderData,
+      ref,
+      utm_source,
     } = body as {
       razorpay_order_id?: string;
       razorpay_payment_id?: string;
@@ -108,6 +123,8 @@ export async function POST(req: NextRequest) {
       customerData?: CustomerPayload;
       packData?: PackPayload;
       orderData?: CustomerPayload & { packId?: string; amount?: number; orderNumber?: string };
+      ref?: string;
+      utm_source?: string;
     };
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -115,7 +132,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature, secret)) {
-      return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
+      return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
     }
 
     const customer = normalizeCustomer(customerData || orderData);
@@ -134,12 +151,21 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
 
     if (existingByPayment) {
-      return NextResponse.json({
-        success: true,
-        orderNumber: existingByPayment.order_number,
-        orderId: existingByPayment.order_number,
-        order: existingByPayment,
+      await writeAuditLog({
+        event_type: "verify_payment_duplicate",
+        ip_hash: ipHash,
+        idempotency_key: razorpay_payment_id,
+        payload: { order_number: existingByPayment.order_number },
       });
+      return NextResponse.json(
+        {
+          success: true,
+          orderNumber: existingByPayment.order_number,
+          orderId: existingByPayment.order_number,
+          order: existingByPayment,
+        },
+        { headers: apiNoStoreHeaders() }
+      );
     }
 
     const { data: existingByRzpOrder } = await supabase
@@ -182,7 +208,7 @@ export async function POST(req: NextRequest) {
         payment_id: razorpay_payment_id,
         razorpay_order_id: razorpay_order_id,
         payment_method: "razorpay",
-        status: "pending",
+        status: "paid",
       })
       .select()
       .single();
@@ -194,18 +220,51 @@ export async function POST(req: NextRequest) {
 
     await Promise.all([
       sendOrderConfirmationSms(data),
-      sendOrderConfirmationEmail(data),
+      data.email
+        ? sendOrderConfirmationEmailResend({
+            orderNumber: data.order_number,
+            customerName: data.full_name,
+            customerEmail: data.email,
+            amount: data.amount,
+            productName: `Royal Swag Lung Detox Tea (${data.pack_type || "standard"})`,
+            addressLine1: data.address_line1,
+            city: data.city,
+            pincode: data.pincode,
+          })
+        : Promise.resolve(false),
+      trackReferralOnOrder({
+        referredOrderId: data.id,
+        referralCode: ref,
+        utmSource: utm_source,
+      }),
     ]).catch((err) => console.error("[verify-payment] notifications:", err));
 
-    return NextResponse.json({
-      success: true,
-      orderNumber,
-      orderId: orderNumber,
-      order: data,
+    await writeAuditLog({
+      event_type: "verify_payment_success",
+      ip_hash: ipHash,
+      idempotency_key: razorpay_payment_id,
+      payload: {
+        order_number: orderNumber,
+        amount: pack.amount,
+        payment_id: razorpay_payment_id,
+      },
     });
+
+    return NextResponse.json(
+      {
+        success: true,
+        orderNumber,
+        orderId: orderNumber,
+        order: data,
+      },
+      { headers: apiNoStoreHeaders() }
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Verification failed";
     console.error("VERIFY PAYMENT ERROR:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: message },
+      { status: 500, headers: apiNoStoreHeaders() }
+    );
   }
 }

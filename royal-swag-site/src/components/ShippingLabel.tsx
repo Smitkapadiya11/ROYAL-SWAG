@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import JsBarcode from "jsbarcode";
 import BrandLogo from "@/components/ui/BrandLogo";
+import { siteConfig } from "@/lib/siteConfig";
 
 export type ShippingLabelOrder = {
   order_id: string;
@@ -17,10 +18,7 @@ export type ShippingLabelOrder = {
   created_at: string;
 };
 
-const FSSAI =
-  process.env.NEXT_PUBLIC_FSSAI_NUMBER ||
-  process.env.NEXT_PUBLIC_FSSAI_LICENSE ||
-  "Licensed";
+const FSSAI = siteConfig.fssaiLicense;
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-IN", {

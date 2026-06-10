@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import ProductSocialProof from "@/components/ui/ProductSocialProof";
 import { ANALYTICS_EVENTS, track, trackPurchaseOnce } from "@/lib/analytics";
+import { getStoredReferralCode, getStoredUtm } from "@/lib/customer-analytics";
 
 const schema = z.object({
   fullName: z.string().min(2, "Enter your full name"),
@@ -158,6 +159,7 @@ export default function ProductCheckout({
           theme: { color: "#324023" },
           handler: async (response: RazorpayResponse) => {
             try {
+              const utm = getStoredUtm();
               const verifyRes = await fetch("/api/verify-payment", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -165,6 +167,8 @@ export default function ProductCheckout({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
+                  ref: getStoredReferralCode() || undefined,
+                  utm_source: utm.utm_source,
                   customerData: {
                     name: form.fullName,
                     phone: form.phone,

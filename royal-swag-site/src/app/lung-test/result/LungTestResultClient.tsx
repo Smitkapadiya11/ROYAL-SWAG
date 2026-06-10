@@ -1,82 +1,82 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { LungTestResult } from "@/components/lung-test/LungTestResult";
-import LungTestHeader from "@/components/lung-test/LungTestHeader";
-import { LUNG_TEST_STORAGE_KEY } from "@/lib/lung-test-constants";
-import type { LungLevel, SymptomAnswers } from "@/lib/lungScore";
+import { useRouter, useSearchParams } from "next/navigation";
+import BrandLogo from "@/components/ui/BrandLogo";
+import { LungHealthReport } from "@/components/lung-test/LungHealthReport";
+import {
+  clearStoredLungResult,
+  readStoredLungResult,
+  type StoredLungResult,
+} from "@/lib/lung-test-constants";
+import { getLungScore, getMatchedHerbNames } from "@/lib/lungScore";
 import { EVENTS, trackEvent } from "@/lib/events";
 
-type StoredResult = {
-  name: string;
-  email: string;
-  phone: string;
-  city: boolean;
-  smoke: boolean;
-  cough: boolean;
-  breathless: boolean;
-  dust: boolean;
-  breathHoldSeconds?: number;
-  score: number;
-  level: LungLevel;
-  timestamp?: number;
-};
+function readFromUrlParams(searchParams: URLSearchParams): StoredLungResult | null {
+  const name = searchParams.get("name");
+  const scoreRaw = searchParams.get("score");
+  if (!name?.trim() || !scoreRaw) return null;
 
-function readStored(): StoredResult | null {
-  if (typeof window === "undefined") return null;
-  for (const key of [LUNG_TEST_STORAGE_KEY, "lungTestResult", "lung_lead"]) {
-    try {
-      const raw = sessionStorage.getItem(key) || localStorage.getItem(key);
-      if (!raw) continue;
-      const parsed = JSON.parse(raw) as StoredResult;
-      if (key === "lung_lead" && parsed.name) {
-        const full = sessionStorage.getItem(LUNG_TEST_STORAGE_KEY);
-        if (full) return JSON.parse(full) as StoredResult;
-        continue;
-      }
-      if (parsed?.name && typeof parsed.score === "number") {
-        return parsed;
-      }
-    } catch {
-      /* try next */
-    }
-  }
-  return null;
+  const score = Number(scoreRaw);
+  if (!Number.isFinite(score)) return null;
+
+  const lungScore = getLungScore(score);
+  return {
+    name: name.trim(),
+    email: searchParams.get("email")?.trim() ?? "",
+    phone: searchParams.get("phone")?.trim() ?? "",
+    city: false,
+    smoke: false,
+    cough: false,
+    breathless: false,
+    dust: false,
+    mucus: false,
+    worsened: false,
+    score,
+    level: lungScore.level,
+    riskSlug: lungScore.riskSlug,
+    matchedHerbs: getMatchedHerbNames({
+      city: false,
+      smoke: false,
+      cough: false,
+      breathless: false,
+      dust: false,
+      mucus: false,
+      worsened: false,
+    }),
+    timestamp: Date.now(),
+  };
 }
 
 export default function LungTestResultClient() {
   const router = useRouter();
-  const [stored, setStored] = useState<StoredResult | null>(null);
+  const searchParams = useSearchParams();
+  const [stored, setStored] = useState<StoredLungResult | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
-      setStored(readStored());
+      const fromStorage = readStoredLungResult();
+      const fromUrl = searchParams ? readFromUrlParams(searchParams) : null;
+      setStored(fromStorage ?? fromUrl);
       setLoaded(true);
     }, 0);
     return () => window.clearTimeout(id);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (stored) {
+      try {
+        sessionStorage.setItem("lung_test_lead_captured", "1");
+      } catch {
+        /* ignore */
+      }
       trackEvent(EVENTS.LUNG_RESULT_VIEW, {
         score: stored.score,
         level: stored.level,
       });
     }
-  }, [stored]);
-
-  const answers: SymptomAnswers | null = useMemo(() => {
-    if (!stored) return null;
-    return {
-      city: !!stored.city,
-      smoke: !!stored.smoke,
-      cough: !!stored.cough,
-      breathless: !!stored.breathless,
-      dust: !!stored.dust,
-    };
   }, [stored]);
 
   if (!loaded) {
@@ -87,7 +87,7 @@ export default function LungTestResultClient() {
     );
   }
 
-  if (!stored || !answers) {
+  if (!stored) {
     return (
       <div className="flex min-h-[70svh] flex-col items-center justify-center bg-parchment px-5 py-16">
         <div className="max-w-md text-center">
@@ -98,8 +98,8 @@ export default function LungTestResultClient() {
             Complete your lung test first
           </h1>
           <p className="mt-3 font-sans text-sm text-[#45483f]">
-            Your personalised score, breath-hold result, and herb matches appear
-            here after the quiz.
+            Your personalised score and herb matches appear here after the
+            symptom quiz.
           </p>
           <Link
             href="/lung-test"
@@ -112,28 +112,25 @@ export default function LungTestResultClient() {
     );
   }
 
-  const level = (stored.level as LungLevel) ?? "Mild";
-  const breathSeconds = stored.breathHoldSeconds ?? 0;
-
   return (
-    <div className="flex min-h-screen flex-col bg-parchment">
-      <LungTestHeader />
-      <div className="mx-auto w-full max-w-lg flex-1 px-5 pb-24 pt-8 md:max-w-5xl md:px-10">
-        <p className="mb-2 text-center font-sans text-xs font-bold uppercase tracking-[0.2em] text-[#9A6F1A]">
-          {stored.name.trim().split(/\s+/)[0] ?? "Your"} lung profile
-        </p>
-        <LungTestResult
-          score={stored.score}
-          level={level}
-          breathSeconds={breathSeconds}
-          answers={answers}
+    <div className="min-h-screen bg-parchment">
+      <header
+        className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-white/60 px-5 backdrop-blur-md md:px-10"
+        style={{ background: "rgba(255,255,255,0.45)" }}
+      >
+        <Link href="/" aria-label="Royal Swag home">
+          <BrandLogo variant="on-light" className="h-9 w-auto md:h-10" />
+        </Link>
+        <span className="rounded-full bg-[#324023]/10 px-3 py-1 font-sans text-xs font-bold text-[#9A6F1A]">
+          Lung Health Report
+        </span>
+      </header>
+
+      <div className="mx-auto w-full max-w-lg px-5 pb-24 pt-8 md:max-w-3xl md:px-10">
+        <LungHealthReport
+          stored={stored}
           onRetake={() => {
-            try {
-              sessionStorage.removeItem(LUNG_TEST_STORAGE_KEY);
-              localStorage.removeItem(LUNG_TEST_STORAGE_KEY);
-            } catch {
-              /* ignore */
-            }
+            clearStoredLungResult();
             router.push("/lung-test");
           }}
         />

@@ -1,5 +1,7 @@
 /** Product bundle cards for /product — Sprint 3 will extend subscription flow. */
 
+import { BUNDLE_COMBO_IMAGE } from "@/lib/product-images";
+
 function readPrice(name: string, fallback: number): number {
   const raw = process.env[name];
   if (raw == null || raw === "") return fallback;
@@ -13,6 +15,7 @@ export type ProductBundleOption = {
   subtitle: string;
   price: number;
   mrp: number;
+  image: string;
   badge: string | null;
   saveLabel: string | null;
   isSubscription?: boolean;
@@ -34,6 +37,7 @@ export const PRODUCT_BUNDLE_OPTIONS: readonly ProductBundleOption[] = [
     subtitle: "30 bags · 30-day supply",
     price: singlePrice,
     mrp: singleMrp,
+    image: BUNDLE_COMBO_IMAGE.single,
     badge: null,
     saveLabel: null,
   },
@@ -43,6 +47,7 @@ export const PRODUCT_BUNDLE_OPTIONS: readonly ProductBundleOption[] = [
     subtitle: "60 bags · 60-day supply",
     price: doublePrice,
     mrp: doubleMrp,
+    image: BUNDLE_COMBO_IMAGE.double,
     badge: "BEST VALUE 🏆",
     saveLabel: `SAVE ₹${doubleMrp - doublePrice}`,
     isDefault: true,
@@ -53,6 +58,7 @@ export const PRODUCT_BUNDLE_OPTIONS: readonly ProductBundleOption[] = [
     subtitle: "90 bags · 90-day supply",
     price: triplePrice,
     mrp: tripleMrp,
+    image: BUNDLE_COMBO_IMAGE.triple,
     badge: null,
     saveLabel: `SAVE ₹${tripleMrp - triplePrice}`,
   },
@@ -62,6 +68,7 @@ export const PRODUCT_BUNDLE_OPTIONS: readonly ProductBundleOption[] = [
     subtitle: "₹649/month · Cancel anytime",
     price: subPrice,
     mrp: singleMrp,
+    image: BUNDLE_COMBO_IMAGE.single,
     badge: "AUTO-DELIVER 🔄",
     saveLabel: null,
     isSubscription: true,

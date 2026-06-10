@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Container, Grid, Section } from "@/components/layout";
+import { Container, Section } from "@/components/layout";
 
 const DOCTORS = [
   {
@@ -55,6 +55,7 @@ function DoctorCard({
   onVideoError,
   cardRef,
   videoRef,
+  mobile = false,
 }: {
   doc: (typeof DOCTORS)[number];
   index: number;
@@ -64,18 +65,18 @@ function DoctorCard({
   onVideoError: (id: string) => void;
   cardRef: (el: HTMLDivElement | null) => void;
   videoRef: (el: HTMLVideoElement | null) => void;
+  mobile?: boolean;
 }) {
   return (
     <div
       ref={cardRef}
-      className="group relative min-w-0 w-[min(17.5rem,72vw)] shrink-0 cursor-pointer overflow-hidden rounded-layout-md transition-all duration-500 md:w-full md:max-w-none md:shrink"
-      style={{
-        boxShadow:
-          activeVideo === index
-            ? "var(--shadow-hover), 0 0 0 2px rgba(154,111,26,0.4)"
-            : "var(--shadow-card)",
-        transform: activeVideo === index ? "scale(1.02)" : "scale(1)",
-      }}
+      className={`group relative min-w-0 cursor-pointer overflow-hidden rounded-layout-md transition-shadow duration-300 ${
+        mobile ? "w-[min(17.5rem,72vw)] shrink-0" : "w-full"
+      } ${
+        activeVideo === index
+          ? "shadow-[var(--shadow-hover),0_0_0_2px_rgba(154,111,26,0.4)]"
+          : "shadow-[var(--shadow-card)]"
+      }`}
       onClick={() => onToggle(index)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -87,14 +88,14 @@ function DoctorCard({
       tabIndex={0}
       aria-label={`Play ${doc.name} endorsement video`}
     >
-      <div className="layout-media--fill relative" style={{ aspectRatio: "3/4" }}>
+      <div className="doctor-video-frame">
         {failedVideos[doc.id] ? (
           <DoctorVideoFallback />
         ) : (
           <video
             ref={videoRef}
             src={doc.videoSrc}
-            className="h-full w-full max-w-full object-cover"
+            className="h-full w-full object-cover object-center"
             playsInline
             preload="metadata"
             loop
@@ -172,10 +173,19 @@ export function DoctorEndorsements() {
   const activeVideoRef = useRef<number | null>(null);
   const [activeVideo, setActiveVideo] = useState<number | null>(null);
   const [failedVideos, setFailedVideos] = useState<Record<string, boolean>>({});
+  const [isMobile, setIsMobile] = useState(false);
 
   const setActive = useCallback((index: number | null) => {
     activeVideoRef.current = index;
     setActiveVideo(index);
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
@@ -215,7 +225,7 @@ export function DoctorEndorsements() {
     });
 
     return () => observers.forEach((o) => o.disconnect());
-  }, [setActive]);
+  }, [setActive, isMobile]);
 
   const toggleVideo = (i: number) => {
     const video = videoRefs.current[i];
@@ -237,6 +247,28 @@ export function DoctorEndorsements() {
     }
   };
 
+  const renderCards = (mobile: boolean) =>
+    DOCTORS.map((doc, i) => (
+      <DoctorCard
+        key={`${mobile ? "m" : "d"}-${doc.id}`}
+        doc={doc}
+        index={i}
+        activeVideo={activeVideo}
+        failedVideos={failedVideos}
+        onToggle={toggleVideo}
+        onVideoError={(id) =>
+          setFailedVideos((prev) => ({ ...prev, [id]: true }))
+        }
+        cardRef={(el) => {
+          cardRefs.current[i] = el;
+        }}
+        videoRef={(el) => {
+          videoRefs.current[i] = el;
+        }}
+        mobile={mobile}
+      />
+    ));
+
   return (
     <Section bg="transparent">
       <Container>
@@ -255,53 +287,13 @@ export function DoctorEndorsements() {
           </p>
         </div>
 
-        {/* Mobile: horizontal scroll snap */}
-        <div className="layout-scroll-snap hide-scrollbar md:hidden">
-          {DOCTORS.map((doc, i) => (
-            <DoctorCard
-              key={doc.id}
-              doc={doc}
-              index={i}
-              activeVideo={activeVideo}
-              failedVideos={failedVideos}
-              onToggle={toggleVideo}
-              onVideoError={(id) =>
-                setFailedVideos((prev) => ({ ...prev, [id]: true }))
-              }
-              cardRef={(el) => {
-                cardRefs.current[i] = el;
-              }}
-              videoRef={(el) => {
-                videoRefs.current[i] = el;
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Desktop: 3-column grid */}
-        <div className="hidden md:block">
-          <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }}>
-            {DOCTORS.map((doc, i) => (
-              <DoctorCard
-                key={doc.id}
-                doc={doc}
-                index={i}
-                activeVideo={activeVideo}
-                failedVideos={failedVideos}
-                onToggle={toggleVideo}
-                onVideoError={(id) =>
-                  setFailedVideos((prev) => ({ ...prev, [id]: true }))
-                }
-                cardRef={(el) => {
-                  cardRefs.current[i] = el;
-                }}
-                videoRef={(el) => {
-                  videoRefs.current[i] = el;
-                }}
-              />
-            ))}
-          </Grid>
-        </div>
+        {isMobile ? (
+          <div className="layout-scroll-snap hide-scrollbar">
+            {renderCards(true)}
+          </div>
+        ) : (
+          <div className="doctor-card-grid">{renderCards(false)}</div>
+        )}
 
         <p className="mt-4 text-center font-sans text-[11px] text-outline md:hidden">
           ← Scroll to see all doctors · Videos auto-play with sound →

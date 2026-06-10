@@ -6,6 +6,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: https: blob:",
+  "media-src 'self'",
   "frame-src https://checkout.razorpay.com",
   "connect-src 'self' https://*.supabase.co https://api.resend.com https://www.google-analytics.com https://www.googletagmanager.com https://lumberjack.razorpay.com",
 ].join("; ");

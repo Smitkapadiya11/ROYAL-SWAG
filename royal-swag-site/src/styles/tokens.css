@@ -215,6 +215,12 @@
   display: none;
 }
 
+/* Tailwind `hidden` must win over layout-scroll-snap flex */
+.md\:hidden > .layout-scroll-snap,
+.hidden > .layout-scroll-snap {
+  display: none !important;
+}
+
 /* ——— Media ——— */
 .layout-media,
 .layout-media img,

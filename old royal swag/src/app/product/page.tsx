@@ -19,6 +19,7 @@ import { getSaving } from "@/lib/productPricing";
 import { useConversionBar } from "@/contexts/ConversionBarContext";
 import { EVENTS, trackEvent } from "@/lib/events";
 import {
+  BUNDLE_COMBO_IMAGE,
   MAIN_PRODUCT_IMAGE,
   PRODUCT_GALLERY,
 } from "@/lib/product-images";
@@ -123,9 +124,9 @@ const COMPARISON_ROWS = [
 export default function ProductPage() {
   const { t } = useTranslations();
   const { showCheckout, setShowCheckout, openCheckout } = useCheckoutUi();
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(1);
   const [activeImage, setActiveImage] = useState<string>(
-    PRODUCT_GALLERY[0] ?? MAIN_FALLBACK
+    BUNDLE_COMBO_IMAGE.double ?? MAIN_FALLBACK
   );
   const { setBarConfig } = useConversionBar();
   const [selectedBundle, setSelectedBundle] = useState<ProductBundleOption>(
@@ -182,15 +183,25 @@ export default function ProductPage() {
     };
   }, []);
 
-  const selectBundle = useCallback((bundle: ProductBundleOption) => {
-    setSelectedBundle(bundle);
-    trackEvent(EVENTS.BUNDLE_SELECT, {
-      pack_name: bundle.title,
-      packId: bundle.id,
-      price: bundle.price,
-      page: "/product",
-    });
-  }, []);
+  const selectBundle = useCallback(
+    (bundle: ProductBundleOption) => {
+      setSelectedBundle(bundle);
+      if (bundle.image) {
+        setActiveImage(bundle.image);
+        setActiveIdx((prev) => {
+          const idx = productImages.indexOf(bundle.image);
+          return idx >= 0 ? idx : prev;
+        });
+      }
+      trackEvent(EVENTS.BUNDLE_SELECT, {
+        pack_name: bundle.title,
+        packId: bundle.id,
+        price: bundle.price,
+        page: "/product",
+      });
+    },
+    [productImages]
+  );
 
   const handleBuyNow = useCallback(() => {
     trackEvent(EVENTS.STICKY_BAR_BUY, {

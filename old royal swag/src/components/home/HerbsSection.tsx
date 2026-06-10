@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import type React from "react";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { toWebp } from "@/lib/image-assets";
 import {
@@ -69,13 +68,11 @@ function HerbCard({
   herb,
   hovered,
   onHover,
-  className = "",
   reduceMotion,
 }: {
   herb: Herb;
   hovered: boolean;
   onHover: (name: string | null) => void;
-  className?: string;
   reduceMotion: boolean;
 }) {
   return (
@@ -90,7 +87,7 @@ function HerbCard({
             }
       }
       transition={herbCardHoverTransition}
-      className={`min-w-0 cursor-pointer overflow-hidden rounded-layout-md ${className}`}
+      className="herb-card min-w-0 cursor-pointer overflow-hidden rounded-layout-md"
       style={{ height: "320px" }}
       onMouseEnter={() => onHover(herb.name)}
       onMouseLeave={() => onHover(null)}
@@ -113,7 +110,7 @@ function HerbCard({
               src={toWebp(herb.img)}
               alt={`Royal Swag ${herb.name} — ${herb.benefit}`}
               fill
-              sizes="(max-width: 768px) 72vw, 320px"
+              sizes="(max-width: 768px) 72vw, 280px"
               objectFit="cover"
             />
           </div>
@@ -181,7 +178,7 @@ export function HerbsSection() {
       </div>
 
       <motion.div
-        className="layout-scroll-snap hide-scrollbar md:hidden"
+        className="herbs-section-grid"
         initial={reduceMotion ? false : "hidden"}
         whileInView={reduceMotion ? undefined : "visible"}
         viewport={sectionRevealViewport}
@@ -194,37 +191,9 @@ export function HerbsSection() {
             hovered={hoveredHerb === herb.name}
             onHover={setHoveredHerb}
             reduceMotion={!!reduceMotion}
-            className="w-[min(14rem,72vw)] shrink-0"
           />
         ))}
       </motion.div>
-
-      <div className="hidden md:block">
-        <motion.div
-          className="layout-grid"
-          style={
-            {
-              "--grid-cols-mobile": 1,
-              "--grid-cols-tablet": 2,
-              "--grid-cols-desktop": 4,
-            } as React.CSSProperties
-          }
-          initial={reduceMotion ? false : "hidden"}
-          whileInView={reduceMotion ? undefined : "visible"}
-          viewport={sectionRevealViewport}
-          variants={herbGridVariants}
-        >
-          {herbs.map((herb) => (
-            <HerbCard
-              key={herb.name}
-              herb={herb}
-              hovered={hoveredHerb === herb.name}
-              onHover={setHoveredHerb}
-              reduceMotion={!!reduceMotion}
-            />
-          ))}
-        </motion.div>
-      </div>
     </div>
   );
 }

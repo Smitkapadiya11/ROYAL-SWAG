@@ -53,7 +53,7 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <div className="page-mobile-pad relative flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-parchment font-sans text-on-surface antialiased">
+    <div className="page-shell page-mobile-pad relative flex min-h-screen flex-col bg-parchment font-sans text-on-surface antialiased">
       {/* Mobile hero */}
       <Section compact className="flex flex-col items-center gap-6 pb-16 pt-12 text-center md:hidden">
         <Container>
@@ -204,42 +204,24 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* Mobile cert grid */}
-        <div className="grid grid-cols-2 gap-3 md:hidden">
+        <div className="layout-grid--certs">
           {CERT_GRID.map((c) => (
             <div
               key={c.label}
-              className="glass-card flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center shadow-sm"
+              className="glass-card flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center shadow-sm md:aspect-auto md:p-8 md:transition-transform md:hover:-translate-y-1"
             >
-              <span className="text-[40px] text-ayurvedic-gold">{c.icon}</span>
+              <span className="text-[40px] text-ayurvedic-gold md:text-4xl">{c.icon}</span>
               <span className="font-sans text-sm font-semibold text-primary-container">
                 {c.label}
               </span>
             </div>
           ))}
-          <div className="col-span-2 flex flex-row items-center justify-center gap-4 rounded-2xl bg-primary-container p-6 text-on-primary-container shadow-sm">
-            <span className="text-3xl text-ayurvedic-gold">🏭</span>
-            <span className="font-display text-2xl font-semibold">
+          <div className="cert-span-full flex flex-row items-center justify-center gap-4 rounded-2xl bg-primary-container p-6 text-on-primary-container shadow-sm md:flex-col md:glass-card md:bg-transparent md:text-inherit md:transition-transform md:hover:-translate-y-1">
+            <span className="text-3xl text-ayurvedic-gold md:text-4xl">🏭</span>
+            <span className="font-display text-2xl font-semibold md:font-sans md:text-sm">
               LEAN Manufacturing
             </span>
           </div>
-        </div>
-
-        {/* Desktop cert grid */}
-        <div className="hidden gap-4 md:grid md:grid-cols-3 lg:grid-cols-5">
-          {[...CERT_GRID, { icon: "🏭", label: "LEAN Manufacturing" }].map(
-            (c) => (
-              <div
-                key={c.label}
-                className="glass-card flex flex-col items-center justify-center gap-3 rounded-2xl p-8 text-center shadow-sm transition-transform hover:-translate-y-1"
-              >
-                <span className="text-4xl text-ayurvedic-gold">{c.icon}</span>
-                <span className="font-sans text-sm font-semibold text-primary-container">
-                  {c.label}
-                </span>
-              </div>
-            )
-          )}
         </div>
         </Container>
       </Section>

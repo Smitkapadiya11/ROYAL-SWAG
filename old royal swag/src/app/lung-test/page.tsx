@@ -319,7 +319,7 @@ export default function LungTestPage() {
   const currentQuestion = LUNG_TEST_QUESTIONS[currentQ];
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-parchment font-sans text-on-surface antialiased">
+    <div className="page-shell relative flex min-h-screen flex-col bg-parchment font-sans text-on-surface antialiased">
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -left-[10%] -top-[10%] h-[50vw] w-[50vw] rounded-full bg-[#e9f1dc] opacity-80 blur-3xl" />
         <div className="absolute -bottom-[10%] -right-[10%] h-[60vw] w-[60vw] rounded-full bg-[#f4edd6] opacity-70 blur-3xl" />
@@ -347,7 +347,7 @@ export default function LungTestPage() {
               <IntroCopy onStart={() => setView("form")} />
             </section>
 
-            <section className="hidden min-h-[72vh] grid-cols-2 items-center gap-12 duration-500 animate-in fade-in md:grid lg:gap-16">
+            <section className="layout-grid--split hidden min-h-[72vh] duration-500 animate-in fade-in md:grid">
               <IntroHeroImage className="mb-0 md:mx-0" />
               <IntroCopy onStart={() => setView("form")} desktop />
             </section>
@@ -366,7 +366,7 @@ export default function LungTestPage() {
               We&apos;ll email your personalised lung report instantly.
             </p>
 
-            <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:items-start md:gap-8">
+            <div className="layout-grid--split md:items-start">
               <form
                 onSubmit={handleLeadSubmit}
                 className="glass-card flex flex-col gap-4 rounded-3xl p-6 shadow-sm md:p-8"

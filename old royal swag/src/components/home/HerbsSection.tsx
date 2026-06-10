@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
-import { toWebp } from "@/lib/image-assets";
 import {
   herbCardHoverTransition,
   herbCardVariants,
@@ -97,17 +96,17 @@ function HerbCard({
         style={{ transform: hovered ? "scale(1.02)" : "scale(1)" }}
       >
         <div
-          className="layout-media--fill absolute inset-0"
+          className="layout-media--fill relative h-full w-full"
           style={{
             background: `linear-gradient(135deg, ${herb.color}, #9A6F1A)`,
           }}
         >
           <div
-            className="h-full w-full transition-transform duration-700 ease-out"
+            className="relative h-full w-full transition-transform duration-700 ease-out"
             style={{ transform: hovered ? "scale(1.1)" : "scale(1)" }}
           >
             <OptimizedImage
-              src={toWebp(herb.img)}
+              src={herb.img}
               alt={`Royal Swag ${herb.name} — ${herb.benefit}`}
               fill
               sizes="(max-width: 768px) 72vw, 280px"

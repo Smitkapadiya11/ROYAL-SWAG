@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Grid } from "@/components/layout";
 import { cn } from "@/lib/utils";
 
 const FOUNDERS = [
@@ -202,11 +203,11 @@ export function VisionariesGrid() {
         aria-hidden
       />
 
-      <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 xl:gap-10">
+      <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }} className="gap-10 lg:gap-6 xl:gap-10">
         {FOUNDERS.map((founder, i) => (
           <FounderCard key={founder.name} founder={founder} index={i} />
         ))}
-      </div>
+      </Grid>
     </div>
   );
 }

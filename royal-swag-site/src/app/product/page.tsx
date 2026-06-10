@@ -26,7 +26,7 @@ import {
 } from "@/lib/product-images";
 import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
 import ClientPortal from "@/components/ui/ClientPortal";
-import { Container } from "@/components/layout";
+import { Container, Grid } from "@/components/layout";
 import { useTranslations } from "@/contexts/LocaleContext";
 
 const MAIN_FALLBACK = PRODUCT_DETAIL_GALLERY[0] ?? "/images/product/product-1.webp";
@@ -315,7 +315,7 @@ export default function ProductPage() {
 
   return (
     <div
-      className="product-page-root min-h-screen w-full min-w-0 overflow-x-hidden bg-parchment pb-32 font-sans text-on-surface md:pb-16"
+      className="page-shell product-page-root min-h-screen bg-parchment pb-32 font-sans text-on-surface md:pb-16"
       style={{
         backgroundImage:
           "radial-gradient(rgba(73,87,56,0.05) 1px, transparent 1px)",
@@ -355,7 +355,7 @@ export default function ProductPage() {
         </nav>
 
         {/* Above-fold: gallery + desktop purchase panel */}
-        <div className="grid min-w-0 grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 lg:gap-14">
+        <div className="layout-grid--product">
           <div className="min-w-0 md:sticky md:top-24 md:self-start">
             <ProductGallery
               images={productImages}
@@ -493,7 +493,7 @@ export default function ProductPage() {
               Every {selectedBundle.title.toLowerCase()} ships with everything you need to start
               your lung detox journey.
             </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Grid cols={{ mobile: 1, tablet: 2, desktop: 2 }} className="gap-3">
               {BOX_CONTENTS.map((item) => (
                 <div
                   key={item.label}
@@ -510,22 +510,24 @@ export default function ProductPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </Grid>
           </section>
 
           <section className="glass-card rounded-xl p-5 md:hidden">
             <h3 className="mb-4 font-display text-lg font-bold text-primary">
               Product Details
             </h3>
-            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {PRODUCT_SPECS.map((spec) => (
-                <div key={spec.label} className="flex flex-col gap-0.5">
-                  <dt className="font-sans text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
-                    {spec.label}
-                  </dt>
-                  <dd className="font-sans text-sm text-on-surface">{spec.value}</dd>
-                </div>
-              ))}
+            <dl>
+              <Grid cols={{ mobile: 1, tablet: 2, desktop: 2 }} className="gap-3">
+                {PRODUCT_SPECS.map((spec) => (
+                  <div key={spec.label} className="flex flex-col gap-0.5">
+                    <dt className="font-sans text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+                      {spec.label}
+                    </dt>
+                    <dd className="font-sans text-sm text-on-surface">{spec.value}</dd>
+                  </div>
+                ))}
+              </Grid>
             </dl>
           </section>
 
@@ -536,7 +538,7 @@ export default function ProductPage() {
             <p className="mb-5 font-sans text-sm text-[#45483f]">
               Every tea bag contains 6 clinically-validated Ayurvedic herbs.
             </p>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <Grid cols={{ mobile: 1, tablet: 2, desktop: 2 }} className="gap-3">
               {HERBS.map((herb, i) => (
                 <div
                   key={herb.name}
@@ -559,7 +561,7 @@ export default function ProductPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </Grid>
             <p className="mt-4 text-center font-sans text-[10px] text-[#75786e]">
               All herbs sourced from certified organic farms. GMP manufactured.
             </p>
@@ -595,7 +597,7 @@ export default function ProductPage() {
             <h3 className="mb-6 font-display text-2xl font-bold text-[#324023]">
               How to Use
             </h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Grid cols={{ mobile: 1, tablet: 2, desktop: 2 }} className="gap-4">
               {HOW_TO_STEPS.map((s) => (
                 <div key={s.step} className="flex items-start gap-4">
                   <div className="flex shrink-0 flex-col items-center">
@@ -619,7 +621,7 @@ export default function ProductPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </Grid>
             <div className="glass-card mt-5 rounded-xl border-l-4 border-[#9A6F1A] p-4">
               <p className="mb-1 font-sans text-xs font-semibold text-[#324023]">
                 💡 Pro Tip from our Vaidya
@@ -696,7 +698,7 @@ export default function ProductPage() {
           <h3 className="mb-6 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
             Backed By Science & Tradition
           </h3>
-          <div className="grid grid-cols-4 gap-4 text-center md:gap-8">
+          <Grid cols={{ mobile: 4, tablet: 4, desktop: 4 }} className="gap-4 text-center md:gap-8">
             {[
               { icon: "✓", label: "AYUSH Appr." },
               { icon: "🌿", label: "100% Natural" },
@@ -712,7 +714,7 @@ export default function ProductPage() {
                 </span>
               </div>
             ))}
-          </div>
+          </Grid>
         </section>
       </Container>
 

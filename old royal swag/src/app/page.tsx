@@ -27,7 +27,7 @@ export default function Home() {
   const { t } = useTranslations();
 
   return (
-    <div className="page-mobile-pad w-full min-w-0 overflow-x-hidden">
+    <div className="page-shell page-mobile-pad">
       <FAQSchema />
 
       <Section compact bg="cream" className="overflow-hidden">
@@ -124,7 +124,7 @@ export default function Home() {
               The Daily Ritual
             </h2>
           </Reveal>
-          <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }} className="mx-auto mt-10 max-w-4xl">
+          <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }} className="mt-10">
             {ritualSteps.map((s, i) => (
               <Reveal key={s.n} direction="up" delay={i * 100}>
                 <article className="glass-card relative rounded-layout-md p-6 pt-10 text-center">

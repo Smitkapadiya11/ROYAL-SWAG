@@ -5,7 +5,7 @@ import Link from "next/link";
 import BrandLogo from "@/components/ui/BrandLogo";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
-import { FounderPhoto } from "@/components/about/FounderPhoto";
+import { VisionariesGrid } from "@/components/about/VisionariesGrid";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { Container, Grid, GridCol, Section } from "@/components/layout";
 import { cn } from "@/lib/utils";
@@ -28,27 +28,6 @@ const TIMELINE = [
     dot: "#495738",
     title: "Lung Detox Tea",
     desc: "Merging centuries-old Ayurvedic wisdom with modern clinical extraction, we formulated our signature Lung Detox Tea.",
-  },
-] as const;
-
-const FOUNDERS = [
-  {
-    name: "Hitesh Sabhadiya",
-    role: "Co-Founder",
-    focus: "Product & Ayurvedic Research",
-    img: "/images/hitesh.jpeg",
-  },
-  {
-    name: "Manoj Koshiya",
-    role: "Co-Founder",
-    focus: "Operations & Growth",
-    img: "/images/manoj.jpeg",
-  },
-  {
-    name: "Jaideep Singh",
-    role: "Co-Founder",
-    focus: "Brand & Marketing",
-    img: "/images/jaideep singh.jpeg",
   },
 ] as const;
 
@@ -209,32 +188,7 @@ export default function AboutPage() {
               The minds architecting Ayurvedic respiratory care.
             </p>
           </div>
-          <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }} className="relative z-10">
-            {FOUNDERS.map((f) => (
-              <div
-                key={f.name}
-                className="glass-card overflow-hidden rounded-2xl transition-all duration-400 hover:-translate-y-1 hover:shadow-xl"
-              >
-                <div
-                  className="flex w-full items-center justify-center bg-gradient-to-br from-[#e9f1dc] to-[#dee5d1]"
-                  style={{ minHeight: "280px" }}
-                >
-                  <FounderPhoto src={f.img} alt={f.name} />
-                </div>
-                <div className="bg-white/50 p-5">
-                  <h4 className="font-display text-xl font-bold text-[#324023]">
-                    {f.name}
-                  </h4>
-                  <p className="mt-1 font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-[#9A6F1A]">
-                    {f.role}
-                  </p>
-                  <div className="mt-2 border-t border-[rgba(200,210,190,0.4)] pt-2">
-                    <p className="font-sans text-sm text-[#45483f]">{f.focus}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </Grid>
+          <VisionariesGrid />
         </div>
         </Container>
       </Section>

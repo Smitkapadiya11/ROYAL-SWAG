@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
 import UrgencySignals, { TrustStrip } from "@/components/product/UrgencySignals";
@@ -21,7 +21,7 @@ import { EVENTS, trackEvent } from "@/lib/events";
 import {
   BUNDLE_GALLERY_IMAGE,
   MAIN_PRODUCT_IMAGE,
-  PRODUCT_GALLERY,
+  PRODUCT_DETAIL_GALLERY,
 } from "@/lib/product-images";
 import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
 import ClientPortal from "@/components/ui/ClientPortal";
@@ -121,10 +121,24 @@ const COMPARISON_ROWS = [
   ["Daily in 5 minutes", "✓", "✓"],
 ] as const;
 
+const BOX_CONTENTS = [
+  { icon: "📦", label: "30 Ayurvedic tea bags", detail: "Individually sealed for freshness" },
+  { icon: "📋", label: "Usage guide card", detail: "Step-by-step brewing instructions" },
+  { icon: "🌿", label: "Herb breakdown insert", detail: "Full ingredient list with dosages" },
+  { icon: "🛡", label: "30-day guarantee card", detail: "WhatsApp refund — no questions" },
+] as const;
+
+const PRODUCT_SPECS = [
+  { label: "Net weight", value: "60g (2g × 30 bags)" },
+  { label: "Shelf life", value: "24 months from manufacture" },
+  { label: "Certification", value: "FSSAI · GMP · AYUSH approved" },
+  { label: "Storage", value: "Cool, dry place — away from sunlight" },
+] as const;
+
 export default function ProductPage() {
   const { t } = useTranslations();
   const { showCheckout, setShowCheckout, openCheckout } = useCheckoutUi();
-  const [activeIdx, setActiveIdx] = useState(1);
+  const [activeIdx, setActiveIdx] = useState(-1);
   const [activeImage, setActiveImage] = useState<string>(
     BUNDLE_GALLERY_IMAGE.double ?? MAIN_FALLBACK
   );
@@ -137,12 +151,12 @@ export default function ProductPage() {
   const purchasePanelRef = useRef<HTMLDivElement>(null);
 
   const [productImages, setProductImages] = useState<string[]>(() =>
-    PRODUCT_GALLERY.length > 0 ? [...PRODUCT_GALLERY] : [MAIN_FALLBACK]
+    PRODUCT_DETAIL_GALLERY.length > 0 ? [...PRODUCT_DETAIL_GALLERY] : []
   );
 
   const handleMainImageError = useCallback(() => {
     setActiveImage(MAIN_FALLBACK);
-    setActiveIdx(0);
+    setActiveIdx(-1);
   }, []);
 
   const handleThumbImageError = useCallback((src: string) => {
@@ -183,24 +197,20 @@ export default function ProductPage() {
     };
   }, []);
 
-  const selectBundle = useCallback(
-    (bundle: ProductBundleOption) => {
-      setSelectedBundle(bundle);
-      const gallerySrc = BUNDLE_GALLERY_IMAGE[bundle.id];
-      if (gallerySrc) {
-        setActiveImage(gallerySrc);
-        const idx = productImages.indexOf(gallerySrc);
-        if (idx >= 0) setActiveIdx(idx);
-      }
-      trackEvent(EVENTS.BUNDLE_SELECT, {
-        pack_name: bundle.title,
-        packId: bundle.id,
-        price: bundle.price,
-        page: "/product",
-      });
-    },
-    [productImages]
-  );
+  const selectBundle = useCallback((bundle: ProductBundleOption) => {
+    setSelectedBundle(bundle);
+    const gallerySrc = BUNDLE_GALLERY_IMAGE[bundle.id];
+    if (gallerySrc) {
+      setActiveImage(gallerySrc);
+      setActiveIdx(-1);
+    }
+    trackEvent(EVENTS.BUNDLE_SELECT, {
+      pack_name: bundle.title,
+      packId: bundle.id,
+      price: bundle.price,
+      page: "/product",
+    });
+  }, []);
 
   const handleBuyNow = useCallback(() => {
     trackEvent(EVENTS.STICKY_BAR_BUY, {
@@ -466,6 +476,50 @@ export default function ProductPage() {
 
           {/* Mobile-only bundle picker (desktop has it in purchase panel) */}
           <div className="md:hidden">{bundlePicker}</div>
+
+          <section className="border-t border-[rgba(200,210,190,0.4)] py-8">
+            <h3 className="mb-2 font-display text-2xl font-bold text-primary">
+              What&apos;s in the Box
+            </h3>
+            <p className="mb-5 font-sans text-sm text-on-surface-variant">
+              Every {selectedBundle.title.toLowerCase()} ships with everything you need to start
+              your lung detox journey.
+            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {BOX_CONTENTS.map((item) => (
+                <div
+                  key={item.label}
+                  className="glass-card flex items-start gap-3 rounded-xl px-4 py-3"
+                >
+                  <span className="shrink-0 text-xl">{item.icon}</span>
+                  <div>
+                    <p className="font-sans text-sm font-semibold text-primary">
+                      {item.label}
+                    </p>
+                    <p className="mt-0.5 font-sans text-xs text-on-surface-variant">
+                      {item.detail}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="glass-card rounded-xl p-5">
+            <h3 className="mb-4 font-display text-lg font-bold text-primary">
+              Product Details
+            </h3>
+            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {PRODUCT_SPECS.map((spec) => (
+                <div key={spec.label} className="flex flex-col gap-0.5">
+                  <dt className="font-sans text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+                    {spec.label}
+                  </dt>
+                  <dd className="font-sans text-sm text-on-surface">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
 
           <section className="border-t border-[rgba(200,210,190,0.4)] py-8">
             <h3 className="mb-2 font-display text-2xl font-bold text-[#324023]">

@@ -92,11 +92,10 @@ export default function ProductGallery({
       <div className="glass-card group relative min-w-0 overflow-hidden rounded-xl p-4 shadow-sm">
         <div className="relative aspect-square w-full max-h-[min(480px,calc(100vh-12rem))]">
           <OptimizedImage
-            key={mainSrc}
             src={mainSrc}
             alt={PRODUCT_IMAGE_ALT}
             fill
-            priority
+            priority={activeIdx < 0}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 480px"
             objectFit="contain"
             className="rounded-lg transition-transform duration-500 ease-out group-hover:scale-[1.02] md:duration-500"

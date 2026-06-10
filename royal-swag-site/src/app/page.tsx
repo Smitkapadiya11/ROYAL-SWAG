@@ -6,7 +6,6 @@ import { HomeHero } from "@/components/home/HomeHero";
 import { HerbsSection } from "@/components/home/HerbsSection";
 import { DoctorEndorsements } from "@/components/sections/DoctorEndorsements";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
-import { CountUp } from "@/components/ui/CountUp";
 import { Reveal } from "@/components/ui/Reveal";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { Container, Grid, Section } from "@/components/layout";
@@ -47,19 +46,19 @@ export default function Home() {
               <Grid cols={{ mobile: 3, tablet: 3, desktop: 3 }} className="text-center">
                 <div>
                   <p className="font-display text-2xl font-bold text-primary md:text-3xl">
-                    <CountUp end={2400} suffix="+" />
+                    2,400+
                   </p>
                   <p className="mt-1 font-sans text-xs text-on-surface-variant md:text-sm">{t("home.customers")}</p>
                 </div>
                 <div>
                   <p className="font-display text-2xl font-bold text-primary md:text-3xl">
-                    <CountUp end={4} prefix="★ " suffix=".9" />
+                    ★ 4.8
                   </p>
                   <p className="mt-1 font-sans text-xs text-on-surface-variant md:text-sm">rating</p>
                 </div>
                 <div>
                   <p className="font-display text-2xl font-bold text-primary md:text-3xl">
-                    <CountUp end={30} suffix=" Days" />
+                    30 Days
                   </p>
                   <p className="mt-1 font-sans text-xs text-on-surface-variant md:text-sm">guarantee</p>
                 </div>

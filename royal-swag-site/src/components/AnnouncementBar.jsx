@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const messages = [
   "🚚 FREE delivery across India · COD available",
-  "🎁 Progress Pack — ₹599 (2 packs). Starter from ₹349.",
+  "🎁 2 Pack Bundle — ₹689 (save ₹210). Starter from ₹349.",
   "⏰ Order before 6 PM → Ships in 2 Days",
   "🛡️ 30-day money-back guarantee. No questions."
 ];

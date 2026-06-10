@@ -68,7 +68,7 @@ function DoctorCard({
   return (
     <div
       ref={cardRef}
-      className="group relative min-w-0 w-[min(17.5rem,72vw)] shrink-0 cursor-pointer overflow-hidden rounded-layout-md transition-all duration-500 md:w-auto"
+      className="group relative min-w-0 w-[min(17.5rem,72vw)] shrink-0 cursor-pointer overflow-hidden rounded-layout-md transition-all duration-500 md:w-full md:max-w-none md:shrink"
       style={{
         boxShadow:
           activeVideo === index
@@ -279,27 +279,29 @@ export function DoctorEndorsements() {
         </div>
 
         {/* Desktop: 3-column grid */}
-        <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }} className="hidden md:grid">
-          {DOCTORS.map((doc, i) => (
-            <DoctorCard
-              key={doc.id}
-              doc={doc}
-              index={i}
-              activeVideo={activeVideo}
-              failedVideos={failedVideos}
-              onToggle={toggleVideo}
-              onVideoError={(id) =>
-                setFailedVideos((prev) => ({ ...prev, [id]: true }))
-              }
-              cardRef={(el) => {
-                cardRefs.current[i] = el;
-              }}
-              videoRef={(el) => {
-                videoRefs.current[i] = el;
-              }}
-            />
-          ))}
-        </Grid>
+        <div className="hidden md:block">
+          <Grid cols={{ mobile: 1, tablet: 2, desktop: 3 }}>
+            {DOCTORS.map((doc, i) => (
+              <DoctorCard
+                key={doc.id}
+                doc={doc}
+                index={i}
+                activeVideo={activeVideo}
+                failedVideos={failedVideos}
+                onToggle={toggleVideo}
+                onVideoError={(id) =>
+                  setFailedVideos((prev) => ({ ...prev, [id]: true }))
+                }
+                cardRef={(el) => {
+                  cardRefs.current[i] = el;
+                }}
+                videoRef={(el) => {
+                  videoRefs.current[i] = el;
+                }}
+              />
+            ))}
+          </Grid>
+        </div>
 
         <p className="mt-4 text-center font-sans text-[11px] text-outline md:hidden">
           ← Scroll to see all doctors · Videos auto-play with sound →

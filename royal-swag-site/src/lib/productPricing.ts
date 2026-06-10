@@ -9,7 +9,7 @@ export const BUNDLES = [
     label: "20-Day Starter",
     packs: "1 Pack",
     price: Number(process.env.NEXT_PUBLIC_PRICE_20DAY) || 349,
-    mrp: Number(process.env.NEXT_PUBLIC_MRP_20DAY) || 499,
+    mrp: Number(process.env.NEXT_PUBLIC_MRP_20DAY) || 399,
     img: comboPath("1 product-13.jpg_202605240444.webp"),
     badge: null,
     description: "Perfect to try. See results in 20 days.",
@@ -20,13 +20,13 @@ export const BUNDLES = [
     label: "40-Day Progress",
     packs: "2 Packs",
     price:
-      Number(process.env.NEXT_PUBLIC_PRODUCT_PRICE) ||
+      Number(process.env.NEXT_PUBLIC_BUNDLE_2_PRICE) ||
       Number(process.env.NEXT_PUBLIC_PRICE_40DAY) ||
-      599,
+      689,
     mrp:
-      Number(process.env.NEXT_PUBLIC_PRODUCT_MRP) ||
+      Number(process.env.NEXT_PUBLIC_BUNDLE_2_MRP) ||
       Number(process.env.NEXT_PUBLIC_MRP_40DAY) ||
-      698,
+      899,
     img: comboPath("2 product_render_202605240445.webp"),
     badge: "BEST VALUE",
     description: "Most popular. Visible improvement guaranteed.",
@@ -36,8 +36,8 @@ export const BUNDLES = [
     days: 60,
     label: "60-Day Results",
     packs: "3 Packs",
-    price: Number(process.env.NEXT_PUBLIC_PRICE_60DAY) || 849,
-    mrp: Number(process.env.NEXT_PUBLIC_MRP_60DAY) || 1047,
+    price: Number(process.env.NEXT_PUBLIC_BUNDLE_3_PRICE) || 999,
+    mrp: Number(process.env.NEXT_PUBLIC_BUNDLE_3_MRP) || 1199,
     img: comboPath("3 product 202605240445.webp"),
     badge: "DOCTOR RECOMMENDED",
     description: "Complete detox. Maximum results.",

@@ -45,9 +45,14 @@ export const siteConfig = {
   address: buildAddress(),
   social: {
     instagram:
-      env("NEXT_PUBLIC_INSTAGRAM_URL") || "https://www.instagram.com/royalswag.in/",
-    youtube: env("NEXT_PUBLIC_YOUTUBE_URL") || "https://www.youtube.com/@royalswag",
-    facebook: env("NEXT_PUBLIC_FACEBOOK_URL") || "https://www.facebook.com/royalswag",
+      env("NEXT_PUBLIC_INSTAGRAM_URL") ||
+      "https://www.instagram.com/royalswag_official/",
+    youtube:
+      env("NEXT_PUBLIC_YOUTUBE_URL") ||
+      "https://www.youtube.com/@royalswagofficial",
+    facebook:
+      env("NEXT_PUBLIC_FACEBOOK_URL") ||
+      "https://www.facebook.com/royalswag.herbal.cigarette/",
   },
   whatsappOrderMessage: encodeURIComponent(orderMessagePlain),
   get whatsappOrderLink() {

@@ -1,6 +1,7 @@
 /** Unique gallery assets under `public/images/product/` (no duplicates, no missing files). */
 export const PRODUCT_GALLERY = [
   "/images/product/product-1.webp",
+  "/images/combos/2 product_render_202605240445.webp",
   "/images/product/product-4.webp",
   "/images/product/product-5.webp",
   "/images/product/product-7.webp",

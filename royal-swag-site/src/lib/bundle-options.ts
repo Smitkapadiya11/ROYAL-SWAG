@@ -19,31 +19,42 @@ export type ProductBundleOption = {
   isDefault?: boolean;
 };
 
-const singlePrice = readPrice("NEXT_PUBLIC_PRODUCT_PRICE", 699);
-const singleMrp = readPrice("NEXT_PUBLIC_PRODUCT_MRP", 999);
-const triplePrice = readPrice("NEXT_PUBLIC_BUNDLE_3_PRICE", 1799);
-const tripleMrp = readPrice("NEXT_PUBLIC_BUNDLE_3_MRP", 2997);
+const singlePrice = readPrice("NEXT_PUBLIC_PRODUCT_PRICE", 349);
+const singleMrp = readPrice("NEXT_PUBLIC_PRODUCT_MRP", 399);
+const doublePrice = readPrice("NEXT_PUBLIC_BUNDLE_2_PRICE", 689);
+const doubleMrp = readPrice("NEXT_PUBLIC_BUNDLE_2_MRP", 899);
+const triplePrice = readPrice("NEXT_PUBLIC_BUNDLE_3_PRICE", 999);
+const tripleMrp = readPrice("NEXT_PUBLIC_BUNDLE_3_MRP", 1199);
 const subPrice = readPrice("NEXT_PUBLIC_SUBSCRIPTION_PRICE", 649);
 
 export const PRODUCT_BUNDLE_OPTIONS: readonly ProductBundleOption[] = [
   {
     id: "single",
-    title: "Single Pack",
-    subtitle: "1 Pack · 30 bags · 30-day supply",
+    title: "1 Pack",
+    subtitle: "30 bags · 30-day supply",
     price: singlePrice,
     mrp: singleMrp,
     badge: null,
     saveLabel: null,
   },
   {
+    id: "double",
+    title: "2 Pack Bundle",
+    subtitle: "60 bags · 60-day supply",
+    price: doublePrice,
+    mrp: doubleMrp,
+    badge: "BEST VALUE 🏆",
+    saveLabel: `SAVE ₹${doubleMrp - doublePrice}`,
+    isDefault: true,
+  },
+  {
     id: "triple",
     title: "3 Pack Bundle",
-    subtitle: "3 Pack · 90 bags · 90-day supply",
+    subtitle: "90 bags · 90-day supply",
     price: triplePrice,
     mrp: tripleMrp,
-    badge: "BEST VALUE 🏆",
+    badge: null,
     saveLabel: `SAVE ₹${tripleMrp - triplePrice}`,
-    isDefault: true,
   },
   {
     id: "subscribe",

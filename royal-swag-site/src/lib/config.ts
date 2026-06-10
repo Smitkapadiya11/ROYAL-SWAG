@@ -13,7 +13,7 @@ const addressL2 = addressParts.slice(2).join(", ") || "";
 export const S = {
   name: "Royal Swag",
   tagline: "Breathe Clean. Live Free.",
-  price: { now: "₹599", was: "₹698" },
+  price: { now: "₹349", was: "₹399" },
   company: siteConfig.companyName,
   address: {
     l1: addressL1,

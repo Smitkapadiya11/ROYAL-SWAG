@@ -5,13 +5,13 @@ import { BUNDLES } from "@/lib/productPricing";
 export function getPrimaryProductPrice(): number {
   const fromEnv = Number(process.env.NEXT_PUBLIC_PRODUCT_PRICE);
   if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
-  return 699;
+  return 349;
 }
 
 export function getPrimaryProductMrp(): number {
   const fromEnv = Number(process.env.NEXT_PUBLIC_PRODUCT_MRP);
   if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
-  return 999;
+  return 399;
 }
 
 export function getPrimaryDiscountPercent(): number {

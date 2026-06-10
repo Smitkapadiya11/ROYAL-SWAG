@@ -23,7 +23,7 @@ export default function BundleSelector({
       <h2 className="mb-3 font-display text-lg font-semibold text-primary md:text-xl">
         Choose Your Pack
       </h2>
-      <div className="flex flex-col gap-3 md:flex-row md:gap-4">
+      <div className="flex flex-col gap-3">
         {PRODUCT_BUNDLE_OPTIONS.map((bundle) => {
           const selected = bundle.id === selectedId;
           const isBestValue = bundle.id === DEFAULT_PRODUCT_BUNDLE.id;

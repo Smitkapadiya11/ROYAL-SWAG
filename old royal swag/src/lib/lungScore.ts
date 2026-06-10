@@ -53,6 +53,13 @@ export function computeSymptomPoints(answers: SymptomAnswers): number {
   );
 }
 
+/** Adjust symptom score from breath-hold capacity test (seconds). */
+export function adjustScoreForBreathHold(points: number, breathHoldSeconds: number): number {
+  if (breathHoldSeconds >= 40) return Math.max(0, points - 2);
+  if (breathHoldSeconds >= 20) return points;
+  return points + 3;
+}
+
 export function getLungScore(points: number): LungScore {
   if (points <= 4) {
     return {

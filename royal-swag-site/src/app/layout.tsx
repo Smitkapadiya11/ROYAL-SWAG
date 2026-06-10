@@ -40,12 +40,12 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Royal Swag Lung Detox Tea | 7 Ayurvedic Herbs — Free Delivery India",
   description:
-    "Cleanse your lungs with 7 Ayurvedic herbs. FSSAI certified. From ₹699. Free delivery. COD available pan India.",
+    "Cleanse your lungs with 7 Ayurvedic herbs. FSSAI certified. From ₹349. Free delivery. COD available pan India.",
   metadataBase: new URL(SITE_ORIGIN),
   openGraph: {
     title: "Royal Swag Lung Detox Tea | 7 Ayurvedic Herbs — Free Delivery India",
     description:
-      "Cleanse your lungs with 7 Ayurvedic herbs. FSSAI certified. From ₹699. Free delivery. COD available pan India.",
+      "Cleanse your lungs with 7 Ayurvedic herbs. FSSAI certified. From ₹349. Free delivery. COD available pan India.",
     images: [
       {
         url: "/images/hero/asset1-hero-product.webp",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Royal Swag Lung Detox Tea",
-    description: "7 Ayurvedic herbs for clean healthy lungs. From ₹699. Free delivery India.",
+    description: "7 Ayurvedic herbs for clean healthy lungs. From ₹349. Free delivery India.",
     images: ["/images/hero/asset1-hero-product.webp"],
   },
 };

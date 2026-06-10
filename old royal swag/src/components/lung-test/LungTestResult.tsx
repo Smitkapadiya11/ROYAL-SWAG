@@ -312,7 +312,7 @@ export function LungTestResult({
           className="block w-full rounded-2xl py-4 text-center font-sans text-sm font-bold tracking-wide text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           style={{ background: "#9A6F1A" }}
         >
-          Start Your Detox — ₹599
+          Start Your Detox — ₹349
         </Link>
       </div>
 

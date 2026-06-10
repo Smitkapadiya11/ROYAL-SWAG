@@ -7,7 +7,7 @@ import { useCheckoutUi } from "@/contexts/CheckoutUiContext";
 import { whatsappHover, whatsappHoverTransition, whatsappMountVariants } from "@/lib/motionVariants";
 
 const WA_MESSAGE =
-  "Hi, I want to order Royal Swag Progress Pack (2 packs, ₹599). Please share payment details.";
+  "Hi, I want to order Royal Swag 2 Pack Bundle (₹689). Please share payment details.";
 
 function normalizePhone(raw: string): string {
   const digits = raw.replace(/\D/g, "");

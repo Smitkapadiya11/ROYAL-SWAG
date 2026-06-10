@@ -2,15 +2,15 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import BrandLogo from "@/components/ui/BrandLogo";
+import BreathHoldTest from "@/components/lung-test/BreathHoldTest";
 import { QuestionScreen } from "@/components/lung-test/QuestionScreen";
 import { trackEvent } from "@/lib/events";
 import { ANALYTICS_EVENTS, setAdvancedMatching, track } from "@/lib/analytics";
 import { LUNG_TEST_QUESTIONS, type LungTestQuestion } from "@/lib/lung-test-questions";
 import { writeStoredLungResult, type StoredLungResult } from "@/lib/lung-test-constants";
 import {
+  adjustScoreForBreathHold,
   computeSymptomPoints,
   getLungScore,
   getMatchedHerbNames,
@@ -22,7 +22,7 @@ import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { LUNG_TEST_INTRO_ALT, LUNG_TEST_INTRO_IMAGE } from "@/lib/image-assets";
 import { lungQuestionStepTransition, lungQuestionStepVariants } from "@/lib/motionVariants";
 
-type View = "intro" | "form" | "questions";
+type View = "intro" | "form" | "questions" | "breath-hold";
 
 const INPUT_CLASS =
   "w-full rounded-xl border border-[#c5c8bc] bg-white/60 px-4 py-3.5 font-sans text-base text-[#324023] placeholder:text-[#75786e] transition-colors focus:border-[#9A6F1A] focus:outline-none focus:ring-2 focus:ring-[#9A6F1A]/20";
@@ -224,11 +224,15 @@ export default function LungTestPage() {
     trackEvent("lung_test_start", { page: "/lung-test" });
   };
 
-  const finishQuiz = async (finalAnswers: SymptomAnswers) => {
+  const finishQuiz = async (finalAnswers: SymptomAnswers, breathHoldSeconds?: number) => {
     if (submitting) return;
     setSubmitting(true);
 
-    const points = computeSymptomPoints(finalAnswers);
+    const symptomPoints = computeSymptomPoints(finalAnswers);
+    const points =
+      breathHoldSeconds != null
+        ? adjustScoreForBreathHold(symptomPoints, breathHoldSeconds)
+        : symptomPoints;
     const lungScore = getLungScore(points);
     const matchedHerbs = getMatchedHerbNames(finalAnswers);
 
@@ -302,7 +306,14 @@ export default function LungTestPage() {
     }
 
     trackEvent("lung_test_questions_complete", { page: "/lung-test" });
-    void finishQuiz(newAnswers);
+    setAnswers(newAnswers);
+    setScore(newScore);
+    setView("breath-hold");
+  };
+
+  const handleBreathHoldComplete = (seconds: number) => {
+    trackEvent("lung_test_breath_hold", { seconds, page: "/lung-test" });
+    void finishQuiz(answers, seconds);
   };
 
   const currentQuestion = LUNG_TEST_QUESTIONS[currentQ];
@@ -314,27 +325,21 @@ export default function LungTestPage() {
         <div className="absolute -bottom-[10%] -right-[10%] h-[60vw] w-[60vw] rounded-full bg-[#f4edd6] opacity-70 blur-3xl" />
       </div>
 
-      <header
-        className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-white/60 px-5 backdrop-blur-md md:px-10"
-        style={{ background: "rgba(255,255,255,0.45)" }}
-      >
-        <Link href="/" aria-label="Royal Swag home">
-          <BrandLogo variant="on-light" className="h-9 w-auto md:h-10" />
-        </Link>
-        <div className="flex items-center gap-2 md:gap-3">
-          {view !== "intro" && (
-            <div className="hidden items-center gap-2 sm:flex">
-              <StepPill label="Details" active={view === "form"} />
-              <StepPill label="Symptoms" active={view === "questions"} />
-            </div>
-          )}
-          <span className="rounded-full bg-[#324023]/10 px-3 py-1 font-sans text-xs font-bold text-[#9A6F1A]">
-            Free Lung Test
-          </span>
-        </div>
-      </header>
-
       <main className="lung-test-shell relative z-10 flex w-full min-w-0 flex-1 flex-col pb-24 pt-6 md:pb-16 md:pt-10">
+        {view !== "intro" && (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <StepPill label="Details" active={view === "form"} />
+              <StepPill
+                label="Symptoms"
+                active={view === "questions" || view === "breath-hold"}
+              />
+            </div>
+            <span className="rounded-full bg-[#324023]/10 px-3 py-1 font-sans text-xs font-bold text-[#9A6F1A]">
+              Free Lung Test
+            </span>
+          </div>
+        )}
         {view === "intro" && (
           <>
             <section className="flex min-h-[70vh] flex-col duration-500 animate-in fade-in md:hidden">
@@ -451,6 +456,25 @@ export default function LungTestPage() {
               }
             }}
           />
+        )}
+
+        {view === "breath-hold" && (
+          <section className="mx-auto w-full max-w-3xl text-center">
+            <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
+              Final step
+            </p>
+            <h2 className="mb-3 font-display text-2xl font-bold text-[#324023] md:text-3xl">
+              Breath-hold lung capacity test
+            </h2>
+            <p className="mb-8 font-sans text-sm text-[#45483f] md:text-base">
+              Take a deep breath, press and hold the button for as long as you can
+              comfortably hold your breath, then release.
+            </p>
+            <BreathHoldTest
+              onComplete={handleBreathHoldComplete}
+              onBack={() => setView("questions")}
+            />
+          </section>
         )}
       </main>
 

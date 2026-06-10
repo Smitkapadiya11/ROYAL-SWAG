@@ -199,30 +199,32 @@ export function HerbsSection() {
         ))}
       </motion.div>
 
-      <motion.div
-        className="layout-grid hidden md:grid"
-        style={
-          {
-            "--grid-cols-mobile": 1,
-            "--grid-cols-tablet": 2,
-            "--grid-cols-desktop": 3,
-          } as React.CSSProperties
-        }
-        initial={reduceMotion ? false : "hidden"}
-        whileInView={reduceMotion ? undefined : "visible"}
-        viewport={sectionRevealViewport}
-        variants={herbGridVariants}
-      >
-        {herbs.map((herb) => (
-          <HerbCard
-            key={herb.name}
-            herb={herb}
-            hovered={hoveredHerb === herb.name}
-            onHover={setHoveredHerb}
-            reduceMotion={!!reduceMotion}
-          />
-        ))}
-      </motion.div>
+      <div className="hidden md:block">
+        <motion.div
+          className="layout-grid"
+          style={
+            {
+              "--grid-cols-mobile": 1,
+              "--grid-cols-tablet": 2,
+              "--grid-cols-desktop": 4,
+            } as React.CSSProperties
+          }
+          initial={reduceMotion ? false : "hidden"}
+          whileInView={reduceMotion ? undefined : "visible"}
+          viewport={sectionRevealViewport}
+          variants={herbGridVariants}
+        >
+          {herbs.map((herb) => (
+            <HerbCard
+              key={herb.name}
+              herb={herb}
+              hovered={hoveredHerb === herb.name}
+              onHover={setHoveredHerb}
+              reduceMotion={!!reduceMotion}
+            />
+          ))}
+        </motion.div>
+      </div>
     </div>
   );
 }

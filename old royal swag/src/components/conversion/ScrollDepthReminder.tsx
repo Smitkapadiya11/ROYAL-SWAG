@@ -54,7 +54,7 @@ export default function ScrollDepthReminder() {
       </button>
       <p className="pr-8 text-xs text-white/90 leading-[1.65]">
         Still scrolling? More than {DETOX_COUNTER_TARGET.toLocaleString("en-IN")} buyers chose this tea recently.
-        ₹599 · free delivery · 30-day guarantee.
+        ₹349 · free delivery · 30-day guarantee.
       </p>
       <LeadGuardLink
         href="/product"

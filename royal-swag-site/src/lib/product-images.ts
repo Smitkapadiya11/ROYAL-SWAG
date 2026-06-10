@@ -1,4 +1,4 @@
-/** Combo pack renders (reference: productPricing.ts / public/images/combos/) */
+/** Combo pack renders in public/images/combos/ — paths URL-encoded for spaces */
 function comboImage(filename: string) {
   return `/images/combos/${encodeURIComponent(filename)}`;
 }
@@ -11,14 +11,15 @@ export const COMBO_PACK_IMAGES = {
 
 export type ComboPackId = keyof typeof COMBO_PACK_IMAGES;
 
-export const BUNDLE_COMBO_IMAGE: Record<string, string> = {
+/** Main gallery image when a pack is selected (not shown in bundle selector) */
+export const BUNDLE_GALLERY_IMAGE: Record<string, string> = {
   single: COMBO_PACK_IMAGES.single,
   double: COMBO_PACK_IMAGES.double,
   triple: COMBO_PACK_IMAGES.triple,
   subscribe: COMBO_PACK_IMAGES.single,
 };
 
-/** Gallery: combo packs first, then product detail shots */
+/** Full gallery: combo renders + product detail shots */
 export const PRODUCT_GALLERY = [
   COMBO_PACK_IMAGES.single,
   COMBO_PACK_IMAGES.double,
@@ -28,9 +29,24 @@ export const PRODUCT_GALLERY = [
   "/images/product/product-5.webp",
   "/images/product/product-7.webp",
   "/images/product/product-8.webp",
+  "/images/product/product-10.webp",
+  "/images/product/product-11.webp",
+  "/images/product/product-13.webp",
 ] as const;
 
 export const PRODUCT_IMAGE_ALT =
   "Royal Swag Lung Detox Tea — Ayurvedic lung cleanse tea packaging";
 
 export const MAIN_PRODUCT_IMAGE = COMBO_PACK_IMAGES.double;
+
+export function productImageSrc(path: string): string {
+  if (!path.includes(" ")) return path;
+  return path
+    .split("/")
+    .map((segment) => (segment.includes(" ") ? encodeURIComponent(segment) : segment))
+    .join("/");
+}
+
+export function isComboImagePath(path: string): boolean {
+  return path.includes("/images/combos/");
+}

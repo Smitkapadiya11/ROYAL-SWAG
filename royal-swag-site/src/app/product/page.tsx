@@ -19,7 +19,7 @@ import { getSaving } from "@/lib/productPricing";
 import { useConversionBar } from "@/contexts/ConversionBarContext";
 import { EVENTS, trackEvent } from "@/lib/events";
 import {
-  BUNDLE_COMBO_IMAGE,
+  BUNDLE_GALLERY_IMAGE,
   MAIN_PRODUCT_IMAGE,
   PRODUCT_GALLERY,
 } from "@/lib/product-images";
@@ -126,7 +126,7 @@ export default function ProductPage() {
   const { showCheckout, setShowCheckout, openCheckout } = useCheckoutUi();
   const [activeIdx, setActiveIdx] = useState(1);
   const [activeImage, setActiveImage] = useState<string>(
-    BUNDLE_COMBO_IMAGE.double ?? MAIN_FALLBACK
+    BUNDLE_GALLERY_IMAGE.double ?? MAIN_FALLBACK
   );
   const { setBarConfig } = useConversionBar();
   const [selectedBundle, setSelectedBundle] = useState<ProductBundleOption>(
@@ -186,12 +186,11 @@ export default function ProductPage() {
   const selectBundle = useCallback(
     (bundle: ProductBundleOption) => {
       setSelectedBundle(bundle);
-      if (bundle.image) {
-        setActiveImage(bundle.image);
-        setActiveIdx((prev) => {
-          const idx = productImages.indexOf(bundle.image);
-          return idx >= 0 ? idx : prev;
-        });
+      const gallerySrc = BUNDLE_GALLERY_IMAGE[bundle.id];
+      if (gallerySrc) {
+        setActiveImage(gallerySrc);
+        const idx = productImages.indexOf(gallerySrc);
+        if (idx >= 0) setActiveIdx(idx);
       }
       trackEvent(EVENTS.BUNDLE_SELECT, {
         pack_name: bundle.title,

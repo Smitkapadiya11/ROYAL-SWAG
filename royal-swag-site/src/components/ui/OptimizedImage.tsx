@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { blurDataFor } from "@/lib/image-blurs";
 import { toWebp } from "@/lib/image-assets";
+import { isComboImagePath, productImageSrc } from "@/lib/product-images";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { cn } from "@/lib/utils";
 
@@ -47,9 +48,11 @@ export function OptimizedImage({
   width,
   height,
 }: OptimizedImageProps) {
-  const webp = toWebp(src);
+  const normalized = productImageSrc(src);
+  const webp = toWebp(normalized);
   const [currentSrc, setCurrentSrc] = useState(webp);
   const [failed, setFailed] = useState(false);
+  const unoptimized = isComboImagePath(currentSrc);
 
   if (failed) {
     return (
@@ -71,14 +74,18 @@ export function OptimizedImage({
     blurDataURL: blur,
     style: { objectFit, objectPosition },
     onError: () => {
+      if (currentSrc !== normalized) {
+        setCurrentSrc(normalized);
+        return;
+      }
       if (currentSrc !== src) {
-        setCurrentSrc(src);
-        onImageError?.();
+        setCurrentSrc(productImageSrc(src));
         return;
       }
       setFailed(true);
       onImageError?.();
     },
+    unoptimized,
   };
 
   if (fill) {

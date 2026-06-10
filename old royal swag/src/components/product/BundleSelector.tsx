@@ -5,7 +5,6 @@ import {
   PRODUCT_BUNDLE_OPTIONS,
   type ProductBundleOption,
 } from "@/lib/bundle-options";
-import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { cn } from "@/lib/utils";
 
 type BundleSelectorProps = {
@@ -37,23 +36,12 @@ export default function BundleSelector({
               data-track-button={`bundle-${bundle.id}`}
               data-track-label={bundle.title}
               className={cn(
-                "relative flex w-full gap-3 rounded-2xl border-2 p-3 text-left transition-all duration-200 md:p-4",
+                "relative flex w-full flex-col rounded-2xl border-2 p-4 text-left transition-all duration-200",
                 selected
                   ? "border-[#0D3B1F] bg-surface/80 shadow-md"
                   : "border-glass-border bg-white/40 hover:border-primary/30"
               )}
             >
-              {!bundle.isSubscription ? (
-                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-glass-border bg-white md:h-20 md:w-20">
-                  <OptimizedImage
-                    src={bundle.image}
-                    alt={bundle.title}
-                    fill
-                    sizes="80px"
-                    objectFit="contain"
-                  />
-                </div>
-              ) : null}
               {bundle.badge ? (
                 <span
                   className={cn(
@@ -65,7 +53,7 @@ export default function BundleSelector({
                 </span>
               ) : null}
 
-              <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1 pt-1">
                   <p className="font-display text-sm font-bold text-primary md:text-base">
                     {bundle.title}

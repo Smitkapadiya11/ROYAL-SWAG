@@ -161,7 +161,13 @@ export default function CheckoutModal({
 
       const checkoutKey = created.keyId || created.key;
       if (!createRes.ok || !created.orderId || !checkoutKey) {
-        throw new Error(created.error || "Could not start checkout");
+        const errMsg = created.error || "Could not start checkout";
+        if (errMsg.includes("Razorpay") || errMsg.includes("not configured")) {
+          throw new Error(
+            "Online payment is being set up. Please order on WhatsApp — we will confirm your pack and delivery."
+          );
+        }
+        throw new Error(errMsg);
       }
 
       const RazorpayCtor = (
@@ -258,7 +264,7 @@ export default function CheckoutModal({
           modal: {
             ondismiss: () => {
               setLoading(false);
-              reject(new Error("Payment cancelled"));
+              resolve();
             },
           },
         });
@@ -271,9 +277,7 @@ export default function CheckoutModal({
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Checkout failed";
-      if (msg !== "Payment cancelled") {
-        toast.error(msg);
-      }
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

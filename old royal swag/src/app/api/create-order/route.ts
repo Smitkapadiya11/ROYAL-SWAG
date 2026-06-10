@@ -6,7 +6,7 @@ import {
 } from "@/lib/audit-log";
 import { apiNoStoreHeaders, hashIp, readJsonBody, sanitizeString } from "@/lib/api-security";
 import { getRazorpayClient } from "@/lib/razorpay";
-import { isAllowedCheckoutAmount } from "@/lib/product-price";
+import { getProductBundleById } from "@/lib/bundle-options";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -73,9 +73,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
-    if (!isAllowedCheckoutAmount(amount)) {
+    const bundle = getProductBundleById(String(packId));
+    if (Math.round(Number(amount)) !== bundle.price) {
       return NextResponse.json(
-        { error: "Amount does not match configured product price" },
+        {
+          error: `Price mismatch for ${bundle.title}. Expected ₹${bundle.price}.`,
+        },
         { status: 400 }
       );
     }

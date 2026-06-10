@@ -19,16 +19,13 @@ export const BUNDLE_GALLERY_IMAGE: Record<string, string> = {
   subscribe: COMBO_PACK_IMAGES.single,
 };
 
-/** Detail / lifestyle shots only — shown in thumbnail strip */
+/** Detail / lifestyle shots only — no pack/combo renders (those live in BundleSelector) */
 export const PRODUCT_DETAIL_GALLERY = [
   "/images/product/product-1.webp",
   "/images/product/product-4.webp",
-  "/images/product/product-5.webp",
   "/images/product/product-7.webp",
-  "/images/product/product-8.webp",
   "/images/product/product-10.webp",
   "/images/product/product-11.webp",
-  "/images/product/product-13.webp",
 ] as const;
 
 /** All images for SEO schema (combos + detail) */
@@ -40,7 +37,7 @@ export const PRODUCT_GALLERY = [
 export const PRODUCT_IMAGE_ALT =
   "Royal Swag Lung Detox Tea — Ayurvedic lung cleanse tea packaging";
 
-export const MAIN_PRODUCT_IMAGE = COMBO_PACK_IMAGES.double;
+export const MAIN_PRODUCT_IMAGE = PRODUCT_DETAIL_GALLERY[0];
 
 export function productImageSrc(path: string): string {
   if (!path.includes(" ")) return path;

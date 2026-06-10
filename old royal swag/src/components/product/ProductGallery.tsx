@@ -1,7 +1,8 @@
 "use client";
 
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
-import { PRODUCT_IMAGE_ALT } from "@/lib/product-images";
+import { PRODUCT_IMAGE_ALT, productImageSrc } from "@/lib/product-images";
+import { cn } from "@/lib/utils";
 
 type ProductGalleryProps = {
   images: string[];
@@ -12,6 +13,28 @@ type ProductGalleryProps = {
   onMainError?: () => void;
   onThumbError?: (src: string) => void;
 };
+
+/** Lightweight thumb — native img, lazy-loaded, skips Next optimizer. */
+function FastThumb({
+  src,
+  onError,
+  className,
+}: {
+  src: string;
+  onError: () => void;
+  className?: string;
+}) {
+  return (
+    <img
+      src={productImageSrc(src)}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      className={cn("absolute inset-0 h-full w-full object-cover", className)}
+      onError={onError}
+    />
+  );
+}
 
 function ThumbButton({
   src,
@@ -32,22 +55,17 @@ function ThumbButton({
     <button
       type="button"
       onClick={() => onSelect(idx, src)}
-      className={`relative shrink-0 overflow-hidden rounded-lg transition-all ${className ?? ""} ${
+      className={cn(
+        "relative shrink-0 overflow-hidden rounded-lg transition-all",
+        className,
         active
           ? "border-2 border-primary ring-2 ring-primary/20"
           : "border border-glass-border hover:border-primary/40"
-      }`}
+      )}
       aria-label={`View product image ${idx + 1}`}
       aria-current={active ? "true" : undefined}
     >
-      <OptimizedImage
-        src={src}
-        alt=""
-        fill
-        sizes="72px"
-        className="object-cover"
-        onImageError={onError}
-      />
+      <FastThumb src={src} onError={onError} />
     </button>
   );
 }
@@ -62,6 +80,7 @@ export default function ProductGallery({
   onThumbError,
 }: ProductGalleryProps) {
   const mainSrc = activeImage || fallback;
+  const thumbActive = (i: number) => activeIdx >= 0 && activeIdx === i;
 
   return (
     <section className="relative w-full min-w-0 overflow-hidden md:max-h-[calc(100vh-7rem)]">
@@ -70,80 +89,62 @@ export default function ProductGallery({
         aria-hidden
       />
 
-      <div className="hidden min-w-0 md:block">
-        <div className="glass-card group relative min-w-0 overflow-hidden rounded-xl p-4 shadow-sm">
-          <div className="relative aspect-square w-full max-h-[min(480px,calc(100vh-12rem))]">
-            <OptimizedImage
-              src={mainSrc}
-              alt={PRODUCT_IMAGE_ALT}
-              fill
-              priority
-              sizes="(max-width: 1024px) 50vw, 480px"
-              objectFit="contain"
-              className="rounded-lg transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-              onImageError={onMainError}
-            />
-            <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md">
-              <span className="text-sm text-ayurvedic-gold">★</span>
-              <span className="font-number text-xs font-bold tabular-nums text-primary">
-                4.9
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 grid grid-cols-4 gap-2 lg:grid-cols-8 lg:gap-2">
-          {images.map((img, i) => (
-            <ThumbButton
-              key={img}
-              src={img}
-              idx={i}
-              active={activeIdx === i}
-              onSelect={onSelect}
-              onError={() => onThumbError?.(img)}
-              className="aspect-square h-auto w-full"
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="md:hidden">
-        <div className="glass-card group relative aspect-square w-full overflow-hidden rounded-xl p-4 shadow-sm">
+      <div className="glass-card group relative min-w-0 overflow-hidden rounded-xl p-4 shadow-sm">
+        <div className="relative aspect-square w-full max-h-[min(480px,calc(100vh-12rem))]">
           <OptimizedImage
+            key={mainSrc}
             src={mainSrc}
             alt={PRODUCT_IMAGE_ALT}
             fill
             priority
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 480px"
             objectFit="contain"
-            className="rounded-lg transition-transform duration-700 ease-out group-hover:scale-105"
+            className="rounded-lg transition-transform duration-500 ease-out group-hover:scale-[1.02] md:duration-500"
             onImageError={onMainError}
           />
-          <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md">
+          <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full border border-glass-border bg-glass-surface px-3 py-1 shadow-sm backdrop-blur-md md:right-3">
             <span className="text-sm text-ayurvedic-gold">★</span>
             <span className="font-number text-xs font-bold tabular-nums text-primary">
               4.9
             </span>
           </div>
         </div>
-
-        <div
-          className="mt-4 flex gap-2 overflow-x-auto pb-2"
-          style={{ scrollbarWidth: "none" }}
-        >
-          {images.map((img, i) => (
-            <ThumbButton
-              key={img}
-              src={img}
-              idx={i}
-              active={activeIdx === i}
-              onSelect={onSelect}
-              onError={() => onThumbError?.(img)}
-              className="h-16 w-16"
-            />
-          ))}
-        </div>
       </div>
+
+      {images.length > 0 ? (
+        <>
+          <div className="mt-4 hidden grid-cols-4 gap-2 md:grid lg:grid-cols-8 lg:gap-2">
+            {images.map((img, i) => (
+              <ThumbButton
+                key={img}
+                src={img}
+                idx={i}
+                active={thumbActive(i)}
+                onSelect={onSelect}
+                onError={() => onThumbError?.(img)}
+                className="aspect-square h-auto w-full"
+              />
+            ))}
+          </div>
+
+          <div
+            className="mt-4 flex gap-2 overflow-x-auto pb-2 md:hidden"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {images.map((img, i) => (
+              <ThumbButton
+                key={`m-${img}`}
+                src={img}
+                idx={i}
+                active={thumbActive(i)}
+                onSelect={onSelect}
+                onError={() => onThumbError?.(img)}
+                className="h-16 w-16"
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
     </section>
   );
 }

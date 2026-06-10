@@ -22,27 +22,8 @@ function VideoCard({
   item: VideoTestimonialDto;
   onPlay: (item: VideoTestimonialDto) => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setInView(true);
-          obs.disconnect();
-        }
-      },
-      { rootMargin: "120px" }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
   return (
-    <article ref={ref} className="flex flex-col">
+    <article className="flex flex-col">
       <button
         type="button"
         onClick={() => onPlay(item)}
@@ -53,6 +34,7 @@ function VideoCard({
           src={item.thumbnailUrl}
           alt=""
           fill
+          loading="lazy"
           className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
@@ -61,18 +43,6 @@ function VideoCard({
             <PlayIcon />
           </span>
         </span>
-        {inView ? (
-          <video
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0"
-            preload="none"
-            poster={item.thumbnailUrl}
-            muted
-            playsInline
-            aria-hidden
-          >
-            <source src={item.videoUrl} />
-          </video>
-        ) : null}
       </button>
       <h3 className="mt-3 font-body text-base font-bold text-primary">
         {item.customerName}

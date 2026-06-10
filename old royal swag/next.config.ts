@@ -17,8 +17,10 @@ const CSP = [
  */
 const nextConfig: NextConfig = {
   images: {
-    formats: ["image/webp", "image/avif"],
-    minimumCacheTTL: 60,
+    formats: ["image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000,
     unoptimized: false,
   },
   compress: true,
@@ -50,6 +52,15 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/videos/:path*",
         headers: [
           {
             key: "Cache-Control",

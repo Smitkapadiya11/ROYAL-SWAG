@@ -27,11 +27,11 @@ function numEnv(key: string, fallback: number): number {
 export function getPricingFromEnv() {
   return {
     price20: numEnv("NEXT_PUBLIC_PRICE_20DAY", 349),
-    price40: numEnv("NEXT_PUBLIC_PRICE_40DAY", 599),
-    price60: numEnv("NEXT_PUBLIC_PRICE_60DAY", 849),
-    mrp20: numEnv("NEXT_PUBLIC_MRP_20DAY", 499),
-    mrp40: numEnv("NEXT_PUBLIC_MRP_40DAY", 698),
-    mrp60: numEnv("NEXT_PUBLIC_MRP_60DAY", 1047),
+    price40: numEnv("NEXT_PUBLIC_BUNDLE_2_PRICE", 689),
+    price60: numEnv("NEXT_PUBLIC_BUNDLE_3_PRICE", 999),
+    mrp20: numEnv("NEXT_PUBLIC_MRP_20DAY", 399),
+    mrp40: numEnv("NEXT_PUBLIC_BUNDLE_2_MRP", 899),
+    mrp60: numEnv("NEXT_PUBLIC_BUNDLE_3_MRP", 1199),
   };
 }
 

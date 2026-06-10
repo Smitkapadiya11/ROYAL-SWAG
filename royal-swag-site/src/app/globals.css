@@ -292,16 +292,6 @@ body.lung-test-page {
   }
 }
 
-body.about-page .site-chrome-footer {
-  display: none !important;
-}
-
-@media (min-width: 768px) {
-  body.about-page .site-chrome-footer {
-    display: block !important;
-  }
-}
-
 body.about-page main {
   padding: 0 !important;
   max-width: none !important;
@@ -314,7 +304,9 @@ body.about-page main {
 }
 
 .site-header-mobile-panel--open {
-  max-height: 300px;
+  max-height: min(80vh, 420px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes slideUp {
@@ -421,10 +413,10 @@ body.about-page main {
   line-height: 1.4;
 }
 
-/* Mobile sticky purchase bar — homepage + product only */
+/* Mobile sticky purchase bar — sits above bottom nav (reference: StickyCTA.jsx) */
 .mobile-sticky-bar {
   position: fixed;
-  bottom: 0;
+  bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   z-index: 998;
@@ -433,8 +425,8 @@ body.about-page main {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: #0d3b1f;
+  background: var(--primary, #324023);
+  box-shadow: 0 -4px 10px rgba(73, 87, 56, 0.2);
 }
 
 @media (min-width: 769px) {
@@ -466,14 +458,14 @@ body.about-page main {
   font-size: 17px;
   font-weight: 700;
   line-height: 1.1;
-  color: #b8860b;
+  color: var(--gold, #9a6f1a);
 }
 
 .mobile-sticky-bar__btn {
   flex-shrink: 0;
   border: none;
   border-radius: 8px;
-  background: #b8860b;
+  background: var(--gold, #9a6f1a);
   padding: 10px 20px;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 15px;
@@ -491,13 +483,10 @@ body.about-page main {
   filter: brightness(1.06);
 }
 
-/* Reserve space above sticky bar on product page (mobile) */
+/* Reserve space for bottom nav + sticky bar on mobile */
 @media (max-width: 768px) {
   .product-page-root {
-    padding-bottom: calc(64px + 5rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(4rem + 64px + 5rem + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  .wa-float-root {
-    bottom: calc(64px + 12px + env(safe-area-inset-bottom, 0px)) !important;
-  }
 }

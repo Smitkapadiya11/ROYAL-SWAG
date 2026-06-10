@@ -142,7 +142,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      <Section compact bg="green" className="mb-8 hidden md:block">
+      <Section compact bg="green" className="mb-8">
         <Container className="text-center">
           <h2 className="font-display text-3xl font-bold text-parchment lg:text-4xl">
             Ready to Breathe Cleaner?

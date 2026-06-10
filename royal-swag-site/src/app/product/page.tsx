@@ -373,7 +373,7 @@ export default function ProductPage() {
 
         {/* Mobile title + details — all content preserved */}
         <div className="mt-6 flex min-w-0 flex-col gap-6 md:mt-12">
-          <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3">
+          <div className="flex items-center gap-3 rounded-xl bg-[#324023] px-4 py-3 md:hidden">
             <span className="text-2xl">🛡</span>
             <div>
               <p className="font-sans text-sm font-bold text-white">

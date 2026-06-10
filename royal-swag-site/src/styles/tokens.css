@@ -127,6 +127,18 @@
   grid-template-columns: repeat(var(--grid-cols-mobile, 1), minmax(0, 1fr));
 }
 
+/* Tailwind `hidden` must win over layout-grid display */
+.hidden.layout-grid {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hidden.md\:grid.layout-grid,
+  .md\:grid.hidden.layout-grid {
+    display: grid !important;
+  }
+}
+
 @media (min-width: 768px) {
   .layout-grid {
     grid-template-columns: repeat(var(--grid-cols-tablet, 2), minmax(0, 1fr));

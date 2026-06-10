@@ -9,6 +9,7 @@ import ProductBuyButton from "@/components/product/ProductBuyButton";
 import { ProductCta } from "@/components/product/ProductCta";
 import { writeCart } from "@/lib/cart";
 import ProductGallery from "@/components/product/ProductGallery";
+import { ProductGalleryAside } from "@/components/product/ProductGalleryAside";
 import ProductSchema from "@/components/seo/ProductSchema";
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
 import {
@@ -365,6 +366,13 @@ export default function ProductPage() {
               onMainError={handleMainImageError}
               onThumbError={handleThumbImageError}
             />
+            <div className="mt-5 hidden md:block">
+              <ProductGalleryAside
+                specs={PRODUCT_SPECS}
+                boxItems={BOX_CONTENTS}
+                selectedBundle={selectedBundle}
+              />
+            </div>
             <div className="mt-4 md:hidden">{titleBlock}</div>
           </div>
 
@@ -456,7 +464,7 @@ export default function ProductPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 md:hidden">
             {[
               { label: "Reduces Inflammation" },
               { label: "Clears Airways" },
@@ -477,7 +485,7 @@ export default function ProductPage() {
           {/* Mobile-only bundle picker (desktop has it in purchase panel) */}
           <div className="md:hidden">{bundlePicker}</div>
 
-          <section className="border-t border-[rgba(200,210,190,0.4)] py-8">
+          <section className="border-t border-[rgba(200,210,190,0.4)] py-8 md:hidden">
             <h3 className="mb-2 font-display text-2xl font-bold text-primary">
               What&apos;s in the Box
             </h3>
@@ -505,7 +513,7 @@ export default function ProductPage() {
             </div>
           </section>
 
-          <section className="glass-card rounded-xl p-5">
+          <section className="glass-card rounded-xl p-5 md:hidden">
             <h3 className="mb-4 font-display text-lg font-bold text-primary">
               Product Details
             </h3>

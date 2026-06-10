@@ -1,0 +1,53 @@
+---
+description: Royal Swag brand colors, typography, glass cards, buttons, logo rules, and protected copy
+alwaysApply: true
+---
+
+# Royal Swag Design System
+
+Use CSS variables from `src/app/globals.css` and utilities (`glass-card`, `btn-primary`, `font-display`, `font-body`). Full reference: `DESIGN_SYSTEM.md`.
+
+## Colors
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--primary` | `#324023` | Forest green — CTAs, headings |
+| `--primary-container` | `#495738` | Darker green accents |
+| `--gold` | `#9A6F1A` | Ayurvedic gold — highlights |
+| `--parchment` | `#F4EDD6` | Page background |
+| `--surface` | `#f5fce7` | Cards, alt sections |
+| `--surface-container` | `#e9f1dc` | Nested surfaces |
+| `--on-surface` | `#171e11` | Body text on light |
+| `--on-surface-variant` | `#45483f` | Muted text |
+| `--glass` | `rgba(255,255,255,0.4)` | Glass panels |
+| `--glass-border` | `rgba(255,255,255,0.6)` | Glass borders |
+
+Tailwind: `bg-primary`, `text-gold`, `bg-parchment`, `bg-surface`, etc.
+
+## Fonts
+
+- **Display / headlines:** Playfair Display (600, 700) — `font-display`, `h1–h4`
+- **Body / labels:** Hanken Grotesk (400, 500, 600) — `font-body`
+
+## Glass card
+
+Class: `.glass-card` or `.card-glass` — `background: var(--glass)`, `backdrop-filter: blur(12px)`, `border: 1px solid rgba(255,255,255,0.5)`, `border-radius: 16px`, hover `scale(1.02)`.
+
+## Button primary
+
+Class: `.btn-primary` — `bg: var(--primary)`, white text, Hanken 600 14px, `letter-spacing: 0.05em`, `border-radius: 12px`, `padding: 12px 24px`, hover `translateY(-2px)` + `box-shadow: 0 4px 12px rgba(154,111,26,0.3)`, active `translateY(1px)`.
+
+## Logo
+
+- File: `/public/images/royal-swag-logo.png` via `ROYAL_SWAG_LOGO_SRC` / `<BrandLogo />`
+- **Dark bg (`#324023`):** `variant="on-dark"` — no filter
+- **Light bg (parchment):** `variant="on-light"` — `filter: invert(1) sepia(1) saturate(2) hue-rotate(10deg)`
+- Header: min height **40px**, preserve aspect ratio — never stretch
+
+## Do not change (without client approval)
+
+- Hero tagline: **"Breathe Clean. Live Free."**
+- **Free Lung Test** feature and CTA
+- **30-Day Guarantee** badge
+- Herb descriptions: **Tulsi, Vasaka, Mulethi, Pippali** (copy and names)
+- **Prices** — do not change amounts without explicit client approval

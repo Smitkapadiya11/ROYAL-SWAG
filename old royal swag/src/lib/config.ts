@@ -1,0 +1,284 @@
+import { siteConfig } from "@/lib/siteConfig";
+
+/** FSSAI license shown on site (set NEXT_PUBLIC_FSSAI_LICENSE in production). */
+export const FSSAI_LICENSE = siteConfig.fssaiLicense;
+
+/** Public support contact (override via env in production). */
+export const SUPPORT_EMAIL = siteConfig.email;
+
+const addressParts = siteConfig.address.split(",").map((s) => s.trim());
+const addressL1 = addressParts.slice(0, 2).join(", ") || siteConfig.address;
+const addressL2 = addressParts.slice(2).join(", ") || "";
+
+export const S = {
+  name: "Royal Swag",
+  tagline: "Breathe Clean. Live Free.",
+  price: { now: "₹599", was: "₹698" },
+  company: siteConfig.companyName,
+  address: {
+    l1: addressL1,
+    l2: addressL2,
+  },
+  phone: siteConfig.phone,
+  phoneRaw: siteConfig.whatsappNumber,
+  email: siteConfig.email,
+  fssai: siteConfig.fssaiLicense,
+  wa: {
+    num: siteConfig.whatsappNumber,
+    msg: siteConfig.whatsappOrderMessage,
+    get url() {
+      return siteConfig.whatsappOrderLink;
+    },
+  },
+  social: {
+    ig: siteConfig.social.instagram,
+    yt: siteConfig.social.youtube,
+    fb: siteConfig.social.facebook,
+    tw: "https://twitter.com/royalswag",
+  },
+  certs: ["ISO", "GMP", "FSSAI", "AYUSH", "LEAN"],
+  stats: [
+    { v: "2016", l: "Founded" },
+    { v: "10 Yrs", l: "Experience" },
+    { v: "4.7★", l: "Amazon Rating" },
+    { v: "847+", l: "Reviews" },
+  ],
+  herbs: [
+    {
+      id: "vasaka",
+      name: "Vasaka",
+      bot: "Adhatoda vasica",
+      role: "The Airway Opener",
+      benefit: "Breaks down mucus, opens bronchial passages.",
+      img: "/images/herbs/vasaka.webp",
+    },
+    {
+      id: "mulethi",
+      name: "Mulethi",
+      bot: "Glycyrrhiza glabra",
+      role: "The Soother",
+      benefit: "Soothes inflamed airways, eases chronic cough.",
+      img: "/images/herbs/mulethi.webp",
+    },
+    {
+      id: "tulsi",
+      name: "Tulsi",
+      bot: "Ocimum sanctum",
+      role: "The Sacred Healer",
+      benefit: "Anti-inflammatory, fights respiratory infections.",
+      img: "/images/herbs/tulsi.webp",
+    },
+    {
+      id: "pippali",
+      name: "Pippali",
+      bot: "Piper longum",
+      role: "The Reviver",
+      benefit: "Expands lung capacity, improves oxygen absorption.",
+      img: "/images/herbs/pippali.webp",
+    },
+    {
+      id: "kantakari",
+      name: "Kantakari",
+      bot: "Solanum xanthocarpum",
+      role: "The Cleanser",
+      benefit: "Relieves bronchitis, clears blocked airways.",
+      img: "/images/herbs/kantakari.webp",
+    },
+    {
+      id: "bibhitaki",
+      name: "Bibhitaki",
+      bot: "Terminalia bellirica",
+      role: "The Protector",
+      benefit: "Prevents infection, clears accumulated lung toxins.",
+      img: "/images/bibhitaki.webp",
+    },
+    {
+      id: "pushkarmool",
+      name: "Pushkarmool",
+      bot: "Inula racemosa",
+      role: "The Deep Purifier",
+      benefit: "Deep lung purification, reduces pulmonary inflammation.",
+      img: "/images/herbs/pushkarmool.webp",
+    },
+  ],
+  team: [
+    {
+      id: "hitesh",
+      initials: "HS",
+      name: "Hitesh Sabhadiya",
+      role: "Founder & CEO",
+      img: "/images/hitesh.webp",
+      bio: "Started Eximburg in 2015. Built Royal Swag from Surat into something people trust on four continents. You may have seen us on Amazon Prime or Netflix.",
+    },
+    {
+      id: "manoj",
+      initials: "MK",
+      name: "Manoj Koshiya",
+      role: "Co-Founder",
+      img: "/images/manoj.webp",
+      bio: "Runs R&D and the factory floor. He won't release a batch until it clears ISO, GMP, FSSAI, and AYUSH checks.",
+    },
+    {
+      id: "jaideep",
+      initials: "JS",
+      name: "Jaideep Singh",
+      role: "Business Director",
+      img: "/images/jaideep singh.webp",
+      bio: "Twelve years in e-commerce. Handles Amazon, our own site, and the numbers behind what ships each week.",
+    },
+  ],
+  reviews: [
+    {
+      initials: "RK",
+      name: "Ramesh K., 44, Ahmedabad",
+      risk: "Moderate Risk",
+      before: "Coughed every morning for 20 minutes before work.",
+      after: "By week 3 it dropped to barely 5 minutes — felt in control again.",
+    },
+    {
+      initials: "SP",
+      name: "Sneha P., 39, Delhi",
+      risk: "High Risk",
+      before: "Stairs left me winded. Paused halfway up every evening.",
+      after: "After a month I walk up without stopping. My husband noticed first.",
+    },
+    {
+      initials: "VM",
+      name: "Vikram M., 51, Mumbai",
+      risk: "Mild Risk",
+      before: "Post-Diwali smog shut my chest down for two weeks straight.",
+      after: "Started early this year — tightness eased within 10 days.",
+    },
+    {
+      initials: "PT",
+      name: "Priya T., 33, Bengaluru",
+      risk: "Moderate Risk",
+      before: "Seasonal allergies every October without fail.",
+      after: "Sailed through this year. Zero antihistamines for the first time.",
+    },
+    {
+      initials: "AK",
+      name: "Arjun K., 47, Surat",
+      risk: "High Risk",
+      before: "Ex-smoker, 8 months clean but chest still felt heavy.",
+      after: "Two weeks in and I could take a full breath again.",
+    },
+    {
+      initials: "NM",
+      name: "Neha M., 29, Pune",
+      risk: "Mild Risk",
+      before: "Work near traffic every day — constant dry throat.",
+      after: "Throat cleared, sleep improved. Have ordered three packs now.",
+    },
+  ],
+} as const;
+
+export const APP_SITE = {
+  name: "Royal Swag",
+  phone: siteConfig.phone,
+  whatsapp: siteConfig.whatsappNumber,
+  email: siteConfig.email,
+  address: siteConfig.address,
+  fssai: siteConfig.fssaiLicense,
+  adminEmail: "admin@eximburginternational.in",
+  razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? "",
+  instagram: siteConfig.social.instagram,
+  youtube: siteConfig.social.youtube,
+  facebook: siteConfig.social.facebook,
+} as const;
+
+export const SITE = {
+  name: S.name,
+  tagline: S.tagline,
+  price: { display: S.price.now, mrp: S.price.was, savings: "Save ₹99" },
+  company: S.company,
+  founded: "2015",
+  address: { line1: S.address.l1, line2: S.address.l2 },
+  phone: { display: S.phone, raw: S.phoneRaw },
+  email: S.email,
+  fssai: S.fssai,
+  whatsapp: { number: S.wa.num, message: S.wa.msg, get url() { return S.wa.url; } },
+  social: {
+    instagram: S.social.ig,
+    youtube: S.social.yt,
+    facebook: S.social.fb,
+    twitter: S.social.tw,
+  },
+  amazon: { india: "https://www.amazon.in/royalswag", us: "https://www.amazon.com/royalswag" },
+  stats: S.stats.map((s) => ({ value: s.v, label: s.l })),
+  certifications: [...S.certs] as string[],
+  herbs: S.herbs.map((h) => ({
+    id: h.id,
+    name: h.name,
+    botanical: h.bot,
+    role: h.role,
+    benefit: h.benefit,
+    image: h.img,
+  })),
+  team: S.team.map((m) => ({
+    id: m.id,
+    name: m.name,
+    role: m.role,
+    image: m.img,
+    bio: m.bio,
+  })),
+} as const;
+
+export const SITE_CONFIG = {
+  ...SITE,
+  adminEmail: APP_SITE.adminEmail,
+  razorpayKeyId: APP_SITE.razorpayKeyId,
+  instagram: APP_SITE.instagram,
+  youtube: APP_SITE.youtube,
+  facebook: APP_SITE.facebook,
+  whatsappNumber: APP_SITE.whatsapp,
+};
+
+export const SITE_ORIGIN =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://lungdetox.royalswag.in";
+
+export const PACKS = [
+  {
+    id: "starter",
+    label: "Starter Pack",
+    subLabel: "15 days · 1 pack",
+    bags: 20,
+    days: 15,
+    price: 349,
+    original: 499,
+    saving: 150,
+    tag: null,
+    image: "/images/product/product-1.webp",
+    whatsappText:
+      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Starter%20Pack%20%281%20pack%2C%20%E2%82%B9349%29.%20Please%20confirm.",
+  },
+  {
+    id: "progress",
+    label: "Progress Pack",
+    subLabel: "30 days · 2 packs",
+    bags: 40,
+    days: 30,
+    price: 599,
+    original: 698,
+    saving: 99,
+    tag: "MOST POPULAR",
+    image: "/images/product/product-4.webp",
+    whatsappText:
+      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Progress%20Pack%20%282%20packs%2C%20%E2%82%B9599%29.%20Please%20confirm.",
+  },
+  {
+    id: "result",
+    label: "Result Pack",
+    subLabel: "45 days · 3 packs",
+    bags: 60,
+    days: 45,
+    price: 849,
+    original: 1047,
+    saving: 198,
+    tag: "BEST VALUE",
+    image: "/images/product/product-7.webp",
+    whatsappText:
+      "Hi%2C%20I%20want%20to%20order%20Royal%20Swag%20Result%20Pack%20%283%20packs%2C%20%E2%82%B9849%29.%20Please%20confirm.",
+  },
+] as const;

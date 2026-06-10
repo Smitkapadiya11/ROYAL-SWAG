@@ -19,7 +19,6 @@ import { getSaving } from "@/lib/productPricing";
 import { useConversionBar } from "@/contexts/ConversionBarContext";
 import { EVENTS, trackEvent } from "@/lib/events";
 import {
-  BUNDLE_GALLERY_IMAGE,
   MAIN_PRODUCT_IMAGE,
   PRODUCT_DETAIL_GALLERY,
 } from "@/lib/product-images";
@@ -28,7 +27,7 @@ import ClientPortal from "@/components/ui/ClientPortal";
 import { Container } from "@/components/layout";
 import { useTranslations } from "@/contexts/LocaleContext";
 
-const MAIN_FALLBACK = MAIN_PRODUCT_IMAGE;
+const MAIN_FALLBACK = PRODUCT_DETAIL_GALLERY[0] ?? "/images/product/product-1.webp";
 
 const CountdownTimer = dynamic(() => import("@/components/product/CountdownTimer"), {
   ssr: false,
@@ -139,9 +138,7 @@ export default function ProductPage() {
   const { t } = useTranslations();
   const { showCheckout, setShowCheckout, openCheckout } = useCheckoutUi();
   const [activeIdx, setActiveIdx] = useState(-1);
-  const [activeImage, setActiveImage] = useState<string>(
-    BUNDLE_GALLERY_IMAGE.double ?? MAIN_FALLBACK
-  );
+  const [activeImage, setActiveImage] = useState<string>(MAIN_FALLBACK);
   const { setBarConfig } = useConversionBar();
   const [selectedBundle, setSelectedBundle] = useState<ProductBundleOption>(
     DEFAULT_PRODUCT_BUNDLE
@@ -199,11 +196,6 @@ export default function ProductPage() {
 
   const selectBundle = useCallback((bundle: ProductBundleOption) => {
     setSelectedBundle(bundle);
-    const gallerySrc = BUNDLE_GALLERY_IMAGE[bundle.id];
-    if (gallerySrc) {
-      setActiveImage(gallerySrc);
-      setActiveIdx(-1);
-    }
     trackEvent(EVENTS.BUNDLE_SELECT, {
       pack_name: bundle.title,
       packId: bundle.id,

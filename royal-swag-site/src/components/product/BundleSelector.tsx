@@ -5,6 +5,7 @@ import {
   PRODUCT_BUNDLE_OPTIONS,
   type ProductBundleOption,
 } from "@/lib/bundle-options";
+import { BUNDLE_GALLERY_IMAGE, productImageSrc } from "@/lib/product-images";
 import { cn } from "@/lib/utils";
 
 type BundleSelectorProps = {
@@ -27,6 +28,9 @@ export default function BundleSelector({
         {PRODUCT_BUNDLE_OPTIONS.map((bundle) => {
           const selected = bundle.id === selectedId;
           const isBestValue = bundle.id === DEFAULT_PRODUCT_BUNDLE.id;
+          const comboSrc = bundle.isSubscription
+            ? null
+            : BUNDLE_GALLERY_IMAGE[bundle.id];
 
           return (
             <button
@@ -53,7 +57,19 @@ export default function BundleSelector({
                 </span>
               ) : null}
 
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-3">
+                {comboSrc ? (
+                  <div className="relative mt-0.5 h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl border border-glass-border bg-white/70 md:h-20 md:w-20">
+                    <img
+                      src={productImageSrc(comboSrc)}
+                      alt={`${bundle.title} — Royal Swag Lung Detox Tea`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain p-1.5"
+                    />
+                  </div>
+                ) : null}
+
                 <div className="min-w-0 flex-1 pt-1">
                   <p className="font-display text-sm font-bold text-primary md:text-base">
                     {bundle.title}

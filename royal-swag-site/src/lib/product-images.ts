@@ -39,6 +39,9 @@ export const PRODUCT_IMAGE_ALT =
 
 export const MAIN_PRODUCT_IMAGE = PRODUCT_DETAIL_GALLERY[0];
 
+/** 1-pack image for lung test & starter CTAs (₹349) — not the 2/3-pack combo renders */
+export const SINGLE_PACK_OFFER_IMAGE = COMBO_PACK_IMAGES.single;
+
 export function productImageSrc(path: string): string {
   if (!path.includes(" ")) return path;
   return path

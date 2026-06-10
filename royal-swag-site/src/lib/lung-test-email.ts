@@ -51,7 +51,7 @@ export function buildLungTestResultEmailHtml(data: LungTestEmailPayload): string
 
     <a href="${data.reportUrl}" style="display:inline-block;background:#324023;color:#f4edd6;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px">View full report</a>
     <p style="margin:24px 0 0;font-size:13px;color:#666">
-      Ready to start? <a href="https://lungdetox.royalswag.in/product" style="color:#9a6f1a">Royal Swag 2 Pack Bundle — ₹689</a>
+      Ready to start? <a href="https://lungdetox.royalswag.in/product?pack=single" style="color:#9a6f1a">Royal Swag 1 Pack — ₹349 (30 tea bags)</a>
     </p>
   </div>
 </body>

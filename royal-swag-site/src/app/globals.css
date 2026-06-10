@@ -220,6 +220,55 @@ body.admin-page {
   background: rgba(73, 87, 56, 0.4);
 }
 
+/* CMS editor panels inside /admin (light parchment theme) */
+.admin-cms-panel .dashboard-card {
+  border: 1px solid rgba(50, 64, 35, 0.12);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  color: #171e11;
+}
+
+.admin-cms-panel .dashboard-input {
+  border: 1px solid rgba(50, 64, 35, 0.15);
+  background: rgba(255, 255, 255, 0.85);
+  color: #171e11;
+}
+
+.admin-cms-panel .dashboard-input:focus {
+  outline: 2px solid rgba(154, 111, 26, 0.25);
+  border-color: #9a6f1a;
+}
+
+.admin-cms-panel .dashboard-btn {
+  background: #324023;
+  color: #fff;
+}
+
+.admin-cms-panel .dashboard-btn:hover {
+  filter: brightness(1.08);
+}
+
+.admin-cms-panel .dashboard-skeleton {
+  background: linear-gradient(90deg, #e9f1dc 0%, #f4edd6 50%, #e9f1dc 100%);
+  background-size: 200% 100%;
+}
+
+.admin-cms-panel label {
+  color: #45483f !important;
+}
+
+.admin-cms-panel button[class*="font-medium"] {
+  color: #324023;
+}
+
+.admin-cms-panel .text-\[\#9CA3AF\] {
+  color: #75786e !important;
+}
+
+.admin-cms-panel .text-\[\#F59E0B\] {
+  color: #9a6f1a !important;
+}
+
 /* Shipping label print */
 @media print {
   @page {

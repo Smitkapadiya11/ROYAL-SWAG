@@ -7,6 +7,14 @@ import AdminSidebar from "./AdminSidebar";
 import LiveClock from "./LiveClock";
 import { cn } from "@/lib/utils";
 
+const MOBILE_NAV = [
+  { href: "/admin/dashboard", label: "Leads" },
+  { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/content", label: "Content" },
+  { href: "/admin/media", label: "Media" },
+  { href: "/admin/settings", label: "Settings" },
+] as const;
+
 type AdminDashboardShellProps = {
   children: ReactNode;
   onSignOut: () => void;
@@ -19,9 +27,6 @@ export default function AdminDashboardShell({
   title = "Overview",
 }: AdminDashboardShellProps) {
   const pathname = usePathname();
-  const onDashboard =
-    pathname === "/admin/dashboard" || pathname === "/admin";
-  const onOrders = pathname === "/admin/orders";
 
   const dateLabel = new Date().toLocaleDateString("en-IN", {
     weekday: "short",
@@ -33,11 +38,13 @@ export default function AdminDashboardShell({
     <div className="admin-dashboard-root flex min-h-screen bg-[#F4EDD6]">
       <AdminSidebar onSignOut={onSignOut} />
 
-      <div className="ml-[220px] flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-[rgba(200,210,190,0.5)] bg-[rgba(244,237,214,0.9)] px-8 backdrop-blur-md">
+      <div className="ml-0 flex min-h-screen flex-1 flex-col md:ml-[220px]">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-[rgba(200,210,190,0.5)] bg-[rgba(244,237,214,0.9)] px-4 backdrop-blur-md md:px-8">
           <div className="flex items-center gap-3">
-            <h1 className="font-display text-xl font-bold text-[#324023]">{title}</h1>
-            <span className="rounded-full bg-[#e9f1dc] px-2 py-0.5 font-sans text-xs text-[#45483f]">
+            <h1 className="font-display text-lg font-bold text-[#324023] md:text-xl">
+              {title}
+            </h1>
+            <span className="hidden rounded-full bg-[#e9f1dc] px-2 py-0.5 font-sans text-xs text-[#45483f] sm:inline">
               {dateLabel}
             </span>
           </div>
@@ -45,32 +52,31 @@ export default function AdminDashboardShell({
         </header>
 
         <nav
-          className="sticky top-14 z-20 flex shrink-0 gap-2 border-b border-[rgba(200,210,190,0.5)] bg-[rgba(244,237,214,0.95)] px-4 py-2 md:hidden"
+          className="sticky top-14 z-20 flex shrink-0 gap-1 overflow-x-auto border-b border-[rgba(200,210,190,0.5)] bg-[rgba(244,237,214,0.95)] px-2 py-2 md:hidden"
           aria-label="Admin mobile"
         >
-          <Link
-            href="/admin/dashboard"
-            className={cn(
-              "flex-1 rounded-lg py-2 text-center font-sans text-xs font-semibold",
-              onDashboard
-                ? "bg-[#324023] text-white"
-                : "bg-white/50 text-[#45483f]"
-            )}
-          >
-            Leads
-          </Link>
-          <Link
-            href="/admin/orders"
-            className={cn(
-              "flex-1 rounded-lg py-2 text-center font-sans text-xs font-semibold",
-              onOrders ? "bg-[#324023] text-white" : "bg-white/50 text-[#45483f]"
-            )}
-          >
-            Orders
-          </Link>
+          {MOBILE_NAV.map((item) => {
+            const active =
+              pathname === item.href ||
+              (item.href === "/admin/dashboard" && pathname === "/admin");
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "shrink-0 rounded-lg px-3 py-2 text-center font-sans text-xs font-semibold",
+                  active
+                    ? "bg-[#324023] text-white"
+                    : "bg-white/50 text-[#45483f]"
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="flex-1 overflow-y-auto p-5 pb-24 md:p-8 md:pb-8">{children}</div>
+        <div className="flex-1 overflow-y-auto p-4 pb-24 md:p-8 md:pb-8">{children}</div>
       </div>
     </div>
   );

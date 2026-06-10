@@ -12,7 +12,7 @@ type Lead = {
   email: string;
   mobile: string;
   risk_level: string;
-  city: string;
+  pollution_city: string;
   score: number;
   created_at: string;
 };
@@ -93,13 +93,13 @@ export default function LungTestLeadsSection() {
 
   const exportCsv = () => {
     const rows: string[][] = [
-      ["Name", "Email", "Mobile", "Risk Level", "City", "Score", "Date"],
+      ["Name", "Email", "Mobile", "Risk Level", "High-Pollution City?", "Score", "Date"],
       ...filtered.map((l) => [
         l.name,
         l.email,
         l.mobile,
         l.risk_level,
-        l.city,
+        l.pollution_city,
         String(l.score),
         l.created_at,
       ]),
@@ -182,7 +182,14 @@ export default function LungTestLeadsSection() {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-[rgba(200,210,190,0.4)] bg-[#e9f1dc]/60">
-              {["Name", "Email", "Mobile", "Risk Level", "City", "Date"].map((col) => (
+              {[
+                "Name",
+                "Email",
+                "Mobile",
+                "Risk Level",
+                "High-Pollution City?",
+                "Date",
+              ].map((col) => (
                 <th
                   key={col}
                   className="px-5 py-3 font-sans text-[11px] font-semibold uppercase tracking-wider text-[#45483f]"
@@ -246,8 +253,17 @@ export default function LungTestLeadsSection() {
                       {capitalizeRisk(l.risk_level) || "Mild"}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 font-sans text-sm text-[#45483f]">
-                    {l.city || "\u2014"}
+                  <td className="px-5 py-3.5">
+                    <span
+                      className={cn(
+                        "inline-flex rounded-full px-2.5 py-1 font-sans text-xs font-semibold",
+                        l.pollution_city === "Yes"
+                          ? "bg-amber-100 text-amber-900"
+                          : "bg-green-100 text-green-800"
+                      )}
+                    >
+                      {l.pollution_city || "\u2014"}
+                    </span>
                   </td>
                   <td className="px-5 py-3.5 font-sans text-xs text-[#75786e]">
                     {new Date(l.created_at).toLocaleDateString("en-IN", {

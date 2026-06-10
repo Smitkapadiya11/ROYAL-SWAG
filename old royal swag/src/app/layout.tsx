@@ -11,6 +11,7 @@ import { SITE_ORIGIN } from "@/lib/config";
 import PageTransition from "@/components/layout/PageTransition";
 import WhatsAppFloat from "@/components/ui/WhatsAppFloat";
 import LeadCapturePopup from "@/components/ui/LeadCapturePopup";
+import { CmsProvider } from "@/contexts/CmsContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { Suspense } from "react";
 import SiteTracker from "@/components/analytics/SiteTracker";
@@ -90,6 +91,7 @@ export default function RootLayout({
         <OrganizationSchema />
         <StyledComponentsRegistry>
           <LocaleProvider>
+          <CmsProvider>
           <CheckoutUiProvider>
           <ConversionBarProvider>
           <Suspense fallback={null}>
@@ -109,6 +111,7 @@ export default function RootLayout({
           <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
           </ConversionBarProvider>
           </CheckoutUiProvider>
+          </CmsProvider>
           </LocaleProvider>
         </StyledComponentsRegistry>
       </body>

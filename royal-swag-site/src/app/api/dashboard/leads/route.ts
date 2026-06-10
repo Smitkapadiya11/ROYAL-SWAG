@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireDashboardAuth } from "@/lib/dashboard-api";
+import { requireDashboardAuthAsync } from "@/lib/dashboard-api";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const risk = req.nextUrl.searchParams.get("risk");

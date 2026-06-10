@@ -32,9 +32,11 @@ export default function AdminPhase1Dashboard({
     >
       {isOverview && <AdminOverviewMetrics />}
       {isOverview && <LungTestLeadsSection />}
-      <div id="orders">
-        <OrdersSection />
-      </div>
+      {!isOverview && (
+        <div id="orders">
+          <OrdersSection />
+        </div>
+      )}
     </AdminDashboardShell>
   );
 }

@@ -26,7 +26,7 @@ export async function GET() {
       email: l.email,
       mobile: l.phone,
       risk_level: l.level,
-      city: l.city ? "Yes" : "No",
+      pollution_city: l.city ? "Yes" : "No",
       score: l.score,
       created_at: l.created_at,
     }));

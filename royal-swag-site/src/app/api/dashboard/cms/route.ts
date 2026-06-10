@@ -1,11 +1,11 @@
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
-import { requireDashboardAuth } from "@/lib/dashboard-api";
+import { requireDashboardAuthAsync } from "@/lib/dashboard-api";
 import { DEFAULT_CMS_CONTENT } from "@/lib/cms-defaults";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const admin = getSupabaseAdmin();
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const body = (await req.json()) as {

@@ -195,10 +195,33 @@ export default function ContentPage() {
               ) : null}
 
               {s.key === "testimonials" || s.key === "faq" || s.key === "banners" ? (
-                <p className="text-[#9CA3AF]">
-                  JSON editor for {s.title} — use Media for assets. Full drag-and-drop
-                  editor ships in Sprint 3. Current data is preserved on save.
-                </p>
+                <label className="block text-[#9CA3AF]">
+                  {s.title} data (JSON array)
+                  <textarea
+                    className="dashboard-input mt-2 min-h-[160px] font-mono text-xs"
+                    value={JSON.stringify(sections[s.key] ?? [], null, 2)}
+                    onChange={(e) => {
+                      try {
+                        const parsed = JSON.parse(e.target.value) as unknown;
+                        void mutate(
+                          {
+                            sections: {
+                              ...sections,
+                              [s.key]: parsed,
+                            },
+                          },
+                          false
+                        );
+                      } catch {
+                        /* allow typing — save validates on submit */
+                      }
+                    }}
+                  />
+                  <span className="mt-1 block text-xs text-[#75786e]">
+                    Edit carefully — invalid JSON will not save. Upload assets in Media first,
+                    then paste URLs here.
+                  </span>
+                </label>
               ) : null}
 
               <button type="button" className="dashboard-btn" onClick={() => void save(s.key)}>

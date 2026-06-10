@@ -10,7 +10,17 @@ const COMING_SOON = [
   "Customer Profiles",
   "Meta Pixel Data",
   "Referral Program",
-  "Hindi Translations",
+] as const;
+
+const MAIN_NAV = [
+  { href: "/admin/dashboard", label: "Lung Test Leads", icon: "🫁", match: "/admin/dashboard" },
+  { href: "/admin/orders", label: "Orders", icon: "🛍", match: "/admin/orders" },
+] as const;
+
+const STORE_NAV = [
+  { href: "/admin/content", label: "Content", icon: "✏️", match: "/admin/content" },
+  { href: "/admin/media", label: "Media", icon: "🎥", match: "/admin/media" },
+  { href: "/admin/settings", label: "Settings", icon: "⚙️", match: "/admin/settings" },
 ] as const;
 
 function NavItem({
@@ -40,15 +50,25 @@ function NavItem({
   );
 }
 
+function NavSection({ title }: { title: string }) {
+  return (
+    <div className="px-3 pb-2 pt-5">
+      <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/25">
+        {title}
+      </p>
+    </div>
+  );
+}
+
 type AdminSidebarProps = {
   onSignOut: () => void;
 };
 
 export default function AdminSidebar({ onSignOut }: AdminSidebarProps) {
   const pathname = usePathname();
-  const onDashboard =
-    pathname === "/admin/dashboard" || pathname === "/admin";
-  const onOrders = pathname === "/admin/orders";
+
+  const isActive = (match: string) =>
+    pathname === match || (match === "/admin/dashboard" && pathname === "/admin");
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[220px] flex-col bg-[#324023] shadow-xl">
@@ -63,25 +83,30 @@ export default function AdminSidebar({ onSignOut }: AdminSidebarProps) {
         </p>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 px-3 py-4" aria-label="Admin">
-        <NavItem
-          href="/admin/dashboard"
-          label="Lung Test Leads"
-          icon="🫁"
-          active={onDashboard}
-        />
-        <NavItem
-          href="/admin/orders"
-          label="Orders"
-          icon="🛍"
-          active={onOrders}
-        />
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4" aria-label="Admin">
+        <NavSection title="Operations" />
+        {MAIN_NAV.map((item) => (
+          <NavItem
+            key={item.href}
+            href={item.href}
+            label={item.label}
+            icon={item.icon}
+            active={isActive(item.match)}
+          />
+        ))}
 
-        <div className="px-3 pb-2 pt-5">
-          <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/25">
-            Coming Soon
-          </p>
-        </div>
+        <NavSection title="Store" />
+        {STORE_NAV.map((item) => (
+          <NavItem
+            key={item.href}
+            href={item.href}
+            label={item.label}
+            icon={item.icon}
+            active={isActive(item.match)}
+          />
+        ))}
+
+        <NavSection title="Coming Soon" />
         {COMING_SOON.map((item) => (
           <div
             key={item}

@@ -5,7 +5,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useConversionBar } from "@/contexts/ConversionBarContext";
 import { useTranslations } from "@/contexts/LocaleContext";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
-import { HERO_PRODUCT_ALT, HERO_PRODUCT_IMAGE } from "@/lib/image-assets";
+import { useCms } from "@/contexts/CmsContext";
+import { HERO_PRODUCT_ALT } from "@/lib/image-assets";
 import {
   heroContainerVariants,
   heroCtaContainerVariants,
@@ -20,6 +21,15 @@ export function HomeHero() {
   const reduceMotion = useReducedMotion();
   const { dismissHeroBuy } = useConversionBar();
   const { t } = useTranslations();
+  const { sections } = useCms();
+  const hero = sections.hero as {
+    image?: string;
+    subtitle?: string;
+    cta_text?: string;
+  };
+  const heroImage = hero.image || "/images/hero/asset1-hero-product.webp";
+  const heroSubtitle = hero.subtitle || t("hero.subtitle");
+  const lungTestCta = hero.cta_text || t("hero.cta.lungTest");
 
   return (
     <div className="home-hero-grid">
@@ -51,7 +61,7 @@ export function HomeHero() {
           className="mt-4 max-w-md font-body text-base leading-relaxed text-on-surface-variant md:text-lg"
           variants={reduceMotion ? undefined : heroSubtitleVariants}
         >
-          {t("hero.subtitle")}
+          {heroSubtitle}
         </motion.p>
         <motion.div
           className="mt-8 flex w-full max-w-full flex-col gap-3 sm:flex-row sm:flex-wrap"
@@ -62,7 +72,7 @@ export function HomeHero() {
               href="/lung-test"
               className="btn-primary inline-flex w-full items-center justify-center px-6 py-3.5 sm:w-fit sm:px-8"
             >
-              {t("hero.cta.lungTest")}
+              {lungTestCta}
             </Link>
           </motion.div>
           <motion.div variants={reduceMotion ? undefined : heroCtaItemVariants}>
@@ -86,7 +96,7 @@ export function HomeHero() {
           animate="visible"
         >
           <OptimizedImage
-            src={HERO_PRODUCT_IMAGE}
+            src={heroImage}
             alt={HERO_PRODUCT_ALT}
             fill
             priority

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireDashboardAuth } from "@/lib/dashboard-api";
+import { requireDashboardAuthAsync } from "@/lib/dashboard-api";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import {
   dbStatusToLabel,
@@ -8,7 +8,7 @@ import {
 } from "@/lib/admin/order-status";
 
 export async function GET(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const status = req.nextUrl.searchParams.get("status");
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const body = (await req.json()) as { id?: string; status?: string };

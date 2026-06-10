@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
-import { requireDashboardAuth } from "@/lib/dashboard-api";
+import { requireDashboardAuthAsync } from "@/lib/dashboard-api";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 const IMAGE_MAX = 50 * 1024 * 1024;
@@ -8,7 +8,7 @@ const VIDEO_MAX = 200 * 1024 * 1024;
 const BUCKET = "media";
 
 export async function GET(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const admin = getSupabaseAdmin();
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const form = await req.formData();
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const { searchParams } = req.nextUrl;

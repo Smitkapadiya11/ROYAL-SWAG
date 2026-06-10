@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireDashboardAuth } from "@/lib/dashboard-api";
+import { requireDashboardAuthAsync } from "@/lib/dashboard-api";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 function startOfDay(d = new Date()): string {
@@ -9,7 +9,7 @@ function startOfDay(d = new Date()): string {
 }
 
 export async function GET(req: NextRequest) {
-  const denied = requireDashboardAuth(req);
+  const denied = await requireDashboardAuthAsync(req);
   if (denied) return denied;
 
   const admin = getSupabaseAdmin();

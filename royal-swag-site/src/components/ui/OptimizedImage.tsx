@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { blurDataFor } from "@/lib/image-blurs";
 import { toWebp } from "@/lib/image-assets";
 import { isComboImagePath, productImageSrc } from "@/lib/product-images";
@@ -54,6 +54,11 @@ export function OptimizedImage({
   const [failed, setFailed] = useState(false);
   const unoptimized = isComboImagePath(currentSrc);
 
+  useEffect(() => {
+    setCurrentSrc(webp);
+    setFailed(false);
+  }, [webp]);
+
   if (failed) {
     return (
       <ImagePlaceholder
@@ -89,7 +94,13 @@ export function OptimizedImage({
   };
 
   if (fill) {
-    return <Image {...shared} fill />;
+    return (
+      <Image
+        {...shared}
+        fill
+        loading={priority ? "eager" : "lazy"}
+      />
+    );
   }
 
   return (

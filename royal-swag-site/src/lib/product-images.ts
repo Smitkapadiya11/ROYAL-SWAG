@@ -19,11 +19,8 @@ export const BUNDLE_GALLERY_IMAGE: Record<string, string> = {
   subscribe: COMBO_PACK_IMAGES.single,
 };
 
-/** Full gallery: combo renders + product detail shots */
-export const PRODUCT_GALLERY = [
-  COMBO_PACK_IMAGES.single,
-  COMBO_PACK_IMAGES.double,
-  COMBO_PACK_IMAGES.triple,
+/** Detail / lifestyle shots only — shown in thumbnail strip */
+export const PRODUCT_DETAIL_GALLERY = [
   "/images/product/product-1.webp",
   "/images/product/product-4.webp",
   "/images/product/product-5.webp",
@@ -32,6 +29,12 @@ export const PRODUCT_GALLERY = [
   "/images/product/product-10.webp",
   "/images/product/product-11.webp",
   "/images/product/product-13.webp",
+] as const;
+
+/** All images for SEO schema (combos + detail) */
+export const PRODUCT_GALLERY = [
+  ...Object.values(COMBO_PACK_IMAGES),
+  ...PRODUCT_DETAIL_GALLERY,
 ] as const;
 
 export const PRODUCT_IMAGE_ALT =

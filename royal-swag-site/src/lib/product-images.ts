@@ -53,3 +53,12 @@ export function productImageSrc(path: string): string {
 export function isComboImagePath(path: string): boolean {
   return path.includes("/images/combos/");
 }
+
+/** Pre-optimized static assets — skip Next image optimizer (avoids 404/fallback on Vercel). */
+export function isStaticPublicImagePath(path: string): boolean {
+  return (
+    path.includes("/images/combos/") ||
+    path.includes("/images/herbs/") ||
+    path.includes("/images/product/")
+  );
+}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { blurDataFor } from "@/lib/image-blurs";
 import { toWebp } from "@/lib/image-assets";
-import { isComboImagePath, productImageSrc } from "@/lib/product-images";
+import { isStaticPublicImagePath, productImageSrc } from "@/lib/product-images";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +52,7 @@ export function OptimizedImage({
   const webp = toWebp(normalized);
   const [currentSrc, setCurrentSrc] = useState(webp);
   const [failed, setFailed] = useState(false);
-  const unoptimized = isComboImagePath(currentSrc);
+  const unoptimized = isStaticPublicImagePath(currentSrc);
 
   useEffect(() => {
     setCurrentSrc(webp);

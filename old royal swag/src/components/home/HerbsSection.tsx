@@ -16,7 +16,7 @@ const herbs = [
     hindi: "तुलसी",
     benefit: "Immunity & Anti-inflammatory",
     desc: "Sacred basil known for powerful immunomodulatory effects. Fights respiratory infections naturally.",
-    img: "/images/herbs/tulsi.jpg",
+    img: "/images/herbs/tulsi.webp",
     color: "#2d5a27",
   },
   {
@@ -24,7 +24,7 @@ const herbs = [
     hindi: "वासका",
     benefit: "Chest Congestion Relief",
     desc: "Relieves chest congestion and persistent coughing. Natural bronchodilator.",
-    img: "/images/herbs/vasaka.jpeg",
+    img: "/images/herbs/vasaka.webp",
     color: "#3d6b35",
   },
   {
@@ -32,7 +32,7 @@ const herbs = [
     hindi: "मुलेठी",
     benefit: "Throat Soothing",
     desc: "Soothes the throat and acts as a natural expectorant. Reduces inflammation.",
-    img: "/images/herbs/mulethi.jpeg",
+    img: "/images/herbs/mulethi.webp",
     color: "#6b4e1a",
   },
   {
@@ -40,7 +40,7 @@ const herbs = [
     hindi: "पिप्पली",
     benefit: "Lung Capacity",
     desc: "Clears respiratory pathways and boosts lung capacity significantly.",
-    img: "/images/herbs/pippali.jpeg",
+    img: "/images/herbs/pippali.webp",
     color: "#4a3a1a",
   },
   {
@@ -48,7 +48,7 @@ const herbs = [
     hindi: "पुष्करमूल",
     benefit: "Bronchodilator",
     desc: "A potent bronchodilator supporting clear, open breathing all day.",
-    img: "/images/herbs/pushkarmool.jpg",
+    img: "/images/herbs/pushkarmool.webp",
     color: "#2a4a2a",
   },
   {
@@ -56,7 +56,7 @@ const herbs = [
     hindi: "कटेरी",
     benefit: "Anti-Inflammation",
     desc: "Effectively manages respiratory ailments and reduces inflammation.",
-    img: "/images/herbs/kantakari.jpg",
+    img: "/images/herbs/kantakari.webp",
     color: "#3a5a2a",
   },
 ];

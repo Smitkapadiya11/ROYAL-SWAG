@@ -35,22 +35,38 @@ type ShippingLabelProps = {
 };
 
 export default function ShippingLabel({ order, captureRef }: ShippingLabelProps) {
-  const barcodeRef = useRef<SVGSVGElement>(null);
+  const orderBarcodeRef = useRef<SVGSVGElement>(null);
+  const pinBarcodeRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    if (!barcodeRef.current) return;
-    try {
-      JsBarcode(barcodeRef.current, order.order_id, {
-        format: "CODE128",
-        width: 1.4,
-        height: 48,
-        displayValue: false,
-        margin: 0,
-      });
-    } catch {
-      /* invalid id */
+    if (orderBarcodeRef.current) {
+      try {
+        JsBarcode(orderBarcodeRef.current, order.order_id, {
+          format: "CODE128",
+          width: 1.2,
+          height: 40,
+          displayValue: false,
+          margin: 0,
+        });
+      } catch {
+        /* invalid id */
+      }
     }
-  }, [order.order_id]);
+    if (pinBarcodeRef.current) {
+      try {
+        const pin = order.pincode.replace(/\D/g, "") || order.mobile.replace(/\D/g, "").slice(-10);
+        JsBarcode(pinBarcodeRef.current, pin, {
+          format: "CODE39",
+          width: 1.1,
+          height: 36,
+          displayValue: false,
+          margin: 0,
+        });
+      } catch {
+        /* invalid pin */
+      }
+    }
+  }, [order.order_id, order.pincode, order.mobile]);
 
   return (
     <div
@@ -103,9 +119,21 @@ export default function ShippingLabel({ order, captureRef }: ShippingLabelProps)
 
       <div className="my-2 border-t border-[#324023]/30" />
 
-      <div className="flex flex-col items-center text-center">
-        <svg ref={barcodeRef} className="max-w-full" />
-        <p className="mt-1 font-mono text-[10px] text-[#324023]">{order.order_id}</p>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col items-center text-center">
+          <p className="mb-1 font-sans text-[7px] font-bold uppercase tracking-wider text-[#9A6F1A]">
+            Order (CODE128)
+          </p>
+          <svg ref={orderBarcodeRef} className="max-w-full" />
+          <p className="mt-0.5 font-mono text-[8px] text-[#324023]">{order.order_id}</p>
+        </div>
+        <div className="flex flex-col items-center text-center">
+          <p className="mb-1 font-sans text-[7px] font-bold uppercase tracking-wider text-[#9A6F1A]">
+            Pincode (CODE39)
+          </p>
+          <svg ref={pinBarcodeRef} className="max-w-full" />
+          <p className="mt-0.5 font-mono text-[8px] text-[#324023]">{order.pincode}</p>
+        </div>
       </div>
 
       <div className="my-2 border-t border-[#324023]/30" />

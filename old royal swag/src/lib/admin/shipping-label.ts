@@ -63,9 +63,17 @@ export function renderLabelHTML(order: ShippingLabelOrder): string {
     <span><strong>DATE:</strong> ${date}</span>
   </div>
   <div class="rule"></div>
-  <div class="barcode-wrap">
-    <svg id="barcode"></svg>
-    <div style="font-size:10px;margin-top:2mm;">${escapeHtml(order.order_id)}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-top:3mm;">
+    <div class="barcode-wrap">
+      <div style="font-size:7px;font-weight:700;letter-spacing:0.1em;color:#9A6F1A;margin-bottom:1mm;">ORDER CODE128</div>
+      <svg class="bc-order" data-id="${escapeHtml(order.order_id)}"></svg>
+      <div style="font-size:8px;margin-top:1mm;">${escapeHtml(order.order_id)}</div>
+    </div>
+    <div class="barcode-wrap">
+      <div style="font-size:7px;font-weight:700;letter-spacing:0.1em;color:#9A6F1A;margin-bottom:1mm;">PIN CODE39</div>
+      <svg class="bc-pin" data-pin="${escapeHtml(order.pincode.replace(/\D/g, "") || order.mobile.replace(/\D/g, "").slice(-10))}"></svg>
+      <div style="font-size:8px;margin-top:1mm;">${escapeHtml(order.pincode)}</div>
+    </div>
   </div>
   <div class="rule"></div>
   <p style="text-align:center;font-size:9px;margin-top:3mm;">
@@ -75,12 +83,11 @@ export function renderLabelHTML(order: ShippingLabelOrder): string {
   </p>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.3/dist/JsBarcode.all.min.js"><\/script>
   <script>
-    JsBarcode("#barcode", ${JSON.stringify(order.order_id)}, {
-      format: "CODE128",
-      width: 1.4,
-      height: 48,
-      displayValue: false,
-      margin: 0
+    JsBarcode(".bc-order", ${JSON.stringify(order.order_id)}, {
+      format: "CODE128", width: 1.2, height: 40, displayValue: false, margin: 0
+    });
+    JsBarcode(".bc-pin", ${JSON.stringify(order.pincode.replace(/\D/g, "") || order.mobile.replace(/\D/g, "").slice(-10))}, {
+      format: "CODE39", width: 1.1, height: 36, displayValue: false, margin: 0
     });
   <\/script>
 </body>
@@ -131,7 +138,10 @@ export function printLabelsBulk(orders: ShippingLabelOrder[]) {
         <div class="row"><span><strong>ORDER:</strong> ${escapeHtml(order.order_id)}</span><span><strong>PACK:</strong> ${escapeHtml(order.pack)}</span></div>
         <div class="row"><span><strong>AMOUNT:</strong> ₹${order.amount}</span><span><strong>DATE:</strong> ${date}</span></div>
         <div class="rule"></div>
-        <div class="barcode-wrap"><svg class="bc" data-id="${escapeHtml(order.order_id)}"></svg><div style="font-size:10px;margin-top:2mm;">${escapeHtml(order.order_id)}</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3mm;">
+          <div class="barcode-wrap"><div style="font-size:7px;font-weight:700;color:#9A6F1A;">ORDER</div><svg class="bc-order" data-id="${escapeHtml(order.order_id)}"></svg><div style="font-size:8px;">${escapeHtml(order.order_id)}</div></div>
+          <div class="barcode-wrap"><div style="font-size:7px;font-weight:700;color:#9A6F1A;">PIN</div><svg class="bc-pin" data-pin="${escapeHtml(order.pincode.replace(/\D/g, "") || order.mobile.replace(/\D/g, "").slice(-10))}"></svg><div style="font-size:8px;">${escapeHtml(order.pincode)}</div></div>
+        </div>
         <div class="rule"></div>
         <p class="footer">Royal Swag · Lung Detox Tea<br/>Breathe Clean. Live Free.<br/>FSSAI: ${escapeHtml(fssai)}</p>
       </div>`;
@@ -152,8 +162,11 @@ export function printLabelsBulk(orders: ShippingLabelOrder[]) {
   </style></head><body>${pages}
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.3/dist/JsBarcode.all.min.js"><\/script>
   <script>
-    document.querySelectorAll('.bc').forEach(function(el) {
-      JsBarcode(el, el.getAttribute('data-id'), { format: 'CODE128', width: 1.4, height: 48, displayValue: false });
+    document.querySelectorAll('.bc-order').forEach(function(el) {
+      JsBarcode(el, el.getAttribute('data-id'), { format: 'CODE128', width: 1.2, height: 40, displayValue: false });
+    });
+    document.querySelectorAll('.bc-pin').forEach(function(el) {
+      JsBarcode(el, el.getAttribute('data-pin'), { format: 'CODE39', width: 1.1, height: 36, displayValue: false });
     });
   <\/script></body></html>`;
 

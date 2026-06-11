@@ -15,6 +15,7 @@ const COMING_SOON = [
 const MAIN_NAV = [
   { href: "/admin/dashboard", label: "Lung Test Leads", icon: "🫁", match: "/admin/dashboard" },
   { href: "/admin/orders", label: "Orders", icon: "🛍", match: "/admin/orders" },
+  { href: "/admin/stickers", label: "Shipping Stickers", icon: "🏷", match: "/admin/stickers" },
 ] as const;
 
 const STORE_NAV = [

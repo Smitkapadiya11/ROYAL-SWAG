@@ -20,21 +20,62 @@ export const DEFAULT_CMS_CONTENT: Record<string, unknown> = {
   },
   herbs: {
     Tulsi: {
-      image: "/images/herbs/tulsi.jpg",
+      image: "/images/herbs/tulsi.webp",
       benefit: "Fights pollution-related inflammation and morning respiratory stress",
     },
     Vasaka: {
-      image: "/images/herbs/vasaka.jpeg",
+      image: "/images/herbs/vasaka.webp",
       benefit: "Clears chest heaviness and supports open, easy breathing",
     },
     Mulethi: {
-      image: "/images/herbs/mulethi.jpeg",
+      image: "/images/herbs/mulethi.webp",
       benefit: "Soothes throat irritation and reduces mucus buildup",
     },
     Pippali: {
-      image: "/images/herbs/pippali.jpeg",
+      image: "/images/herbs/pippali.webp",
       benefit: "Aids smoking recovery and rebuilds lung capacity",
     },
+    Pushkarmool: {
+      image: "/images/herbs/pushkarmool.webp",
+      benefit: "A potent bronchodilator supporting clear, open breathing",
+    },
+    Kantakari: {
+      image: "/images/herbs/kantakari.webp",
+      benefit: "Effectively manages respiratory ailments and reduces inflammation",
+    },
+  },
+  videos: {
+    doctors: [
+      {
+        id: "doc1",
+        videoSrc: "/videos/doctor1.mp4",
+        name: "Dr. Rajesh Sharma",
+        title: "MBBS, MD — Pulmonologist",
+        hospital: "Apollo Hospitals, Ahmedabad",
+        quote:
+          "I recommend Royal Swag to all my patients with chronic respiratory issues.",
+        years: "18 years experience",
+      },
+      {
+        id: "doc2",
+        videoSrc: "/videos/doctor2.mp4",
+        name: "Dr. Priya Mehta",
+        title: "BAMS — Ayurvedic Specialist",
+        hospital: "Surat Ayurved Centre",
+        quote:
+          "The herb combination in this tea is clinically validated and highly effective.",
+        years: "12 years experience",
+      },
+      {
+        id: "doc3",
+        videoSrc: "/videos/doctor3.mp4",
+        name: "Dr. Vikram Patel",
+        title: "MD — Internal Medicine",
+        hospital: "Gujarat Medical Institute",
+        quote: "Natural, safe, and measurably effective for lung detoxification.",
+        years: "22 years experience",
+      },
+    ],
   },
   testimonials: [
     {

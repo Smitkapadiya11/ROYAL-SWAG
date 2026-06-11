@@ -51,17 +51,25 @@ export async function GET() {
 export async function PATCH(req: NextRequest) {
   logAdminEnvCheck();
 
-  const body = (await req.json()) as { id?: string; status?: string };
-  if (!body.id || !body.status) {
-    return NextResponse.json({ error: "id and status required" }, { status: 400 });
+  const body = (await req.json()) as {
+    id?: string;
+    status?: string;
+    label_printed?: boolean;
+  };
+  if (!body.id) {
+    return NextResponse.json({ error: "id required" }, { status: 400 });
   }
+  if (!body.status && body.label_printed === undefined) {
+    return NextResponse.json({ error: "status or label_printed required" }, { status: 400 });
+  }
+
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (body.status) patch.status = body.status;
+  if (body.label_printed !== undefined) patch.label_printed = body.label_printed;
 
   try {
     const supabase = getSupabaseAdmin();
-    const { error } = await supabase
-      .from("orders")
-      .update({ status: body.status, updated_at: new Date().toISOString() })
-      .eq("id", body.id);
+    const { error } = await supabase.from("orders").update(patch).eq("id", body.id);
 
     if (error) {
       console.error("ORDERS PATCH ERROR:", error);

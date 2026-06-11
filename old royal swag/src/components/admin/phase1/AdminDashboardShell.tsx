@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const MOBILE_NAV = [
   { href: "/admin/dashboard", label: "Leads" },
   { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/stickers", label: "Stickers" },
   { href: "/admin/content", label: "Content" },
   { href: "/admin/media", label: "Media" },
   { href: "/admin/settings", label: "Settings" },

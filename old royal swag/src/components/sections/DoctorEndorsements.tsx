@@ -1,7 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Container, Section } from "@/components/layout";
+import { useCms } from "@/contexts/CmsContext";
+import { DEFAULT_CMS_CONTENT } from "@/lib/cms-defaults";
 
 const DOCTORS = [
   {
@@ -34,6 +36,31 @@ const DOCTORS = [
     years: "22 years experience",
   },
 ] as const;
+
+type DoctorEntry = {
+  id: string;
+  videoSrc: string;
+  name: string;
+  title: string;
+  hospital: string;
+  quote: string;
+  years: string;
+};
+
+function resolveDoctors(cmsDoctors?: Partial<DoctorEntry>[]): DoctorEntry[] {
+  const defaults =
+    (DEFAULT_CMS_CONTENT.videos as { doctors?: Partial<DoctorEntry>[] })?.doctors ??
+    [];
+  const source = cmsDoctors?.length ? cmsDoctors : defaults;
+  return DOCTORS.map((base, i) => {
+    const patch = source[i] ?? source.find((d) => d.id === base.id) ?? {};
+    return {
+      ...base,
+      ...patch,
+      videoSrc: patch.videoSrc || base.videoSrc,
+    } as DoctorEntry;
+  });
+}
 
 function DoctorVideoPlaceholder() {
   return (
@@ -68,7 +95,7 @@ function DoctorCard({
   videoRef,
   mobile = false,
 }: {
-  doc: (typeof DOCTORS)[number];
+  doc: DoctorEntry;
   index: number;
   activeVideo: number | null;
   failedVideos: Record<string, boolean>;
@@ -180,6 +207,12 @@ function DoctorCard({
 }
 
 export function DoctorEndorsements() {
+  const { sections } = useCms();
+  const doctors = useMemo(() => {
+    const cms = (sections.videos as { doctors?: Partial<DoctorEntry>[] })?.doctors;
+    return resolveDoctors(cms);
+  }, [sections.videos]);
+
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const activeVideoRef = useRef<number | null>(null);
   const [activeVideo, setActiveVideo] = useState<number | null>(null);
@@ -203,9 +236,9 @@ export function DoctorEndorsements() {
   const ensureVideoSrc = useCallback((i: number) => {
     const video = videoRefs.current[i];
     if (!video || video.getAttribute("src")) return;
-    video.src = DOCTORS[i].videoSrc;
+    video.src = doctors[i]?.videoSrc ?? DOCTORS[i].videoSrc;
     setLoadedVideos((prev) => ({ ...prev, [i]: true }));
-  }, []);
+  }, [doctors]);
 
   const toggleVideo = (i: number) => {
     const video = videoRefs.current[i];
@@ -232,7 +265,7 @@ export function DoctorEndorsements() {
   };
 
   const renderCards = (mobile: boolean) =>
-    DOCTORS.map((doc, i) => (
+    doctors.map((doc, i) => (
       <DoctorCard
         key={`${mobile ? "m" : "d"}-${doc.id}`}
         doc={doc}

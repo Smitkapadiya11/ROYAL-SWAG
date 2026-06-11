@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { useCms } from "@/contexts/CmsContext";
 import {
   herbCardHoverTransition,
   herbCardVariants,
@@ -68,12 +69,19 @@ function HerbCard({
   hovered,
   onHover,
   reduceMotion,
+  cmsImage,
+  cmsBenefit,
 }: {
   herb: Herb;
   hovered: boolean;
   onHover: (name: string | null) => void;
   reduceMotion: boolean;
+  cmsImage?: string;
+  cmsBenefit?: string;
 }) {
+  const imageSrc = cmsImage || herb.img;
+  const benefitLabel = cmsBenefit || herb.benefit;
+
   return (
     <motion.div
       variants={reduceMotion ? undefined : herbCardVariants}
@@ -106,8 +114,8 @@ function HerbCard({
             style={{ transform: hovered ? "scale(1.1)" : "scale(1)" }}
           >
             <OptimizedImage
-              src={herb.img}
-              alt={`Royal Swag ${herb.name} — ${herb.benefit}`}
+              src={imageSrc}
+              alt={`Royal Swag ${herb.name} — ${benefitLabel}`}
               fill
               sizes="(max-width: 768px) 72vw, 280px"
               objectFit="cover"
@@ -130,7 +138,7 @@ function HerbCard({
             {herb.name}
           </h3>
           <span className="mt-1 inline-block rounded-full bg-[#9A6F1A]/80 px-2 py-0.5 text-[10px] font-semibold text-white">
-            {herb.benefit}
+            {benefitLabel}
           </span>
         </div>
 
@@ -158,6 +166,11 @@ function HerbCard({
 export function HerbsSection() {
   const [hoveredHerb, setHoveredHerb] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
+  const { sections } = useCms();
+  const cmsHerbs = (sections.herbs ?? {}) as Record<
+    string,
+    { image?: string; benefit?: string }
+  >;
 
   return (
     <div className="flex min-w-0 flex-col gap-6 overflow-hidden">
@@ -190,6 +203,8 @@ export function HerbsSection() {
             hovered={hoveredHerb === herb.name}
             onHover={setHoveredHerb}
             reduceMotion={!!reduceMotion}
+            cmsImage={cmsHerbs[herb.name]?.image}
+            cmsBenefit={cmsHerbs[herb.name]?.benefit}
           />
         ))}
       </motion.div>

@@ -224,7 +224,7 @@ function FullHeader() {
 
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-primary transition-colors hover:bg-primary/5 lg:hidden"
+              className="hidden h-10 w-10 items-center justify-center rounded-lg text-primary transition-colors hover:bg-primary/5 md:inline-flex lg:hidden"
               aria-expanded={menuOpen}
               aria-controls="site-header-mobile-menu"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -238,7 +238,7 @@ function FullHeader() {
         <div
           id="site-header-mobile-menu"
           className={cn(
-            "site-header-mobile-panel overflow-hidden border-t border-primary/10 bg-[var(--color-cream)] lg:hidden",
+            "site-header-mobile-panel hidden overflow-hidden border-t border-primary/10 bg-[var(--color-cream)] md:block lg:hidden",
             menuOpen && "site-header-mobile-panel--open"
           )}
           aria-hidden={!menuOpen}

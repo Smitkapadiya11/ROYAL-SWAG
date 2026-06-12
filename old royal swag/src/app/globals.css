@@ -9,13 +9,34 @@ body {
 }
 
 .page-mobile-pad {
-  padding-bottom: calc(4rem + 64px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+body.has-bottom-nav .page-mobile-pad {
+  padding-bottom: calc(4rem + 1rem + env(safe-area-inset-bottom, 0px));
+}
+
+body.has-bottom-nav.has-sticky-bar-visible .page-mobile-pad {
+  padding-bottom: calc(4rem + 64px + 1rem + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 768px) {
   .page-mobile-pad {
     padding-bottom: 0;
   }
+}
+
+/* WhatsApp float — stack above bottom nav / sticky bar on mobile */
+.wa-float-root {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+body.has-bottom-nav .wa-float-root {
+  bottom: calc(4rem + 12px + env(safe-area-inset-bottom, 0px));
+}
+
+body.has-bottom-nav.has-sticky-bar-visible .wa-float-root {
+  bottom: calc(4rem + 64px + 12px + env(safe-area-inset-bottom, 0px));
 }
 
 :root {
@@ -736,10 +757,10 @@ body.about-page main {
   line-height: 1.4;
 }
 
-/* Mobile sticky purchase bar — sits above bottom nav (reference: StickyCTA.jsx) */
+/* Mobile sticky purchase bar — sits above bottom nav when present */
 .mobile-sticky-bar {
   position: fixed;
-  bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  bottom: env(safe-area-inset-bottom, 0px);
   left: 0;
   right: 0;
   z-index: 998;
@@ -750,6 +771,10 @@ body.about-page main {
   padding: 0 16px;
   background: var(--primary, #324023);
   box-shadow: 0 -4px 10px rgba(73, 87, 56, 0.2);
+}
+
+body.has-bottom-nav .mobile-sticky-bar {
+  bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 769px) {
@@ -806,11 +831,16 @@ body.about-page main {
   filter: brightness(1.06);
 }
 
-/* Reserve space for bottom nav + sticky bar on mobile */
+/* Product page — no bottom nav; reserve space for in-flow CTAs + WhatsApp */
 @media (max-width: 768px) {
   .product-page-root {
-    padding-bottom: calc(4rem + 64px + 5rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
   }
+}
+
+/* Footer clearance when bottom nav is visible */
+body.has-bottom-nav .site-chrome-footer {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)) !important;
 }
 
 /* Sacred Seven — horizontal scroll mobile, 3-col grid desktop (single render) */

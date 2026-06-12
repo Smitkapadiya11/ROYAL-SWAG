@@ -21,6 +21,7 @@ import AnalyticsProvider from "@/components/analytics/AnalyticsProvider";
 import { CheckoutUiProvider } from "@/contexts/CheckoutUiContext";
 import { ConversionBarProvider } from "@/contexts/ConversionBarContext";
 import MobileStickyBarHost from "@/components/conversion/MobileStickyBarHost";
+import BottomNavHost from "@/components/layout/BottomNavHost";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -105,6 +106,7 @@ export default function RootLayout({
             <PageTransition>{children}</PageTransition>
           </main>
           <Footer />
+          <BottomNavHost />
           <WhatsAppFloat />
           <MobileStickyBarHost />
           <LeadCapturePopup />

@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
-import BrandLogo from "@/components/ui/BrandLogo";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { VisionariesGrid } from "@/components/about/VisionariesGrid";
-import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { Container, Grid, GridCol, Section } from "@/components/layout";
 import { cn } from "@/lib/utils";
 
@@ -36,14 +33,6 @@ const CERT_GRID = [
   { icon: "🔬", label: "GMP Quality" },
   { icon: "🛡", label: "FSSAI Approved" },
   { icon: "🌿", label: "AYUSH Ministry" },
-] as const;
-
-const FOOTER_LINKS = [
-  "ISO Certified",
-  "GMP Quality",
-  "FSSAI Approved",
-  "AYUSH Ministry",
-  "LEAN Manufacturing",
 ] as const;
 
 export default function AboutPage() {
@@ -164,8 +153,8 @@ export default function AboutPage() {
         </div>
         <div className="mt-8 min-w-0">
           <BeforeAfterSlider
-            beforeSrc="/images/lungs-before.png"
-            afterSrc="/images/lungs-after.png"
+            beforeSrc="/images/lungs-before.webp"
+            afterSrc="/images/lungs-after.webp"
             beforeLabel="Before"
             afterLabel="After 30 Days"
           />
@@ -226,25 +215,6 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      <footer className="flex w-full flex-col gap-8 rounded-t-layout-lg bg-primary px-5 py-12 pb-28 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:hidden">
-        <BrandLogo variant="on-dark" className="h-10 w-auto" />
-        <div className="flex flex-col gap-5">
-          {FOOTER_LINKS.map((l) => (
-            <Link
-              key={l}
-              href="#certifications"
-              className="font-sans text-sm font-semibold text-white/90 transition-colors hover:text-ayurvedic-gold"
-            >
-              {l}
-            </Link>
-          ))}
-        </div>
-        <div className="mt-6 border-t border-white/10 pt-6 font-sans text-base text-white/50">
-          © {new Date().getFullYear()} Royal Swag Lung Detox. All Rights Reserved.
-        </div>
-      </footer>
-
-      <MobileBottomNav />
     </div>
   );
 }

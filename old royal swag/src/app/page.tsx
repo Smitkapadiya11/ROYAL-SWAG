@@ -7,7 +7,6 @@ import { HerbsSection } from "@/components/home/HerbsSection";
 import { DoctorEndorsements } from "@/components/sections/DoctorEndorsements";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { Reveal } from "@/components/ui/Reveal";
-import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { Container, Grid, Section } from "@/components/layout";
 import { S } from "@/lib/config";
 import { useTranslations } from "@/contexts/LocaleContext";
@@ -167,8 +166,6 @@ export default function Home() {
           </div>
         </Container>
       </Section>
-
-      <MobileBottomNav />
     </div>
   );
 }

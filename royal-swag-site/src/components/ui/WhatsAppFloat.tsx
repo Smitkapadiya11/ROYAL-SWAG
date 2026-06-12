@@ -40,16 +40,10 @@ export default function WhatsAppFloat() {
     window.open(siteConfig.whatsappOrderLink, "_blank", "noopener,noreferrer");
   };
 
-  const isStickyChromePage = pathname === "/" || pathname === "/product";
-
   return (
     <div
       className={cn(
-        "wa-float-root fixed right-5 z-[9999] transition-opacity duration-200",
-        "max-md:bottom-[calc(4rem+12px+env(safe-area-inset-bottom,0px))]",
-        isStickyChromePage &&
-          "max-md:bottom-[calc(4rem+64px+12px+env(safe-area-inset-bottom,0px))]",
-        "md:bottom-5",
+        "wa-float-root fixed right-5 z-[9999] transition-opacity duration-200 md:bottom-5",
         showCheckout ? "pointer-events-none opacity-0" : "opacity-100"
       )}
     >

@@ -21,6 +21,7 @@ import { getSaving } from "@/lib/productPricing";
 import { useConversionBar } from "@/contexts/ConversionBarContext";
 import { EVENTS, trackEvent } from "@/lib/events";
 import {
+  BUNDLE_GALLERY_IMAGE,
   MAIN_PRODUCT_IMAGE,
   PRODUCT_DETAIL_GALLERY,
 } from "@/lib/product-images";
@@ -198,6 +199,11 @@ export default function ProductPage() {
 
   const selectBundle = useCallback((bundle: ProductBundleOption) => {
     setSelectedBundle(bundle);
+    const comboImage = BUNDLE_GALLERY_IMAGE[bundle.id];
+    if (comboImage) {
+      setActiveImage(comboImage);
+      setActiveIdx(-1);
+    }
     trackEvent(EVENTS.BUNDLE_SELECT, {
       pack_name: bundle.title,
       packId: bundle.id,
@@ -315,7 +321,7 @@ export default function ProductPage() {
 
   return (
     <div
-      className="page-shell product-page-root min-h-screen bg-parchment pb-32 font-sans text-on-surface md:pb-16"
+      className="page-shell product-page-root min-h-screen bg-parchment font-sans text-on-surface md:pb-16"
       style={{
         backgroundImage:
           "radial-gradient(rgba(73,87,56,0.05) 1px, transparent 1px)",
@@ -408,8 +414,8 @@ export default function ProductPage() {
                 {t("product.guarantee")}
               </p>
               <p className="font-sans text-[11px] text-white/70">
-                If you don&apos;t feel a difference — WhatsApp us. Full refund.
-                We&apos;ve done this 47 times in 3 years.
+                Full refund via WhatsApp — we&apos;ve done this 47 times in 3
+                years.
               </p>
             </div>
           </div>

@@ -11,7 +11,8 @@ import {
 import { EVENTS, trackEvent } from "@/lib/events";
 import { stickyBarMountVariants } from "@/lib/motionVariants";
 
-const ALLOWED_PATHS = new Set(["/", "/product"]);
+/** Homepage only — product page uses in-flow CTAs + desktop float bar. */
+const ALLOWED_PATHS = new Set(["/"]);
 const HERO_CTA_SELECTOR = "[data-hero-buy-cta]";
 
 type MobileStickyBarProps = {
@@ -53,11 +54,18 @@ export default function MobileStickyBar({ onBuyNow }: MobileStickyBarProps) {
     return () => observer.disconnect();
   }, [pathname]);
 
-  if (!mounted || !ALLOWED_PATHS.has(pathname)) {
-    return null;
-  }
+  const onAllowedPath = ALLOWED_PATHS.has(pathname);
+  const visible =
+    mounted && onAllowedPath && pastHero && !heroBuyDismissed && !showCheckout;
 
-  const visible = pastHero && !heroBuyDismissed && !showCheckout;
+  useEffect(() => {
+    if (!visible) {
+      document.body.classList.remove("has-sticky-bar-visible");
+      return;
+    }
+    document.body.classList.add("has-sticky-bar-visible");
+    return () => document.body.classList.remove("has-sticky-bar-visible");
+  }, [visible]);
 
   if (!visible) {
     return null;

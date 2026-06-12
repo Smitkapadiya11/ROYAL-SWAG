@@ -1,10 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { logAdminEnvCheck } from "@/lib/admin/env-check";
 import { getSupabaseAdmin } from "@/lib/admin/session";
+import { requireDashboardAuthAsync } from "@/lib/dashboard-api";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireDashboardAuthAsync(req);
+  if (denied) return denied;
+
   logAdminEnvCheck();
 
   try {

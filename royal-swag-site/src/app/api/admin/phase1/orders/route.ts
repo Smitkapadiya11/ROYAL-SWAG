@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { logAdminEnvCheck } from "@/lib/admin/env-check";
 import { getSupabaseAdmin } from "@/lib/admin/session";
 import { dbStatusToLabel } from "@/lib/admin/order-status";
+import { requireDashboardAuthAsync } from "@/lib/dashboard-api";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireDashboardAuthAsync(req);
+  if (denied) return denied;
+
   logAdminEnvCheck();
 
   try {
@@ -49,6 +53,9 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  const denied = await requireDashboardAuthAsync(req);
+  if (denied) return denied;
+
   logAdminEnvCheck();
 
   const body = (await req.json()) as {

@@ -204,11 +204,24 @@ export default function LungTestPage() {
   const [answers, setAnswers] = useState<SymptomAnswers>(EMPTY_ANSWERS);
   const [score, setScore] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleLeadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const phoneOk = /^[6-9]\d{9}$/.test(lead.phone.replace(/\D/g, "").slice(-10));
-    if (!lead.name.trim() || !lead.email.trim() || !phoneOk) return;
+    if (!lead.name.trim()) {
+      setFormError("Please enter your full name.");
+      return;
+    }
+    if (!lead.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email.trim())) {
+      setFormError("Please enter a valid email address.");
+      return;
+    }
+    if (!phoneOk) {
+      setFormError("Please enter a valid 10-digit Indian mobile number.");
+      return;
+    }
+    setFormError(null);
 
     setView("questions");
     setCurrentQ(0);
@@ -271,6 +284,7 @@ export default function LungTestPage() {
           dust: finalAnswers.dust,
           mucus: finalAnswers.mucus,
           worsened: finalAnswers.worsened,
+          breathHoldSeconds: breathHoldSeconds ?? null,
           score: points,
           sourceUrl: window.location.href,
         }),
@@ -371,6 +385,14 @@ export default function LungTestPage() {
                 onSubmit={handleLeadSubmit}
                 className="glass-card flex flex-col gap-4 rounded-3xl p-6 shadow-sm md:p-8"
               >
+                {formError ? (
+                  <p
+                    className="rounded-xl border border-[#ba1a1a]/30 bg-[#ffdad6]/40 px-4 py-3 font-sans text-sm text-[#ba1a1a]"
+                    role="alert"
+                  >
+                    {formError}
+                  </p>
+                ) : null}
                 <input
                   type="text"
                   placeholder="Full name"
@@ -485,6 +507,7 @@ export default function LungTestPage() {
         )}
         aria-live="polite"
         aria-busy={submitting}
+        aria-hidden={!submitting}
       >
         <div className="mb-4 flex h-16 w-16 animate-pulse items-center justify-center rounded-2xl border-2 border-[#324023] bg-[#324023]/10">
           <span className="text-2xl" aria-hidden>

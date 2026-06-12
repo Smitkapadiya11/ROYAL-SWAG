@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { sendNurtureEmail } from "@/lib/nurture-email";
 import {
+  adjustScoreForBreathHold,
   computeSymptomPoints,
   getHerbRecommendations,
   getLungScore,
@@ -66,7 +67,15 @@ export async function POST(req: NextRequest) {
       worsened: Boolean(worsened),
     };
 
-    const points = computeSymptomPoints(answers);
+    const symptomPoints = computeSymptomPoints(answers);
+    const breath =
+      typeof breathHoldSeconds === "number" && !Number.isNaN(breathHoldSeconds)
+        ? Math.round(breathHoldSeconds * 10) / 10
+        : null;
+    const points =
+      breath != null
+        ? adjustScoreForBreathHold(symptomPoints, breath)
+        : symptomPoints;
     const lungScore = getLungScore(points);
 
     if (clientScore != null && Math.abs(clientScore - points) > 1) {
@@ -75,10 +84,6 @@ export async function POST(req: NextRequest) {
 
     const matchedHerbs = getMatchedHerbNames(answers);
     const herbs = getHerbRecommendations(answers);
-    const breath =
-      typeof breathHoldSeconds === "number" && !Number.isNaN(breathHoldSeconds)
-        ? Math.round(breathHoldSeconds * 10) / 10
-        : null;
 
     const admin = getSupabaseAdmin();
     const sourcePage = sourceUrl || "/lung-test";

@@ -2,7 +2,8 @@
 export function isHeaderHiddenPath(pathname: string): boolean {
   return (
     pathname.startsWith("/admin") ||
-    pathname.startsWith("/dashboard")
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/lung-test/result")
   );
 }
 

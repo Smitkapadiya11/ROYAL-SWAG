@@ -307,7 +307,7 @@ export function DoctorEndorsements() {
             {renderCards(true)}
           </div>
         ) : (
-          <div className="doctor-card-grid">{renderCards(false)}</div>
+          <div className="layout-grid--doctors">{renderCards(false)}</div>
         )}
 
         <p className="mt-4 text-center font-sans text-[11px] text-outline md:hidden">

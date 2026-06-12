@@ -193,7 +193,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="layout-grid--certs">
+        <Grid variant="certs">
           {CERT_GRID.map((c) => (
             <div
               key={c.label}
@@ -211,7 +211,7 @@ export default function AboutPage() {
               LEAN Manufacturing
             </span>
           </div>
-        </div>
+        </Grid>
         </Container>
       </Section>
 

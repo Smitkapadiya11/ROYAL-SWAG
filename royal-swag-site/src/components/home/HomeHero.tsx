@@ -32,7 +32,7 @@ export function HomeHero() {
   const lungTestCta = hero.cta_text || t("hero.cta.lungTest");
 
   return (
-    <div className="home-hero-grid">
+    <div className="layout-grid--hero">
       <motion.div
         className="home-hero-copy flex flex-col justify-center py-4 md:py-8"
         variants={reduceMotion ? undefined : heroContainerVariants}

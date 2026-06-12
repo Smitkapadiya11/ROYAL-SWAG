@@ -22,6 +22,14 @@
   --section-gap-mobile: 56px;
   --grid-cols: 12;
   --grid-gap: 24px;
+  --grid-gap-sm: 12px;
+  --grid-gap-md: 24px;
+  --grid-gap-lg: 32px;
+  --grid-gap-xl: 48px;
+  --content-max-prose: 42rem;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --bp-wide: 1280px;
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
@@ -124,7 +132,80 @@
   gap: var(--grid-gap);
   width: 100%;
   min-width: 0;
+  align-items: var(--grid-align, stretch);
   grid-template-columns: repeat(var(--grid-cols-mobile, 1), minmax(0, 1fr));
+}
+
+.layout-grid--gap-sm {
+  gap: var(--grid-gap-sm);
+}
+
+.layout-grid--gap-md {
+  gap: var(--grid-gap-md);
+}
+
+.layout-grid--gap-lg {
+  gap: var(--grid-gap-lg);
+}
+
+.layout-grid--gap-xl {
+  gap: var(--grid-gap-xl);
+}
+
+/* Auto-fill card grids */
+.layout-grid--auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: var(--grid-gap);
+  width: 100%;
+  min-width: 0;
+}
+
+.layout-grid--cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: var(--grid-gap-md);
+  width: 100%;
+  min-width: 0;
+}
+
+/* Trust / stats strip — always 3 equal columns */
+.layout-grid--stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--grid-gap-sm);
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .layout-grid--stats {
+    gap: var(--grid-gap-md);
+  }
+}
+
+/* Main + sidebar (product aside, lung-test form) */
+.layout-grid--sidebar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .layout-grid--sidebar {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: var(--grid-gap-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-grid--sidebar {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: var(--grid-gap-xl);
+  }
 }
 
 /* Tailwind `hidden` must win over layout-grid display */
@@ -255,7 +336,74 @@ main video:not([class*="object-"]) {
   height: auto;
 }
 
+/* Sacred Seven — horizontal scroll mobile, 2 → 3 col grid desktop */
+.layout-grid--herbs {
+  display: flex;
+  flex-direction: row;
+  gap: var(--grid-gap-sm);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 12px;
+  margin-inline: calc(-1 * var(--container-pad-mobile));
+  padding-inline: var(--container-pad-mobile);
+  width: 100%;
+  min-width: 0;
+}
+
+.layout-grid--herbs::-webkit-scrollbar {
+  display: none;
+}
+
+.layout-grid--herbs > .herb-card {
+  flex: 0 0 min(14rem, 72vw);
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .layout-grid--herbs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+    gap: var(--grid-gap-md);
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .layout-grid--herbs > .herb-card {
+    flex: unset;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-grid--herbs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--grid-gap);
+  }
+}
+
+/* Doctor endorsements — 2 → 3 equal cards */
+.layout-grid--doctors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--grid-gap-md);
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout-grid--doctors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--grid-gap);
+  }
+}
+
 /* ——— Homepage hero ——— */
+.layout-grid--hero,
 .home-hero-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -287,6 +435,7 @@ main video:not([class*="object-"]) {
 }
 
 @media (min-width: 768px) {
+  .layout-grid--hero,
   .home-hero-grid {
     grid-template-columns: 1fr 1fr;
     min-height: 500px;
@@ -299,6 +448,7 @@ main video:not([class*="object-"]) {
 }
 
 @media (min-width: 1024px) {
+  .layout-grid--hero,
   .home-hero-grid {
     grid-template-columns: 5fr 7fr;
     min-height: 600px;
@@ -323,9 +473,45 @@ main video:not([class*="object-"]) {
 
 /* Page shell — consistent root wrapper for marketing pages */
 .page-shell {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   min-width: 0;
-  overflow-x: hidden;
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.layout-page-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Centered section headings */
+.layout-section-head {
+  width: 100%;
+  max-width: var(--content-max-prose);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.layout-section-head--left {
+  margin-inline: 0;
+  text-align: left;
+}
+
+.layout-content-narrow {
+  width: 100%;
+  max-width: var(--container-max-md);
+  margin-inline: auto;
+}
+
+.layout-content-form {
+  width: 100%;
+  max-width: var(--container-max-sm);
+  margin-inline: auto;
 }
 
 /* Two-column split (product gallery + purchase, lung test intro) */

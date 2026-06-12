@@ -319,13 +319,13 @@ export default function LungTestPage() {
   const currentQuestion = LUNG_TEST_QUESTIONS[currentQ];
 
   return (
-    <div className="page-shell relative flex min-h-screen flex-col bg-parchment font-sans text-on-surface antialiased">
+    <div className="page-shell page-mobile-pad relative bg-parchment font-sans text-on-surface antialiased">
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -left-[10%] -top-[10%] h-[50vw] w-[50vw] rounded-full bg-[#e9f1dc] opacity-80 blur-3xl" />
         <div className="absolute -bottom-[10%] -right-[10%] h-[60vw] w-[60vw] rounded-full bg-[#f4edd6] opacity-70 blur-3xl" />
       </div>
 
-      <main className="lung-test-shell relative z-10 flex w-full min-w-0 flex-1 flex-col pb-24 pt-6 md:pb-16 md:pt-10">
+      <main className="layout-container layout-page-main relative z-10 pb-24 pt-6 md:pb-16 md:pt-10">
         {view !== "intro" && (
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -347,7 +347,7 @@ export default function LungTestPage() {
               <IntroCopy onStart={() => setView("form")} />
             </section>
 
-            <section className="layout-grid--split hidden min-h-[72vh] duration-500 animate-in fade-in md:grid">
+            <section className="hidden min-h-[72vh] duration-500 animate-in fade-in md:grid layout-grid--split">
               <IntroHeroImage className="mb-0 md:mx-0" />
               <IntroCopy onStart={() => setView("form")} desktop />
             </section>
@@ -355,7 +355,7 @@ export default function LungTestPage() {
         )}
 
         {view === "form" && (
-          <section className="mx-auto flex w-full min-h-[70vh] max-w-3xl flex-col duration-300 animate-in fade-in slide-in-from-right md:min-h-[60vh]">
+          <section className="layout-content-narrow flex min-h-[70vh] w-full flex-col duration-300 animate-in fade-in slide-in-from-right md:min-h-[60vh]">
             <p className="mb-1 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A] md:text-xs">
               Step 1 of 2
             </p>
@@ -459,7 +459,7 @@ export default function LungTestPage() {
         )}
 
         {view === "breath-hold" && (
-          <section className="mx-auto w-full max-w-3xl text-center">
+          <section className="layout-content-narrow w-full text-center">
             <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9A6F1A]">
               Final step
             </p>

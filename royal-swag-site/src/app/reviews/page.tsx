@@ -16,7 +16,7 @@ export default function ReviewsPage() {
 
   return (
 
-    <div className="w-full min-w-0 overflow-x-hidden">
+    <div className="page-shell page-mobile-pad w-full min-w-0 bg-parchment font-sans text-on-surface antialiased">
 
       <Section bg="green" className="text-center">
 

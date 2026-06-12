@@ -7,7 +7,7 @@ import { HerbsSection } from "@/components/home/HerbsSection";
 import { DoctorEndorsements } from "@/components/sections/DoctorEndorsements";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 import { Reveal } from "@/components/ui/Reveal";
-import { Container, Grid, Section } from "@/components/layout";
+import { Container, Grid, GridCol, Section } from "@/components/layout";
 import { S } from "@/lib/config";
 import { useTranslations } from "@/contexts/LocaleContext";
 
@@ -42,7 +42,7 @@ export default function Home() {
               <p className="mb-6 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
                 {t("home.trusted")}
               </p>
-              <Grid cols={{ mobile: 3, tablet: 3, desktop: 3 }} className="text-center">
+              <Grid variant="stats" className="text-center">
                 <div>
                   <p className="font-display text-2xl font-bold text-primary md:text-3xl">
                     2,400+
@@ -69,23 +69,26 @@ export default function Home() {
 
       <Section bg="cream">
         <Container>
-          <Grid cols={{ mobile: 1, tablet: 1, desktop: 2 }} className="items-center">
-            <Reveal direction="up" delay={0}>
-              <div className="text-center md:text-left">
-                <p className="font-body text-sm font-semibold tracking-widest text-ayurvedic-gold">✦</p>
-                <h2 className="mt-3 font-display text-3xl font-bold text-primary md:text-4xl">
-                  A Decade of Purity
-                </h2>
-                <p className="mt-6 font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
-                  We believe in the power of nature, elevated by science. Ayurveda understood the
-                  complexities of the human respiratory system long before the industrial age —
-                  we&apos;ve carefully sourced and blended time-tested botanicals into a revitalizing
-                  daily ritual for modern lungs.
-                </p>
-              </div>
-            </Reveal>
-            <Reveal direction="up" delay={100}>
-              <div className="rounded-layout-md bg-surface p-4 md:p-6">
+          <Grid twelveCol className="items-center">
+            <GridCol span={{ mobile: 4, tablet: 6, desktop: 5 }}>
+              <Reveal direction="up" delay={0}>
+                <div className="text-center md:text-left">
+                  <p className="font-body text-sm font-semibold tracking-widest text-ayurvedic-gold">✦</p>
+                  <h2 className="mt-3 font-display text-3xl font-bold text-primary md:text-4xl">
+                    A Decade of Purity
+                  </h2>
+                  <p className="mt-6 font-body text-base leading-relaxed text-on-surface-variant md:text-lg">
+                    We believe in the power of nature, elevated by science. Ayurveda understood the
+                    complexities of the human respiratory system long before the industrial age —
+                    we&apos;ve carefully sourced and blended time-tested botanicals into a revitalizing
+                    daily ritual for modern lungs.
+                  </p>
+                </div>
+              </Reveal>
+            </GridCol>
+            <GridCol span={{ mobile: 4, tablet: 6, desktop: 7 }}>
+              <Reveal direction="up" delay={100}>
+                <div className="rounded-layout-md bg-surface p-4 md:p-6">
                 <h2 className="text-center font-display text-3xl font-bold text-primary md:text-left md:text-4xl">
                   The Journey to Clarity
                 </h2>
@@ -101,7 +104,8 @@ export default function Home() {
                   />
                 </div>
               </div>
-            </Reveal>
+              </Reveal>
+            </GridCol>
           </Grid>
         </Container>
       </Section>

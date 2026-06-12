@@ -190,7 +190,7 @@ export function HerbsSection() {
       </div>
 
       <motion.div
-        className="herbs-section-grid"
+        className="layout-grid--herbs"
         initial={reduceMotion ? false : "hidden"}
         whileInView={reduceMotion ? undefined : "visible"}
         viewport={sectionRevealViewport}

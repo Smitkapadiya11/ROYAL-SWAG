@@ -361,7 +361,7 @@ export default function ProductPage() {
         </nav>
 
         {/* Above-fold: gallery + desktop purchase panel */}
-        <div className="layout-grid--product">
+        <Grid variant="product">
           <div className="min-w-0 md:sticky md:top-24 md:self-start">
             <ProductGallery
               images={productImages}
@@ -403,7 +403,7 @@ export default function ProductPage() {
               </div>
             </div>
           </div>
-        </div>
+        </Grid>
 
         {/* Mobile title + details — all content preserved */}
         <div className="mt-6 flex min-w-0 flex-col gap-6 md:mt-12">

@@ -6,5 +6,7 @@ export {
   type GridBreakpointCols,
   type GridColProps,
   type GridColSpan,
+  type GridGap,
   type GridProps,
+  type GridVariant,
 } from "./Grid";
